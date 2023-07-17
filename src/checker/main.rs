@@ -287,6 +287,7 @@ fn verify<'a>(proof: impl Iterator<Item = &'a u32>) -> (Stack, Journal, Memory) 
     return (stack, journal, memory);
 }
 
+#[test]
 fn test_construct_phi_implies_phi() {
     let proof : Vec<u32> = vec![
         Instruction::List as u32, 0, // E Fresh
@@ -304,6 +305,7 @@ fn test_construct_phi_implies_phi() {
     assert_eq!(stack, vec![Term::Pattern(Rc::new(Pattern::Implication{left: phi0.clone(), right: phi0.clone()}))]);
 }
 
+#[test]
 fn test_phi_implies_phi() {
     let proof : Vec<u32> = vec![
         Instruction::Prop1 as u32,               // (p1: phi0 -> (phi1 -> phi0))
@@ -358,9 +360,6 @@ fn test_phi_implies_phi() {
     println!("{}, {:?}", stack.len(), stack[0]);
 }
 
-fn main() {
-    test_construct_phi_implies_phi();
-    test_phi_implies_phi()
-}
+fn main() { }
 
 
