@@ -1,0 +1,6 @@
+# Build products
+/.build/
+
+# User directory for temp files
+/tmp/
+
