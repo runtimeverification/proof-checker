@@ -97,12 +97,8 @@ fn instantiate(p: Rc<Pattern>, var_id: u32, plug: Rc<Pattern>) -> Rc<Pattern> {
                 right: instantiate(right.clone(), var_id, plug.clone())
             })
         }
-        Pattern::MetaVar { id, e_fresh, s_fresh, positive, negative, application_context } => {
-            if *id == var_id {
-                plug
-            } else {
-                p
-            }
+        Pattern::MetaVar { id, ..} => {
+            if *id == var_id { plug } else { p }
         }
         _ => {
             unimplemented!("Instantiation failed")
@@ -266,9 +262,8 @@ fn execute_instructions<'a>(
                 let metavar = pop_stack_pattern(stack);
 
                 match metavar.as_ref() {
-                    Pattern::MetaVar { id, e_fresh, s_fresh, positive, negative, application_context } => {
+                    Pattern::MetaVar {id, ..} => {
                         let metatheorem = pop_stack_proved(stack);
-
                         stack.push(Term::Proved(instantiate(metatheorem, *id, plug)));
                     }
                     _ => panic!("Expected a metavariable")
