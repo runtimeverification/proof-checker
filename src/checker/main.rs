@@ -2,7 +2,11 @@
 
 use std::rc::Rc;
 
-// Instructions
+/// Instructions
+/// ============
+///
+/// Instructions are used to define the on-the-wire representation of matching
+/// logic proofs.
 
 #[derive(Debug, Eq, PartialEq)]
 enum Instruction {
@@ -65,7 +69,15 @@ impl Instruction {
     }
 }
 
-// Terms
+/// Terms
+/// =====
+///
+/// Terms define the in-memory representation of matching logic patterns and proofs.
+/// However, since we only implement a proof checker in this program we do not need
+/// an explicit representation of the entire hilbert proof tree.
+/// We only need to store the conclusion of things that are proved so far.
+/// We use the `Proved` variant for this.
+
 #[derive(Debug, Eq, PartialEq, Clone)]
 enum Pattern {
     #[allow(dead_code)] EVar(u32),
@@ -76,7 +88,7 @@ enum Pattern {
     #[allow(dead_code)] Exists  { var: u32, subpattern: Rc<Pattern>},
     #[allow(dead_code)] Mu      { var: u32, subpattern: Rc<Pattern>},
 
-    MetaVar{
+    MetaVar {
         id: u32,
         e_fresh: Vec<u32>,
         s_fresh: Vec<u32>,
@@ -90,10 +102,6 @@ enum Term        { Pattern(Rc<Pattern>), Proved(Rc<Pattern>), List(Vec<u32>) }
 #[derive(Debug, Eq, PartialEq)]
 enum Entry       { Pattern(Rc<Pattern>), Proved(Rc<Pattern>) }
 
-type Stack = Vec<Term>;
-type Journal = Vec<Entry>;
-type Memory = Vec<Entry>;
-
 fn instantiate(p: Rc<Pattern>, var_id: u32, plug: Rc<Pattern>) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::Implication { left, right } => {
@@ -105,11 +113,19 @@ fn instantiate(p: Rc<Pattern>, var_id: u32, plug: Rc<Pattern>) -> Rc<Pattern> {
         Pattern::MetaVar { id, ..} => {
             if *id == var_id { plug } else { p }
         }
-        _ => {
-            unimplemented!("Instantiation failed")
-        }
+        _ => unimplemented!("Instantiation failed")
     }
 }
+
+/// Proof checker
+/// =============
+
+type Stack = Vec<Term>;
+type Journal = Vec<Entry>;
+type Memory = Vec<Entry>;
+
+/// Stack utilities
+/// ---------------
 
 fn pop_stack(stack: &mut Stack) -> Term {
     return stack.pop().expect("Insufficient stack items.");
@@ -136,6 +152,8 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
     }
 }
 
+/// Main implementation
+/// -------------------
 
 fn execute_instructions<'a>(
     mut proof: impl Iterator<Item = &'a u32>,
@@ -182,7 +200,6 @@ fn execute_instructions<'a>(
                     negative: vec![],
                     application_context: vec![]
                 });
-
                 let prop1 = Pattern::Implication {
                     left: Rc::clone(&phi0),
                     right: Rc::new(Pattern::Implication {
@@ -289,6 +306,9 @@ fn verify<'a>(proof: impl Iterator<Item = &'a u32>) -> (Stack, Journal, Memory) 
     execute_instructions(proof, &mut stack, &mut journal, &mut memory);
     return (stack, journal, memory);
 }
+
+/// Testing
+/// =======
 
 #[test]
 fn test_construct_phi_implies_phi() {
