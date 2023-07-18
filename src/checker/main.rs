@@ -290,10 +290,10 @@ fn execute_instructions<'a>(
             Instruction::InstantiateSchema => {
                 let plug = pop_stack_pattern(stack);
                 let metavar = pop_stack_pattern(stack);
-                match metavar.as_ref() {
+                match *metavar {
                     Pattern::MetaVar { id, .. } => {
                         let metatheorem = pop_stack_proved(stack);
-                        stack.push(Term::Proved(instantiate(metatheorem, *id, plug)));
+                        stack.push(Term::Proved(instantiate(metatheorem, id, plug)));
                     }
                     _ => panic!("Expected a metavariable"),
                 }
