@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 use std::rc::Rc;
 
 // Instructions
