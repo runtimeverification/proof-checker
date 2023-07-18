@@ -228,9 +228,17 @@ fn execute_instructions<'a>(
     memory: &mut Memory,
     _journal: &mut Journal,
 ) {
+    // Metavars
     let phi0 = metavar_unconstrained(0);
     let phi1 = metavar_unconstrained(1);
     let phi2 = metavar_unconstrained(2);
+
+    // Axioms
+    let prop1 = implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi0)));
+    let prop2 = implies(
+        implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi2))),
+        implies(implies(Rc::clone(&phi0), Rc::clone(&phi1)), implies(Rc::clone(&phi0), Rc::clone(&phi2))),
+    );
 
     while let Some(instr_u32) = proof.next() {
         match Instruction::from(*instr_u32) {
@@ -268,15 +276,10 @@ fn execute_instructions<'a>(
             }
 
             Instruction::Prop1 => {
-                let prop1 = implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi0)));
-                stack.push(Term::Proved(prop1));
+                stack.push(Term::Proved(Rc::clone(&prop1)));
             }
             Instruction::Prop2 => {
-                let prop2 = implies(
-                    implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi2))),
-                    implies(implies(Rc::clone(&phi0), Rc::clone(&phi1)), implies(Rc::clone(&phi0), Rc::clone(&phi2))),
-                );
-                stack.push(Term::Proved(prop2));
+                stack.push(Term::Proved(Rc::clone(&prop2)));
             }
             Instruction::ModusPonens => match pop_stack_proved(stack).as_ref() {
                 Pattern::Implication { left, right } => {
