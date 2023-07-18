@@ -228,6 +228,10 @@ fn execute_instructions<'a>(
     memory: &mut Memory,
     _journal: &mut Journal,
 ) {
+    let phi0 = metavar_unconstrained(0);
+    let phi1 = metavar_unconstrained(1);
+    let phi2 = metavar_unconstrained(2);
+
     while let Some(instr_u32) = proof.next() {
         match Instruction::from(*instr_u32) {
             Instruction::List => {
@@ -264,18 +268,13 @@ fn execute_instructions<'a>(
             }
 
             Instruction::Prop1 => {
-                let phi0 = metavar_unconstrained(0);
-                let phi1 = metavar_unconstrained(1);
-                let prop1 = implies(phi0.clone(), implies(phi1, phi0));
+                let prop1 = implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi0)));
                 stack.push(Term::Proved(prop1));
             }
             Instruction::Prop2 => {
-                let phi0 = metavar_unconstrained(0);
-                let phi1 = metavar_unconstrained(1);
-                let phi2 = metavar_unconstrained(2);
                 let prop2 = implies(
-                    implies(phi0.clone(), implies(phi1.clone(), phi2.clone())),
-                    implies(implies(phi0.clone(), phi1), implies(phi0, phi2)),
+                    implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi2))),
+                    implies(implies(Rc::clone(&phi0), Rc::clone(&phi1)), implies(Rc::clone(&phi0), Rc::clone(&phi2))),
                 );
                 stack.push(Term::Proved(prop2));
             }
