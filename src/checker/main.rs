@@ -348,14 +348,7 @@ fn test_construct_phi_implies_phi() {
         Instruction::Implication as u32, // Phi -> Phi
     ];
     let (stack, _journal, _memory) = verify(proof.iter());
-    let phi0 = Rc::new(Pattern::MetaVar {
-        id: 0,
-        s_fresh: vec![],
-        e_fresh: vec![],
-        positive: vec![],
-        negative: vec![],
-        application_context: vec![],
-    });
+    let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
         vec![Term::Pattern(Rc::new(Pattern::Implication {
@@ -417,7 +410,11 @@ fn test_phi_implies_phi() {
         Instruction::ModusPonens as u32,         // Stack: phi0 -> phi0
     ];
     let (stack, _journal, _memory) = verify(proof.iter());
-    println!("{}, {:?}", stack.len(), stack[0]);
+    let phi0 = metavar_unconstrained(0);
+    assert_eq!(stack, vec![Term::Proved(Rc::new(Pattern::Implication{
+        left: Rc::clone(&phi0),
+        right: Rc::clone(&phi0)
+    }))])
 }
 
 fn main() {}
