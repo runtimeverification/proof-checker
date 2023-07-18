@@ -125,7 +125,7 @@ enum Entry {
 /// Pattern construction utilities
 /// ------------------------------
 
-fn unconstrained_metavar(var_id: u32) -> Rc<Pattern> {
+fn metavar_unconstrained(var_id: u32) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
         e_fresh: vec![],
@@ -134,6 +134,21 @@ fn unconstrained_metavar(var_id: u32) -> Rc<Pattern> {
         negative: vec![],
         application_context: vec![],
     });
+}
+
+fn metavar_s_fresh(var_id: u32, fresh: u32) -> Rc<Pattern> {
+    return Rc::new(Pattern::MetaVar {
+        id: var_id,
+        e_fresh: vec![],
+        s_fresh: vec![fresh],
+        positive: vec![],
+        negative: vec![],
+        application_context: vec![],
+    });
+}
+
+fn svar(id: u32) -> Rc<Pattern> {
+    return Rc::new(Pattern::SVar(id));
 }
 
 fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
@@ -158,6 +173,15 @@ fn instantiate(p: Rc<Pattern>, var_id: u32, plug: Rc<Pattern>) -> Rc<Pattern> {
         }
         _ => unimplemented!("Instantiation failed"),
     }
+}
+
+#[ignore]
+#[test]
+#[should_panic]
+fn test_instantiate_fresh() {
+    let svar_0 = svar(0);
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0);
+    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
 }
 
 /// Proof checker
@@ -240,15 +264,15 @@ fn execute_instructions<'a>(
             }
 
             Instruction::Prop1 => {
-                let phi0 = unconstrained_metavar(0);
-                let phi1 = unconstrained_metavar(1);
+                let phi0 = metavar_unconstrained(0);
+                let phi1 = metavar_unconstrained(1);
                 let prop1 = implies(phi0.clone(), implies(phi1, phi0));
                 stack.push(Term::Proved(prop1));
             }
             Instruction::Prop2 => {
-                let phi0 = unconstrained_metavar(0);
-                let phi1 = unconstrained_metavar(1);
-                let phi2 = unconstrained_metavar(2);
+                let phi0 = metavar_unconstrained(0);
+                let phi1 = metavar_unconstrained(1);
+                let phi2 = metavar_unconstrained(2);
                 let prop2 = implies(
                     implies(phi0.clone(), implies(phi1.clone(), phi2.clone())),
                     implies(implies(phi0.clone(), phi1), implies(phi0, phi2)),
