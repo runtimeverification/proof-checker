@@ -102,6 +102,24 @@ enum Term        { Pattern(Rc<Pattern>), Proved(Rc<Pattern>), List(Vec<u32>) }
 #[derive(Debug, Eq, PartialEq)]
 enum Entry       { Pattern(Rc<Pattern>), Proved(Rc<Pattern>) }
 
+/// Pattern construction utilities
+/// ------------------------------
+
+fn unconstrained_metavar(var_id: u32) -> Rc<Pattern> {
+    return Rc::new(Pattern::MetaVar {
+        id: var_id,
+        e_fresh: vec![],
+        s_fresh: vec![],
+        positive: vec![],
+        negative: vec![],
+        application_context: vec![]
+    })
+}
+
+/// Substitution utilities
+/// ----------------------
+
+
 fn instantiate(p: Rc<Pattern>, var_id: u32, plug: Rc<Pattern>) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::Implication { left, right } => {
@@ -184,22 +202,8 @@ fn execute_instructions<'a>(
             }
 
             Instruction::Prop1 => {
-                let phi0 = Rc::new(Pattern::MetaVar {
-                    id: 0,
-                    e_fresh: vec![],
-                    s_fresh: vec![],
-                    positive: vec![],
-                    negative: vec![],
-                    application_context: vec![]
-                });
-                let phi1 = Rc::new(Pattern::MetaVar {
-                    id: 1,
-                    e_fresh: vec![],
-                    s_fresh: vec![],
-                    positive: vec![],
-                    negative: vec![],
-                    application_context: vec![]
-                });
+                let phi0 = unconstrained_metavar(0);
+                let phi1 = unconstrained_metavar(1);
                 let prop1 = Pattern::Implication {
                     left: Rc::clone(&phi0),
                     right: Rc::new(Pattern::Implication {
@@ -207,35 +211,12 @@ fn execute_instructions<'a>(
                         right: Rc::clone(&phi0)
                     })
                 };
-
                 stack.push(Term::Proved(Rc::new(prop1)));
             }
             Instruction::Prop2 => {
-                let phi0 = Rc::new(Pattern::MetaVar {
-                    id: 0,
-                    e_fresh: vec![],
-                    s_fresh: vec![],
-                    positive: vec![],
-                    negative: vec![],
-                    application_context: vec![]
-                });
-                let phi1 = Rc::new(Pattern::MetaVar {
-                    id: 1,
-                    e_fresh: vec![],
-                    s_fresh: vec![],
-                    positive: vec![],
-                    negative: vec![],
-                    application_context: vec![]
-                });
-                let phi2 = Rc::new(Pattern::MetaVar {
-                    id: 2,
-                    e_fresh: vec![],
-                    s_fresh: vec![],
-                    positive: vec![],
-                    negative: vec![],
-                    application_context: vec![]
-                });
-
+                let phi0 = unconstrained_metavar(0);
+                let phi1 = unconstrained_metavar(1);
+                let phi2 = unconstrained_metavar(2);
                 let prop2 = Pattern::Implication {
                     left: Rc::new(Pattern::Implication {
                         left: Rc::clone(&phi0),
