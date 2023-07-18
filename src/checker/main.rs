@@ -1,5 +1,7 @@
 use std::rc::Rc;
 
+// Instructions
+
 #[derive(Debug, Eq, PartialEq)]
 enum Instruction {
     List = 1,
@@ -61,15 +63,16 @@ impl Instruction {
     }
 }
 
+// Terms
 #[derive(Debug, Eq, PartialEq, Clone)]
 enum Pattern {
-    EVar(u32),
-    SVar(u32),
-    Symbol(u32),
+    #[allow(dead_code)] EVar(u32),
+    #[allow(dead_code)] SVar(u32),
+    #[allow(dead_code)] Symbol(u32),
     Implication{left: Rc<Pattern>, right: Rc<Pattern>},
-    Application{left: Rc<Pattern>, right: Rc<Pattern>},
-    Exists  { var: u32, subpattern: Rc<Pattern>},
-    Mu      { var: u32, subpattern: Rc<Pattern>},
+    #[allow(dead_code)] Application{left: Rc<Pattern>, right: Rc<Pattern>},
+    #[allow(dead_code)] Exists  { var: u32, subpattern: Rc<Pattern>},
+    #[allow(dead_code)] Mu      { var: u32, subpattern: Rc<Pattern>},
 
     MetaVar{
         id: u32,
