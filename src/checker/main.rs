@@ -116,6 +116,10 @@ fn unconstrained_metavar(var_id: u32) -> Rc<Pattern> {
     })
 }
 
+fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::Implication{left, right})
+}
+
 /// Substitution utilities
 /// ----------------------
 
@@ -123,10 +127,10 @@ fn unconstrained_metavar(var_id: u32) -> Rc<Pattern> {
 fn instantiate(p: Rc<Pattern>, var_id: u32, plug: Rc<Pattern>) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::Implication { left, right } => {
-            Rc::new(Pattern::Implication {
-                left: instantiate(left.clone(), var_id, plug.clone()),
-                right: instantiate(right.clone(), var_id, plug.clone())
-            })
+            implies(
+                instantiate(left.clone(), var_id, plug.clone()),
+                instantiate(right.clone(), var_id, plug.clone())
+            )
         }
         Pattern::MetaVar { id, ..} => {
             if *id == var_id { plug } else { p }
@@ -188,7 +192,7 @@ fn execute_instructions<'a>(
             Instruction::Implication => {
                 let right = pop_stack_pattern(stack);
                 let left = pop_stack_pattern(stack);
-                stack.push(Term::Pattern(Rc::new(Pattern::Implication{left, right})))
+                stack.push(Term::Pattern(implies(left, right)))
             }
             Instruction::MetaVar => {
                 let id = *proof.next().expect("Insufficient parameters for MetaVar instruction");
@@ -204,44 +208,26 @@ fn execute_instructions<'a>(
             Instruction::Prop1 => {
                 let phi0 = unconstrained_metavar(0);
                 let phi1 = unconstrained_metavar(1);
-                let prop1 = Pattern::Implication {
-                    left: Rc::clone(&phi0),
-                    right: Rc::new(Pattern::Implication {
-                        left: Rc::clone(&phi1),
-                        right: Rc::clone(&phi0)
-                    })
-                };
-                stack.push(Term::Proved(Rc::new(prop1)));
+                let prop1 = implies(phi0.clone(), implies(phi1, phi0));
+                stack.push(Term::Proved(prop1));
             }
             Instruction::Prop2 => {
                 let phi0 = unconstrained_metavar(0);
                 let phi1 = unconstrained_metavar(1);
                 let phi2 = unconstrained_metavar(2);
-                let prop2 = Pattern::Implication {
-                    left: Rc::new(Pattern::Implication {
-                        left: Rc::clone(&phi0),
-                        right: Rc::new(Pattern::Implication {
-                            left: Rc::clone(&phi1),
-                            right: Rc::clone(&phi2)
-                        })
-                    }),
-                    right: Rc::new(Pattern::Implication {
-                        left: Rc::new(
-                            Pattern::Implication { left: Rc::clone(&phi0), right: Rc::clone(&phi1) }
-                        ),
-                        right: Rc::new(
-                            Pattern::Implication { left: Rc::clone(&phi0), right: Rc::clone(&phi2) }
-                        )
-                    })
-                };
-
-                stack.push(Term::Proved(Rc::new(prop2)));
+                let prop2 = implies(
+                              implies(phi0.clone(), implies(phi1.clone(), phi2.clone())),
+                              implies(
+                                implies(phi0.clone(), phi1.clone()),
+                                implies(phi0.clone(), phi2.clone()),
+                              )
+                            );
+                stack.push(Term::Proved(prop2));
             }
             Instruction::ModusPonens => {
                 match pop_stack_proved(stack).as_ref() {
                     Pattern::Implication { left, right } => {
                         assert_eq!(*left.as_ref(), *pop_stack_proved(stack).as_ref());
-
                         stack.push(Term::Proved(Rc::clone(&right)))
                     }
                     _ => { panic!("Expected an implication as a first parameter.") }
@@ -250,7 +236,6 @@ fn execute_instructions<'a>(
             Instruction::InstantiateSchema => {
                 let plug = pop_stack_pattern(stack);
                 let metavar = pop_stack_pattern(stack);
-
                 match metavar.as_ref() {
                     Pattern::MetaVar {id, ..} => {
                         let metatheorem = pop_stack_proved(stack);
