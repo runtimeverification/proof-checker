@@ -159,20 +159,7 @@ fn execute_instructions<'a>(
                 stack.push(Term::Pattern(Rc::new(
                     Pattern::MetaVar{id, e_fresh, s_fresh, positive, negative, application_context})));
             }
-            Instruction::Save => {
-                match stack.last().expect("Save needs an entry on the stack") {
-                    Term::Pattern(p) => memory.push(Entry::Pattern(p.clone())),
-                    Term::Proved(p) => memory.push(Entry::Proved(p.clone())),
-                    Term::List(_) => panic!("Cannot Save lists."),
-                }
-            }
-            Instruction::Load => {
-                let index = *proof.next().expect("Insufficient parameters for Load instruction");
-                match &memory[index as usize] {
-                    Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
-                    Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
-                }
-            }
+
             Instruction::Prop1 => {
                 let phi0 = Rc::new(Pattern::MetaVar {
                     id: 0,
@@ -269,6 +256,22 @@ fn execute_instructions<'a>(
                     _ => panic!("Expected a metavariable")
                 }
             }
+
+            Instruction::Save => {
+                match stack.last().expect("Save needs an entry on the stack") {
+                    Term::Pattern(p) => memory.push(Entry::Pattern(p.clone())),
+                    Term::Proved(p) => memory.push(Entry::Proved(p.clone())),
+                    Term::List(_) => panic!("Cannot Save lists."),
+                }
+            }
+            Instruction::Load => {
+                let index = *proof.next().expect("Insufficient parameters for Load instruction");
+                match &memory[index as usize] {
+                    Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
+                    Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
+                }
+            }
+
             _ => { unimplemented!("Instruction: {}", instr_u32) }
         }
     }
