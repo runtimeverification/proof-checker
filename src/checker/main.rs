@@ -32,7 +32,7 @@ enum Instruction {
 }
 
 impl Instruction {
-    fn from(value: u32) -> Instruction {
+    fn from(value: u64) -> Instruction {
         match value {
             1 => Instruction::List,
             2 => Instruction::EVar,
@@ -82,11 +82,11 @@ impl Instruction {
 #[derive(Debug, Eq, PartialEq, Clone)]
 enum Pattern {
     #[allow(dead_code)]
-    EVar(u32),
+    EVar(u64),
     #[allow(dead_code)]
-    SVar(u32),
+    SVar(u64),
     #[allow(dead_code)]
-    Symbol(u32),
+    Symbol(u64),
     Implication {
         left: Rc<Pattern>,
         right: Rc<Pattern>,
@@ -97,24 +97,24 @@ enum Pattern {
         right: Rc<Pattern>,
     },
     #[allow(dead_code)]
-    Exists { var: u32, subpattern: Rc<Pattern> },
+    Exists { var: u64, subpattern: Rc<Pattern> },
     #[allow(dead_code)]
-    Mu { var: u32, subpattern: Rc<Pattern> },
+    Mu { var: u64, subpattern: Rc<Pattern> },
 
     MetaVar {
-        id: u32,
-        e_fresh: Vec<u32>,
-        s_fresh: Vec<u32>,
-        positive: Vec<u32>,
-        negative: Vec<u32>,
-        application_context: Vec<u32>,
+        id: u64,
+        e_fresh: Vec<u64>,
+        s_fresh: Vec<u64>,
+        positive: Vec<u64>,
+        negative: Vec<u64>,
+        application_context: Vec<u64>,
     },
 }
 #[derive(Debug, Eq, PartialEq, Clone)]
 enum Term {
     Pattern(Rc<Pattern>),
     Proved(Rc<Pattern>),
-    List(Vec<u32>),
+    List(Vec<u64>),
 }
 #[derive(Debug, Eq, PartialEq)]
 enum Entry {
@@ -125,7 +125,7 @@ enum Entry {
 /// Pattern construction utilities
 /// ------------------------------
 
-fn metavar_unconstrained(var_id: u32) -> Rc<Pattern> {
+fn metavar_unconstrained(var_id: u64) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
         e_fresh: vec![],
@@ -136,7 +136,7 @@ fn metavar_unconstrained(var_id: u32) -> Rc<Pattern> {
     });
 }
 
-fn metavar_s_fresh(var_id: u32, fresh: u32) -> Rc<Pattern> {
+fn metavar_s_fresh(var_id: u64, fresh: u64) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
         e_fresh: vec![],
@@ -147,7 +147,7 @@ fn metavar_s_fresh(var_id: u32, fresh: u32) -> Rc<Pattern> {
     });
 }
 
-fn svar(id: u32) -> Rc<Pattern> {
+fn svar(id: u64) -> Rc<Pattern> {
     return Rc::new(Pattern::SVar(id));
 }
 
@@ -158,7 +158,7 @@ fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
 /// Substitution utilities
 /// ----------------------
 
-fn instantiate(p: Rc<Pattern>, var_id: u32, plug: Rc<Pattern>) -> Rc<Pattern> {
+fn instantiate(p: Rc<Pattern>, var_id: u64, plug: Rc<Pattern>) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::Implication { left, right } => implies(
             instantiate(left.clone(), var_id, plug.clone()),
@@ -198,7 +198,7 @@ fn pop_stack(stack: &mut Stack) -> Term {
     return stack.pop().expect("Insufficient stack items.");
 }
 
-fn pop_stack_list(stack: &mut Stack) -> Vec<u32> {
+fn pop_stack_list(stack: &mut Stack) -> Vec<u64> {
     match pop_stack(stack) {
         Term::List(l) => return l,
         _ => panic!("Expected list on stack."),
@@ -223,7 +223,7 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
 /// -------------------
 
 fn execute_instructions<'a>(
-    mut proof: impl Iterator<Item = &'a u32>,
+    mut proof: impl Iterator<Item = &'a u64>,
     stack: &mut Stack,
     memory: &mut Memory,
     _journal: &mut Journal,
@@ -328,7 +328,7 @@ fn execute_instructions<'a>(
     }
 }
 
-fn verify<'a>(proof: impl Iterator<Item = &'a u32>) -> (Stack, Journal, Memory) {
+fn verify<'a>(proof: impl Iterator<Item = &'a u64>) -> (Stack, Journal, Memory) {
     let mut stack = vec![];
     let mut journal = vec![];
     let mut memory = vec![];
@@ -342,16 +342,16 @@ fn verify<'a>(proof: impl Iterator<Item = &'a u32>) -> (Stack, Journal, Memory) 
 #[test]
 fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
-    let proof : Vec<u32> = vec![
-        Instruction::List as u32, 0, // E Fresh
-        Instruction::List as u32, 0, // S Fresh
-        Instruction::List as u32, 0, // Positive
-        Instruction::List as u32, 0, // Negative
-        Instruction::List as u32, 0, // Context
-        Instruction::MetaVar as u32, 0, // Stack: Phi
-        Instruction::Save as u32,    // @ 0
-        Instruction::Load as u32, 0, // Phi ; Phi
-        Instruction::Implication as u32, // Phi -> Phi
+    let proof : Vec<u64> = vec![
+        Instruction::List as u64, 0, // E Fresh
+        Instruction::List as u64, 0, // S Fresh
+        Instruction::List as u64, 0, // Positive
+        Instruction::List as u64, 0, // Negative
+        Instruction::List as u64, 0, // Context
+        Instruction::MetaVar as u64, 0, // Stack: Phi
+        Instruction::Save as u64,    // @ 0
+        Instruction::Load as u64, 0, // Phi ; Phi
+        Instruction::Implication as u64, // Phi -> Phi
     ];
     let (stack, _journal, _memory) = verify(proof.iter());
     let phi0 = metavar_unconstrained(0);
@@ -367,53 +367,53 @@ fn test_construct_phi_implies_phi() {
 #[test]
 fn test_phi_implies_phi() {
     #[rustfmt::skip]
-    let proof : Vec<u32> = vec![
-        Instruction::Prop1 as u32,               // (p1: phi0 -> (phi1 -> phi0))
+    let proof : Vec<u64> = vec![
+        Instruction::Prop1 as u64,               // (p1: phi0 -> (phi1 -> phi0))
 
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::MetaVar as u32, 1,          // Stack: p1 ; phi1
-        Instruction::Save as u32,                // phi1 save at 0
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::MetaVar as u64, 1,          // Stack: p1 ; phi1
+        Instruction::Save as u64,                // phi1 save at 0
 
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::MetaVar as u32, 0,          // Stack: p1 ; phi1 ; phi0
-        Instruction::Save as u32,                // phi0 save at 1
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::MetaVar as u64, 0,          // Stack: p1 ; phi1 ; phi0
+        Instruction::Save as u64,                // phi0 save at 1
 
-        Instruction::InstantiateSchema as u32,   // Stack: (p2: phi0 -> (phi0 -> phi0))
+        Instruction::InstantiateSchema as u64,   // Stack: (p2: phi0 -> (phi0 -> phi0))
 
-        Instruction::Prop1 as u32,               // Stack: p2 ; p1
-        Instruction::Load as u32, 0,             // Stack: p2 ; p1 ; phi1
-        Instruction::Load as u32, 1,             // Stack: p2 ; p1 ; phi0
-        Instruction::Load as u32, 1,             // Stack: p2 ; p1 ; phi0 ; phi0
-        Instruction::Implication as u32,         // Stack: p2 ; p1 ; phi1; phi0 -> phi0
+        Instruction::Prop1 as u64,               // Stack: p2 ; p1
+        Instruction::Load as u64, 0,             // Stack: p2 ; p1 ; phi1
+        Instruction::Load as u64, 1,             // Stack: p2 ; p1 ; phi0
+        Instruction::Load as u64, 1,             // Stack: p2 ; p1 ; phi0 ; phi0
+        Instruction::Implication as u64,         // Stack: p2 ; p1 ; phi1; phi0 -> phi0
 
-        Instruction::Save as u32,                // phi0 -> phi0 save at 3
+        Instruction::Save as u64,                // phi0 -> phi0 save at 3
 
-        Instruction::InstantiateSchema as u32,   // Stack: p2 ; (p3: phi0 -> (phi0 -> phi0) -> phi0)
+        Instruction::InstantiateSchema as u64,   // Stack: p2 ; (p3: phi0 -> (phi0 -> phi0) -> phi0)
 
-        Instruction::Prop2 as u32,               // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
-        Instruction::Load as u32, 0,
-        Instruction::Load as u32, 2,
-        Instruction::InstantiateSchema as u32,
+        Instruction::Prop2 as u64,               // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
+        Instruction::Load as u64, 0,
+        Instruction::Load as u64, 2,
+        Instruction::InstantiateSchema as u64,
 
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::List as u32, 0,
-        Instruction::MetaVar as u32, 2,
-        Instruction::Load as u32, 1,
-        Instruction::InstantiateSchema as u32,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::List as u64, 0,
+        Instruction::MetaVar as u64, 2,
+        Instruction::Load as u64, 1,
+        Instruction::InstantiateSchema as u64,
 
-        Instruction::ModusPonens as u32,
-        Instruction::ModusPonens as u32,         // Stack: phi0 -> phi0
+        Instruction::ModusPonens as u64,
+        Instruction::ModusPonens as u64,         // Stack: phi0 -> phi0
     ];
     let (stack, _journal, _memory) = verify(proof.iter());
     let phi0 = metavar_unconstrained(0);
