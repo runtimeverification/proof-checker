@@ -134,7 +134,7 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
 
 fn execute_instructions<'a>(
     mut proof: impl Iterator<Item = &'a u32>,
-    stack: &mut Stack, memory: &mut Memory, journal: &mut Journal)
+    stack: &mut Stack, memory: &mut Memory, _journal: &mut Journal)
 {
     while let Some(instr_u32) = proof.next() {
         match Instruction::from(*instr_u32) {
