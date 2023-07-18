@@ -247,7 +247,9 @@ fn execute_instructions<'a>(
                     .next()
                     .expect("Insufficient parameters for List instruction")
                     as usize;
-                assert_eq!(len, 0);
+                if len != 0 {
+                    panic!("Len was supposed to be zero.")
+                }
                 let list = vec![];
                 stack.push(Term::List(list));
             }
@@ -283,7 +285,9 @@ fn execute_instructions<'a>(
             }
             Instruction::ModusPonens => match pop_stack_proved(stack).as_ref() {
                 Pattern::Implication { left, right } => {
-                    assert_eq!(*left.as_ref(), *pop_stack_proved(stack).as_ref());
+                    if *left.as_ref() != *pop_stack_proved(stack).as_ref() {
+                        panic!("Antecedents do not match for modus ponens.")
+                    }
                     stack.push(Term::Proved(Rc::clone(&right)))
                 }
                 _ => {
