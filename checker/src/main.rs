@@ -1,4 +1,5 @@
 #![deny(warnings)]
+#![no_std]
 
 extern crate alloc;
 use alloc::rc::Rc;
