@@ -8,7 +8,6 @@ edition = "2021"
 name = "guest"
 path = "src/main.rs"
 
-[workspace]
-
 [dependencies]
+checker = { path = "../../checker" }
 risc0-zkvm = { version = "0.16.1", default-features = false }
