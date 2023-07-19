@@ -175,15 +175,6 @@ fn instantiate(p: Rc<Pattern>, var_id: u64, plug: Rc<Pattern>) -> Rc<Pattern> {
     }
 }
 
-#[ignore]
-#[test]
-#[should_panic]
-fn test_instantiate_fresh() {
-    let svar_0 = svar(0);
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0);
-    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
-}
-
 /// Proof checker
 /// =============
 
@@ -338,6 +329,15 @@ fn verify<'a>(proof: impl Iterator<Item = &'a u64>) -> (Stack, Journal, Memory) 
 
 /// Testing
 /// =======
+
+#[ignore]
+#[test]
+#[should_panic]
+fn test_instantiate_fresh() {
+    let svar_0 = svar(0);
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0);
+    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
+}
 
 #[test]
 fn test_construct_phi_implies_phi() {
