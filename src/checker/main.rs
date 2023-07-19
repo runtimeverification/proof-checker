@@ -161,8 +161,8 @@ fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
 fn instantiate(p: Rc<Pattern>, var_id: u64, plug: Rc<Pattern>) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::Implication { left, right } => implies(
-            instantiate(left.clone(), var_id, plug.clone()),
-            instantiate(right.clone(), var_id, plug.clone()),
+            instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
+            instantiate(Rc::clone(&right), var_id, plug),
         ),
         Pattern::MetaVar { id, .. } => {
             if *id == var_id {
@@ -291,7 +291,7 @@ fn execute_instructions<'a>(
                 match *metavar {
                     Pattern::MetaVar { id, .. } => {
                         let metatheorem = pop_stack_proved(stack);
-                        stack.push(Term::Proved(instantiate(metatheorem, id, plug)));
+                        stack.push(Term::Proved(instantiate(Rc::clone(&metatheorem), id, Rc::clone(&plug))));
                     }
                     _ => panic!("Expected a metavariable"),
                 }
