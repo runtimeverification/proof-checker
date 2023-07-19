@@ -1,0 +1,11 @@
+[package]
+name = "proof-checker"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "checker"
+path = "src/checker/main.rs"
+
+[dependencies]
+
