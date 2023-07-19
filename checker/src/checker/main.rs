@@ -1,6 +1,9 @@
 #![deny(warnings)]
 
-use std::rc::Rc;
+extern crate alloc;
+use alloc::rc::Rc;
+use alloc::vec;
+use alloc::vec::Vec;
 
 /// Instructions
 /// ============
