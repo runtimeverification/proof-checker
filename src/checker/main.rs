@@ -291,7 +291,7 @@ fn execute_instructions<'a>(
                 match *metavar {
                     Pattern::MetaVar { id, .. } => {
                         let metatheorem = pop_stack_proved(stack);
-                        stack.push(Term::Proved(instantiate(Rc::clone(&metatheorem), id, Rc::clone(&plug))));
+                        stack.push(Term::Proved(instantiate(metatheorem, id, plug)));
                     }
                     _ => panic!("Expected a metavariable"),
                 }
