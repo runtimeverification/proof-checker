@@ -139,6 +139,7 @@ fn metavar_unconstrained(var_id: u64) -> Rc<Pattern> {
     });
 }
 
+#[cfg(test)]
 fn metavar_s_fresh(var_id: u64, fresh: u64) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
@@ -150,6 +151,7 @@ fn metavar_s_fresh(var_id: u64, fresh: u64) -> Rc<Pattern> {
     });
 }
 
+#[cfg(test)]
 fn svar(id: u64) -> Rc<Pattern> {
     return Rc::new(Pattern::SVar(id));
 }
@@ -367,8 +369,7 @@ fn test_construct_phi_implies_phi() {
     );
 }
 
-#[test]
-fn test_phi_implies_phi() {
+pub fn test_phi_implies_phi() {
     #[rustfmt::skip]
     let proof : Vec<u64> = vec![
         Instruction::Prop1 as u64,               // (p1: phi0 -> (phi1 -> phi0))
@@ -426,4 +427,4 @@ fn test_phi_implies_phi() {
     }))])
 }
 
-fn main() {}
+
