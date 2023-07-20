@@ -223,7 +223,7 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
 /// -------------------
 
 fn execute_instructions<'a>(
-    next: &mut impl FnMut() -> Option<&'a u8>,
+    next: &mut impl FnMut() -> Option<u8>,
     stack: &mut Stack,
     memory: &mut Memory,
     _journal: &mut Journal,
@@ -241,11 +241,11 @@ fn execute_instructions<'a>(
     );
 
     while let Some(instr_u32) = next() {
-        match Instruction::from(*instr_u32) {
+        match Instruction::from(instr_u32) {
             Instruction::List => {
                 let len = next()
                     .expect("Insufficient parameters for List instruction");
-                if *len != 0 {
+                if len != 0 {
                     panic!("Len was supposed to be zero.")
                 }
                 let list = vec![];
@@ -265,7 +265,7 @@ fn execute_instructions<'a>(
                 let s_fresh = pop_stack_list(stack);
                 let e_fresh = pop_stack_list(stack);
                 stack.push(Term::Pattern(Rc::new(Pattern::MetaVar {
-                    id: *id,
+                    id,
                     e_fresh,
                     s_fresh,
                     positive,
@@ -311,7 +311,7 @@ fn execute_instructions<'a>(
             Instruction::Load => {
                 let index = next()
                     .expect("Insufficient parameters for Load instruction");
-                match &memory[(*index) as usize] {
+                match &memory[index as usize] {
                     Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
@@ -327,7 +327,7 @@ fn execute_instructions<'a>(
     }
 }
 
-pub fn verify<'a>(next: &mut impl FnMut() -> Option<&'a u8>) -> (Stack, Journal, Memory) {
+pub fn verify<'a>(next: &mut impl FnMut() -> Option<u8>) -> (Stack, Journal, Memory) {
     let mut stack = vec![];
     let mut journal = vec![];
     let mut memory = vec![];
@@ -363,7 +363,7 @@ pub fn test_construct_phi_implies_phi() {
         Instruction::EOF as u8
     ];
     let mut iterator = proof.iter();
-    let next = &mut (|| iterator.next());
+    let next = &mut (|| iterator.next().cloned());
     let (stack, _journal, _memory) = verify(next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
@@ -428,7 +428,7 @@ pub fn test_phi_implies_phi_impl() {
         Instruction::EOF as u8
     ];
     let mut iterator = proof.iter();
-    let next = &mut (|| iterator.next());
+    let next = &mut (|| iterator.next().cloned());
     let (stack, _journal, _memory) = verify(next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(stack, vec![Term::Proved(Rc::new(Pattern::Implication{
