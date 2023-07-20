@@ -2200,6 +2200,7 @@ dependencies = [
 name = "zk-host"
 version = "0.1.0"
 dependencies = [
+ "checker",
  "risc0-build",
  "risc0-zkvm",
 ]
