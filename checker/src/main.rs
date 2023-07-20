@@ -14,7 +14,7 @@ use alloc::vec::Vec;
 
 #[rustfmt::skip]
 #[derive(Debug, Eq, PartialEq)]
-enum Instruction {
+pub enum Instruction {
     List = 1,
     // Patterns
     EVar, SVar, Symbol, Implication, Application, Mu, Exists,
@@ -87,7 +87,7 @@ impl Instruction {
 /// We use the `Proved` variant for this.
 
 #[derive(Debug, Eq, PartialEq, Clone)]
-enum Pattern {
+pub enum Pattern {
     #[allow(dead_code)]
     EVar(u8),
     #[allow(dead_code)]
@@ -118,13 +118,13 @@ enum Pattern {
     },
 }
 #[derive(Debug, Eq, PartialEq, Clone)]
-enum Term {
+pub enum Term {
     Pattern(Rc<Pattern>),
     Proved(Rc<Pattern>),
     List(Vec<u8>),
 }
 #[derive(Debug, Eq, PartialEq)]
-enum Entry {
+pub enum Entry {
     Pattern(Rc<Pattern>),
     Proved(Rc<Pattern>),
 }
@@ -327,7 +327,7 @@ fn execute_instructions<'a>(
     }
 }
 
-fn verify<'a>(next: &mut impl FnMut() -> Option<&'a u8>) -> (Stack, Journal, Memory) {
+pub fn verify<'a>(next: &mut impl FnMut() -> Option<&'a u8>) -> (Stack, Journal, Memory) {
     let mut stack = vec![];
     let mut journal = vec![];
     let mut memory = vec![];
