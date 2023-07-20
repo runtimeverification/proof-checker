@@ -364,6 +364,7 @@ fn test_construct_phi_implies_phi() {
         Instruction::Save as u8,    // @ 0
         Instruction::Load as u8, 0, // Phi ; Phi
         Instruction::Implication as u8, // Phi -> Phi
+        Instruction::EOF as u8
     ];
     let (stack, _journal, _memory) = verify(proof.iter());
     let phi0 = metavar_unconstrained(0);
@@ -425,6 +426,7 @@ pub fn test_phi_implies_phi() {
 
         Instruction::ModusPonens as u8,
         Instruction::ModusPonens as u8,         // Stack: phi0 -> phi0
+        Instruction::EOF as u8
     ];
     let (stack, _journal, _memory) = verify(proof.iter());
     let phi0 = metavar_unconstrained(0);
