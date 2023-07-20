@@ -223,7 +223,7 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
 /// -------------------
 
 fn execute_instructions<'a>(
-    mut proof: impl Iterator<Item = &'a u8>,
+    next: &mut impl FnMut() -> Option<&'a u8>,
     stack: &mut Stack,
     memory: &mut Memory,
     _journal: &mut Journal,
@@ -240,14 +240,12 @@ fn execute_instructions<'a>(
         implies(implies(Rc::clone(&phi0), Rc::clone(&phi1)), implies(Rc::clone(&phi0), Rc::clone(&phi2))),
     );
 
-    while let Some(instr_u32) = proof.next() {
+    while let Some(instr_u32) = next() {
         match Instruction::from(*instr_u32) {
             Instruction::List => {
-                let len = *proof
-                    .next()
-                    .expect("Insufficient parameters for List instruction")
-                    as usize;
-                if len != 0 {
+                let len = next()
+                    .expect("Insufficient parameters for List instruction");
+                if *len != 0 {
                     panic!("Len was supposed to be zero.")
                 }
                 let list = vec![];
@@ -259,8 +257,7 @@ fn execute_instructions<'a>(
                 stack.push(Term::Pattern(implies(left, right)))
             }
             Instruction::MetaVar => {
-                let id = *proof
-                    .next()
+                let id = next()
                     .expect("Insufficient parameters for MetaVar instruction");
                 let application_context = pop_stack_list(stack);
                 let negative = pop_stack_list(stack);
@@ -268,7 +265,7 @@ fn execute_instructions<'a>(
                 let s_fresh = pop_stack_list(stack);
                 let e_fresh = pop_stack_list(stack);
                 stack.push(Term::Pattern(Rc::new(Pattern::MetaVar {
-                    id,
+                    id: *id,
                     e_fresh,
                     s_fresh,
                     positive,
@@ -312,10 +309,9 @@ fn execute_instructions<'a>(
                 Term::List(_) => panic!("Cannot Save lists."),
             },
             Instruction::Load => {
-                let index = *proof
-                    .next()
+                let index = next()
                     .expect("Insufficient parameters for Load instruction");
-                match &memory[index as usize] {
+                match &memory[(*index) as usize] {
                     Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
@@ -331,11 +327,11 @@ fn execute_instructions<'a>(
     }
 }
 
-fn verify<'a>(proof: impl Iterator<Item = &'a u8>) -> (Stack, Journal, Memory) {
+fn verify<'a>(next: &mut impl FnMut() -> Option<&'a u8>) -> (Stack, Journal, Memory) {
     let mut stack = vec![];
     let mut journal = vec![];
     let mut memory = vec![];
-    execute_instructions(proof, &mut stack, &mut journal, &mut memory);
+    execute_instructions(next, &mut stack, &mut journal, &mut memory);
     return (stack, journal, memory);
 }
 
@@ -352,7 +348,7 @@ fn test_instantiate_fresh() {
 }
 
 #[test]
-fn test_construct_phi_implies_phi() {
+pub fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
         Instruction::List as u8, 0, // E Fresh
@@ -366,7 +362,9 @@ fn test_construct_phi_implies_phi() {
         Instruction::Implication as u8, // Phi -> Phi
         Instruction::EOF as u8
     ];
-    let (stack, _journal, _memory) = verify(proof.iter());
+    let mut iterator = proof.iter();
+    let next = &mut (|| iterator.next());
+    let (stack, _journal, _memory) = verify(next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -377,7 +375,8 @@ fn test_construct_phi_implies_phi() {
     );
 }
 
-pub fn test_phi_implies_phi() {
+// TODO: Resolve the unused warning/error in cargo test and flag this as a test directly
+pub fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
         Instruction::Prop1 as u8,               // (p1: phi0 -> (phi1 -> phi0))
@@ -428,7 +427,9 @@ pub fn test_phi_implies_phi() {
         Instruction::ModusPonens as u8,         // Stack: phi0 -> phi0
         Instruction::EOF as u8
     ];
-    let (stack, _journal, _memory) = verify(proof.iter());
+    let mut iterator = proof.iter();
+    let next = &mut (|| iterator.next());
+    let (stack, _journal, _memory) = verify(next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(stack, vec![Term::Proved(Rc::new(Pattern::Implication{
         left: Rc::clone(&phi0),
@@ -436,4 +437,7 @@ pub fn test_phi_implies_phi() {
     }))])
 }
 
-
+#[test]
+pub fn test_proof_phi_implies_phi() {
+    test_phi_implies_phi_impl();
+}
