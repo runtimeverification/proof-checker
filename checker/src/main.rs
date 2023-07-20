@@ -33,6 +33,8 @@ enum Instruction {
     Save, Load,
     // Journal Manipulation,
     Publish,
+    // Prover Manipulation
+    EOF
 }
 
 impl Instruction {
@@ -69,6 +71,7 @@ impl Instruction {
             29 => Instruction::Save,
             30 => Instruction::Load,
             31 => Instruction::Publish,
+            32 => Instruction::EOF,
             _ => panic!("Bad Instruction!"),
         }
     }
@@ -316,6 +319,9 @@ fn execute_instructions<'a>(
                     Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
+            }
+            Instruction::EOF => {
+                break;
             }
 
             _ => {
