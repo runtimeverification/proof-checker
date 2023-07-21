@@ -206,8 +206,10 @@ class PropagationOr(Proof):
 
 ### Meta Variable Instantiation
 
-Using a single rule of meta inference, we may instantiate metatheorems.
-This allows us to prove theorem schemas, such as $\phi \limplies \phi$.
+Using a rule of meta inference, we may instantiate metatheorems.
+This allows us to instantiate axiom and theorem schemas, such as
+$\phi \limplies \phi$.
+
 
 ```python
 class InstantiateSchema(Proof):
@@ -224,6 +226,7 @@ class InstantiateSchema(Proof):
         return subproof.meta_substitute(metavar, instantiation)
 ```
 
+TODO: Could we just merge this with `InstantiateSchema`?
 We may also use metavariables to represent notation.
 
 ```python
