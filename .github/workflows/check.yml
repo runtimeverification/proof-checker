@@ -16,9 +16,9 @@ jobs:
       - name: 'Install Poetry'
         uses: Gr1N/setup-poetry@v8
       - name: 'Run code quality checks'
-        run: make check
+        run: make -C generation check
       - name: 'Run pyupgrade'
-        run: make pyupgrade
+        run: make -C generation pyupgrade
 
   unit-tests:
     needs: code-quality-checks
@@ -30,7 +30,7 @@ jobs:
       - name: 'Install Poetry'
         uses: Gr1N/setup-poetry@v8
       - name: 'Run unit tests'
-        run: make cov-unit
+        run: make -C 'generation' cov-unit
       - name: 'Run rust tests'
         run: cargo test
 
@@ -51,24 +51,24 @@ jobs:
           docker build .                        \
             --file .github/workflows/Dockerfile \
             --build-arg K_VERSION=${K_VERSION}  \
-            --tag runtimeverificationinc/proof-generation-ci:${COMMIT}
+            --tag runtimeverificationinc/proof-checker-ci:${COMMIT}
 
           docker run                   \
-            --name proof-generation-ci \
+            --name proof-checker-ci \
             --rm                       \
             --interactive              \
             --tty                      \
             --detach                   \
             --workdir /home/user       \
-            runtimeverificationinc/proof-generation-ci:${COMMIT}
+            runtimeverificationinc/proof-checker-ci:${COMMIT}
 
-          docker cp . proof-generation-ci:/home/user
-          docker exec proof-generation-ci chown -R user:user /home/user
+          docker cp . proof-checker-ci:/home/user
+          docker exec proof-checker-ci chown -R user:user /home/user
       - name: 'Set Python version'
-        run: docker exec --user user proof-generation-ci poetry env use 3.10
+        run: docker exec --user user proof-checker-ci poetry env use 3.10
       - name: 'Run integration tests'
-        run: docker exec --user user proof-generation-ci make cov-integration COV_ARGS=-n8
+        run: docker exec --user user proof-checker-ci make -C generation cov-integration COV_ARGS=-n8
       - name: 'Tear down Docker container'
         if: always()
         run: |
-          docker stop --time=0 proof-generation-ci
+          docker stop --time=0 proof-checker-ci
