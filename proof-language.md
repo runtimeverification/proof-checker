@@ -274,123 +274,120 @@ class Generalization(Proof):
 ...
 ```
 
+Verification
+============
+
+The verifier operates in three phases---the `gamma` phase, the `claim` phase, and the `proof` phase.
+The `gamma` phase sets up the axioms that may be used in the proof.
+The `claim` phase sets up claims, or theorems expected to be proved.
+These two phases consume input from a "public" file, in ZK terminology.
+The third phase, `proof`, proves each of these claims using the axioms.
+The input to this phase is "private" in ZK terminology, allowing up us to roll-up the proof.
+The semantics of instructions in each of these phases is identical, except
+for the publish instruction. We will expand on this later.
+
+The verifier's state consists of:
+
+*   a *stack* of terms (i.e. lists of ids, patterns and proved conclusions).
+*   a *memory* consisting of previously constructed patterns and proven conclusions that may be reused for later proofs.
+*   only during the phase `gamma`, a write-only list of axioms.
+    At the beginning of the `proof` phase this list of axioms will be used to pre-populate the memory.
+*   only during the phases `claim` and `proof`: a queue of claims to be proved.
+
+The verifier's input consists of three files, one for each phase.
+These files are at a logical level. Depending on the circumstances
+the implementation may choose to represent them as three distinct OS files,
+or a single input stream separated by the `EOF` instruction.
+In the case of Risc0, we will likely combine the first two files, since they are public
+and keep the third separate, since it is private.
+
+Between phases, the stack and memory are cleared.
+
+> TODO: We need to think about this.
+> I'd like notation to be shared between the phases,
+> but don't want arbitary intermediate terms saved to the memory to be shared.
+> Should we have an additional instruction for publishing notation?
+
 Instructions and semantics
 ==========================
 
 Each of these instructions checks that the constructed `Term` is well-formed before pushing onto the stack.
 Otherwise, execution aborts, and verification fails.
 
-*   Supporting:
+### Supporting
 
-    `List n:uint32`
-    : Consume $n$ items from the stack, and push a list containing those items to the stack.
+`List n:u32 [u32]*n`
+:   Consume a length $n$, and $n$ items from the input.
+    Push a list containing those `u32`s to the stack.
 
-* Variables and Symbols:
 
-    `EVar <uint32>`
-    : Push an `EVar` onto the stack.
+### Variables and Symbols:
 
-    `SVar <uint32>`
-    : `Push an `SVar` onto the stack.
+`EVar <u32>`
+:   Push an `EVar` onto the stack.
 
-    `Symbol <uint32>`
-    : `Push an `Symbol` onto the stack.
+`SVar <u32>`
+:   Push a `SVar` onto the stack.
 
-    `MetaVar <uint32>`
-    : Consume the first four entries from the stack (corresponding to the meta-requirements),
-      and push an `MetaVar` onto the stack.
+`Symbol <u32>`
+:   Push a `Symbol` onto the stack.
 
-* Connectives:
+`MetaVar <u32>`
+:   Consume the first five entries from the stack (corresponding to the
+    meta-requirements), and push an `MetaVar` onto the stack.
 
-    `Implication`/`Application`/`Exists`/`Mu`
-    : Consume the first two patterns from the stack, and push an implication/application/exists/mu onto the stack with appropriate argumetns.
 
-* Axiom Schemas
+`Implication`/`Application`/`Exists`/`Mu`
+:   Consume the two patterns from the stack,
+    and push an implication/application/exists/mu to the stack
+    with appropriate arguments, performing well formedness checks as needed.
 
-    `Lukaseiwicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
-    : Push Proof term corresponding to axiom schema onto the stack.
+### Axiom Schemas
 
-* Meta inference
+`Lukaseiwicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
+:   Push proof term corresponding to axiom schema onto the stack.
 
-    `InstantiateSchema <metavar_id:uint32>`
-    : Consume a `Proof` and `Pattern` off the stack, and push the instantiated proof term to the stack.
+### Meta inference
 
-    `InstantiateNotation <metavar_id:uint32>`
-    : Consume two `Pattern`s off the stack, and push the instantiated proof term to the stack.
+`Instantiate <metavar_id:u32>`
+:   Consume a `Proof` and `Pattern` off the stack, and push the instantiated proof term to the stack,
+    checking wellformedness as needed.
 
-*   Inference rules
+### Inference rules
 
-    `ModusPonens`/`Generalization`/`Frame`/`Substitution`/`KnasterTarski`
-    : Consume one or two `Proof` terms off the stack and push the new proof term.
+`ModusPonens`/`Generalization`/`Frame`/`Substitution`/`KnasterTarski`
+:   Consume one or two `Proof` terms off the stack and push the new proof term.
 
-*   Memory manipulation:
+### Memory manipulation:
 
-    `Save`
-    : Store the top of the stack to the lowest unused index in memory.
+`Save`
+:   Store the top of the stack to the lowest unused index in memory.
 
-    `Load i:uint32`
-    : Push the `Term` at index $i$ to the top of the stack.
+`Load i:u32`
+:   Push the `Term` at index $i$ to the top of the stack.
 
-    `Delete i:uint32`
-    : Remove the `Term` at index $i$ from memory. This is not strictly needed,
-      but will allow the verifier to use less memory. The memory slot is not considered free.
+`Delete i:u32`
+:   Remove the `Term` at index $i$ from memory. This is not strictly needed, but
+    will allow the verifier to use less memory. The memory slot is not
+    considered for reuse by the `Save` instruction.
 
-*   Journal manipulation.
 
-    `Publish`
-    : publish the entry at the top of the stack to the journal.
+### Journal manipulation.
 
-*   Stack manipulation.
+`Publish`
+:   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms.
+    * During the `claim` phase consume a pattern from the stack and push it to the queue of claims.
+    * During the `proof` phase consume a pattern from the stack
+      and a claim from the queue of claims and assert that they are equal.
 
-    `Pop`
-    : Consume the top of the stack. (Do we need this? Probably not.)
 
-Verification
-============
+### Stack manipulation.
 
-The verifier takes two inputs[^1]:
+`Pop`
+:   Consume the top of the stack.
 
-1.  `theory` A file with instructions to construct patterns
-    and place them on the stack to represent the theory $\Gamma$.
-    This is public.
+### Technical
 
-    All patterns on the stack after running this file are considered axioms.
-    Before verification of the proof, these are moved to the first free memory locations (That is, after the notation).
-
-    All patterns placed in memory using the `Save` instruction may be used as notation.
-    Note that these patterns are not considered proved, and can only be used to buildother patterns.
-
-    TODO: We should review this. Do we want a specific instruction for publishing notation?
-
-2.  `lemmas`: A file with instructions to construct patterns corresponding the
-    lemmas previously proved in other proof files. An aggregation circuit will
-    need to check that the theory used by that proof is a subset of the theory
-    for the corrent proof.
-
-    All patterns on the stack after running this file are considered proved lemmas.
-
-    TODO: Should we allow notation from these as well?
-    If we do, composing proofs may get difficult---notation may accumulate
-    forcing the checker to use a lot more memory than needed.
-
-3.  `proof`: A file with instructions to construct proofs about the theory.
-    This file is private, and should be rolled-up by ZK.
-
-The verifier consumes the theory file. The stack should now only include `Pattern` terms.
-These are moved into the initial entries of the memory, as `Proof` terms.
-The verifier then consumes the `proof` file and produces a "journal"[^2],
-containing a list of instructions to construct the patterns of theorems proved.
-
-[^1]: This needs input from the ZK folk for the exact input mechanism.
-[^2]: Using Risc Zero terminology
-
-The verifier state consists of a stack of `Term`s, and
-an indexed list of saved `Term`s, called the memory.
-
-Composition
-===========
-
-We may compose proofs together, by allowing proofs to reuse results contained in another proofs journal.
-A subset of the contents of the journal of a proof $p$ may be included as the input lemmas of another proof $q$,
-**so long as** the gamma of $p$ is subset of gamma of $q$.
+`EOF`
+:   End the current phase.
 
