@@ -11,3 +11,5 @@ path = "src/main.rs"
 [dependencies]
 checker = { path = "../../checker" }
 risc0-zkvm = { version = "0.16.1", default-features = false, features = [ "std" ] }
+
+[workspace]

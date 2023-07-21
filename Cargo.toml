@@ -1,5 +1,5 @@
 [workspace]
-members = ["checker", "risc0", "risc0/guest"]
+members = ["checker", "risc0"]
 resolver = "2"
 
 # Always optimize; building and running the guest takes much longer without optimization.
