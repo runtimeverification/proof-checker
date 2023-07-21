@@ -107,13 +107,13 @@ and a representation for various "meta" patterns.
 
 ```python
 class Symbol(Pattern):
-    name: uint32
+    name: u32
 
 class SVar(Pattern):
-    name: uint32
+    name: u32
 
 class EVar(Pattern):
-    name: uint32
+    name: u32
 
 class Implication(Pattern):
     left: Pattern
@@ -143,7 +143,7 @@ of metavariables:
 
 ```python
 class MetaVar(Pattern):
-    name: uint32
+    name: u32
 
     # Meta-requirements that must be satisfied by any instantiation.
     e_fresh: list[EVar]             # Element variables that must not occur in an instatiation
@@ -214,7 +214,7 @@ $\phi \limplies \phi$.
 ```python
 class InstantiateSchema(Proof):
     subproof : Proof
-    metavar_id: uint32
+    metavar_id: u32
     instantiation: Pattern
 
     def well_formed():
@@ -232,7 +232,7 @@ We may also use metavariables to represent notation.
 ```python
 class InstantiateNotation(Pattern):
     notation: Pattern
-    metavar_id: uint32
+    metavar_id: u32
     instantiation: Pattern
 
     def well_formed():
