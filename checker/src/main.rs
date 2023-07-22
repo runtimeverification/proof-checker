@@ -33,8 +33,6 @@ pub enum Instruction {
     Save, Load,
     // Journal Manipulation,
     Publish,
-    // Prover Manipulation
-    EOF
 }
 
 impl Instruction {
@@ -71,7 +69,6 @@ impl Instruction {
             29 => Instruction::Save,
             30 => Instruction::Load,
             31 => Instruction::Publish,
-            32 => Instruction::EOF,
             _ => panic!("Bad Instruction!"),
         }
     }
@@ -315,11 +312,7 @@ fn execute_instructions<'a>(
                     Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
-            }
-            Instruction::EOF => {
-                break;
-            }
-
+            },
             _ => {
                 unimplemented!("Instruction: {}", instr_u32)
             }
@@ -360,7 +353,6 @@ pub fn test_construct_phi_implies_phi() {
         Instruction::Save as u8,    // @ 0
         Instruction::Load as u8, 0, // Phi ; Phi
         Instruction::Implication as u8, // Phi -> Phi
-        Instruction::EOF as u8
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
@@ -425,7 +417,6 @@ pub fn test_phi_implies_phi_impl() {
 
         Instruction::ModusPonens as u8,
         Instruction::ModusPonens as u8,         // Stack: phi0 -> phi0
-        Instruction::EOF as u8
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());

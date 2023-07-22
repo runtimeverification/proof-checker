@@ -2,13 +2,14 @@ use zk_host::methods::{GUEST_ELF, GUEST_ID};
 
 use risc0_zkvm::{
     default_executor_from_elf,
-    serde::{from_slice, to_vec},
+    serde::from_slice,
     ExecutorEnv,
 };
 
+use std::time::Instant;
+
 extern crate checker;
 use checker::Instruction;
-use std::time::Instant;
 
 fn main() {
     let now = Instant::now();
@@ -60,8 +61,6 @@ fn main() {
 
         Instruction::ModusPonens as u8,
         Instruction::ModusPonens as u8,         // Stack: phi0 -> phi0
-
-        Instruction::EOF as u8,                                    // EOF
     ];
 
     println!("Setting up env...");
