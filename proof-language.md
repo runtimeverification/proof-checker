@@ -334,11 +334,6 @@ Otherwise, execution aborts, and verification fails.
 `Symbol <u32>`
 :   Push a `Symbol` onto the stack.
 
-`MetaVar <u32>`
-:   Consume the first five entries from the stack (corresponding to the
-    meta-requirements), and push an `MetaVar` onto the stack.
-
-
 `Implication`/`Application`/`Exists`/`Mu`
 :   Consume the two patterns from the stack,
     and push an implication/application/exists/mu to the stack
@@ -350,6 +345,13 @@ Otherwise, execution aborts, and verification fails.
 :   Push proof term corresponding to axiom schema onto the stack.
 
 ### Meta inference
+
+`MetaVar <u32>`
+:   Consume the first five entries from the stack (corresponding to the
+    meta-requirements), and push an `MetaVar` onto the stack.
+
+`ESubst`/`SSubst`
+:   Consume the one metavariable from the stack and use it to construct a substitution.
 
 `Instantiate <metavar_id:u32>`
 :   Consume a `Proof` and `Pattern` off the stack, and push the instantiated proof term to the stack,
