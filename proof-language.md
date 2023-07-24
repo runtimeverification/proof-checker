@@ -364,8 +364,11 @@ Otherwise, execution aborts, and verification fails.
 
 ### Memory manipulation:
 
-`Save`
-:   Store the top of the stack to the lowest unused index in memory.
+`Save i:u32`
+:   Store the top of the stack to the specified index $i$ in memory.
+    This overwrites existing data stored there.
+    It is recommended to indices as compactly as possible.
+    Otherwise, the performance of the checker may be affected.
 
 `Load i:u32`
 :   Push the `Term` at index $i$ to the top of the stack.
