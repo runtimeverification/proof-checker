@@ -1,6 +1,4 @@
-ARG K_DISTRO=jammy
-ARG K_VERSION
-FROM runtimeverificationinc/kframework-k:ubuntu-${K_DISTRO}-${K_VERSION}
+FROM ubuntu-latest
 
 ARG PYTHON_VERSION=3.10
 

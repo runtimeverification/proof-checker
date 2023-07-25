@@ -18,11 +18,8 @@ jobs:
       - name: 'Build Docker image'
         run: |
           COMMIT=$(git rev-parse --short=7 HEAD)
-          K_VERSION=$(cat deps/k_release)
-
           docker build .                        \
             --file .github/workflows/Dockerfile \
-            --build-arg K_VERSION=${K_VERSION}  \
             --tag runtimeverificationinc/proof-checker-ci:${COMMIT}
 
           docker run                   \
