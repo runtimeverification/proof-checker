@@ -6,68 +6,22 @@ use risc0_zkvm::{
     ExecutorEnv,
 };
 
+use std::fs::File;
+use std::io::BufReader;
 use std::time::Instant;
-
-extern crate checker;
-use checker::Instruction;
 
 fn main() {
     let now = Instant::now();
 
-    let proof: &[u8] = &[
-        Instruction::Prop1 as u8,               // (p1: phi0 -> (phi1 -> phi0))
-
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::MetaVar as u8, 1 as u8,          // Stack: p1 ; phi1
-        Instruction::Save as u8,                // phi1 save at 0
-
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::MetaVar as u8, 0 as u8,          // Stack: p1 ; phi1 ; phi0
-        Instruction::Save as u8,                // phi0 save at 1
-
-        Instruction::InstantiateSchema as u8,   // Stack: (p2: phi0 -> (phi0 -> phi0))
-
-        Instruction::Prop1 as u8,               // Stack: p2 ; p1
-        Instruction::Load as u8, 0 as u8,             // Stack: p2 ; p1 ; phi1
-        Instruction::Load as u8, 1 as u8,             // Stack: p2 ; p1 ; phi0
-        Instruction::Load as u8, 1 as u8,             // Stack: p2 ; p1 ; phi0 ; phi0
-        Instruction::Implication as u8,         // Stack: p2 ; p1 ; phi1; phi0 -> phi0
-
-        Instruction::Save as u8,                // phi0 -> phi0 save at 3
-
-        Instruction::InstantiateSchema as u8,   // Stack: p2 ; (p3: phi0 -> (phi0 -> phi0) -> phi0)
-
-        Instruction::Prop2 as u8,               // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
-        Instruction::Load as u8, 0 as u8,
-        Instruction::Load as u8, 2 as u8,
-        Instruction::InstantiateSchema as u8,
-
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::List as u8, 0 as u8,
-        Instruction::MetaVar as u8, 2 as u8,
-        Instruction::Load as u8, 1 as u8,
-        Instruction::InstantiateSchema as u8,
-
-        Instruction::ModusPonens as u8,
-        Instruction::ModusPonens as u8,         // Stack: phi0 -> phi0
-    ];
+    let file_path = std::env::args().nth(1).expect("No proof file path given");
 
     println!("Setting up env...");
+    let f = File::open(file_path).expect("The proof file was not found");
+    let reader = BufReader::new(f);
 
     // First, we construct an executor environment
     let env = ExecutorEnv::builder()
-        .stdin(proof)
+        .stdin(reader)
         .build()
         .unwrap();
 
