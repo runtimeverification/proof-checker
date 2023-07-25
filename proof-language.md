@@ -59,9 +59,9 @@ memory**.
 ## Non-goals:
 
 -   Parallization: I have not been thinking explicitly about parallel verification of this format,
-    because I expect parallization to happen by composing units of this format into larger proofs.
+    because I expect parallelization to happen by composing units of this format into larger proofs.
     Even so I think with some additional metadata, we could make
-    this format parallizable.
+    this format parallelizable.
 
 -   Human readability: We aim to be a simple binary format. To become human
     readable, we expect the user to run a secondary program to pretty-print the
