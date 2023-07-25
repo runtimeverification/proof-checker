@@ -7,36 +7,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  code-quality-checks:
-    name: 'Code Quality Checks'
-    runs-on: [self-hosted, linux, normal]
-    steps:
-      - name: 'Check out code'
-        uses: actions/checkout@v3
-      - name: 'Install Poetry'
-        uses: Gr1N/setup-poetry@v8
-      - name: 'Run code quality checks'
-        run: make -C generation check
-      - name: 'Run pyupgrade'
-        run: make -C generation pyupgrade
-
-  unit-tests:
-    needs: code-quality-checks
-    name: 'Unit Tests'
-    runs-on: [self-hosted, linux, normal]
-    steps:
-      - name: 'Check out code'
-        uses: actions/checkout@v3
-      - name: 'Install Poetry'
-        uses: Gr1N/setup-poetry@v8
-      - name: 'Run unit tests'
-        run: make -C 'generation' cov-unit
-      - name: 'Run rust tests'
-        run: cargo test
-
   integration-tests:
-    needs: code-quality-checks
-    name: 'Integration Tests'
+    name: 'Tests'
     runs-on: [self-hosted, linux, normal]
     steps:
       - name: 'Check out code'
@@ -66,6 +38,14 @@ jobs:
           docker exec proof-checker-ci chown -R user:user /home/user
       - name: 'Set Python version'
         run: docker exec --user user proof-checker-ci poetry env use 3.10
+      - name: 'Run code quality checks'
+        run: make -C generation check
+      - name: 'Run pyupgrade'
+        run: make -C generation pyupgrade
+      - name: 'Run unit tests'
+        run: make -C 'generation' cov-unit
+      - name: 'Run rust tests'
+        run: cargo test
       - name: 'Run integration tests'
         run: docker exec --user user proof-checker-ci make -C generation cov-integration COV_ARGS=-n8
       - name: 'Tear down Docker container'
