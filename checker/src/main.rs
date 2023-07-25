@@ -367,8 +367,8 @@ pub fn test_construct_phi_implies_phi() {
     );
 }
 
-// TODO: Resolve the unused warning/error in cargo test and flag this as a test directly
-pub fn test_phi_implies_phi_impl() {
+#[test]
+fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
         Instruction::Prop1 as u8,               // (p1: phi0 -> (phi1 -> phi0))
@@ -426,9 +426,4 @@ pub fn test_phi_implies_phi_impl() {
         left: Rc::clone(&phi0),
         right: Rc::clone(&phi0)
     }))])
-}
-
-#[test]
-pub fn test_proof_phi_implies_phi() {
-    test_phi_implies_phi_impl();
 }

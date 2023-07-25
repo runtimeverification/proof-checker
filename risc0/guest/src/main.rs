@@ -23,7 +23,7 @@ pub fn main() {
     verify(next);
 
     // This won't be included once we implement the necessary methods for env::commit(Proved )
-    //println!("Finished with stack {:?}", stack);
+    // println!("Finished with stack {:?}", stack);
 
     // This is optional
     env::commit(&env::get_cycle_count());
