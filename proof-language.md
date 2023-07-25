@@ -398,3 +398,18 @@ Otherwise, execution aborts, and verification fails.
 `EOF`
 :   End the current phase.
 
+
+Future considerations
+=====================
+
+-   De Brujin-like nameless representation: A nameless representation would
+    simplify substitution and well-formedness checking.
+-   Since we are constructing an on-the-wire format for machine use, there are
+    other nameless representations we may consider. For example, we can consider
+    two variables (element, set, meta-) equal, only if they are the identical
+    DAG node. That is, the variable was constructed once, and retrieved using
+    the `Load` command.
+
+
+
+
