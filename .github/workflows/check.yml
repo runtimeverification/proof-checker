@@ -9,7 +9,7 @@ concurrency:
 jobs:
   code-quality-checks:
     name: 'Code Quality Checks'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, flyweight]
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v3
@@ -23,7 +23,7 @@ jobs:
   unit-tests:
     needs: code-quality-checks
     name: 'Unit Tests'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, flyweight]
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v3
