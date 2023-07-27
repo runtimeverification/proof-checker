@@ -477,7 +477,7 @@ $\phi \limplies \phi$.
 ```python
 class InstantiateSchema(Proof):
     subproof : Proof
-    metavar: MetaVar
+    metavar_id: u32
     instantiation: Pattern
 
     def well_formed():
