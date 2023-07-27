@@ -114,6 +114,14 @@ pub enum Pattern {
         application_context: Vec<u8>,
     },
 }
+
+impl Pattern {
+    #[allow(dead_code)]
+    fn well_formed(&self) -> bool {
+        unimplemented!("Well-formedness checking is unimplemented yet");
+    }
+}
+
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Term {
     Pattern(Rc<Pattern>),
@@ -141,13 +149,13 @@ fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
 }
 
 #[cfg(test)]
-fn metavar_s_fresh(var_id: u8, fresh: u8) -> Rc<Pattern> {
+fn metavar_s_fresh(var_id: u8, fresh: u8, positive: Vec<u8>, negative: Vec<u8>) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
         e_fresh: vec![],
         s_fresh: vec![fresh],
-        positive: vec![],
-        negative: vec![],
+        positive,
+        negative,
         application_context: vec![],
     });
 }
@@ -333,15 +341,36 @@ pub fn verify<'a>(next: &mut impl FnMut() -> Option<u8>) -> (Stack, Journal, Mem
 
 #[ignore]
 #[test]
+fn test_negative_disjoint() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![]);
+    assert!(!phi0_s_fresh_0.well_formed());
+}
+
+#[ignore]
+#[test]
+fn test_positive_disjoint() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![], vec![0]);
+    assert!(!phi0_s_fresh_0.well_formed());
+}
+
+#[ignore]
+#[test]
+fn test_wellformedness_fresh() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
+    assert!(phi0_s_fresh_0.well_formed());
+}
+
+#[ignore]
+#[test]
 #[should_panic]
 fn test_instantiate_fresh() {
     let svar_0 = svar(0);
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0);
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
     _ = instantiate(phi0_s_fresh_0, 0, svar_0);
 }
 
 #[test]
-pub fn test_construct_phi_implies_phi() {
+fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
         Instruction::List as u8, 0, // E Fresh
