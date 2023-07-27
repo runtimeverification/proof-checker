@@ -300,7 +300,7 @@ class Mu(Pattern):
 
 Meta-patterns allow us to represent axiom- and theorem-schemas through the use
 of metavariables.
-Each `MetaVar` has a list of constraints that must be met by any instantiation.
+Each `MetaVar` has several sets of constraints that must be met by any instantiation.
 These may also be used by the well-formedness checks for `Proof`s.
 Since we only know constraints of a meta-pattern, constraint checking is best-effort.
 This means we want to reject anything that we can't prove to be satisfy the constraints.
@@ -581,9 +581,9 @@ Otherwise, execution aborts, and verification fails.
 
 ### Supporting
 
-`List n:u32 [u32]*n`
+`Set n:u32 [u32]*n`
 :   Consume a length $n$, and $n$ items from the input.
-    Push a list containing those `u32`s to the stack.
+    Push a set containing those `u32`s to the stack.
 
 
 ### Variables and Symbols:
