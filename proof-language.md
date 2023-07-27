@@ -334,7 +334,7 @@ We also need to represent substitutions applied to `MetaVar`s.
 
 ```python
 class ESubst(Pattern):
-    pattern: MetaVar
+    pattern: ESubst | MetaVar
     var: EVar
     plug: Pattern
 
@@ -373,7 +373,7 @@ class ESubst(Pattern):
 
 
 class SSubst(Pattern):
-    pattern: MetaVar
+    pattern: SSubst | MetaVar
     var: SVar
     plug: Pattern
 
@@ -383,7 +383,7 @@ class SSubst(Pattern):
             # so freshness of evar depends on the original pattern
             return pattern.e_fresh(evar)
 
-        # We can skip the case evar == var, as var: Var
+        # We can skip the case evar == var, as var: SVar
 
         # We know that some instances of var are substituted
         # so we need to check both pattern and plug
