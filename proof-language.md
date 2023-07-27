@@ -312,8 +312,8 @@ class MetaVar(Pattern):
     name: u32
 
     # Meta-requirements that must be satisfied by any instantiation.
-    e_fresh: set[u32]             # Element variables that must not occur in an instatiation
-    s_fresh: set[u32]             # Set variables that must not occur in an instatiation
+    e_fresh: set[u32]             # Element variables that must not occur free in an instatiation
+    s_fresh: set[u32]             # Set variables that must not occur free in an instatiation
     positive: set[u32]            # Set variables that must only occur positively in an instatiation
     negative: set[u32]            # Set variables that must only occur negatively in an instatiation
     application_context: set[u32] # Element variables that must only occur as a hole variable in an application context.
