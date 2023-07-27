@@ -240,13 +240,13 @@ class SVar(Pattern):
         return True
 
     def s_fresh(svar):
-        return svar.name != name
+        return svar != name
 
 class EVar(Pattern):
     name: u32
 
     def e_fresh(evar):
-        return evar.name != name
+        return evar != name
 
     def s_fresh(svar):
         return True
@@ -338,13 +338,13 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
-    def e_fresh(evar: EVar):
+    def e_fresh(evar):
         if pattern.s_fresh(var):
             # This means that this substitution is an identity,
             # so freshness of evar depends on the original pattern
             return pattern.e_fresh(evar)
 
-        if evar == var:
+        if evar == var.name:
             # This means there are free instances of svar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
             return plug.e_fresh(evar)
@@ -357,7 +357,7 @@ class ESubst(Pattern):
         # the result as svar != var
         return pattern.e_fresh(evar) and plug.e_fresh(evar)
 
-    def s_fresh(svar: SVar):
+    def s_fresh(svar):
         if pattern.s_fresh(var):
              # This means that this substitution is an identity,
              # so freshness of svar depends on the original pattern
@@ -377,13 +377,13 @@ class SSubst(Pattern):
     var: SVar
     plug: Pattern
 
-    def e_fresh(evar: EVar):
+    def e_fresh(evar):
         if pattern.s_fresh(var):
             # This means that this substitution is an identity,
             # so freshness of evar depends on the original pattern
             return pattern.e_fresh(evar)
 
-        # We can skip the case evar == var, as var: SVar
+        # We can skip the case evar == var, as var: Var
 
         # We know that some instances of var are substituted
         # so we need to check both pattern and plug
@@ -391,13 +391,13 @@ class SSubst(Pattern):
         # (see explanation for s_fresh)
         return pattern.e_fresh(evar) and plug.e_fresh(evar)
 
-    def s_fresh(svar: SVar):
+    def s_fresh(svar):
         if pattern.s_fresh(var):
              # This means that this substitution is an identity,
              # so freshness of svar depends on the original pattern
             return pattern.s_fresh(svar)
 
-        if svar == var:
+        if svar == var.name:
             # This means there are free instances of svar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
             return plug.s_fresh(svar)
