@@ -201,6 +201,14 @@ abstract class Pattern(Term):
         # MetaVars are introduced later.
     ...
 
+    def e_fresh(evar):
+        # returns true iff evar is not a free element variable in this pattern
+    ...
+
+    def s_fresh(svar):
+        # returns true iff svar is not a free set variable in this pattern
+    ...
+
 abstract class Proof(Term):
     abstract def conclusion:
         ...
@@ -219,27 +227,69 @@ and a representation for various "meta" patterns.
 class Symbol(Pattern):
     name: u32
 
+    def e_fresh(evar):
+        return True
+
+    def s_fresh(svar):
+        return True
+
 class SVar(Pattern):
     name: u32
 
+    def e_fresh(evar):
+        return True
+
+    def s_fresh(svar):
+        return svar.name != name
+
 class EVar(Pattern):
     name: u32
+
+    def e_fresh(evar):
+        return evar.name != name
+
+    def s_fresh(svar):
+        return True
 
 class Implication(Pattern):
     left: Pattern
     right: Pattern
 
+    def e_fresh(evar):
+        return left.e_fresh(evar) and right.e_fresh(evar)
+
+    def s_fresh(svar):
+        return left.s_fresh(svar) and right.s_fresh(svar)
+
 class Application(Pattern):
     left: Pattern
     right: Pattern
 
+    def e_fresh(evar):
+        return left.e_fresh(evar) and right.e_fresh(evar)
+
+    def s_fresh(svar):
+        return left.s_fresh(svar) and right.s_fresh(svar)
+
 class Exists(Pattern):
     var: EVar
-    subpattern : Pattern
+    subpattern: Pattern
+
+    def e_fresh(evar):
+        return evar == var or subpattern.e_fresh(evar)
+
+    def s_fresh(svar):
+        return subpattern.s_fresh(svar)
 
 class Mu(Pattern):
     var: SVar
-    subpattern : Pattern
+    subpattern: Pattern
+
+    def e_fresh(evar):
+        return subpattern.e_fresh(evar)
+
+    def s_fresh(svar):
+        return var == svar or subpattern.s_fresh(svar)
 
     def well_formed():
         return super.well_formed()
@@ -249,35 +299,75 @@ class Mu(Pattern):
 ### Meta-patterns
 
 Meta-patterns allow us to represent axiom- and theorem-schemas through the use
-of metavariables:
+of metavariables.
+Each `MetaVar` has a list of constraints that must be met by any instantiation.
+These may also be used by the well-formedness checks for `Proof`s.
+Since we only know constraints of a meta-pattern, constraint checking is best-effort.
+This means we want to reject anything that we can't prove to be satisfy the constraints.
+For well-formedness, we use the same meta-reasoning as the one used by the MM formalization
+(denoted with the comments):
 
 ```python
 class MetaVar(Pattern):
     name: u32
 
     # Meta-requirements that must be satisfied by any instantiation.
-    e_fresh: list[u32]             # Element variables that must not occur in an instatiation
-    s_fresh: list[u32]             # Set variables that must not occur in an instatiation
-    positive: list[u32]            # Set variables that must only occur positively in an instatiation
-    negative: list[u32]            # Set variables that must only occur negatively in an instatiation
-    application_context: list[u32] # Element variables that must only occur as a hole variable in an application context.
-```
+    e_fresh: set[u32]             # Element variables that must not occur in an instatiation
+    s_fresh: set[u32]             # Set variables that must not occur in an instatiation
+    positive: set[u32]            # Set variables that must only occur positively in an instatiation
+    negative: set[u32]            # Set variables that must only occur negatively in an instatiation
+    application_context: set[u32] # Element variables that must only occur as a hole variable in an application context.
 
-Each `MetaVar` has a list of requirements that must be met by any instantiation.
-These may also be used by the well-formedness checks for `Proof`s.
+    def e_fresh(evar):
+        return evar in this.e_fresh
+
+    def s_fresh(svar):
+        return svar in this.s_fresh
+
+    def well_formed():
+        return super.well_formed()
+           and s_fresh.issubset(positive) # positive-disjoint
+           and s_fresh.issubset(negative) # negative-disjoint
+```
 
 We also need to represent substitutions applied to `MetaVar`s.
 
 ```python
-class ESubst(Pattern):
+# TODO: Might actually consider making ESubst really only pattern
+# and compute e_fresh, s_fresh, etc. from the given pattern+var+plug comb
+class ESubst(MetaVar):
     pattern: MetaVar
     var: EVar
     plug: Pattern
 
-class SSubst(Pattern):
+# TODO: Might actually consider making ESubst really only pattern
+# and compute e_fresh, s_fresh, etc. from the given pattern+var+plug comb
+class SSubst(MetaVar):
     pattern: MetaVar
     var: SVar
     plug: Pattern
+
+    def well_formed():
+        if        var == plug                      # subst-id
+            or    var in pattern.s_fresh           # subst-fresh
+            return pattern.well_formed()
+
+        if plug.s_fresh(var) and not this.s_fresh(X):
+            return false                           # fresh-in-subst
+
+        for X in pattern.s_fresh:
+            if plug.s_fresh(X) and not this.s_fresh(X):
+                return false                       # fresh-after-subst
+
+        if is_instance(pattern, SSubst)
+            and var in pattern.pattern.s_fresh
+            and pattern.plug == var:
+                return pattern.pattern.well_formed # subst-inverse
+
+        # TODO: subst-fold (subst-unfold not needed, as we really only want
+        # to use the reasoning to simplify)
+
+        return super.well_formed()
 ```
 
 
@@ -324,7 +414,7 @@ $\phi \limplies \phi$.
 ```python
 class InstantiateSchema(Proof):
     subproof : Proof
-    metavar_id: u32
+    metavar: MetaVar
     instantiation: Pattern
 
     def well_formed():
