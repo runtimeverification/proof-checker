@@ -334,7 +334,7 @@ We also need to represent substitutions applied to `MetaVar`s.
 
 ```python
 class ESubst(Pattern):
-    pattern: ESubst | MetaVar
+    pattern: ESubst | MetaVar # TODO: Should we allow composing it with SSubst too?
     var: EVar
     plug: Pattern
 
@@ -371,9 +371,10 @@ class ESubst(Pattern):
         # (see explanation for e_fresh)
         return pattern.s_fresh(svar) and plug.s_fresh(svar)
 
+    # TODO: Well-formedness checking
 
 class SSubst(Pattern):
-    pattern: SSubst | MetaVar
+    pattern: SSubst | MetaVar # TODO: Should we allow composing it with ESubst too?
     var: SVar
     plug: Pattern
 
@@ -415,20 +416,19 @@ class SSubst(Pattern):
             or    var in pattern.s_fresh           # subst-fresh
             return pattern.well_formed()
 
-        if plug.s_fresh(var) and not this.s_fresh(X):
+        if plug.s_fresh(var) and not this.s_fresh(var):
             return false                           # fresh-in-subst
 
         for X in pattern.s_fresh:
             if plug.s_fresh(X) and not this.s_fresh(X):
                 return false                       # fresh-after-subst
 
-        if is_instance(pattern, SSubst)
-            and var in pattern.pattern.s_fresh
-            and pattern.plug == var:
-                return pattern.pattern.well_formed # subst-inverse
+        if is_instance(pattern, SSubst) and var in pattern.pattern.s_fresh
+            if pattern.plug == var:
+                return pattern.pattern.well_formed() # subst-inverse
 
-        # TODO: subst-fold (subst-unfold not needed, as we really only want
-        # to use the reasoning to simplify)
+            # TODO: subst-fold (subst-unfold not needed, as we really only want
+            # to use the reasoning to simplify), maybe it could handle subst-inverse
 
         return super.well_formed()
 ```
