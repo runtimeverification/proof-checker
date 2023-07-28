@@ -96,9 +96,7 @@ pub enum Pattern {
         left: Rc<Pattern>,
         right: Rc<Pattern>,
     },
-    #[allow(dead_code)]
     Exists { var: u8, subpattern: Rc<Pattern> },
-    #[allow(dead_code)]
     Mu { var: u8, subpattern: Rc<Pattern> },
     MetaVar {
         id: u8,
@@ -186,6 +184,11 @@ fn symbol(id: u8) -> Rc<Pattern> {
 
 fn exists(var: u8, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Exists{ var, subpattern });
+}
+
+// Does not do any well-formedness checks!!!!!
+fn mu(var: u8, subpattern: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::Mu{ var, subpattern });
 }
 
 fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
@@ -301,11 +304,18 @@ fn execute_instructions<'a>(
     let phi1 = metavar_unconstrained(1);
     let phi2 = metavar_unconstrained(2);
 
+    // Notation
+    let bot = mu(1, svar(1));
+
     // Axioms
     let prop1 = implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi0)));
     let prop2 = implies(
         implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi2))),
         implies(implies(Rc::clone(&phi0), Rc::clone(&phi1)), implies(Rc::clone(&phi0), Rc::clone(&phi2))),
+    );
+    let prop3 = implies(
+        implies(implies(Rc::clone(&phi0), Rc::clone(&bot)), Rc::clone(&bot)),
+        Rc::clone(&phi0)
     );
 
     while let Some(instr_u32) = next() {
@@ -376,6 +386,9 @@ fn execute_instructions<'a>(
             }
             Instruction::Prop2 => {
                 stack.push(Term::Proved(Rc::clone(&prop2)));
+            }
+            Instruction::Prop3 => {
+                stack.push(Term::Proved(Rc::clone(&prop3)));
             }
             Instruction::ModusPonens => match pop_stack_proved(stack).as_ref() {
                 Pattern::Implication { left, right } => {
