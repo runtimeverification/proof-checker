@@ -335,7 +335,7 @@ We also need to represent substitutions applied to `MetaVar`s.
 ```python
 class ESubst(Pattern):
     pattern: ESubst | MetaVar # TODO: Should we allow composing it with SSubst too?
-    var: EVar
+    var: u32
     plug: Pattern
 
     def e_fresh(evar):
@@ -344,7 +344,7 @@ class ESubst(Pattern):
             # so freshness of evar depends on the original pattern
             return pattern.e_fresh(evar)
 
-        if evar == var.name:
+        if evar == var:
             # This means there are free instances of svar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
             return plug.e_fresh(evar)
@@ -375,7 +375,7 @@ class ESubst(Pattern):
 
 class SSubst(Pattern):
     pattern: SSubst | MetaVar # TODO: Should we allow composing it with ESubst too?
-    var: SVar
+    var: u32
     plug: Pattern
 
     def e_fresh(evar):
@@ -398,7 +398,7 @@ class SSubst(Pattern):
              # so freshness of svar depends on the original pattern
             return pattern.s_fresh(svar)
 
-        if svar == var.name:
+        if svar == var:
             # This means there are free instances of svar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
             return plug.s_fresh(svar)
