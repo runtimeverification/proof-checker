@@ -306,6 +306,7 @@ fn execute_instructions<'a>(
 
     // Notation
     let bot = mu(1, svar(1));
+    let not = |pat: Rc<Pattern>| implies(pat, Rc::clone(&bot));
 
     // Axioms
     let prop1 = implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi0)));
@@ -314,7 +315,7 @@ fn execute_instructions<'a>(
         implies(implies(Rc::clone(&phi0), Rc::clone(&phi1)), implies(Rc::clone(&phi0), Rc::clone(&phi2))),
     );
     let prop3 = implies(
-        implies(implies(Rc::clone(&phi0), Rc::clone(&bot)), Rc::clone(&bot)),
+        not(not(Rc::clone(&phi0))),
         Rc::clone(&phi0)
     );
 
