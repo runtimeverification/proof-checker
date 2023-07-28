@@ -326,8 +326,6 @@ class MetaVar(Pattern):
 
     def well_formed():
         return super.well_formed()
-           and s_fresh.issubset(positive) # positive-disjoint
-           and s_fresh.issubset(negative) # negative-disjoint
 ```
 
 We also need to represent substitutions applied to `MetaVar`s.
