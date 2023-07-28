@@ -5,3 +5,5 @@ described in [proof-language.md].
 *   We use Risc0 to provide a ZKed implementation of the above, under [risc0/].
 *   We are porting metamath proofs from [https://github.com/runtimeverification/proof-generation]
     in the directory [generation/].
+*   The directory, [proofs/] contains some example proofs.
+    These can be regenerated using the command: `make CHECK_PROOF=cp test-proof-gen`
