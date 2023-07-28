@@ -343,26 +343,26 @@ class ESubst(Pattern):
         if pattern.e_fresh(var):
             # This means that this substitution is an identity,
             # so freshness of evar depends on the original pattern
-            return pattern.e_fresh(evar)
+            return pattern.e_fresh(evar)    # subst-id
 
         if evar == var:
             # This means there are free instances of svar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
-            return plug.e_fresh(evar)
+            return plug.e_fresh(evar)       # fresh-in-subst
 
         # There are free instances of var being substituted and svar != var, so
         # we need to check for freshness of svar in both the original pattern
-        # and the plugged pattern
+        # and the plugged pattern.
         # Note that it's fine that the original pattern still contains
         # free instances of var => we know that those won't affect
         # the result as svar != var
-        return pattern.e_fresh(evar) and plug.e_fresh(evar)
+        return pattern.e_fresh(evar) and plug.e_fresh(evar) # fresh-after-subst
 
     def s_fresh(svar):
         if pattern.s_fresh(var):
              # This means that this substitution is an identity,
              # so freshness of svar depends on the original pattern
-            return pattern.s_fresh(svar)
+            return pattern.s_fresh(svar)    # subst-id
 
         # We can skip the case svar == var, as var: EVar
 
@@ -370,7 +370,7 @@ class ESubst(Pattern):
         # so we need to check both pattern and plug
         # Pattern contains instances of var, but this won't affect s_fresh(svar)
         # (see explanation for e_fresh)
-        return pattern.s_fresh(svar) and plug.s_fresh(svar)
+        return pattern.s_fresh(svar) and plug.s_fresh(svar) # fresh-after-subst
 
     # TODO: Well-formedness checking
 
@@ -394,18 +394,18 @@ class SSubst(Pattern):
         # so we need to check both pattern and plug
         # Pattern contains instances of var, but this won't affect e_fresh(evar)
         # (see explanation for s_fresh)
-        return pattern.e_fresh(evar) and plug.e_fresh(evar)
+        return pattern.e_fresh(evar) and plug.e_fresh(evar) # fresh-after-subst
 
     def s_fresh(svar):
         if pattern.s_fresh(var):
              # This means that this substitution is an identity,
              # so freshness of svar depends on the original pattern
-            return pattern.s_fresh(svar)
+            return pattern.s_fresh(svar)    # subst-id
 
         if svar == var:
             # This means there are free instances of svar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
-            return plug.s_fresh(svar)
+            return plug.s_fresh(svar)       # subst-in-subst
 
         # There are free instances of var being substituted and svar != var, so
         # we need to check for freshness of svar in both the original pattern
