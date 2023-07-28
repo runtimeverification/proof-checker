@@ -178,6 +178,18 @@ pub enum Entry {
 /// Pattern construction utilities
 /// ------------------------------
 
+fn evar(id: u8) -> Rc<Pattern> {
+    return Rc::new(Pattern::EVar(id));
+}
+
+fn svar(id: u8) -> Rc<Pattern> {
+    return Rc::new(Pattern::SVar(id));
+}
+
+fn symbol(id: u8) -> Rc<Pattern> {
+    return Rc::new(Pattern::Symbol(id));
+}
+
 fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
@@ -203,16 +215,6 @@ fn metavar_s_fresh(var_id: u8, fresh: u8, positive: Vec<u8>, negative: Vec<u8>) 
         negative,
         application_context: vec![],
     });
-}
-
-#[cfg(test)]
-fn evar(id: u8) -> Rc<Pattern> {
-    return Rc::new(Pattern::EVar(id));
-}
-
-#[cfg(test)]
-fn svar(id: u8) -> Rc<Pattern> {
-    return Rc::new(Pattern::SVar(id));
 }
 
 /// Substitution utilities
@@ -301,6 +303,25 @@ fn execute_instructions<'a>(
                 }
                 let list = vec![];
                 stack.push(Term::List(list));
+            }
+            // TODO: Add an abstraction for pushing these one-argument terms on stack?
+            Instruction::EVar => {
+                let id = next()
+                    .expect("Expected id for the EVar to be put on stack");
+
+                stack.push(Term::Pattern(evar(id)));
+            }
+            Instruction::SVar => {
+                let id = next()
+                    .expect("Expected id for the SVar to be put on stack");
+
+                stack.push(Term::Pattern(svar(id)));
+            }
+            Instruction::Symbol => {
+                let id = next()
+                    .expect("Expected id for the Symbol to be put on stack");
+
+                stack.push(Term::Pattern(symbol(id)));
             }
             Instruction::Implication => {
                 let right = pop_stack_pattern(stack);
