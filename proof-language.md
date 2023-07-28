@@ -272,7 +272,7 @@ class Application(Pattern):
         return left.s_fresh(svar) and right.s_fresh(svar)
 
 class Exists(Pattern):
-    var: EVar
+    var: u32
     subpattern: Pattern
 
     def e_fresh(evar):
@@ -282,7 +282,7 @@ class Exists(Pattern):
         return subpattern.s_fresh(svar)
 
 class Mu(Pattern):
-    var: SVar
+    var: u32
     subpattern: Pattern
 
     def e_fresh(evar):
