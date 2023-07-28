@@ -36,15 +36,13 @@ jobs:
       - name: 'Set Python version'
         run: docker exec --user user proof-checker-ci poetry env use 3.10
       - name: 'Run code quality checks'
-        run: make -C generation check
-      - name: 'Run pyupgrade'
-        run: make -C generation pyupgrade
+        run: docker exec --user user proof-checker-ci make -j8 check
       - name: 'Run unit tests'
-        run: make -C 'generation' cov-unit
-      - name: 'Run rust tests'
-        run: cargo test
-      - name: 'Run integration tests'
-        run: docker exec --user user proof-checker-ci make -C generation cov-integration COV_ARGS=-n8
+        run: docker exec --user user proof-checker-ci make -j8 test-unit
+      - name: 'Run system tests'
+        run: docker exec --user user proof-checker-ci make -j8 test-system
+      - name: 'Run ZK tests'
+        run: docker exec --user user proof-checker-ci make -j8 test-zk
       - name: 'Tear down Docker container'
         if: always()
         run: |
