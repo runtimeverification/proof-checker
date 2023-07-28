@@ -30,13 +30,12 @@ class Propositional:
         return [self.imp_reflexivity]
 
     phi0: MetaVar = MetaVar(0)
-    phi1: MetaVar = MetaVar(1)
-    phi2: MetaVar = MetaVar(2)
+
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
     imp_reflexivity: Proof = modus_ponens(
-        prop1.instantiate(phi1, phi0),
+        prop1.instantiate(1, phi0),
         modus_ponens(
-            prop1.instantiate(phi1, phi0_implies_phi0),
-            prop2.instantiate(phi1, phi0_implies_phi0).instantiate(phi2, phi0),
+            prop1.instantiate(1, phi0_implies_phi0),
+            prop2.instantiate(1, phi0_implies_phi0).instantiate(2, phi0),
         ),
     )

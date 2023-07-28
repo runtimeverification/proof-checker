@@ -146,14 +146,14 @@ def app(left: Pattern, right: Pattern) -> Pattern:
 
 @dataclass(frozen=True)
 class Proof(Term):
-    def instantiate(self: Proof, var: MetaVar, plug: Pattern) -> Proof:
+    def instantiate(self: Proof, var: int, plug: Pattern) -> Proof:
         return Instantiate(self, var, plug)
 
 
 @dataclass(frozen=True)
 class Instantiate(Proof):
     subproof: Proof
-    var: MetaVar
+    var: int
     plug: Pattern
 
     def well_formed(self) -> bool:
@@ -162,7 +162,7 @@ class Instantiate(Proof):
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
         self.subproof.serialize(to_reuse, memory, output)
         self.plug.serialize(to_reuse, memory, output)
-        output.write(bytes([Instruction.Instantiate, self.var.name]))
+        output.write(bytes([Instruction.Instantiate, self.var]))
 
 
 @dataclass(frozen=True)
