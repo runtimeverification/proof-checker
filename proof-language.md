@@ -332,7 +332,7 @@ We also need to represent substitutions applied to `MetaVar`s.
 
 ```python
 class ESubst(Pattern):
-    pattern: Pattern
+    pattern: MetaVar | SSubst | ESubst
     var: u32
     plug: Pattern
 
@@ -375,7 +375,7 @@ class ESubst(Pattern):
     # TODO: Well-formedness checking
 
 class SSubst(Pattern):
-    pattern: Pattern
+    pattern: MetaVar | SSubst | ESubst
     var: u32
     plug: Pattern
 
