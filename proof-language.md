@@ -319,10 +319,10 @@ class MetaVar(Pattern):
     application_context: set[u32] # Element variables that must only occur as a hole variable in an application context.
 
     def e_fresh(evar):
-        return evar in this.e_fresh
+        return evar in e_fresh
 
     def s_fresh(svar):
-        return svar in this.s_fresh
+        return svar in s_fresh
 
     def well_formed():
         return super.well_formed()
@@ -416,12 +416,12 @@ class SSubst(Pattern):
             or    pattern.s_fresh(var)             # subst-fresh
             return pattern.well_formed()
 
-        if plug.s_fresh(var) and not this.s_fresh(var):
+        if plug.s_fresh(var) and not s_fresh(var):
             return false                           # fresh-in-subst
 
         if is_instance(pattern, MetaVar):
             for X in pattern.s_fresh:
-                if plug.s_fresh(X) and not this.s_fresh(X):
+                if plug.s_fresh(X) and not s_fresh(X):
                     return false                   # fresh-after-subst
 
         if is_instance(pattern, SSubst) and pattern.pattern.s_fresh(var)
