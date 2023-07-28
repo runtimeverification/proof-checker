@@ -413,17 +413,18 @@ class SSubst(Pattern):
 
     def well_formed():
         if        var == plug                      # subst-id
-            or    var in pattern.s_fresh           # subst-fresh
+            or    pattern.s_fresh(var)             # subst-fresh
             return pattern.well_formed()
 
         if plug.s_fresh(var) and not this.s_fresh(var):
             return false                           # fresh-in-subst
 
-        for X in pattern.s_fresh:
-            if plug.s_fresh(X) and not this.s_fresh(X):
-                return false                       # fresh-after-subst
+        if is_instance(pattern, MetaVar):
+            for X in pattern.s_fresh:
+                if plug.s_fresh(X) and not this.s_fresh(X):
+                    return false                   # fresh-after-subst
 
-        if is_instance(pattern, SSubst) and var in pattern.pattern.s_fresh
+        if is_instance(pattern, SSubst) and pattern.pattern.s_fresh(var)
             if pattern.plug == var:
                 return pattern.pattern.well_formed() # subst-inverse
 
