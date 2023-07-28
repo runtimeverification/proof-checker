@@ -293,7 +293,7 @@ class Mu(Pattern):
 
     def well_formed():
         return super.well_formed()
-           and subpattern.var_occurs_positively(var)
+           and subpattern.positive(var)
 ```
 
 ### Meta-patterns
