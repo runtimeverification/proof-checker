@@ -85,17 +85,13 @@ impl Instruction {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Pattern {
-    #[allow(dead_code)]
     EVar(u8),
-    #[allow(dead_code)]
     SVar(u8),
-    #[allow(dead_code)]
     Symbol(u8),
     Implication {
         left: Rc<Pattern>,
         right: Rc<Pattern>,
     },
-    #[allow(dead_code)]
     Application {
         left: Rc<Pattern>,
         right: Rc<Pattern>,
@@ -127,7 +123,6 @@ pub enum Pattern {
 }
 
 impl Pattern {
-    #[allow(dead_code)]
     fn e_fresh(&self, evar: u8) -> bool {
         match self {
             Pattern::EVar(name) => *name != evar,
@@ -142,7 +137,6 @@ impl Pattern {
         }
     }
 
-    #[allow(dead_code)]
     fn s_fresh(&self, svar: u8) -> bool {
         match self {
             Pattern::SVar(name) => *name != svar,
@@ -203,6 +197,10 @@ fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
 
 fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Implication { left, right });
+}
+
+fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::Application { left, right });
 }
 
 #[cfg(test)]
@@ -340,6 +338,11 @@ fn execute_instructions<'a>(
                 let right = pop_stack_pattern(stack);
                 let left = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(implies(left, right)))
+            }
+            Instruction::Application => {
+                let right = pop_stack_pattern(stack);
+                let left = pop_stack_pattern(stack);
+                stack.push(Term::Pattern(app(left, right)))
             }
             Instruction::MetaVar => {
                 let id = next()
