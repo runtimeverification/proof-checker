@@ -308,10 +308,19 @@ fn execute_instructions<'a>(
     let not = |pat: Rc<Pattern>| implies(pat, Rc::clone(&bot));
 
     // Axioms
-    let prop1 = implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi0)));
+    let prop1 = implies(
+        Rc::clone(&phi0),
+        implies(Rc::clone(&phi1), Rc::clone(&phi0)),
+    );
     let prop2 = implies(
-        implies(Rc::clone(&phi0), implies(Rc::clone(&phi1), Rc::clone(&phi2))),
-        implies(implies(Rc::clone(&phi0), Rc::clone(&phi1)), implies(Rc::clone(&phi0), Rc::clone(&phi2))),
+        implies(
+            Rc::clone(&phi0),
+            implies(Rc::clone(&phi1), Rc::clone(&phi2)),
+        ),
+        implies(
+            implies(Rc::clone(&phi0), Rc::clone(&phi1)),
+            implies(Rc::clone(&phi0), Rc::clone(&phi2)),
+        ),
     );
     let prop3 = implies(
         not(not(Rc::clone(&phi0))),
@@ -321,8 +330,7 @@ fn execute_instructions<'a>(
     while let Some(instr_u32) = next() {
         match Instruction::from(instr_u32) {
             Instruction::List => {
-                let len = next()
-                    .expect("Insufficient parameters for List instruction");
+                let len = next().expect("Insufficient parameters for List instruction");
                 if len != 0 {
                     panic!("Len was supposed to be zero.")
                 }
@@ -364,8 +372,7 @@ fn execute_instructions<'a>(
                 stack.push(Term::Pattern(exists(id, subpattern)))
             }
             Instruction::MetaVar => {
-                let id = next()
-                    .expect("Insufficient parameters for MetaVar instruction");
+                let id = next().expect("Insufficient parameters for MetaVar instruction");
                 let application_context = pop_stack_list(stack);
                 let negative = pop_stack_list(stack);
                 let positive = pop_stack_list(stack);
@@ -407,8 +414,8 @@ fn execute_instructions<'a>(
                 let metaterm = pop_stack(stack);
                 match metaterm {
                     Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, id, plug))),
-                    Term::Proved(p)  => stack.push(Term::Proved(instantiate(p, id, plug))),
-                    Term::List(_) => panic!("Cannot Instantiate list.")
+                    Term::Proved(p) => stack.push(Term::Proved(instantiate(p, id, plug))),
+                    Term::List(_) => panic!("Cannot Instantiate list."),
                 }
             }
 
@@ -418,13 +425,12 @@ fn execute_instructions<'a>(
                 Term::List(_) => panic!("Cannot Save lists."),
             },
             Instruction::Load => {
-                let index = next()
-                    .expect("Insufficient parameters for Load instruction");
+                let index = next().expect("Insufficient parameters for Load instruction");
                 match &memory[index as usize] {
                     Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
-            },
+            }
             _ => {
                 unimplemented!("Instruction: {}", instr_u32)
             }
@@ -514,14 +520,14 @@ fn test_sfresh() {
 fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
-        Instruction::List as u8, 0, // E Fresh
-        Instruction::List as u8, 0, // S Fresh
-        Instruction::List as u8, 0, // Positive
-        Instruction::List as u8, 0, // Negative
-        Instruction::List as u8, 0, // Context
-        Instruction::MetaVar as u8, 0, // Stack: Phi
-        Instruction::Save as u8,    // @ 0
-        Instruction::Load as u8, 0, // Phi ; Phi
+        Instruction::List as u8, 0,     // E Fresh
+        Instruction::List as u8, 0,     // S Fresh
+        Instruction::List as u8, 0,     // Positive
+        Instruction::List as u8, 0,     // Negative
+        Instruction::List as u8, 0,     // Context
+        Instruction::MetaVar as u8, 0,  // Stack: Phi
+        Instruction::Save as u8,        // @ 0
+        Instruction::Load as u8, 0,     // Phi ; Phi
         Instruction::Implication as u8, // Phi -> Phi
     ];
     let mut iterator = proof.iter();
@@ -575,8 +581,11 @@ fn test_phi_implies_phi_impl() {
     let next = &mut (|| iterator.next().cloned());
     let (stack, _journal, _memory) = verify(next);
     let phi0 = metavar_unconstrained(0);
-    assert_eq!(stack, vec![Term::Proved(Rc::new(Pattern::Implication{
-        left: Rc::clone(&phi0),
-        right: Rc::clone(&phi0)
-    }))])
+    assert_eq!(
+        stack,
+        vec![Term::Proved(Rc::new(Pattern::Implication {
+            left: Rc::clone(&phi0),
+            right: Rc::clone(&phi0)
+        }))]
+    )
 }
