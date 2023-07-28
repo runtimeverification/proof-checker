@@ -104,7 +104,6 @@ pub enum Pattern {
     Exists { var: u8, subpattern: Rc<Pattern> },
     #[allow(dead_code)]
     Mu { var: u8, subpattern: Rc<Pattern> },
-
     MetaVar {
         id: u8,
         e_fresh: Vec<u8>,
@@ -113,6 +112,18 @@ pub enum Pattern {
         negative: Vec<u8>,
         application_context: Vec<u8>,
     },
+    #[allow(dead_code)]
+    ESubst {
+        pattern: Rc<Pattern>,
+        evar_id: u8,
+        plug: Rc<Pattern>
+    },
+    #[allow(dead_code)]
+    SSubst {
+        pattern: Rc<Pattern>,
+        svar_id: u8,
+        plug: Rc<Pattern>
+    }
 }
 
 impl Pattern {
@@ -126,7 +137,8 @@ impl Pattern {
             Pattern::Application { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
             Pattern::Exists { var, subpattern } => evar == *var || subpattern.e_fresh(evar),
             Pattern::Mu { subpattern, .. } => subpattern.e_fresh(evar),
-            Pattern::MetaVar { e_fresh, .. } => e_fresh.contains(&evar)
+            Pattern::MetaVar { e_fresh, .. } => e_fresh.contains(&evar),
+            _ => { unimplemented!("e_fresh unimplemented for this case"); }
         }
     }
 
@@ -140,7 +152,8 @@ impl Pattern {
             Pattern::Application { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
-            Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar)
+            Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar),
+            _ => { unimplemented!("e_fresh unimplemented for this case"); }
         }
     }
 
