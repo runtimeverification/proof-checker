@@ -413,29 +413,7 @@ class SSubst(Pattern):
         # Note that it's fine that the original pattern still contains
         # free instances of var => we know that those won't affect
         # the result as svar != var
-        return pattern.s_fresh(svar) and plug.s_fresh(svar)
-
-    def well_formed():
-        if        var == plug                      # subst-id
-            or    pattern.s_fresh(var)             # subst-fresh
-            return pattern.well_formed()
-
-        if plug.s_fresh(var) and not s_fresh(var):
-            return false                           # fresh-in-subst
-
-        if is_instance(pattern, MetaVar):
-            for X in pattern.s_fresh:
-                if plug.s_fresh(X) and not s_fresh(X):
-                    return false                   # fresh-after-subst
-
-        if is_instance(pattern, SSubst) and pattern.pattern.s_fresh(var)
-            if pattern.plug == var:
-                return pattern.pattern.well_formed() # subst-inverse
-
-            # TODO: subst-fold (subst-unfold not needed, as we really only want
-            # to use the reasoning to simplify), maybe it could handle subst-inverse
-
-        return super.well_formed()
+        return pattern.s_fresh(svar) and plug.s_fresh(svar) # subst-after-subst
 ```
 
 
