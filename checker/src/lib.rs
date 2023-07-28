@@ -26,7 +26,7 @@ pub enum Instruction {
     // Inference rules,
     ModusPonens, Generalization, Frame, Substitution, KnasterTarski,
     // Meta Incference rules,
-    InstantiateNotation, InstantiateSchema,
+    Instantiate,
     // Stack Manipulation,
     Pop,
     // Memory Manipulation,
@@ -63,12 +63,11 @@ impl Instruction {
             23 => Instruction::Frame,
             24 => Instruction::Substitution,
             25 => Instruction::KnasterTarski,
-            26 => Instruction::InstantiateNotation,
-            27 => Instruction::InstantiateSchema,
-            28 => Instruction::Pop,
-            29 => Instruction::Save,
-            30 => Instruction::Load,
-            31 => Instruction::Publish,
+            26 => Instruction::Instantiate,
+            27 => Instruction::Pop,
+            28 => Instruction::Save,
+            29 => Instruction::Load,
+            30 => Instruction::Publish,
             _ => panic!("Bad Instruction!"),
         }
     }
@@ -402,15 +401,14 @@ fn execute_instructions<'a>(
                     panic!("Expected an implication as a first parameter.")
                 }
             },
-            Instruction::InstantiateSchema => {
+            Instruction::Instantiate => {
+                let id = next().expect("Insufficient parameters for MetaVar instruction");
                 let plug = pop_stack_pattern(stack);
-                let metavar = pop_stack_pattern(stack);
-                match *metavar {
-                    Pattern::MetaVar { id, .. } => {
-                        let metatheorem = pop_stack_proved(stack);
-                        stack.push(Term::Proved(instantiate(metatheorem, id, plug)));
-                    }
-                    _ => panic!("Expected a metavariable"),
+                let metaterm = pop_stack(stack);
+                match metaterm {
+                    Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, id, plug))),
+                    Term::Proved(p)  => stack.push(Term::Proved(instantiate(p, id, plug))),
+                    Term::List(_) => panic!("Cannot Instantiate list.")
                 }
             }
 
@@ -543,52 +541,35 @@ fn test_construct_phi_implies_phi() {
 fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
-        Instruction::Prop1 as u8,               // (p1: phi0 -> (phi1 -> phi0))
+        Instruction::Prop1 as u8,              // (p1: phi0 -> (phi1 -> phi0))
 
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
-        Instruction::MetaVar as u8, 1,          // Stack: p1 ; phi1
-        Instruction::Save as u8,                // phi1 save at 0
+        Instruction::MetaVar as u8, 0,         // Stack: p1 ; phi0
+        Instruction::Save as u8,               // phi0 save at 0
 
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::MetaVar as u8, 0,          // Stack: p1 ; phi1 ; phi0
-        Instruction::Save as u8,                // phi0 save at 1
+        Instruction::Instantiate as u8, 1,     // Stack: (p2: phi0 -> (phi0 -> phi0))
 
-        Instruction::InstantiateSchema as u8,   // Stack: (p2: phi0 -> (phi0 -> phi0))
+        Instruction::Prop1 as u8,              // Stack: p2 ; p1
+        Instruction::Load as u8, 0,            // Stack: p2 ; p1 ; phi0
+        Instruction::Load as u8, 0,            // Stack: p2 ; p1 ; phi0 ; phi0
+        Instruction::Implication as u8,        // Stack: p2 ; p1 ; phi1; phi0 -> phi0
+        Instruction::Save as u8,               // phi0 -> phi0 save at 1
 
-        Instruction::Prop1 as u8,               // Stack: p2 ; p1
-        Instruction::Load as u8, 0,             // Stack: p2 ; p1 ; phi1
-        Instruction::Load as u8, 1,             // Stack: p2 ; p1 ; phi0
-        Instruction::Load as u8, 1,             // Stack: p2 ; p1 ; phi0 ; phi0
-        Instruction::Implication as u8,         // Stack: p2 ; p1 ; phi1; phi0 -> phi0
+        Instruction::Instantiate as u8, 1,     // Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
 
-        Instruction::Save as u8,                // phi0 -> phi0 save at 3
-
-        Instruction::InstantiateSchema as u8,   // Stack: p2 ; (p3: phi0 -> (phi0 -> phi0) -> phi0)
-
-        Instruction::Prop2 as u8,               // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
-        Instruction::Load as u8, 0,
-        Instruction::Load as u8, 2,
-        Instruction::InstantiateSchema as u8,
-
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::MetaVar as u8, 2,
+        Instruction::Prop2 as u8,              // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
         Instruction::Load as u8, 1,
-        Instruction::InstantiateSchema as u8,
+        Instruction::Instantiate as u8, 1,     // Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
 
-        Instruction::ModusPonens as u8,
-        Instruction::ModusPonens as u8,         // Stack: phi0 -> phi0
+        Instruction::Load as u8, 0,
+        Instruction::Instantiate as u8, 2,     // Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0))
+
+        Instruction::ModusPonens as u8,        // Stack: p2 ; (p2 -> (phi0 -> phi0))
+        Instruction::ModusPonens as u8,        // Stack: phi0 -> phi0
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());

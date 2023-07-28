@@ -26,8 +26,8 @@ class Instruction(IntEnum):
 
     # Axiom Schemas
     Prop1 = 0x0C
-    Prop2 = 0x0D  # TODO: Fix numbering
-    Prop3 = 0x0E  # TODO: Fix numbering
+    Prop2 = 0x0D
+    Prop3 = 0x0E
 
     Quantifier = 0x0F
     PropagationOr = 0x10
