@@ -184,6 +184,10 @@ fn symbol(id: u8) -> Rc<Pattern> {
     return Rc::new(Pattern::Symbol(id));
 }
 
+fn exists(var: u8, subpattern: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::Exists{ var, subpattern });
+}
+
 fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
@@ -343,6 +347,11 @@ fn execute_instructions<'a>(
                 let right = pop_stack_pattern(stack);
                 let left = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(app(left, right)))
+            }
+            Instruction::Exists => {
+                let id = next().expect("Expected var_id for the exists binder");
+                let subpattern = pop_stack_pattern(stack);
+                stack.push(Term::Pattern(exists(id, subpattern)))
             }
             Instruction::MetaVar => {
                 let id = next()
