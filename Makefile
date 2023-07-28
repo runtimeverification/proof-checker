@@ -1,4 +1,4 @@
-all:    check test-unit test-system
+all:    check test-unit test-system test-zk
 .PHONY: all
 FORCE:
 
@@ -11,6 +11,7 @@ check-cargo:
 	cargo fmt --check
 check-python:
 	make -C generation check
+	make -C generation pyupgrade
 
 .PHONY: check check-cargo check-python
 
@@ -38,7 +39,7 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-proof-gen test-zk
+test-system: test-proof-gen
 .PHONY: test-proof-gen test-proof-check test-risc0
 
 PROOFS=$(wildcard proofs/*.ml-proof)
