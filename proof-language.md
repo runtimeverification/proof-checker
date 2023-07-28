@@ -338,6 +338,9 @@ class ESubst(Pattern):
     var: u32
     plug: Pattern
 
+    def simplify():
+        # TODO: Calculate the substitution on the concrete part of pattern
+
     def e_fresh(evar):
         if pattern.s_fresh(var):
             # This means that this substitution is an identity,
@@ -377,6 +380,9 @@ class SSubst(Pattern):
     pattern: Pattern
     var: u32
     plug: Pattern
+
+    def simplify():
+        # TODO: Calculate the substitution on the concrete part of pattern
 
     def e_fresh(evar):
         if pattern.s_fresh(var):
