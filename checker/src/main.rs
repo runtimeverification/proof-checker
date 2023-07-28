@@ -226,12 +226,25 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
             instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
             instantiate(Rc::clone(&right), var_id, plug),
         ),
-        Pattern::MetaVar { id, .. } => {
+        Pattern::MetaVar { id, e_fresh, s_fresh, .. } => {
             if *id == var_id {
-                plug
-            } else {
-                p
+                // TODO: Improve performance
+                // This introduces 3000 cycles on proof of phi -> phi with empty e_fresh, s_fresh
+                for evar in e_fresh {
+                    if !plug.e_fresh(*evar) {
+                        panic!("Instantiation of MetaVar {} breaks a freshness constraint: EVar {}", id, evar);
+                    }
+                }
+                for svar in s_fresh {
+                    if !plug.s_fresh(*svar) {
+                        panic!("Instantiation of MetaVar {} breaks a freshness constraint: SVar {}", id, svar);
+                    }
+                }
+
+                return plug
             }
+
+            p
         }
         _ => unimplemented!("Instantiation failed"),
     }
