@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING
 
 from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2
@@ -39,3 +40,9 @@ class Propositional:
             prop2.instantiate(1, phi0_implies_phi0).instantiate(2, phi0),
         ),
     )
+
+
+if __name__ == '__main__':
+    _exe, proof_path = sys.argv
+    with open(proof_path, 'wb') as out:
+        Propositional.imp_reflexivity.serialize({Propositional.phi0, Propositional.phi0_implies_phi0}, [], out)
