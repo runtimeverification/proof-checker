@@ -117,6 +117,34 @@ pub enum Pattern {
 
 impl Pattern {
     #[allow(dead_code)]
+    fn e_fresh(&self, evar: u8) -> bool {
+        match self {
+            Pattern::EVar(name) => *name != evar,
+            Pattern::SVar(_) => true,
+            Pattern::Symbol(_) => true,
+            Pattern::Implication { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
+            Pattern::Application { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
+            Pattern::Exists { var, subpattern } => evar == *var || subpattern.e_fresh(evar),
+            Pattern::Mu { subpattern, .. } => subpattern.e_fresh(evar),
+            Pattern::MetaVar { e_fresh, .. } => e_fresh.contains(&evar)
+        }
+    }
+
+    #[allow(dead_code)]
+    fn s_fresh(&self, svar: u8) -> bool {
+        match self {
+            Pattern::SVar(name) => *name != svar,
+            Pattern::EVar(_) => true,
+            Pattern::Symbol(_) => true,
+            Pattern::Implication { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
+            Pattern::Application { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
+            Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
+            Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
+            Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar)
+        }
+    }
+
+    #[allow(dead_code)]
     fn well_formed(&self) -> bool {
         unimplemented!("Well-formedness checking is unimplemented yet");
     }
@@ -148,6 +176,10 @@ fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
     });
 }
 
+fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::Implication { left, right });
+}
+
 #[cfg(test)]
 fn metavar_s_fresh(var_id: u8, fresh: u8, positive: Vec<u8>, negative: Vec<u8>) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
@@ -161,12 +193,13 @@ fn metavar_s_fresh(var_id: u8, fresh: u8, positive: Vec<u8>, negative: Vec<u8>) 
 }
 
 #[cfg(test)]
-fn svar(id: u8) -> Rc<Pattern> {
-    return Rc::new(Pattern::SVar(id));
+fn evar(id: u8) -> Rc<Pattern> {
+    return Rc::new(Pattern::EVar(id));
 }
 
-fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
-    return Rc::new(Pattern::Implication { left, right });
+#[cfg(test)]
+fn svar(id: u8) -> Rc<Pattern> {
+    return Rc::new(Pattern::SVar(id));
 }
 
 /// Substitution utilities
@@ -367,6 +400,43 @@ fn test_instantiate_fresh() {
     let svar_0 = svar(0);
     let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
     _ = instantiate(phi0_s_fresh_0, 0, svar_0);
+}
+
+#[test]
+fn test_efresh() {
+    let evar = evar(1);
+    let left = Rc::new(Pattern::Exists { var: 1, subpattern: evar.clone() });
+    assert!(left.e_fresh(1));
+
+    let right = Rc::new(Pattern::Exists { var: 2, subpattern: evar });
+    assert!(!right.e_fresh(1));
+
+    let implication = implies(Rc::clone(&left), right);
+    assert!(!implication.e_fresh(1));
+
+    let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
+    let metaapplication = Pattern::Application { left, right: mvar };
+    assert!(!metaapplication.e_fresh(2));
+}
+
+#[test]
+fn test_sfresh() {
+    let svar = svar(1);
+    let left = Rc::new(Pattern::Mu { var: 1, subpattern: svar.clone() });
+    assert!(left.s_fresh(1));
+
+    let right = Rc::new(Pattern::Mu { var: 2, subpattern: svar });
+    assert!(!right.s_fresh(1));
+
+    let implication = implies(Rc::clone(&left), right);
+    assert!(!implication.s_fresh(1));
+
+    let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
+    let metaapplication = Pattern::Application { left: Rc::clone(&left), right: Rc::clone(&mvar) };
+    assert!(!metaapplication.s_fresh(1));
+
+    let metaapplication2 = Pattern::Application { left, right: mvar };
+    assert!(metaapplication2.s_fresh(2));
 }
 
 #[test]
