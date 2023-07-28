@@ -340,7 +340,7 @@ class ESubst(Pattern):
         # TODO: Calculate the substitution on the concrete part of pattern
 
     def e_fresh(evar):
-        if pattern.s_fresh(var):
+        if pattern.e_fresh(var):
             # This means that this substitution is an identity,
             # so freshness of evar depends on the original pattern
             return pattern.e_fresh(evar)
