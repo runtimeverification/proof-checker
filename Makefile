@@ -1,4 +1,4 @@
-all:    check test-unit test-system test-zk
+all: check test-unit test-system test-zk
 .PHONY: all
 FORCE:
 
@@ -39,8 +39,8 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-proof-gen
-.PHONY: test-proof-gen test-proof-check test-risc0
+test-system: test-proof-gen test-proof-verify
+.PHONY: test-proof-gen test-proof-verify test-risc0
 
 PROOFS=$(wildcard proofs/*.ml-proof)
 
@@ -59,6 +59,17 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof proofs/%.ml-proof
 	${CHECK_PROOF} $^
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
+
+# Proof generation
+# ----------------
+
+PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
+
+proofs/%.ml-proof.verify: proofs/%.ml-proof
+	cargo run --bin checker $<
+
+test-proof-verify: ${PROOF_VERIFY_TARGETS}
+
 
 # Risc0
 # -----
