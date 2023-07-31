@@ -1,4 +1,4 @@
-FROM ubuntu-latest
+FROM ubuntu:latest
 
 ARG PYTHON_VERSION=3.10
 
