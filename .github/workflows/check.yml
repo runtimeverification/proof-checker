@@ -28,21 +28,20 @@ jobs:
             --interactive              \
             --tty                      \
             --detach                   \
-            --workdir /home/user       \
             runtimeverificationinc/proof-checker-ci:${COMMIT}
-
-          docker cp . proof-checker-ci:/home/user
-          docker exec proof-checker-ci chown -R user:user /home/user
+          docker cp ./. proof-checker-ci:/home/user/workspace
+          docker exec --user root proof-checker-ci chown -R user:user /home/user
       - name: 'Set Python version'
-        run: docker exec --user user proof-checker-ci poetry env use 3.10
+        run: |
+            docker exec --workdir /home/user/workspace/generation proof-checker-ci poetry env use 3.10
       - name: 'Run code quality checks'
-        run: docker exec --user user proof-checker-ci make -j8 check
+        run: docker exec proof-checker-ci make -j8 check
       - name: 'Run unit tests'
-        run: docker exec --user user proof-checker-ci make -j8 test-unit
+        run: docker exec proof-checker-ci make -j8 test-unit
       - name: 'Run system tests'
-        run: docker exec --user user proof-checker-ci make -j8 test-system
+        run: docker exec proof-checker-ci make -j8 test-system
       - name: 'Run ZK tests'
-        run: docker exec --user user proof-checker-ci make -j8 test-zk
+        run: docker exec proof-checker-ci make -j8 test-zk
       - name: 'Tear down Docker container'
         if: always()
         run: |
