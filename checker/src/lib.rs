@@ -471,12 +471,12 @@ fn execute_instructions<'a>(
     }
 }
 
-pub fn verify<'a>(next: &mut impl FnMut() -> Option<u8>) -> (Stack, Journal, Memory) {
+pub fn verify<'a>(next: &mut impl FnMut() -> Option<u8>) -> (Stack, Memory, Journal) {
     let mut stack = vec![];
-    let mut journal = vec![];
     let mut memory = vec![];
-    execute_instructions(next, &mut stack, &mut journal, &mut memory);
-    return (stack, journal, memory);
+    let mut journal = vec![];
+    execute_instructions(next, &mut stack, &mut memory, &mut journal);
+    return (stack, memory, journal);
 }
 
 /// Testing
