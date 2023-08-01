@@ -310,6 +310,19 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
     }
 }
 
+// Notation
+fn bot() -> Rc<Pattern> {
+    mu(0, svar(0))
+}
+fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
+    implies(pat, Rc::clone(&bot()))
+}
+
+#[allow(dead_code)]
+fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
+    not(exists(evar, not(pat)))
+}
+
 /// Main implementation
 /// -------------------
 
@@ -323,11 +336,6 @@ fn execute_instructions<'a>(
     let phi0 = metavar_unconstrained(0);
     let phi1 = metavar_unconstrained(1);
     let phi2 = metavar_unconstrained(2);
-
-    // Notation
-    let bot = mu(1, svar(1));
-    let not = |pat: Rc<Pattern>| implies(pat, Rc::clone(&bot));
-    let _forall = |evar: u8, pat: Rc<Pattern>| not(exists(evar, not(pat)));
 
     // Axioms
     let prop1 = implies(
@@ -634,5 +642,31 @@ fn test_phi_implies_phi_impl() {
             left: Rc::clone(&phi0),
             right: Rc::clone(&phi0)
         }))]
+    )
+}
+
+// TODO: Actually pass just phi0 in memory
+#[test]
+fn test_universal_quantification() {
+    let phi0 = metavar_unconstrained(0);
+
+    #[rustfmt::skip]
+    let proof : Vec<u8> = vec![
+        Instruction::Load as u8, 0,                   // (p1: not(phi0) -> bot)
+        Instruction::Generalization as u8             // (p2: exists not(phi0) -> bot)
+
+    ];
+    #[rustfmt::skip]
+    let memory: Memory = vec![
+        Entry::Proved(implies(not(Rc::clone(&phi0)), bot()))
+    ];
+
+    let mut iterator = proof.iter();
+    let next = &mut (|| iterator.next().cloned());
+    let (stack, _journal, _memory2) = verify(next, memory);
+
+    assert_eq!(
+        stack,
+        vec![Term::Proved(forall(0, Rc::clone(&phi0)))]
     )
 }
