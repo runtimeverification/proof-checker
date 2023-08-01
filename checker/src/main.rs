@@ -11,5 +11,5 @@ pub fn main() {
         Some(Err(_r)) => None,
         None => None,
     });
-    verify(proof_next);
+    verify(proof_next, vec![]);
 }

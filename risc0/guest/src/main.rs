@@ -20,7 +20,7 @@ pub fn main() {
         }
     });
 
-    verify(next);
+    verify(next, vec![]);
 
     // This won't be included once we implement the necessary methods for env::commit(Proved )
     // println!("Finished with stack {:?}", stack);

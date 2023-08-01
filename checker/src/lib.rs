@@ -471,9 +471,8 @@ fn execute_instructions<'a>(
     }
 }
 
-pub fn verify<'a>(next: &mut impl FnMut() -> Option<u8>) -> (Stack, Memory, Journal) {
+pub fn verify<'a>(next: &mut impl FnMut() -> Option<u8>, mut memory: Memory) -> (Stack, Memory, Journal) {
     let mut stack = vec![];
-    let mut memory = vec![];
     let mut journal = vec![];
     execute_instructions(next, &mut stack, &mut memory, &mut journal);
     return (stack, memory, journal);
@@ -580,7 +579,7 @@ fn test_construct_phi_implies_phi() {
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(next);
+    let (stack, _journal, _memory) = verify(next, vec![]);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -627,7 +626,7 @@ fn test_phi_implies_phi_impl() {
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(next);
+    let (stack, _journal, _memory) = verify(next, vec![]);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
