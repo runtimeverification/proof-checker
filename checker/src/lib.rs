@@ -327,6 +327,7 @@ fn execute_instructions<'a>(
     // Notation
     let bot = mu(1, svar(1));
     let not = |pat: Rc<Pattern>| implies(pat, Rc::clone(&bot));
+    let _forall = |evar: u8, pat: Rc<Pattern>| not(exists(evar, not(pat)));
 
     // Axioms
     let prop1 = implies(
@@ -425,7 +426,7 @@ fn execute_instructions<'a>(
             },
             Instruction::Generalization => match pop_stack_proved(stack).as_ref() {
                 Pattern::Implication { left, right } => {
-                    let evar = next().expect("Insufficient parameters for (Gen)");
+                    let evar = 0;
 
                     if !right.e_fresh(evar) {
                         panic!("The binding variable has to be fresh in the conclusion.");
