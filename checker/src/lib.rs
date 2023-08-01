@@ -423,6 +423,23 @@ fn execute_instructions<'a>(
                     panic!("Expected an implication as a first parameter.")
                 }
             },
+            Instruction::Generalization => match pop_stack_proved(stack).as_ref() {
+                Pattern::Implication { left, right } => {
+                    let evar = next().expect("Insufficient parameters for (Gen)");
+
+                    if !right.e_fresh(evar) {
+                        panic!("The binding variable has to be fresh in the conclusion.");
+                    }
+
+                    stack.push(Term::Proved(implies(
+                        exists(evar, Rc::clone(left)),
+                        Rc::clone(right)
+                    )));
+                }
+                _ => {
+                    panic!("Expected an implication as a first parameter.")
+                }
+            }
             Instruction::Instantiate => {
                 let id = next().expect("Insufficient parameters for MetaVar instruction");
                 let plug = pop_stack_pattern(stack);
