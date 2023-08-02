@@ -325,7 +325,11 @@ class MetaVar(Pattern):
     def s_fresh(svar):
         return svar in s_fresh
 
+    # Should check whether the metavar is instantiable, as uninstantiable metavars might lead to issues
+    # (see https://github.com/runtimeverification/proof-checker/issues/8)
     def well_formed():
+        # TODO: Implement by the procedure suggested by `metavar_instantiation.md`
+
         return super.well_formed()
 ```
 
