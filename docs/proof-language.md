@@ -412,7 +412,7 @@ class SSubst(Pattern):
         if svar == var:
             # This means there are free instances of svar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
-            return plug.s_fresh(svar)       # subst-in-subst
+            return plug.s_fresh(svar)       # fresh-in-subst
 
         # There are free instances of var being substituted and svar != var, so
         # we need to check for freshness of svar in both the original pattern
