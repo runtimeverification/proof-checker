@@ -341,14 +341,20 @@ class ESubst(Pattern):
     var: u32
     plug: Pattern
 
+    def well_formed():
+        # We do not allow redundant substitutions, since it reduces need the meta-inference for freshness etc.
+        if var == plug:           return False  # This is the identity substitution, and so is redundant.
+        if pattern.e_fresh(var):  return False  # The variable does not occur, so this is redundant
+        # Now we know at least one element variable will be substituted, so we need to check
+        # well-formedness of both pattern and plug
+        return super.well_formed() and pattern.well_formed() and plug.well_formed()
+
     def e_fresh(evar):
-        if pattern.e_fresh(var):
-            # This means that this substitution is an identity,
-            # so freshness of evar depends on the original pattern
-            return pattern.e_fresh(evar)    # subst-id
+        # We can skip the case pattern.e_fresh(var) == true, as
+        # such a substitution is malformed by assumption
 
         if evar == var:
-            # This means there are free instances of svar == var and all of them
+            # This means there are free instances of evar == var and all of them
             # are being substituted for plug, so its freshness depends on plug
             return plug.e_fresh(evar)       # fresh-in-subst
 
@@ -361,10 +367,8 @@ class ESubst(Pattern):
         return pattern.e_fresh(evar) and plug.e_fresh(evar) # fresh-after-subst
 
     def s_fresh(svar):
-        if pattern.s_fresh(var):
-             # This means that this substitution is an identity,
-             # so freshness of svar depends on the original pattern
-            return pattern.s_fresh(svar)    # subst-id
+        # We can skip the case pattern.e_fresh(var) == true, as
+        # such a substitution is malformed by assumption
 
         # We can skip the case svar == var, as var: EVar
 
@@ -381,11 +385,17 @@ class SSubst(Pattern):
     var: u32
     plug: Pattern
 
+    def well_formed():
+        # We do not allow redundant substitutions, since it reduces need the meta-inference for freshness etc.
+        if var == plug:           return False  # This is the identity substitution, and so is redundant.
+        if pattern.s_fresh(var):  return False  # The variable does not occur, so this is redundant
+        # Now we know at least one set variable will be substituted, so we need to check
+        # well-formedness of both pattern and plug
+        return super.well_formed() and pattern.well_formed() and plug.well_formed()
+
     def e_fresh(evar):
-        if pattern.s_fresh(var):
-            # This means that this substitution is an identity,
-            # so freshness of evar depends on the original pattern
-            return pattern.e_fresh(evar)
+        # We can skip the case pattern.s_fresh(var) == true, as
+        # such a substitution is malformed by assumption
 
         # We can skip the case evar == var, as var: SVar
 
@@ -396,10 +406,8 @@ class SSubst(Pattern):
         return pattern.e_fresh(evar) and plug.e_fresh(evar) # fresh-after-subst
 
     def s_fresh(svar):
-        if pattern.s_fresh(var):
-             # This means that this substitution is an identity,
-             # so freshness of svar depends on the original pattern
-            return pattern.s_fresh(svar)    # subst-id
+        # We can skip the case pattern.e_fresh(var) == true, as
+        # such a substitution is malformed by assumption
 
         if svar == var:
             # This means there are free instances of svar == var and all of them
