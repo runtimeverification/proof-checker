@@ -199,6 +199,10 @@ fn mu(var: u8, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Mu { var, subpattern });
 }
 
+fn esubst(pattern: Rc<Pattern>, evar_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::ESubst { pattern, evar_id, plug });
+}
+
 fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
@@ -415,12 +419,7 @@ fn execute_instructions<'a>(
                 let evar_id = next().expect("Insufficient parameters for ESubst instruction");
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
-                stack.push(
-                        Term::Pattern(Rc::new(Pattern::ESubst {
-                            pattern, plug, evar_id
-                        })
-                    )
-                );
+                stack.push(Term::Pattern(esubst(pattern, evar_id, plug)));
             }
 
             Instruction::Prop1 => {
