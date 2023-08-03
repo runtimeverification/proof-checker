@@ -29,9 +29,44 @@ def test_instantiate() -> None:
     assert mu(0, phi1).instantiate(2, phi0_ef0) == mu(0, phi1)
 
 
+def test_conclusion() -> None:
+    phi0 = MetaVar(0)
+    phi1 = MetaVar(1)
+    phi2 = MetaVar(2)
+    prop = Propositional()
+
+    step1 = prop1.instantiate(1, phi0)
+    assert step1.conclusion() == implies(phi0, implies(phi0, phi0))
+
+    step2 = prop1.instantiate(1, prop.phi0_implies_phi0)
+    assert step2.conclusion() == implies(phi0, implies(prop.phi0_implies_phi0, phi0))
+
+    assert prop2.conclusion() == implies(
+        implies(phi0, implies(phi1, phi2)), implies(implies(phi0, phi1), implies(phi0, phi2))
+    )
+
+    step3 = prop2.instantiate(1, prop.phi0_implies_phi0)
+    assert step3.conclusion() == implies(
+        implies(phi0, implies(prop.phi0_implies_phi0, phi2)),
+        implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi2)),
+    )
+
+    step4 = step3.instantiate(2, phi0)
+    assert step4.conclusion() == implies(
+        implies(phi0, implies(prop.phi0_implies_phi0, phi0)),
+        implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0)),
+    )
+
+    step4 = modus_ponens(step2, step4)
+    assert step4.conclusion() == implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0))
+
+    step5 = modus_ponens(step1, step4)
+    assert step5.conclusion() == implies(phi0, phi0)
+
+
 def test_serialize_phi_implies_phi() -> None:
     out = BytesIO()
-    Propositional.phi0_implies_phi0.serialize({Propositional.phi0}, [], out)
+    Propositional().phi0_implies_phi0.serialize({Propositional().phi0}, [], out)
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         Instruction.List, 0,
@@ -49,7 +84,8 @@ def test_serialize_phi_implies_phi() -> None:
 
 def test_prove_imp_implies_imp() -> None:
     out = BytesIO()
-    Propositional.imp_reflexivity.serialize({Propositional.phi0, Propositional.phi0_implies_phi0}, [], out)
+    assert Propositional().imp_reflexivity().conclusion() == Propositional().phi0_implies_phi0
+    Propositional().imp_reflexivity().serialize({Propositional().phi0, Propositional().phi0_implies_phi0}, [], out)
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         Instruction.Prop1,              # (p1: phi0 -> (phi1 -> phi0))
