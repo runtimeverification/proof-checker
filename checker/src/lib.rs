@@ -111,7 +111,6 @@ pub enum Pattern {
         negative: Vec<u8>,
         application_context: Vec<u8>,
     },
-    #[allow(dead_code)]
     ESubst {
         pattern: Rc<Pattern>,
         evar_id: u8,
@@ -412,6 +411,17 @@ fn execute_instructions<'a>(
                     application_context,
                 })));
             }
+            Instruction::ESubst => {
+                let evar_id = next().expect("Insufficient parameters for ESubst instruction");
+                let pattern = pop_stack_pattern(stack);
+                let plug = pop_stack_pattern(stack);
+                stack.push(
+                        Term::Pattern(Rc::new(Pattern::ESubst {
+                            pattern, plug, evar_id
+                        })
+                    )
+                );
+            }
 
             Instruction::Prop1 => {
                 stack.push(Term::Proved(Rc::clone(&prop1)));
@@ -460,7 +470,6 @@ fn execute_instructions<'a>(
                     Term::List(_) => panic!("Cannot Instantiate list."),
                 }
             }
-
             Instruction::Save => match stack.last().expect("Save needs an entry on the stack") {
                 Term::Pattern(p) => memory.push(Entry::Pattern(p.clone())),
                 Term::Proved(p) => memory.push(Entry::Proved(p.clone())),
