@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import abstractmethod
 from dataclasses import dataclass
 from typing import BinaryIO
 
@@ -19,29 +18,23 @@ class Term:
             memory.append(self)
             output.write(bytes([Instruction.Save]))
 
-    @abstractmethod
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
         raise NotImplementedError
 
 
 class Pattern(Term):
-    ...
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        raise NotImplementedError
 
 
 @dataclass(frozen=True)
 class EVar(Pattern):
     name: int
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
-        raise NotImplementedError
-
 
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
-
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
-        raise NotImplementedError
 
 
 @dataclass(frozen=True)
@@ -65,8 +58,6 @@ class Application(Pattern):
     left: Pattern
     right: Pattern
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
-        raise NotImplementedError
 
 
 @dataclass(frozen=True)
@@ -80,8 +71,6 @@ class Mu(Pattern):
     var: SVar
     subpattern: Pattern
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
-        raise NotImplementedError
 
 
 @dataclass(frozen=True)
