@@ -357,6 +357,10 @@ fn execute_instructions<'a>(
         ),
     );
     let prop3 = implies(not(not(Rc::clone(&phi0))), Rc::clone(&phi0));
+    let quantifier = implies(
+        esubst(Rc::clone(&phi0), 0, evar(1)),
+        exists(0, Rc::clone(&phi0))
+    );
 
     while let Some(instr_u32) = next() {
         match Instruction::from(instr_u32) {
@@ -442,6 +446,9 @@ fn execute_instructions<'a>(
                     panic!("Expected an implication as a first parameter.")
                 }
             },
+            Instruction::Quantifier => {
+                stack.push(Term::Proved(Rc::clone(&quantifier)));
+            }
             Instruction::Generalization => match pop_stack_proved(stack).as_ref() {
                 Pattern::Implication { left, right } => {
                     let evar = 0;
