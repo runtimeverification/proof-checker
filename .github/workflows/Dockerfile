@@ -19,7 +19,9 @@ USER user:user
 WORKDIR /home/user/
 
 ENV PATH=/home/user/.cargo/bin:/home/user/.local/bin:${PATH}
-RUN    curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python${PYTHON_VERSION} - \
+RUN    (  curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python${PYTHON_VERSION} - \
+       || cat poetry-installer-error*.log \
+       ) \
     && poetry --version
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -- /dev/stdin -y
 RUN rustup default nightly
