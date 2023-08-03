@@ -603,8 +603,9 @@ Otherwise, execution aborts, and verification fails.
 :   Consume the first five entries from the stack (corresponding to the
     meta-requirements), and push an `MetaVar` onto the stack.
 
-`ESubst`/`SSubst`
-:   Consume the one metavariable from the stack and use it to construct a substitution.
+`ESubst <metavar_id:u32>`/`SSubst <metavar_id:u32>`
+:   Consume a meta-pattern `phi` and a pattern `psi` from the stack, and push a
+    corresponding substitution `phi[psi/metavar_id]`.
 
 `Instantiate <metavar_id:u32>`
 :   Consume a `Proof` and `Pattern` off the stack, and push the instantiated proof term to the stack,
@@ -617,16 +618,16 @@ Otherwise, execution aborts, and verification fails.
 
 ### Memory manipulation:
 
-`Save i:u32`
+`Save <i:u32>`
 :   Store the top of the stack to the specified index $i$ in memory.
     This overwrites existing data stored there.
     It is recommended to indices as compactly as possible.
     Otherwise, the performance of the checker may be affected.
 
-`Load i:u32`
+`Load <i:u32>`
 :   Push the `Term` at index $i$ to the top of the stack.
 
-`Delete i:u32`
+`Delete <i:u32>`
 :   Remove the `Term` at index $i$ from memory. This is not strictly needed, but
     will allow the verifier to use less memory. The memory slot is not
     considered for reuse by the `Save` instruction.
@@ -661,7 +662,4 @@ Future considerations
     two variables (element, set, meta-) equal, only if they are the identical
     DAG node. That is, the variable was constructed once, and retrieved using
     the `Load` command.
-
-
-
 
