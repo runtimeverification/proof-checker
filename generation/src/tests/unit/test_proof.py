@@ -3,7 +3,7 @@ from __future__ import annotations
 from io import BytesIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import EVar, MetaVar, app, exists, implies, modus_ponens, prop1, prop2, mu
+from proof_generation.proof import EVar, MetaVar, app, exists, implies, modus_ponens, mu, prop1, prop2
 from proof_generation.proofs.propositional import Propositional
 
 
