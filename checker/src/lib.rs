@@ -443,13 +443,13 @@ fn execute_instructions<'a>(
 
                     stack.push(Term::Proved(implies(
                         exists(evar, Rc::clone(left)),
-                        Rc::clone(right)
+                        Rc::clone(right),
                     )));
                 }
                 _ => {
                     panic!("Expected an implication as a first parameter.")
                 }
-            }
+            },
             Instruction::Instantiate => {
                 let id = next().expect("Insufficient parameters for MetaVar instruction");
                 let plug = pop_stack_pattern(stack);
@@ -480,7 +480,10 @@ fn execute_instructions<'a>(
     }
 }
 
-pub fn verify<'a>(next: &mut impl FnMut() -> Option<u8>, mut memory: Memory) -> (Stack, Memory, Journal) {
+pub fn verify<'a>(
+    next: &mut impl FnMut() -> Option<u8>,
+    mut memory: Memory,
+) -> (Stack, Memory, Journal) {
     let mut stack = vec![];
     let mut journal = vec![];
     execute_instructions(next, &mut stack, &mut memory, &mut journal);
@@ -665,8 +668,5 @@ fn test_universal_quantification() {
     let next = &mut (|| iterator.next().cloned());
     let (stack, _journal, _memory2) = verify(next, memory);
 
-    assert_eq!(
-        stack,
-        vec![Term::Proved(forall(0, Rc::clone(&phi0)))]
-    )
+    assert_eq!(stack, vec![Term::Proved(forall(0, Rc::clone(&phi0)))])
 }
