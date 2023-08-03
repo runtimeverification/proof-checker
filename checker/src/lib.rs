@@ -231,6 +231,20 @@ fn metavar_s_fresh(var_id: u8, fresh: u8, positive: Vec<u8>, negative: Vec<u8>) 
     });
 }
 
+// Notation
+fn bot() -> Rc<Pattern> {
+    mu(0, svar(0))
+}
+
+fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
+    implies(pat, Rc::clone(&bot()))
+}
+
+#[allow(dead_code)]
+fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
+    not(exists(evar, not(pat)))
+}
+
 /// Substitution utilities
 /// ----------------------
 
@@ -308,19 +322,6 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
         Term::Proved(p) => return p,
         _ => panic!("Expected proved on stack."),
     }
-}
-
-// Notation
-fn bot() -> Rc<Pattern> {
-    mu(0, svar(0))
-}
-fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
-    implies(pat, Rc::clone(&bot()))
-}
-
-#[allow(dead_code)]
-fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
-    not(exists(evar, not(pat)))
 }
 
 /// Main implementation
@@ -654,7 +655,6 @@ fn test_universal_quantification() {
     let proof : Vec<u8> = vec![
         Instruction::Load as u8, 0,                   // (p1: not(phi0) -> bot)
         Instruction::Generalization as u8             // (p2: exists not(phi0) -> bot)
-
     ];
     #[rustfmt::skip]
     let memory: Memory = vec![
