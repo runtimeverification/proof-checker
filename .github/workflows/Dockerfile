@@ -2,12 +2,13 @@ FROM ubuntu:latest
 
 ARG PYTHON_VERSION=3.10
 
-RUN    apt-get -y update             \
-    && apt-get -y install            \
-         curl                        \
-         graphviz                    \
-         python${PYTHON_VERSION}     \
-         python${PYTHON_VERSION}-dev \
+RUN    apt-get -y update                \
+    && apt-get -y install               \
+         curl                           \
+         graphviz                       \
+         python${PYTHON_VERSION}        \
+         python${PYTHON_VERSION}-venv   \
+         python${PYTHON_VERSION}-dev    \
     && apt-get -y clean
 
 ARG USER_ID=9876
