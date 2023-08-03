@@ -12,6 +12,7 @@ RUN    apt-get -y update             \
 
 RUN    curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python${PYTHON_VERSION} - \
     && poetry --version
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ARG USER_ID=9876
 ARG GROUP_ID=9876
