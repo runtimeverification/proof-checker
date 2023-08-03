@@ -28,21 +28,22 @@ class Propositional:
 
     def proof(self) -> list[Proof]:
         """Returns a list of proofs for the published statements."""
-        return [self.imp_reflexivity]
+        return [self.imp_reflexivity()]
 
     phi0: MetaVar = MetaVar(0)
-
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
-    imp_reflexivity: Proof = modus_ponens(
-        prop1.instantiate(1, phi0),
-        modus_ponens(
-            prop1.instantiate(1, phi0_implies_phi0),
-            prop2.instantiate(1, phi0_implies_phi0).instantiate(2, phi0),
-        ),
-    )
+
+    def imp_reflexivity(self) -> Proof:
+        return modus_ponens(
+            prop1.instantiate(1, self.phi0),
+            modus_ponens(
+                prop1.instantiate(1, self.phi0_implies_phi0),
+                prop2.instantiate(1, self.phi0_implies_phi0).instantiate(2, self.phi0),
+            ),
+        )
 
 
 if __name__ == '__main__':
     _exe, proof_path = sys.argv
     with open(proof_path, 'wb') as out:
-        Propositional.imp_reflexivity.serialize({Propositional.phi0, Propositional.phi0_implies_phi0}, [], out)
+        Propositional().imp_reflexivity().serialize({Propositional.phi0, Propositional.phi0_implies_phi0}, [], out)

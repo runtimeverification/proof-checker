@@ -160,6 +160,9 @@ class Proof(Term):
     def instantiate(self: Proof, var: int, plug: Pattern) -> Proof:
         return Instantiate(self, var, plug)
 
+    def conclusion(self) -> Pattern:
+        raise NotImplementedError
+
 
 @dataclass(frozen=True)
 class Instantiate(Proof):
@@ -175,6 +178,9 @@ class Instantiate(Proof):
         self.plug.serialize(to_reuse, memory, output)
         output.write(bytes([Instruction.Instantiate, self.var]))
 
+    def conclusion(self) -> Pattern:
+        return self.subproof.conclusion().instantiate(self.var, self.plug)
+
 
 @dataclass(frozen=True)
 class ModusPonens(Proof):
@@ -187,6 +193,12 @@ class ModusPonens(Proof):
         self.right.serialize(to_reuse, memory, output)
         output.write(bytes([Instruction.ModusPonens]))
 
+    def conclusion(self) -> Pattern:
+        right_conclusion = self.right.conclusion()
+        assert isinstance(right_conclusion, Implication)
+        assert right_conclusion.left == self.left.conclusion(), (right_conclusion.left, self.left.conclusion())
+        return right_conclusion.right
+
 
 def modus_ponens(left: Proof, right: Proof) -> Proof:
     return ModusPonens(left, right)
@@ -197,6 +209,11 @@ class Prop1(Proof):
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
         output.write(bytes([Instruction.Prop1]))
 
+    def conclusion(self) -> Pattern:
+        phi0: MetaVar = MetaVar(0)
+        phi1: MetaVar = MetaVar(1)
+        return implies(phi0, implies(phi1, phi0))
+
 
 prop1 = Prop1()
 
@@ -205,6 +222,12 @@ prop1 = Prop1()
 class Prop2(Proof):
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], output: BinaryIO) -> None:
         output.write(bytes([Instruction.Prop2]))
+
+    def conclusion(self) -> Pattern:
+        phi0: MetaVar = MetaVar(0)
+        phi1: MetaVar = MetaVar(1)
+        phi2: MetaVar = MetaVar(2)
+        return implies(implies(phi0, implies(phi1, phi2)), implies(implies(phi0, phi1), implies(phi0, phi2)))
 
 
 prop2 = Prop2()
