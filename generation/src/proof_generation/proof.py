@@ -139,6 +139,7 @@ def app(left: Pattern, right: Pattern) -> Pattern:
 def exists(var: int, subpattern: Pattern) -> Pattern:
     return Exists(EVar(var), subpattern)
 
+
 def mu(var: int, subpattern: Pattern) -> Pattern:
     return Mu(SVar(var), subpattern)
 
