@@ -52,12 +52,17 @@ class Implication(Pattern):
         self.right.serialize(to_reuse, memory, output)
         output.write(bytes([Instruction.Implication]))
 
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        return Implication(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
+
 
 @dataclass(frozen=True)
 class Application(Pattern):
     left: Pattern
     right: Pattern
 
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        return Application(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
 
 
 @dataclass(frozen=True)
@@ -65,12 +70,17 @@ class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        return Exists(self.var, self.subpattern.instantiate(var, plug))
+
 
 @dataclass(frozen=True)
 class Mu(Pattern):
     var: SVar
     subpattern: Pattern
 
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        return Mu(self.var, self.subpattern.instantiate(var, plug))
 
 
 @dataclass(frozen=True)
@@ -93,6 +103,11 @@ class MetaVar(Pattern):
         for list in lists:
             output.write(bytes([Instruction.List, len(list), *[var.name for var in list]]))
         output.write(bytes([Instruction.MetaVar, self.name]))
+
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        if var == self.name:
+            return plug
+        return self
 
 
 @dataclass(frozen=True)
@@ -117,16 +132,23 @@ def implies(left: Pattern, right: Pattern) -> Pattern:
     return Implication(left, right)
 
 
+def app(left: Pattern, right: Pattern) -> Pattern:
+    return Application(left, right)
+
+
+def exists(var: int, subpattern: Pattern) -> Pattern:
+    return Exists(EVar(var), subpattern)
+
+def mu(var: int, subpattern: Pattern) -> Pattern:
+    return Mu(SVar(var), subpattern)
+
+
 X = SVar(0)
 bot = Mu(X, X)
 
 
 def neg(p: Pattern) -> Pattern:
     return implies(p, bot)
-
-
-def app(left: Pattern, right: Pattern) -> Pattern:
-    return Application(left, right)
 
 
 # Proofs
