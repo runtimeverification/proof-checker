@@ -10,7 +10,7 @@ RUN    apt-get -y update             \
          python${PYTHON_VERSION}-dev \
     && apt-get -y clean
 
-RUN    curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python3 - \
+RUN    curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python${PYTHON_VERSION} - \
     && poetry --version
 
 ARG USER_ID=9876
