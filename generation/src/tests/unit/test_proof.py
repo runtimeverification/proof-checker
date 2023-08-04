@@ -113,7 +113,7 @@ def test_prove_imp_implies_imp() -> None:
         Instruction.Instantiate, 1,     # Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
 
         Instruction.Load, 0,
-        Instruction.Instantiate, 2,     # Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0))
+        Instruction.Instantiate, 2,     # Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0)))
 
         Instruction.ModusPonens,        # Stack: p2 ; (p2 -> (phi0 -> phi0))
         Instruction.ModusPonens,        # Stack: phi0 -> phi0
