@@ -10,7 +10,7 @@ RUN    apt-get -y update                \
          python${PYTHON_VERSION}-venv   \
          python${PYTHON_VERSION}-dev    \
          colordiff                      \
-         automake                       \
+         make                           \
     && apt-get -y clean
 
 ARG USER_ID=9876
