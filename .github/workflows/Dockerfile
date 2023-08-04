@@ -12,6 +12,7 @@ RUN    apt-get -y update                \
          colordiff                      \
          make                           \
          clang                          \
+         pkg-config                      \
     && apt-get -y clean
 
 ARG USER_ID=9876
