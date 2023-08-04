@@ -32,7 +32,11 @@ jobs:
           docker cp . proof-checker-ci:/home/user
           docker exec --user root proof-checker-ci chown -R user:user /home/user
       - name: 'Set Python version'
-        run: docker exec --workdir /home/user/proof-checker/generation proof-checker-ci poetry env use 3.10
+        run: |
+            docker exec --workdir /home/user/ ls -la
+            docker exec --workdir /home/user/proof-checker/ ls -la
+            docker exec --workdir /home/user/proof-checker/generation ls -la
+            docker exec --workdir /home/user/proof-checker/generation proof-checker-ci poetry env use 3.10
       - name: 'Run code quality checks'
         run: docker exec proof-checker-ci make -j8 check
       - name: 'Run unit tests'
