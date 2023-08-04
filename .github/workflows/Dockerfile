@@ -7,11 +7,9 @@ RUN    apt-get -y update                \
          curl                           \
          graphviz                       \
          python${PYTHON_VERSION}        \
+         python${PYTHON_VERSION}-venv   \
          python${PYTHON_VERSION}-dev    \
     && apt-get -y clean
-
-RUN    curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python${PYTHON_VERSION} - \
-    && poetry --version
 
 ARG USER_ID=9876
 ARG GROUP_ID=9876
@@ -22,5 +20,7 @@ USER user:user
 WORKDIR /home/user/
 ENV PATH=/home/user/.cargo/bin:/home/user/.local/bin:${PATH}
 
+RUN    curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr python${PYTHON_VERSION} - \
+    && poetry --version
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -- /dev/stdin -y
 RUN rustup default nightly
