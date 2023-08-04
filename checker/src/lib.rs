@@ -155,11 +155,43 @@ impl Pattern {
                 unimplemented!("e_fresh unimplemented for this case");
             }
         }
+
+        // TODO: Implement positivity checking
+        fn positive(&self, svar: u8) -> bool {
+            unimplemented!("Positivity checking is not implemented yet")
+        }
     }
 
     #[allow(dead_code)]
     fn well_formed(&self) -> bool {
-        unimplemented!("Well-formedness checking is unimplemented yet");
+        match self {
+            Pattern::MetaVar { id, e_fresh, s_fresh, positive, negative, application_context } => {
+                // TODO: Should basically determin whether metavar is instantiable
+                unimplemented!("Well-formedness checking is unimplemented yet for metavars.");
+            }
+            Pattern::Mu { var, subpattern } => {
+                subpattern.positive(var)
+            }
+            Pattern::ESubst { pattern, evar_id, plug } => {
+                if pattern.e_fresh(evar_id) {
+                    return false;
+                }
+
+                pattern.well_formed() && plug.well_formed()
+            }
+            Pattern::SSubst { pattern, svar_id, plug } => {
+                if pattern.s_fresh(svar_id) {
+                    return false;
+                }
+
+                pattern.well_formed() && plug.well_formed()
+            }
+            _ => {
+                // Should default to true except for the cases above
+                // TODO: Check
+                unimplemented!("Well-formedness checking is unimplemented yet for this kind of pattern.");
+            }
+        }
     }
 }
 
