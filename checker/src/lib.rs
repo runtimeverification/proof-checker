@@ -544,6 +544,9 @@ fn execute_instructions<'a>(
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
             }
+            Instruction::Publish => {
+                // no-op
+            }
             _ => {
                 unimplemented!("Instruction: {}", instr_u32)
             }
