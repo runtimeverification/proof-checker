@@ -168,6 +168,9 @@ class Proof(Term):
     def conclusion(self) -> Pattern:
         raise NotImplementedError
 
+    def __post_init__(self) -> None:
+        self.conclusion()
+
 
 @dataclass(frozen=True)
 class Instantiate(Proof):
