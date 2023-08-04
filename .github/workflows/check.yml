@@ -28,7 +28,6 @@ jobs:
             --interactive              \
             --tty                      \
             --detach                   \
-            --workdir /home/user       \
             runtimeverificationinc/proof-checker-ci:${COMMIT}
           docker cp . proof-checker-ci:/home/user
           docker exec --user root proof-checker-ci chown -R user:user /home/user
