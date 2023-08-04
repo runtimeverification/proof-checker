@@ -12,7 +12,9 @@ RUN    apt-get -y update                \
          colordiff                      \
          make                           \
          clang                          \
-         pkg-config                      \
+         pkg-config                     \
+         libssl-dev                     \
+         bsdmainutils                   \
     && apt-get -y clean
 
 ARG USER_ID=9876
