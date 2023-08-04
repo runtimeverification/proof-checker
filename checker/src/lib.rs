@@ -135,7 +135,11 @@ impl Pattern {
             Pattern::Exists { var, subpattern } => evar == *var || subpattern.e_fresh(evar),
             Pattern::Mu { subpattern, .. } => subpattern.e_fresh(evar),
             Pattern::MetaVar { e_fresh, .. } => e_fresh.contains(&evar),
-            Pattern::ESubst { pattern, evar_id, plug } => {
+            Pattern::ESubst {
+                pattern,
+                evar_id,
+                plug,
+            } => {
                 // Assume: substitution is well-formed => plug occurs in the result
 
                 if evar == *evar_id {
@@ -193,14 +197,22 @@ impl Pattern {
                 unimplemented!("Well-formedness checking is unimplemented yet for metavars.");
             }
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
-            Pattern::ESubst { pattern, evar_id, plug } => {
+            Pattern::ESubst {
+                pattern,
+                evar_id,
+                plug,
+            } => {
                 if pattern.e_fresh(*evar_id) {
                     return false;
                 }
 
                 pattern.well_formed() && plug.well_formed()
             }
-            Pattern::SSubst { pattern, svar_id, plug } => {
+            Pattern::SSubst {
+                pattern,
+                svar_id,
+                plug,
+            } => {
                 if pattern.s_fresh(*svar_id) {
                     return false;
                 }
@@ -210,7 +222,9 @@ impl Pattern {
             _ => {
                 // Should default to true except for the cases above
                 // TODO: Check
-                unimplemented!("Well-formedness checking is unimplemented yet for this kind of pattern.");
+                unimplemented!(
+                    "Well-formedness checking is unimplemented yet for this kind of pattern."
+                );
             }
         }
     }
@@ -253,7 +267,11 @@ fn mu(var: u8, subpattern: Rc<Pattern>) -> Rc<Pattern> {
 }
 
 fn esubst(pattern: Rc<Pattern>, evar_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
-    return Rc::new(Pattern::ESubst { pattern, evar_id, plug });
+    return Rc::new(Pattern::ESubst {
+        pattern,
+        evar_id,
+        plug,
+    });
 }
 
 fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
@@ -412,7 +430,7 @@ fn execute_instructions<'a>(
     let prop3 = implies(not(not(Rc::clone(&phi0))), Rc::clone(&phi0));
     let quantifier = implies(
         esubst(Rc::clone(&phi0), 0, evar(1)),
-        exists(0, Rc::clone(&phi0))
+        exists(0, Rc::clone(&phi0)),
     );
 
     while let Some(instr_u32) = next() {
@@ -528,10 +546,10 @@ fn execute_instructions<'a>(
                     Term::Proved(p) => stack.push(Term::Proved(instantiate(p, id, plug))),
                     Term::List(_) => panic!("Cannot Instantiate list."),
                 }
-            },
+            }
             Instruction::Pop => {
                 stack.pop();
-            },
+            }
             Instruction::Save => match stack.last().expect("Save needs an entry on the stack") {
                 Term::Pattern(p) => memory.push(Entry::Pattern(p.clone())),
                 Term::Proved(p) => memory.push(Entry::Proved(p.clone())),
