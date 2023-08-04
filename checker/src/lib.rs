@@ -475,7 +475,10 @@ fn execute_instructions<'a>(
                     Term::Proved(p) => stack.push(Term::Proved(instantiate(p, id, plug))),
                     Term::List(_) => panic!("Cannot Instantiate list."),
                 }
-            }
+            },
+            Instruction::Pop => {
+                stack.pop();
+            },
             Instruction::Save => match stack.last().expect("Save needs an entry on the stack") {
                 Term::Pattern(p) => memory.push(Entry::Pattern(p.clone())),
                 Term::Proved(p) => memory.push(Entry::Proved(p.clone())),
