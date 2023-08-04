@@ -21,7 +21,8 @@ fn main() {
     let claims_reader = BufReader::new(claims_file);
 
     let assumptions_filepath = std::env::args().nth(3).unwrap_or(empty_file);
-    let assumptions_file = File::open(assumptions_filepath).expect("The assumptions file was not found");
+    let assumptions_file =
+        File::open(assumptions_filepath).expect("The assumptions file was not found");
     let assumptions_reader = BufReader::new(assumptions_file);
 
     // First, we construct an executor environment
