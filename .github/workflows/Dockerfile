@@ -16,7 +16,7 @@ ARG GROUP_ID=9876
 RUN    groupadd -g $GROUP_ID user                     \
     && useradd -m -u $USER_ID -s /bin/sh -g user user
 USER user:user
-RUN mkdir workspace
+RUN mkdir /home/user/workspace
 WORKDIR /home/user/workspace
 ENV PATH=/home/user/.cargo/bin:/home/user/.local/bin:${PATH}
 
