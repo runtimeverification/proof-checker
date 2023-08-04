@@ -11,6 +11,7 @@ RUN    apt-get -y update                \
          python${PYTHON_VERSION}-dev    \
          colordiff                      \
          make                           \
+         clang                          \
     && apt-get -y clean
 
 ARG USER_ID=9876
