@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, BinaryIO
 
 from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2
 
 if TYPE_CHECKING:
-    from proof_generation.proof import Pattern, Proof
+    from proof_generation.proof import Pattern, Proof, Term
 
 
 class Propositional:
@@ -20,7 +20,7 @@ class Propositional:
 
     def notation(self) -> set[Pattern]:
         """Returns a list patterns that we will want to reuse."""
-        return {self.phi0}
+        return {self.phi0, self.phi0_implies_phi0}
 
     def published(self) -> set[Pattern]:
         """Returns a list statements for theorems that we want to publish."""
@@ -29,6 +29,12 @@ class Propositional:
     def proof(self) -> list[Proof]:
         """Returns a list of proofs for the published statements."""
         return [self.imp_reflexivity()]
+
+    def serialize(self, output: BinaryIO) -> None:
+        to_reuse: set[Term] = self.notation().union(self.lemmas())
+        to_publish: set[Pattern] = self.published()
+        self.imp_reflexivity().serialize(to_reuse, [], to_publish, out)
+        assert to_publish == set()
 
     phi0: MetaVar = MetaVar(0)
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
@@ -46,4 +52,4 @@ class Propositional:
 if __name__ == '__main__':
     _exe, proof_path = sys.argv
     with open(proof_path, 'wb') as out:
-        Propositional().imp_reflexivity().serialize({Propositional.phi0, Propositional.phi0_implies_phi0}, [], out)
+        Propositional().serialize(out)
