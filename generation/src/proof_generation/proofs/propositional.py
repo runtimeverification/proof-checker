@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, BinaryIO
 
+from proof_generation.instruction import Instruction
 from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2
 
 if TYPE_CHECKING:
@@ -27,14 +28,21 @@ class Propositional:
         return [self.phi0_implies_phi0]
 
     def proofs(self) -> list[Proof]:
-        """Returns a list of proofs for the claims statements."""
+        """Returns a list of proofs for the claims."""
         return [self.imp_reflexivity()]
 
-    def serialize(self, output: BinaryIO) -> None:
+    def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
+        claims_memory: list[Term] = []
+        for claim in self.claims():
+            claim.serialize(set(self.notation()), claims_memory, [], claims_out)
+            claims_out.write(bytes([Instruction.Publish]))
+
+        claims: list[Pattern] = self.claims()
         to_reuse: set[Term] = self.notation().union(self.lemmas())
-        to_publish: set[Pattern] = self.published()
-        self.imp_reflexivity().serialize(to_reuse, [], to_publish, out)
-        assert to_publish == set()
+        proofs_memory: list[Term] = []
+        for proof in self.proofs():
+            proof.serialize(to_reuse, proofs_memory, claims, proofs_out)
+        assert claims == []
 
     phi0: MetaVar = MetaVar(0)
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
@@ -50,6 +58,7 @@ class Propositional:
 
 
 if __name__ == '__main__':
-    _exe, proof_path = sys.argv
-    with open(proof_path, 'wb') as out:
-        Propositional().serialize(out)
+    _exe, claim_path, proof_path = sys.argv
+    with open(claim_path, 'wb') as claim_out:
+        with open(proof_path, 'wb') as proof_out:
+            Propositional().serialize(claim_out, proof_out)
