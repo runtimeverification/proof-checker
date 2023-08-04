@@ -11,7 +11,6 @@ use checker::verify;
 pub fn main() {
     let mut proof_stream = env::stdin().bytes();
     let mut _claims_stream = env::FdReader::new(10).bytes();
-    let mut _assumptions_stream = env::FdReader::new(11).bytes();
 
     let next = &mut (|| {
         match proof_stream.next() {
