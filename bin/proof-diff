@@ -4,4 +4,4 @@ set -euo pipefail
 
 actual=$1; shift
 expected=$1; shift
-colordiff -U3 --label actual <(hexdump $actual) --label expected <(hexdump $expected)
+colordiff -U3 --label actual <(hexdump -C $actual) --label expected <(hexdump -C $expected)
