@@ -20,6 +20,6 @@ USER user:user
 WORKDIR /home/user/
 ENV PATH=/home/user/.cargo/bin:/home/user/.local/bin:${PATH}
 
-RUN pip${PYTHON_VERSION} install poetry && poetry --version
+RUN curl -sSL https://install.python-poetry.org | python${PYTHON_VERSION} -
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -- /dev/stdin -y
 RUN rustup default nightly
