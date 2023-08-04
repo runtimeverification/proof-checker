@@ -9,10 +9,12 @@ extern crate checker;
 use checker::verify;
 
 pub fn main() {
-    let mut stdin_stream = env::stdin().bytes();
+    let mut proof_stream = env::stdin().bytes();
+    let mut _claims_stream = env::FdReader::new(10).bytes();
+    let mut _assumptions_stream = env::FdReader::new(11).bytes();
 
     let next = &mut (|| {
-        match stdin_stream.next() {
+        match proof_stream.next() {
             Some(Ok(v)) => Some(v),
             // TODO: Error handling
             Some(Err(_r)) => None,
@@ -21,9 +23,6 @@ pub fn main() {
     });
 
     verify(next, vec![]);
-
-    // This won't be included once we implement the necessary methods for env::commit(Proved )
-    // println!("Finished with stack {:?}", stack);
 
     // This is optional
     env::commit(&env::get_cycle_count());
