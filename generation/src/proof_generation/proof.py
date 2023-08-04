@@ -9,21 +9,21 @@ from proof_generation.instruction import Instruction
 class Term:
     ...
 
-    def serialize(self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO) -> None:
+    def serialize(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         if self in memory:
             output.write(bytes([Instruction.Load, memory.index(self)]))
             return
-        self.serialize_impl(to_reuse, memory, to_publish, output)
+        self.serialize_impl(to_reuse, memory, claims, output)
         if self in to_reuse:
             memory.append(self)
             output.write(bytes([Instruction.Save]))
 
-        if isinstance(self, Proof) and self.conclusion() in to_publish:
-            to_publish.remove(self.conclusion())
+        if isinstance(self, Proof) and self.conclusion() in claims:
+            claims.remove(self.conclusion())
             output.write(bytes([Instruction.Publish]))
 
     def serialize_impl(
-        self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO
+        self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO
     ) -> None:
         raise NotImplementedError
 
@@ -54,10 +54,10 @@ class Implication(Pattern):
     right: Pattern
 
     def serialize_impl(
-        self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO
+        self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO
     ) -> None:
-        self.left.serialize(to_reuse, memory, to_publish, output)
-        self.right.serialize(to_reuse, memory, to_publish, output)
+        self.left.serialize(to_reuse, memory, claims, output)
+        self.right.serialize(to_reuse, memory, claims, output)
         output.write(bytes([Instruction.Implication]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -101,7 +101,7 @@ class MetaVar(Pattern):
     application_context: tuple[EVar, ...] = ()
 
     def serialize_impl(
-        self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO
+        self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO
     ) -> None:
         lists: list[tuple[EVar, ...] | tuple[SVar, ...]] = [
             self.e_fresh,
@@ -185,10 +185,10 @@ class Instantiate(Proof):
         return True
 
     def serialize_impl(
-        self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO
+        self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO
     ) -> None:
-        self.subproof.serialize(to_reuse, memory, to_publish, output)
-        self.plug.serialize(to_reuse, memory, to_publish, output)
+        self.subproof.serialize(to_reuse, memory, claims, output)
+        self.plug.serialize(to_reuse, memory, claims, output)
         output.write(bytes([Instruction.Instantiate, self.var]))
 
     def conclusion(self) -> Pattern:
@@ -202,10 +202,10 @@ class ModusPonens(Proof):
     ...
 
     def serialize_impl(
-        self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO
+        self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO
     ) -> None:
-        self.left.serialize(to_reuse, memory, to_publish, output)
-        self.right.serialize(to_reuse, memory, to_publish, output)
+        self.left.serialize(to_reuse, memory, claims, output)
+        self.right.serialize(to_reuse, memory, claims, output)
         output.write(bytes([Instruction.ModusPonens]))
 
     def conclusion(self) -> Pattern:
@@ -222,7 +222,7 @@ def modus_ponens(left: Proof, right: Proof) -> Proof:
 @dataclass(frozen=True)
 class Prop1(Proof):
     def serialize_impl(
-        self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO
+        self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO
     ) -> None:
         output.write(bytes([Instruction.Prop1]))
 
@@ -238,7 +238,7 @@ prop1 = Prop1()
 @dataclass(frozen=True)
 class Prop2(Proof):
     def serialize_impl(
-        self, to_reuse: set[Term], memory: list[Term], to_publish: set[Pattern], output: BinaryIO
+        self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO
     ) -> None:
         output.write(bytes([Instruction.Prop2]))
 
