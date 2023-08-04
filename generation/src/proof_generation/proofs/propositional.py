@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, BinaryIO
 
-from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2
+from proof_generation.proof import Implication, MetaVar, implies, modus_ponens, prop1, prop2
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof, Term
@@ -53,6 +53,23 @@ class Propositional:
                 prop2.instantiate(1, self.phi0_implies_phi0).instantiate(2, self.phi0),
             ),
         )
+
+    def imp_transitivity(self, left: Proof, right: Proof) -> Proof:
+        left_conc = left.conclusion()
+        assert isinstance(left_conc, Implication)
+        left_conc.left
+        phi1 = left_conc.right
+
+        right_conc = right.conclusion()
+        assert isinstance(right_conc, Implication)
+        assert right_conc.left == phi1
+        right_conc.right
+
+        step1 = modus_ponens(right, prop1.instantiate(0, right_conc))
+        step2 = modus_ponens(
+            step1, prop2.instantiate(1, right_conc.left).instantiate(2, right_conc.right).instantiate(0, MetaVar(1))
+        )
+        return modus_ponens(left, step2.instantiate(1, MetaVar(10)))
 
 
 if __name__ == '__main__':
