@@ -121,3 +121,9 @@ def test_prove_imp_reflexivity() -> None:
         Instruction.Publish,
     ])
     # fmt: on
+
+
+def test_prove_transitivity() -> None:
+    prop = Propositional()
+    refl = prop.imp_reflexivity().instantiate(0, MetaVar(10))
+    assert prop.imp_transitivity(refl, refl).conclusion() == refl.conclusion()
