@@ -22,12 +22,12 @@ class Propositional:
         """Returns a list patterns that we will want to reuse."""
         return {self.phi0, self.phi0_implies_phi0}
 
-    def published(self) -> set[Pattern]:
+    def claims(self) -> list[Pattern]:
         """Returns a list statements for theorems that we want to publish."""
-        return {self.phi0_implies_phi0}
+        return [self.phi0_implies_phi0]
 
-    def proof(self) -> list[Proof]:
-        """Returns a list of proofs for the published statements."""
+    def proofs(self) -> list[Proof]:
+        """Returns a list of proofs for the claims statements."""
         return [self.imp_reflexivity()]
 
     def serialize(self, output: BinaryIO) -> None:
