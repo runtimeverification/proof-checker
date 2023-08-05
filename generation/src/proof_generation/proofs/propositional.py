@@ -3,7 +3,6 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, BinaryIO
 
-from proof_generation.instruction import Instruction
 from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2
 
 if TYPE_CHECKING:
