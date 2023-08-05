@@ -583,11 +583,21 @@ pub fn verify<'a>(
 ) -> (Stack, Memory, Claims) {
     let mut claim_stack = vec![];
     let mut claim_memory = vec![];
-    execute_instructions(claims_next_byte, &mut claim_stack, &mut claim_memory, &mut vec![]);
+    execute_instructions(
+        claims_next_byte,
+        &mut claim_stack,
+        &mut claim_memory,
+        &mut vec![],
+    );
 
     let mut proof_stack = vec![];
     let mut proof_memory = vec![];
-    execute_instructions(proof_next_byte, &mut proof_stack, &mut proof_memory, &mut claim_stack);
+    execute_instructions(
+        proof_next_byte,
+        &mut proof_stack,
+        &mut proof_memory,
+        &mut claim_stack,
+    );
     return (proof_stack, proof_memory, claim_stack);
 }
 
