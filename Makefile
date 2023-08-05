@@ -62,13 +62,13 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof FORCE
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
 
-# Proof generation
+# Proof checking
 # ----------------
 
 PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
 
 proofs/%.ml-proof.verify: proofs/%.ml-proof
-	cargo run --bin checker $<
+	cargo run --bin checker $< proofs/$*.ml-claim
 
 test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
@@ -79,7 +79,7 @@ test-proof-verify: ${PROOF_VERIFY_TARGETS}
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --bin host  $^
+	cargo run --bin host $^ proofs/$*.ml-claim
 
 test-zk: ${PROOF_ZK_TARGETS}
 

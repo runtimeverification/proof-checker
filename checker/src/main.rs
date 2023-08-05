@@ -11,5 +11,14 @@ pub fn main() {
         Some(Err(_r)) => None,
         None => None,
     });
-    verify(proof_next, vec![]);
+
+    let claim_path = std::env::args().nth(2).unwrap_or("/dev/null".to_string());
+    let mut claim = BufReader::new(File::open(claim_path).unwrap()).bytes();
+    let claim_next = &mut (|| match claim.next() {
+        Some(Ok(v)) => Some(v),
+        Some(Err(_r)) => None,
+        None => None,
+    });
+
+    verify(proof_next, claim_next);
 }

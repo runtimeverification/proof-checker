@@ -34,8 +34,7 @@ class Propositional:
     def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
         claims_memory: list[Term] = []
         for claim in self.claims():
-            claim.serialize(set(self.notation()), claims_memory, [], claims_out)
-            claims_out.write(bytes([Instruction.Publish]))
+            claim.serialize(self.notation().difference({claim}), claims_memory, [], claims_out)
 
         claims: list[Pattern] = self.claims()
         to_reuse: set[Term] = self.notation().union(self.lemmas())
