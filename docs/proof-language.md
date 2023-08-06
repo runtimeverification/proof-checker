@@ -218,20 +218,6 @@ abstract class Pattern(Term):
         # returns true iff all free occurences of svar in this pattern are negative
     ...
 
-    # TODO: The issue is this does not differentiate between
-    # svar not occurring (0) and svar occuring only once (1) and not app_context(svar) (2)
-    # so we need to create a three-valued arithmetic like follows:
-    # 0 + 0 |-> 0
-    # 0 + 1 |-> 1
-    # 1 + 0 |-> 1
-    # 1 + 1 |-> 2 (as we have two free instances of svar, it cannot be app_context)
-    # 2 + n |-> 2
-    def app_context(svar):
-        # returns true iff all instances of svar in this pattern are negative
-        # this means, in practice, that svar occurs exactly once and free or
-        # not at all
-    ...
-
 abstract class Proof(Term):
     abstract def conclusion:
         ...
