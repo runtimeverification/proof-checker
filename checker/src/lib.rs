@@ -328,6 +328,9 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
             instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
             instantiate(Rc::clone(&right), var_id, plug),
         ),
+        Pattern::Mu { var, subpattern } => {
+            mu(*var, instantiate(Rc::clone(subpattern), var_id, plug))
+        }
         Pattern::MetaVar {
             id,
             e_fresh,
