@@ -192,7 +192,7 @@ impl Pattern {
             Pattern::Symbol(_) => true,
             Pattern::Implication { left, right } => left.negative(svar) && right.positive(svar),
             Pattern::Application { left, right } => left.positive(svar) && right.positive(svar),
-            Pattern::Exists { subpattern , .. } => subpattern.positive(svar),
+            Pattern::Exists { subpattern, .. } => subpattern.positive(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.positive(svar),
             Pattern::MetaVar { positive, .. } => positive.contains(&svar),
             _ => {
@@ -365,14 +365,12 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
             instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
             instantiate(Rc::clone(&right), var_id, plug),
         ),
-        Pattern::Exists { var, subpattern } => exists(
-            *var,
-            instantiate(Rc::clone(&subpattern), var_id, plug),
-        ),
-        Pattern::Mu { var, subpattern } => mu(
-            *var,
-            instantiate(Rc::clone(&subpattern), var_id, plug),
-        ),
+        Pattern::Exists { var, subpattern } => {
+            exists(*var, instantiate(Rc::clone(&subpattern), var_id, plug))
+        }
+        Pattern::Mu { var, subpattern } => {
+            mu(*var, instantiate(Rc::clone(&subpattern), var_id, plug))
+        }
         Pattern::MetaVar {
             id,
             e_fresh,
