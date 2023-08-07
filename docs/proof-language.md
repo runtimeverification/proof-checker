@@ -712,10 +712,13 @@ Otherwise, execution aborts, and verification fails.
 `Symbol <u32>`
 :   Push a `Symbol` onto the stack.
 
-`Implication`/`Application`/`Exists`/`Mu`
+`Implication`/`Application`
 :   Consume the two patterns from the stack,
-    and push an implication/application/exists/mu to the stack
-    with appropriate arguments, performing well formedness checks as needed.
+    and push an implication/application to the stack
+    with appropriate arguments.
+
+`Exists <var_id:u32>`/`Mu <var_id:u32>`
+:   Consume a pattern from the stack, and push the corresponding pattern to the stack, if well-formed.
 
 ### Axiom Schemas
 
