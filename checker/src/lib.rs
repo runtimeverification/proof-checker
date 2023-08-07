@@ -17,7 +17,7 @@ use alloc::vec::Vec;
 pub enum Instruction {
     List = 1,
     // Patterns
-    EVar, SVar, Symbol, Implication, Application, Mu, Exists,
+    EVar, SVar, Symbol, Implication, Application, Exists, Mu,
     // Meta Patterns,
     MetaVar, ESubst, SSubst,
     // Axiom Schemas,
