@@ -208,10 +208,6 @@ class ModusPonens(Proof):
         return right_conclusion.right
 
 
-def modus_ponens(left: Proof, right: Proof) -> Proof:
-    return ModusPonens(left, right)
-
-
 @dataclass(frozen=True)
 class Prop1(Proof):
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
@@ -221,9 +217,6 @@ class Prop1(Proof):
         phi0: MetaVar = MetaVar(0)
         phi1: MetaVar = MetaVar(1)
         return implies(phi0, implies(phi1, phi0))
-
-
-prop1 = Prop1()
 
 
 @dataclass(frozen=True)
@@ -236,6 +229,3 @@ class Prop2(Proof):
         phi1: MetaVar = MetaVar(1)
         phi2: MetaVar = MetaVar(2)
         return implies(implies(phi0, implies(phi1, phi2)), implies(implies(phi0, phi1), implies(phi0, phi2)))
-
-
-prop2 = Prop2()
