@@ -575,7 +575,10 @@ fn execute_instructions<'a>(
                 let theorem = pop_stack_proved(stack);
 
                 if claim != theorem {
-                    panic!("This proof does not prove the requested claim");
+                    panic!(
+                        "This proof does not prove the requested claim: {:?}, theorem: {:?}",
+                        claim, theorem
+                    );
                 }
             }
             _ => {
