@@ -161,13 +161,13 @@ impl Pattern {
 
     fn s_fresh(&self, svar: u8) -> bool {
         match self {
-            Pattern::SVar(name) => *name != svar,
             Pattern::EVar(_) => true,
+            Pattern::SVar(name) => *name != svar,
             Pattern::Symbol(_) => true,
             Pattern::Implication { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
             Pattern::Application { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
-            Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
+            Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
             Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar),
             Pattern::ESubst { pattern, plug, .. } =>
                 // Assume: substitution is well-formed => plug occurs in the result
@@ -189,14 +189,20 @@ impl Pattern {
         unimplemented!("Positivity is not implemented yet.")
     }
 
+    // TODO: Implement negative checking
+    #[allow(dead_code)]
+    fn negative(&self, _svar: u8) -> bool {
+        unimplemented!("Positivity is not implemented yet.")
+    }
+
     #[allow(dead_code)]
     fn well_formed(&self) -> bool {
         match self {
+            Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::MetaVar { .. } => {
                 // TODO: Should basically determin whether metavar is instantiable
                 unimplemented!("Well-formedness checking is unimplemented yet for metavars.");
             }
-            Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::ESubst {
                 pattern,
                 evar_id,
@@ -324,13 +330,25 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 
 fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
     match p.as_ref() {
+        Pattern::EVar(id) => evar(*id),
+        Pattern::SVar(id) => svar(*id),
+        Pattern::Symbol(id) => symbol(*id),
         Pattern::Implication { left, right } => implies(
             instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
             instantiate(Rc::clone(&right), var_id, plug),
         ),
-        Pattern::Mu { var, subpattern } => {
-            mu(*var, instantiate(Rc::clone(subpattern), var_id, plug))
-        }
+        Pattern::Application { left, right } => app(
+            instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
+            instantiate(Rc::clone(&right), var_id, plug),
+        ),
+        Pattern::Exists { var, subpattern } => exists(
+            *var,
+            instantiate(Rc::clone(&subpattern), var_id, plug),
+        ),
+        Pattern::Mu { var, subpattern } => mu(
+            *var,
+            instantiate(Rc::clone(&subpattern), var_id, plug),
+        ),
         Pattern::MetaVar {
             id,
             e_fresh,
@@ -650,7 +668,6 @@ fn test_wellformedness_fresh() {
     assert!(phi0_s_fresh_0.well_formed());
 }
 
-#[ignore]
 #[test]
 #[should_panic]
 fn test_instantiate_fresh() {
