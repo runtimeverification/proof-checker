@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from io import BytesIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import EVar, MetaVar, ModusPonens, Prop1, Prop2, app, exists, implies, mu
+from proof_generation.proof import EVar, MetaVar, ModusPonens, Prop1, Prop2, app, exists, implies, mu, Proof, Symbol
 from proof_generation.proofs.propositional import Propositional
 
 
@@ -122,8 +123,15 @@ def test_prove_imp_reflexivity() -> None:
     ])
     # fmt: on
 
+@dataclass(frozen=True)
+class Assumption(Proof):
+    _conclusion: Pattern
+
+    def conclusion(self) -> Pattern:
+        return self._conclusion
 
 def test_prove_transitivity() -> None:
     prop = Propositional()
-    refl = prop.imp_reflexivity().instantiate(0, MetaVar(10))
-    assert prop.imp_transitivity(refl, refl).conclusion() == refl.conclusion()
+    phi0_implies_phi1 = Assumption(implies(Symbol(0), Symbol(1)))
+    phi1_implies_phi2 = Assumption(implies(Symbol(1), Symbol(2)))
+    assert prop.imp_transitivity(phi0_implies_phi1, phi1_implies_phi2).conclusion() == implies(Symbol(0), Symbol(2))
