@@ -3,7 +3,7 @@ from __future__ import annotations
 from io import BytesIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import EVar, MetaVar, app, exists, implies, modus_ponens, mu, prop1, prop2
+from proof_generation.proof import EVar, MetaVar, ModusPonens, Prop1, Prop2, app, exists, implies, mu
 from proof_generation.proofs.propositional import Propositional
 
 
@@ -35,17 +35,17 @@ def test_conclusion() -> None:
     phi2 = MetaVar(2)
     prop = Propositional()
 
-    step1 = prop1.instantiate(1, phi0)
+    step1 = Prop1().instantiate(1, phi0)
     assert step1.conclusion() == implies(phi0, implies(phi0, phi0))
 
-    step2 = prop1.instantiate(1, prop.phi0_implies_phi0)
+    step2 = Prop1().instantiate(1, prop.phi0_implies_phi0)
     assert step2.conclusion() == implies(phi0, implies(prop.phi0_implies_phi0, phi0))
 
-    assert prop2.conclusion() == implies(
+    assert Prop2().conclusion() == implies(
         implies(phi0, implies(phi1, phi2)), implies(implies(phi0, phi1), implies(phi0, phi2))
     )
 
-    step3 = prop2.instantiate(1, prop.phi0_implies_phi0)
+    step3 = Prop2().instantiate(1, prop.phi0_implies_phi0)
     assert step3.conclusion() == implies(
         implies(phi0, implies(prop.phi0_implies_phi0, phi2)),
         implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi2)),
@@ -57,10 +57,10 @@ def test_conclusion() -> None:
         implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0)),
     )
 
-    step4 = modus_ponens(step2, step4)
+    step4 = ModusPonens(step2, step4)
     assert step4.conclusion() == implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0))
 
-    step5 = modus_ponens(step1, step4)
+    step5 = ModusPonens(step1, step4)
     assert step5.conclusion() == implies(phi0, phi0)
 
 

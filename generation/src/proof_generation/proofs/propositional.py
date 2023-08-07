@@ -3,13 +3,24 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, BinaryIO
 
-from proof_generation.proof import Implication, MetaVar, implies, modus_ponens, prop1, prop2
+from proof_generation.proof import Implication, MetaVar, ModusPonens, Prop1, Prop2, implies
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof, Term
 
 
-class Propositional:
+class ProofExp:
+    def prop1(self) -> Proof:
+        return Prop1()
+
+    def prop2(self) -> Proof:
+        return Prop2()
+
+    def modus_ponens(self, left: Proof, right: Proof) -> Proof:
+        return ModusPonens(left, right)
+
+
+class Propositional(ProofExp):
     def theory(self) -> list[Pattern]:
         """Returns a list of axioms. In this case we do not rely on any axioms."""
         return []
@@ -46,11 +57,11 @@ class Propositional:
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
 
     def imp_reflexivity(self) -> Proof:
-        return modus_ponens(
-            prop1.instantiate(1, self.phi0),
-            modus_ponens(
-                prop1.instantiate(1, self.phi0_implies_phi0),
-                prop2.instantiate(1, self.phi0_implies_phi0).instantiate(2, self.phi0),
+        return self.modus_ponens(
+            self.prop1().instantiate(1, self.phi0),
+            self.modus_ponens(
+                self.prop1().instantiate(1, self.phi0_implies_phi0),
+                self.prop2().instantiate(1, self.phi0_implies_phi0).instantiate(2, self.phi0),
             ),
         )
 
@@ -65,11 +76,12 @@ class Propositional:
         assert right_conc.left == phi1
         right_conc.right
 
-        step1 = modus_ponens(right, prop1.instantiate(0, right_conc))
-        step2 = modus_ponens(
-            step1, prop2.instantiate(1, right_conc.left).instantiate(2, right_conc.right).instantiate(0, MetaVar(1))
+        step1 = self.modus_ponens(right, self.prop1().instantiate(0, right_conc))
+        step2 = self.modus_ponens(
+            step1,
+            self.prop2().instantiate(1, right_conc.left).instantiate(2, right_conc.right).instantiate(0, MetaVar(1)),
         )
-        return modus_ponens(left, step2.instantiate(1, MetaVar(10)))
+        return self.modus_ponens(left, step2.instantiate(1, MetaVar(10)))
 
 
 if __name__ == '__main__':
