@@ -765,10 +765,14 @@ Otherwise, execution aborts, and verification fails.
 
 `Publish`
 :   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms.
-    * During the `claim` phase consume a pattern from the stack and push it to the queue of claims.
+    * During the `claim` phase consume a pattern from the stack and push it to the stack of claims.
     * During the `proof` phase consume a proof from the stack
       and a claim from the queue of claims and assert that they are equal.
 
+    Note that since the claim form a stack, the must be proved in the reverse order they
+    were proved in[^claims-stack-vs-queue].
+
+[^claims-stack-vs-queue]: This is convenient for the current implementation, but we may want to revist it later.
 
 ### Stack manipulation.
 
