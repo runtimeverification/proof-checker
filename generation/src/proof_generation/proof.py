@@ -35,16 +35,22 @@ class Pattern(Term):
 class EVar(Pattern):
     name: int
 
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        return self
 
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
 
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        return self
 
 @dataclass(frozen=True)
 class Symbol(Pattern):
     name: int
 
+    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+        return self
 
 @dataclass(frozen=True)
 class Implication(Pattern):
