@@ -38,6 +38,7 @@ class EVar(Pattern):
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
+
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
@@ -45,12 +46,14 @@ class SVar(Pattern):
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
+
 @dataclass(frozen=True)
 class Symbol(Pattern):
     name: int
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
+
 
 @dataclass(frozen=True)
 class Implication(Pattern):
@@ -152,14 +155,6 @@ def exists(var: int, subpattern: Pattern) -> Pattern:
 
 def mu(var: int, subpattern: Pattern) -> Pattern:
     return Mu(SVar(var), subpattern)
-
-
-X = SVar(0)
-bot = Mu(X, X)
-
-
-def neg(p: Pattern) -> Pattern:
-    return implies(p, bot)
 
 
 # Proofs
