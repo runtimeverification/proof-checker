@@ -38,6 +38,9 @@ class EVar(Pattern):
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        output.write(bytes([Instruction.EVar, self.name]))
+
 
 @dataclass(frozen=True)
 class SVar(Pattern):
@@ -46,6 +49,9 @@ class SVar(Pattern):
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        output.write(bytes([Instruction.SVar, self.name]))
+
 
 @dataclass(frozen=True)
 class Symbol(Pattern):
@@ -53,6 +59,9 @@ class Symbol(Pattern):
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
+
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        output.write(bytes([Instruction.Symbol, self.name]))
 
 
 @dataclass(frozen=True)
@@ -74,6 +83,11 @@ class Application(Pattern):
     left: Pattern
     right: Pattern
 
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        self.left.serialize(to_reuse, memory, claims, output)
+        self.right.serialize(to_reuse, memory, claims, output)
+        output.write(bytes([Instruction.Application]))
+
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return Application(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
 
@@ -83,14 +97,22 @@ class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        self.subpattern.serialize(to_reuse, memory, claims, output)
+        output.write(bytes([Instruction.Exists, self.var.name]))
+
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
-        return Exists(self.var, self.subpattern.instantiate(var, plug))
+        return Exists(self.var, self.subpattern.instantiate(self.var.name, plug))
 
 
 @dataclass(frozen=True)
 class Mu(Pattern):
     var: SVar
     subpattern: Pattern
+
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        self.subpattern.serialize(to_reuse, memory, claims, output)
+        output.write(bytes([Instruction.Mu, self.var.name]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(var, plug))
