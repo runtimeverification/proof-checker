@@ -183,12 +183,111 @@ Terms
 =====
 
 As mentioned previously, we may view this format as a language for constructing
-terms that meet particular well-formedness criteria. Let us first enumerate
-those terms, in a python-esque pseudocode.
+terms that meet particular well-formedness criteria. Let us first define those terms.
 
 `Term`s are of two types, `Pattern`, and `Proof`.
 Every `Term` has a well-formedness check.
 Every `Proof` has a conclusion.
+
+```
+Term    := Pattern | Proof
+Pattern := EVar(name: Id) | SVar(name: Id) | Symbol(name: Id)
+         | Application(left: Pattern, right: Pattern)
+         | Implication(left: Pattern, right: Pattern)
+         | Exists(var: Id, subpattern: Pattern)
+         | Mu(var: Id, subpattern: Pattern)
+
+         | MetaVar(var: Id, e_fresh: IdSet, s_fresh: IdSet, positive: IdSet, negative: IdSet, app_context_hole_list: IdSet)
+         | ESubst(pattern: MetaVar, var: Id, plug: Pattern)
+         | SSubst(pattern: MetaVar, var: Id, plug: Pattern)
+Proof := Gamma
+       | Prop1 | Prop2 | Prop3      // Replace with Lukaseiwicz?
+       | ModusPonens(Proof, Proof)
+       | Quantifier | Generalization(Proof)
+       | PropagationOr | PropagationExists |  Frame(Proof)
+       | PreFixpoint | KnasterTarski(Proof)
+       | Existance | Singleton | Substitution(Proof)
+```
+
+\newcommand{\efresh}{\mathrm{eFresh}}
+\newcommand{\sFresh}{\mathrm{sFresh}}
+\newcommand{\positive}{\mathrm{positive}}
+\newcommand{\negative}{\mathrm{negative}}
+\newcommand{\appctx}{\mathrm{appContext}}
+
+We define the predicates,
+$\efresh(evar: Id, pattern: Pattern)$,
+$\sfresh(svar: Id, pattern: Pattern)$,
+$\positive(svar: Id, pattern: Pattern)$,
+$\negative(svar: Id, pattern: Pattern)$,
+$\appctx(evar: Id, pattern: Pattern)$,
+over patterns.
+For concrete patterns they are defined in the obvious way.
+For metavariables and substitutions over them, they are defined as follows:
+
+
+```
+efresh(x, MetaVar(e_fresh, ...))    = x in e_fresh
+efresh(x, ESubst(pattern, x, plug)) = efresh(x, plug) or  efresh(x, pattern)
+efresh(x, ESubst(pattern, y, plug)) = efresh(x, plug) and efresh(x, pattern)
+efresh(x, SSubst(pattern, Y, plug)) = efresh(x, plug) and efresh(x, pattern)
+```
+
+```
+sfresh(X, MetaVar(s_fresh, ...))    = x in s_fresh
+sfresh(X, ESubst(pattern, X, plug)) = sfresh(X, plug) or  sfresh(X, pattern)
+sfresh(X, ESubst(pattern, Y, plug)) = sfresh(X, plug) and sfresh(X, pattern)
+sfresh(X, SSubst(pattern, y, plug)) = sfresh(X, plug) and sfresh(X, pattern)
+```
+
+```
+positive(X, MetaVar(positive, ...))   = x in positive
+positive(X, SSubst(pattern, X, plug)) =     (positive(X, plug) and positive(X, pattern))
+                                        or  (negative(X, plug) and negative(X, pattern))
+positive(X, SSubst(pattern, Y, plug)) = positive(X, pattern)
+                                        and (  (positive(X, plug) and positive(Y, pattern))
+                                            or (negative(X, plug) and negative(Y, pattern))
+                                            )
+positive(X, ESubst(pattern, y, plug)) = positive(X, pattern)
+                                        and (  (positive(X, plug) and positive(y, pattern))
+                                            or (negative(X, plug) and negative(y, pattern))
+                                            )
+```
+
+```
+negative(X, MetaVar(negative, ...))   = x in negative
+negative(X, SSubst(pattern, X, plug)) =     (negative(X, plug) and positive(X, pattern))
+                                        or  (positive(X, plug) and negative(X, pattern))
+negative(X, SSubst(pattern, Y, plug)) = negative(X, pattern)
+                                        and (  (positive(X, plug) and negative(Y, pattern))
+                                            or (negative(X, plug) and positive(Y, pattern))
+                                            )
+negative(X, ESubst(pattern, y, plug)) = negative(X, pattern)
+                                        and (  (negative(X, plug) and positive(y, pattern))
+                                            or (positive(X, plug) and negative(y, pattern))
+                                            )
+```
+
+```
+appctx(x, MetaVar(appctx, ...)) = x in appctx
+appctx(x, ESubst(pattern, x, plug)) = appctx(x, pattern) and appctx(x, plug)
+appctx(x, ESubst(pattern, y, plug)) =    (appctx(x, pattern) and fresh(x, plug))
+                                      or (fresh())
+```
+
+## Are there harms to having an incomplete meta-deduction system?
+
+Can we define an uninstantiable pattern?
+Suppose we only track the negativity of set variables and appctx of element variables.
+In this case we can define the meta-pattern that is only instantiable with a negative pattern.
+
+        ESubst(SSubst(MetaVar(0, negative={X}), X, x))
+
+
+        Phi{appctx={y}}         // Instantiable
+//  Instantiate Phi  with
+
+
 
 ```python
 abstract class Term:
