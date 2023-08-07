@@ -480,7 +480,7 @@ fn execute_instructions<'a>(
             Instruction::Mu => {
                 let id = next().expect("Expected var_id for the exists binder");
                 let subpattern = pop_stack_pattern(stack);
-                stack.push(Term::Pattern(exists(id, subpattern)))
+                stack.push(Term::Pattern(mu(id, subpattern)))
             }
             Instruction::MetaVar => {
                 let id = next().expect("Insufficient parameters for MetaVar instruction");
