@@ -9,12 +9,12 @@ from proof_generation.instruction import Instruction
 class Term:
     ...
 
-    def serialize(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize(self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         if self in memory:
             output.write(bytes([Instruction.Load, memory.index(self)]))
             return
-        self.serialize_impl(to_reuse, memory, claims, output)
-        if self in to_reuse:
+        self.serialize_impl(notation, memory, claims, output)
+        if self in notation:
             memory.append(self)
             output.write(bytes([Instruction.Save]))
 
@@ -22,7 +22,9 @@ class Term:
             claims.remove(self.conclusion())
             output.write(bytes([Instruction.Publish]))
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
         raise NotImplementedError
 
 
@@ -38,7 +40,9 @@ class EVar(Pattern):
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
         output.write(bytes([Instruction.EVar, self.name]))
 
 
@@ -49,7 +53,9 @@ class SVar(Pattern):
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
         output.write(bytes([Instruction.SVar, self.name]))
 
 
@@ -60,7 +66,9 @@ class Symbol(Pattern):
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
         output.write(bytes([Instruction.Symbol, self.name]))
 
 
@@ -69,9 +77,11 @@ class Implication(Pattern):
     left: Pattern
     right: Pattern
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
-        self.left.serialize(to_reuse, memory, claims, output)
-        self.right.serialize(to_reuse, memory, claims, output)
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
+        self.left.serialize(notation, memory, claims, output)
+        self.right.serialize(notation, memory, claims, output)
         output.write(bytes([Instruction.Implication]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -83,9 +93,11 @@ class Application(Pattern):
     left: Pattern
     right: Pattern
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
-        self.left.serialize(to_reuse, memory, claims, output)
-        self.right.serialize(to_reuse, memory, claims, output)
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
+        self.left.serialize(notation, memory, claims, output)
+        self.right.serialize(notation, memory, claims, output)
         output.write(bytes([Instruction.Application]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -97,8 +109,10 @@ class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
-        self.subpattern.serialize(to_reuse, memory, claims, output)
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
+        self.subpattern.serialize(notation, memory, claims, output)
         output.write(bytes([Instruction.Exists, self.var.name]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -110,8 +124,10 @@ class Mu(Pattern):
     var: SVar
     subpattern: Pattern
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
-        self.subpattern.serialize(to_reuse, memory, claims, output)
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
+        self.subpattern.serialize(notation, memory, claims, output)
         output.write(bytes([Instruction.Mu, self.var.name]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -127,7 +143,9 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     application_context: tuple[EVar, ...] = ()
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
         lists: list[tuple[EVar, ...] | tuple[SVar, ...]] = [
             self.e_fresh,
             self.s_fresh,
@@ -204,9 +222,11 @@ class Instantiate(Proof):
     def well_formed(self) -> bool:
         return True
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
-        self.subproof.serialize(to_reuse, memory, claims, output)
-        self.plug.serialize(to_reuse, memory, claims, output)
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
+        self.subproof.serialize(notation, memory, claims, output)
+        self.plug.serialize(notation, memory, claims, output)
         output.write(bytes([Instruction.Instantiate, self.var]))
 
     def conclusion(self) -> Pattern:
@@ -219,9 +239,11 @@ class ModusPonens(Proof):
     right: Proof
     ...
 
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
-        self.left.serialize(to_reuse, memory, claims, output)
-        self.right.serialize(to_reuse, memory, claims, output)
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
+        self.left.serialize(notation, memory, claims, output)
+        self.right.serialize(notation, memory, claims, output)
         output.write(bytes([Instruction.ModusPonens]))
 
     def conclusion(self) -> Pattern:
@@ -233,7 +255,9 @@ class ModusPonens(Proof):
 
 @dataclass(frozen=True)
 class Prop1(Proof):
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
         output.write(bytes([Instruction.Prop1]))
 
     def conclusion(self) -> Pattern:
@@ -244,7 +268,9 @@ class Prop1(Proof):
 
 @dataclass(frozen=True)
 class Prop2(Proof):
-    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+    ) -> None:
         output.write(bytes([Instruction.Prop2]))
 
     def conclusion(self) -> Pattern:

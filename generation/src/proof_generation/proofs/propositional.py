@@ -44,13 +44,12 @@ class Propositional(ProofExp):
     def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
         claims_memory: list[Term] = []
         for claim in self.claims():
-            claim.serialize(set(self.notation()), claims_memory, [], claims_out)
+            claim.serialize(self.notation(), claims_memory, [], claims_out)
 
         claims: list[Pattern] = self.claims()
-        to_reuse: set[Term] = self.notation().union(self.lemmas())
         proofs_memory: list[Term] = []
         for proof in self.proofs():
-            proof.serialize(to_reuse, proofs_memory, claims, proofs_out)
+            proof.serialize(self.notation(), proofs_memory, claims, proofs_out)
         assert claims == []
 
     phi0: MetaVar = MetaVar(0)
