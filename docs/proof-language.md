@@ -435,8 +435,8 @@ class ESubst(Pattern):
         # (see explanation for e_fresh)
         return pattern.s_fresh(svar) and plug.s_fresh(svar) # fresh-after-subst
 
-    # Best-effort for now, as we can't handle (plug.s_fresh(var) returns something else
-    # than intended, as positive takes svar not evar)
+    # Best-effort for now, as we can't handle (pattern.positive(var) returns something else
+    # than intended, as positive takes set variable, not var: EVar)
     def positive(svar):
         # Both pattern and plug need to be checked, as
         # the substitution is well-formed by assumption
@@ -449,8 +449,8 @@ class ESubst(Pattern):
 
         return pattern.positive(svar) and plug.s_fresh(svar)
 
-    # Best-effort for now, as we can't handle (plug.s_fresh(var) returns something else
-    # than intended, as positive takes svar not evar)
+    # Best-effort for now, as we can't handle (pattern.positive(var) returns something else
+    # than intended, as positive takes a set variable, not var: EVar)
     def negative(svar):
         # Both pattern and plug need to be checked, as
         # the substitution is well-formed by assumption
