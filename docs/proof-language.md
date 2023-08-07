@@ -435,21 +435,29 @@ class ESubst(Pattern):
         # (see explanation for e_fresh)
         return pattern.s_fresh(svar) and plug.s_fresh(svar) # fresh-after-subst
 
+    # Best-effort for now, as we can't handle (plug.s_fresh(var) returns something else
+    # than intended, as positive takes svar not evar)
     def positive(svar):
         # Both pattern and plug need to be checked, as
         # the substitution is well-formed by assumption
         # and svar != var in ESubst
+
         # Note that the unsubstituted var in pattern
         # do not influence the result, as var: EVar
-        return pattern.positive(svar) and plug.positive(svar)
 
+        # If svar notin FV(plug), so plug has no influence on the result
+
+        return pattern.positive(svar) and plug.s_fresh(svar)
+
+    # Best-effort for now, as we can't handle (plug.s_fresh(var) returns something else
+    # than intended, as positive takes svar not evar)
     def negative(svar):
         # Both pattern and plug need to be checked, as
         # the substitution is well-formed by assumption
         # and svar != var in ESubst
         # Note that the unsubstituted var in pattern
         # do not influence the result, as var: EVar
-        return pattern.negative(svar) and plug.negative(svar)
+        return pattern.negative(svar) and plug.s_fresh(svar)
 
     # TODO: Well-formedness checking
 
@@ -495,33 +503,49 @@ class SSubst(Pattern):
         # the result as svar != var
         return pattern.s_fresh(svar) and plug.s_fresh(svar) # subst-after-subst
 
+    # Note that the case where occurence of svar is positive in SSubst by some paths being positive by pat.pos + plug.pos
+    # and some paths being positive by pat.neg + plug.neg cannot happen, as plug is fixed and we're checking for plug.s_fresh(svar)!
+    # Consider such a scenario can happen for a contradiction:
+    # then svar has a negative occurrence by the simple fact that plug contains
+    # at least one free instance of svar, contradiction with assuming all occurrences of svar in the result are positive
     def positive(svar):
+        plug_positive_svar =
+                plug.s_fresh(svar) # svar notin FV(plug), so plug has no influence on the result
+            or  pattern.positive(var) and plug.positive(svar)
+            or  pattern.negative(var) and plug.negative(svar)
+
         if svar == var:
             # All free occurrences of svar are being replaced with plug,
             # so positivity only depends on plug
-            return plug.positive(svar)
+            return plug_positive_svar
 
         # Both pattern and plug need to be checked, as
         # the substitution is well-formed by assumption so
         # there is at least one occurrence of var being replaced
 
         # Note that the unsubstituted var in pattern
-        # do not influence the result, as svar != var
-        return pattern.positive(svar) and plug.positive(svar)
+        # does not influence the result, as svar != var
+        return pattern.positive(svar) and plug_positive_svar
 
+    # For a sketch of correctness, see comment on positive(svar)
     def negative(svar):
+        plug_negative_svar =
+                plug.s_fresh(svar)
+            or  pattern.positive(var) and plug.negative(svar)
+            or  pattern.negative(var) and plug.positive(svar)
+
         if svar == var:
             # All free occurrences of svar are being replaced with plug,
             # so negativity only depends on plug
-            return plug.negative(svar)
+            return plug_negative_svar
 
         # Both pattern and plug need to be checked, as
         # the substitution is well-formed by assumption so
         # there is at least one occurrence of var being replaced
 
         # Note that the unsubstituted var in pattern
-        # do not influence the result, as svar != var
-        return pattern.negative(svar) and plug.negative(svar)
+        # does not influence the result, as svar != var
+        return pattern.negative(svar) and plug_negative_svar
 ```
 
 
