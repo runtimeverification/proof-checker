@@ -35,11 +35,11 @@ class Propositional(ProofExp):
 
     def claims(self) -> list[Pattern]:
         """Returns a list statements for theorems that we want to publish."""
-        return [self.phi0_implies_phi0]
+        return [self.phi0_implies_phi0, self.top()]
 
     def proofs(self) -> list[Proof]:
         """Returns a list of proofs for the claims."""
-        return [self.imp_reflexivity()]
+        return [self.imp_reflexivity(), self.top_intro()]
 
     def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
         claims_memory: list[Term] = []
@@ -52,6 +52,9 @@ class Propositional(ProofExp):
             proof.serialize(self.notation(), proofs_memory, claims, proofs_out)
         assert claims == []
 
+    # Notation
+    # ========
+
     phi0: MetaVar = MetaVar(0)
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
 
@@ -63,6 +66,9 @@ class Propositional(ProofExp):
 
     def top(self) -> Pattern:
         return self.neg(self.bot())
+
+    # Proofs
+    # ======
 
     def imp_reflexivity(self) -> Proof:
         return self.modus_ponens(
@@ -93,6 +99,9 @@ class Propositional(ProofExp):
             self.prop2().instantiate(1, phi1).instantiate(2, phi2).instantiate(0, MetaVar(1)),
         )
         return self.modus_ponens(left, step2.instantiate(1, phi0))
+
+    def top_intro(self) -> Proof:
+        return self.imp_reflexivity().instantiate(0, self.bot())
 
 
 if __name__ == '__main__':
