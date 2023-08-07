@@ -185,14 +185,38 @@ impl Pattern {
     }
 
     // TODO: Implement positivity checking
-    fn positive(&self, _svar: u8) -> bool {
-        unimplemented!("Positivity is not implemented yet.")
+    fn positive(&self, svar: u8) -> bool {
+        match self {
+            Pattern::EVar(_) => true,
+            Pattern::SVar(_) => true,
+            Pattern::Symbol(_) => true,
+            Pattern::Implication { left, right } => left.negative(svar) && right.positive(svar),
+            Pattern::Application { left, right } => left.positive(svar) && right.positive(svar),
+            Pattern::Exists { subpattern , .. } => subpattern.positive(svar),
+            Pattern::Mu { var, subpattern } => svar == *var || subpattern.positive(svar),
+            Pattern::MetaVar { positive, .. } => positive.contains(&svar),
+            _ => {
+                unimplemented!("positive unimplemented for this case");
+            }
+        }
     }
 
     // TODO: Implement negative checking
     #[allow(dead_code)]
-    fn negative(&self, _svar: u8) -> bool {
-        unimplemented!("Positivity is not implemented yet.")
+    fn negative(&self, svar: u8) -> bool {
+        match self {
+            Pattern::EVar(_) => true,
+            Pattern::SVar(name) => *name != svar,
+            Pattern::Symbol(_) => true,
+            Pattern::Implication { left, right } => left.positive(svar) && right.negative(svar),
+            Pattern::Application { left, right } => left.negative(svar) && right.negative(svar),
+            Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
+            Pattern::Mu { var, subpattern } => svar == *var || subpattern.negative(svar),
+            Pattern::MetaVar { negative, .. } => negative.contains(&svar),
+            _ => {
+                unimplemented!("negative unimplemented for this case");
+            }
+        }
     }
 
     #[allow(dead_code)]
