@@ -67,21 +67,21 @@ class Propositional(ProofExp):
 
     def imp_transitivity(self, left: Proof, right: Proof) -> Proof:
         left_conc = left.conclusion()
-        assert isinstance(left_conc, Implication)
-        left_conc.left
-        phi1 = left_conc.right
-
+        match left_conc:
+            case Implication(_phi0, phi1): pass
+            case _ : raise AssertionError("Expected implication")
         right_conc = right.conclusion()
-        assert isinstance(right_conc, Implication)
-        assert right_conc.left == phi1
-        right_conc.right
+        match right_conc:
+            case Implication(phi1_r, phi2):
+                assert phi1_r == phi1
+            case _ : raise AssertionError("Expected implication")
 
         step1 = self.modus_ponens(right, self.prop1().instantiate(0, right_conc))
         step2 = self.modus_ponens(
             step1,
             self.prop2().instantiate(1, right_conc.left).instantiate(2, right_conc.right).instantiate(0, MetaVar(1)),
         )
-        return self.modus_ponens(left, step2.instantiate(1, MetaVar(10)))
+        return self.modus_ponens(left, step2.instantiate(1, left_conc.left))
 
 
 if __name__ == '__main__':
