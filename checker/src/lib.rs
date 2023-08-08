@@ -669,35 +669,6 @@ pub fn verify<'a>(
 /// Testing
 /// =======
 
-#[ignore]
-#[test]
-fn test_negative_disjoint() {
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![]);
-    assert!(!phi0_s_fresh_0.well_formed());
-}
-
-#[ignore]
-#[test]
-fn test_positive_disjoint() {
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![], vec![0]);
-    assert!(!phi0_s_fresh_0.well_formed());
-}
-
-#[ignore]
-#[test]
-fn test_wellformedness_fresh() {
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
-    assert!(phi0_s_fresh_0.well_formed());
-}
-
-#[test]
-#[should_panic]
-fn test_instantiate_fresh() {
-    let svar_0 = svar(0);
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
-    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
-}
-
 #[test]
 fn test_efresh() {
     let evar = evar(1);
@@ -748,6 +719,76 @@ fn test_sfresh() {
 
     let metaapplication2 = Pattern::Application { left, right: mvar };
     assert!(metaapplication2.s_fresh(2));
+}
+
+#[test]
+#[should_panic]
+fn test_instantiate_fresh() {
+    let svar_0 = svar(0);
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
+    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
+}
+
+#[test]
+#[ignore]
+fn test_wellformedness_fresh() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
+    assert!(phi0_s_fresh_0.well_formed());
+}
+
+#[test]
+fn test_positivity() {
+    let svar = svar(1);
+    let not_svar = not(Rc::clone(&svar));
+
+    assert!(!not_svar.positive(1));
+    assert!(not_svar.positive(2));
+    assert!(not_svar.negative(1));
+    assert!(not_svar.negative(2));
+
+    let pat = implies(Rc::clone(&not_svar), Rc::clone(&not_svar));
+
+    assert!(!pat.positive(1));
+    assert!(pat.positive(2));
+
+    let pat2 = implies(Rc::clone(&not_svar), Rc::clone(&svar));
+    assert!(pat2.positive(1));
+}
+
+#[test]
+fn test_wellformedness_positive() {
+    let svar = svar(1);
+    let mux_x = mu(1, Rc::clone(&svar));
+    assert!(mux_x.well_formed());
+
+    let mux_x2 = mu(2, not(Rc::clone(&svar)));
+    assert!(mux_x2.well_formed());
+
+    let mux_x3 = mu(2, not(symbol(1)));
+    assert!(mux_x3.well_formed());
+
+    let mux_x = mu(1, not(Rc::clone(&svar)));
+    assert!(!mux_x.well_formed());
+
+    let phi = metavar_s_fresh(97, 2, vec![], vec![]);
+    let mux_phi = mu(1, phi);
+    assert!(!mux_phi.well_formed());
+
+    // Even though freshness implies positivity, we do not want to do any
+    // additional reasoning and let everything on the prover
+    let phi2 = metavar_s_fresh(98, 1, vec![], vec![]);
+    let mux_phi2 = mu(1, phi2);
+    assert!(!mux_phi2.well_formed());
+
+    // It's ok if 2 is negative, the only thing we care about is that 2 is guaranteed to be positive
+    // (we can instantiate without this variable)
+    let phi3 = metavar_s_fresh(99, 1, vec![2], vec![2]);
+    let mux_phi3 = mu(2, phi3);
+    assert!(mux_phi3.well_formed());
+
+    let phi4 = metavar_s_fresh(100, 1, vec![2], vec![]);
+    let mux_phi4 = mu(2, phi4);
+    assert!(mux_phi4.well_formed());
 }
 
 #[test]
