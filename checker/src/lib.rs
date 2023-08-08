@@ -184,7 +184,6 @@ impl Pattern {
         }
     }
 
-    // TODO: Implement positivity checking
     fn positive(&self, svar: u8) -> bool {
         match self {
             Pattern::EVar(_) => true,
@@ -201,8 +200,6 @@ impl Pattern {
         }
     }
 
-    // TODO: Implement negative checking
-    #[allow(dead_code)]
     fn negative(&self, svar: u8) -> bool {
         match self {
             Pattern::EVar(_) => true,
