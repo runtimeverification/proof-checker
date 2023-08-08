@@ -363,9 +363,9 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 
 fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
     match p.as_ref() {
-        Pattern::EVar(id) => evar(*id),
-        Pattern::SVar(id) => svar(*id),
-        Pattern::Symbol(id) => symbol(*id),
+        Pattern::EVar(_) => p,
+        Pattern::SVar(_) => p,
+        Pattern::Symbol(_) => p,
         Pattern::Implication { left, right } => implies(
             instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
             instantiate(Rc::clone(&right), var_id, plug),
