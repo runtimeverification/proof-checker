@@ -195,6 +195,9 @@ impl Pattern {
             Pattern::Exists { subpattern, .. } => subpattern.positive(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.positive(svar),
             Pattern::MetaVar { positive, .. } => positive.contains(&svar),
+            Pattern::ESubst { pattern, plug, .. } =>
+                // best-effort for now, see spec
+                pattern.positive(svar) && plug.s_fresh(svar),
             _ => {
                 unimplemented!("positive unimplemented for this case");
             }
@@ -212,6 +215,9 @@ impl Pattern {
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.negative(svar),
             Pattern::MetaVar { negative, .. } => negative.contains(&svar),
+            Pattern::ESubst { pattern, plug, .. } =>
+                // best-effort for now, see spec
+                pattern.negative(svar) && plug.s_fresh(svar),
             _ => {
                 unimplemented!("negative unimplemented for this case");
             }
