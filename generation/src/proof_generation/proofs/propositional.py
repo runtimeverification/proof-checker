@@ -4,6 +4,7 @@ import sys
 from typing import TYPE_CHECKING, BinaryIO
 
 from proof_generation.proof import Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, SVar, implies
+from proof_generation.instruction import Instruction
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof
@@ -45,6 +46,7 @@ class Propositional(ProofExp):
         claims_memory: list[tuple[bool, Pattern]] = []
         for claim in reversed(self.claims()):
             claim.serialize(self.notation(), set(), claims_memory, [], claims_out)
+            claims_out.write(bytes([Instruction.Publish]))
 
         claims: list[Pattern] = self.claims()
         proofs_memory: list[tuple[bool, Pattern]] = []
