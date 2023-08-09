@@ -113,6 +113,21 @@ class MetaVar(Pattern):
             return plug
         return self
 
+    def __repr__(self) -> str:
+        """
+        Use a shorter name and only print fields if they're not ().
+
+        Examples:
+        - MV(1)
+        - MV(2, application_context=something)
+        """
+        _repr = f'MV({self.name}'
+        for (field, value) in self.__dict__.items():
+            if field != 'name' and value != ():
+                _repr += f', {field}={value}'
+        _repr += ')'
+        return _repr
+
 
 @dataclass(frozen=True)
 class ESubst(Pattern):
@@ -186,6 +201,8 @@ class Instantiate(Proof):
     def conclusion(self) -> Pattern:
         return self.subproof.conclusion().instantiate(self.var, self.plug)
 
+    
+
 
 @dataclass(frozen=True)
 class ModusPonens(Proof):
@@ -203,6 +220,9 @@ class ModusPonens(Proof):
         assert isinstance(right_conclusion, Implication)
         assert right_conclusion.left == self.left.conclusion(), (right_conclusion.left, self.left.conclusion())
         return right_conclusion.right
+
+    #def __repr__(self) -> str:
+        #return f'MP(\n\tleft={self.left.__repr__()}, \n\tright={self.right.__repr__()}\n)'
 
 
 def modus_ponens(left: Proof, right: Proof) -> Proof:
