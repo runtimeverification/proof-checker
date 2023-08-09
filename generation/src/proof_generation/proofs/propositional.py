@@ -43,7 +43,7 @@ class Propositional(ProofExp):
 
     def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
         claims_memory: list[tuple[bool, Pattern]] = []
-        for claim in self.claims():
+        for claim in reversed(self.claims()):
             claim.serialize(self.notation(), set(), claims_memory, [], claims_out)
 
         claims: list[Pattern] = self.claims()
