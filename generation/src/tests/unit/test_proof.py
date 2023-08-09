@@ -66,7 +66,7 @@ def test_conclusion() -> None:
 
 def test_serialize_phi_implies_phi() -> None:
     out = BytesIO()
-    Propositional().phi0_implies_phi0.serialize({Propositional().phi0}, [], [], out)
+    Propositional().phi0_implies_phi0.serialize({Propositional().phi0}, set(), [], [], out)
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         Instruction.List, 0,
@@ -86,7 +86,7 @@ def test_prove_imp_reflexivity() -> None:
     prop = Propositional()
     out = BytesIO()
     assert prop.imp_reflexivity().conclusion() == prop.phi0_implies_phi0
-    prop.imp_reflexivity().serialize({prop.phi0, prop.phi0_implies_phi0}, [], [prop.phi0_implies_phi0], out)
+    prop.imp_reflexivity().serialize({prop.phi0, prop.phi0_implies_phi0}, set(), [], [prop.phi0_implies_phi0], out)
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         Instruction.Prop1,              # (p1: phi0 -> (phi1 -> phi0))

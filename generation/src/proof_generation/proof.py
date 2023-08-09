@@ -9,13 +9,29 @@ from proof_generation.instruction import Instruction
 class Term:
     ...
 
-    def serialize(self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
-        if self in memory:
-            output.write(bytes([Instruction.Load, memory.index(self)]))
+    def serialize(
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
+    ) -> None:
+        if isinstance(self, Pattern) and (False, self) in memory:
+            output.write(bytes([Instruction.Load, memory.index((False, self))]))
             return
-        self.serialize_impl(notation, memory, claims, output)
-        if self in notation:
-            memory.append(self)
+        if isinstance(self, Proof) and (True, self.conclusion()) in memory:
+            output.write(bytes([Instruction.Load, memory.index((True, self.conclusion()))]))
+            return
+
+        self.serialize_impl(notation, lemmas, memory, claims, output)
+
+        # TODO: Check if needed lemma is already on the top of the stack.
+        if isinstance(self, Pattern) and self in notation:
+            memory.append((False, self))
+            output.write(bytes([Instruction.Save]))
+        if isinstance(self, Proof) and self.conclusion() in lemmas:
+            memory.append((True, self.conclusion()))
             output.write(bytes([Instruction.Save]))
 
         if isinstance(self, Proof) and self.conclusion() in claims:
@@ -23,7 +39,12 @@ class Term:
             output.write(bytes([Instruction.Publish]))
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
         raise NotImplementedError
 
@@ -41,7 +62,12 @@ class EVar(Pattern):
         return self
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
         output.write(bytes([Instruction.EVar, self.name]))
 
@@ -54,7 +80,12 @@ class SVar(Pattern):
         return self
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
         output.write(bytes([Instruction.SVar, self.name]))
 
@@ -67,7 +98,12 @@ class Symbol(Pattern):
         return self
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
         output.write(bytes([Instruction.Symbol, self.name]))
 
@@ -78,10 +114,15 @@ class Implication(Pattern):
     right: Pattern
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
-        self.left.serialize(notation, memory, claims, output)
-        self.right.serialize(notation, memory, claims, output)
+        self.left.serialize(notation, lemmas, memory, claims, output)
+        self.right.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Implication]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -94,10 +135,15 @@ class Application(Pattern):
     right: Pattern
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
-        self.left.serialize(notation, memory, claims, output)
-        self.right.serialize(notation, memory, claims, output)
+        self.left.serialize(notation, lemmas, memory, claims, output)
+        self.right.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Application]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -110,9 +156,14 @@ class Exists(Pattern):
     subpattern: Pattern
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
-        self.subpattern.serialize(notation, memory, claims, output)
+        self.subpattern.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Exists, self.var.name]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -125,9 +176,14 @@ class Mu(Pattern):
     subpattern: Pattern
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
-        self.subpattern.serialize(notation, memory, claims, output)
+        self.subpattern.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Mu, self.var.name]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -144,7 +200,12 @@ class MetaVar(Pattern):
     application_context: tuple[EVar, ...] = ()
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
         lists: list[tuple[EVar, ...] | tuple[SVar, ...]] = [
             self.e_fresh,
@@ -223,10 +284,15 @@ class Instantiate(Proof):
         return True
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
-        self.subproof.serialize(notation, memory, claims, output)
-        self.plug.serialize(notation, memory, claims, output)
+        self.subproof.serialize(notation, lemmas, memory, claims, output)
+        self.plug.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Instantiate, self.var]))
 
     def conclusion(self) -> Pattern:
@@ -240,10 +306,15 @@ class ModusPonens(Proof):
     ...
 
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
-        self.left.serialize(notation, memory, claims, output)
-        self.right.serialize(notation, memory, claims, output)
+        self.left.serialize(notation, lemmas, memory, claims, output)
+        self.right.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.ModusPonens]))
 
     def conclusion(self) -> Pattern:
@@ -256,7 +327,12 @@ class ModusPonens(Proof):
 @dataclass(frozen=True)
 class Prop1(Proof):
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
         output.write(bytes([Instruction.Prop1]))
 
@@ -269,7 +345,12 @@ class Prop1(Proof):
 @dataclass(frozen=True)
 class Prop2(Proof):
     def serialize_impl(
-        self, notation: set[Pattern], memory: list[Term], claims: list[Pattern], output: BinaryIO
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
     ) -> None:
         output.write(bytes([Instruction.Prop2]))
 

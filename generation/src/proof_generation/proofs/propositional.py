@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, BinaryIO
 from proof_generation.proof import Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, SVar, implies
 
 if TYPE_CHECKING:
-    from proof_generation.proof import Pattern, Proof, Term
+    from proof_generation.proof import Pattern, Proof
 
 
 class ProofExp:
@@ -26,8 +26,8 @@ class Propositional(ProofExp):
         return []
 
     def lemmas(self) -> set[Pattern]:
-        """Returns a list statements for lemmas that we should reuse."""
-        return set()
+        """Returns a list statements for internal lemmas that we should reuse."""
+        return set(self.claims())
 
     def notation(self) -> set[Pattern]:
         """Returns a list patterns that we will want to reuse."""
@@ -42,14 +42,14 @@ class Propositional(ProofExp):
         return [self.imp_reflexivity(), self.top_intro()]
 
     def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
-        claims_memory: list[Term] = []
+        claims_memory: list[tuple[bool, Pattern]] = []
         for claim in self.claims():
-            claim.serialize(self.notation(), claims_memory, [], claims_out)
+            claim.serialize(self.notation(), set(), claims_memory, [], claims_out)
 
         claims: list[Pattern] = self.claims()
-        proofs_memory: list[Term] = []
+        proofs_memory: list[tuple[bool, Pattern]] = []
         for proof in self.proofs():
-            proof.serialize(self.notation(), proofs_memory, claims, proofs_out)
+            proof.serialize(self.notation(), self.lemmas(), proofs_memory, claims, proofs_out)
         assert claims == []
 
     # Notation
