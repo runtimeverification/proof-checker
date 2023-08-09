@@ -370,7 +370,7 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
 /// =============
 
 type Stack = Vec<Term>;
-type Claims = Vec<Term>;
+type Claims = Vec<Rc<Pattern>>;
 type Memory = Vec<Entry>;
 
 /// Stack utilities
@@ -404,11 +404,17 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
 /// Main implementation
 /// -------------------
 
+pub enum ExecutionPhase {
+    Claim,
+    Proof,
+}
+
 fn execute_instructions<'a>(
     next: &mut impl FnMut() -> Option<u8>,
     stack: &mut Stack,
     memory: &mut Memory,
     claims: &mut Claims,
+    phase: ExecutionPhase,
 ) {
     // Metavars
     let phi0 = metavar_unconstrained(0);
@@ -570,17 +576,22 @@ fn execute_instructions<'a>(
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
             }
-            Instruction::Publish => {
-                let claim = pop_stack_pattern(claims);
-                let theorem = pop_stack_proved(stack);
-
-                if claim != theorem {
-                    panic!(
-                        "This proof does not prove the requested claim: {:?}, theorem: {:?}",
-                        claim, theorem
-                    );
+            Instruction::Publish => match phase {
+                ExecutionPhase::Claim => {
+                    let claim = pop_stack_pattern(stack);
+                    claims.push(claim)
                 }
-            }
+                ExecutionPhase::Proof => {
+                    let claim = claims.pop().expect("Insufficient claims.");
+                    let theorem = pop_stack_proved(stack);
+                    if claim != theorem {
+                        panic!(
+                            "This proof does not prove the requested claim: {:?}, theorem: {:?}",
+                            claim, theorem
+                        );
+                    }
+                }
+            },
             _ => {
                 unimplemented!("Instruction: {}", instr_u32)
             }
@@ -592,24 +603,27 @@ pub fn verify<'a>(
     proof_next_byte: &mut impl FnMut() -> Option<u8>,
     claims_next_byte: &mut impl FnMut() -> Option<u8>,
 ) -> (Stack, Memory, Claims) {
-    let mut claim_stack = vec![];
-    let mut claim_memory = vec![];
+    let mut stack = vec![];
+    let mut memory = vec![];
+    let mut claims = vec![];
     execute_instructions(
         claims_next_byte,
-        &mut claim_stack,
-        &mut claim_memory,
-        &mut vec![],
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Claim,
     );
 
-    let mut proof_stack = vec![];
-    let mut proof_memory = vec![];
+    stack.clear();
+    memory.clear();
     execute_instructions(
         proof_next_byte,
-        &mut proof_stack,
-        &mut proof_memory,
-        &mut claim_stack,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Proof,
     );
-    return (proof_stack, proof_memory, claim_stack);
+    return (stack, memory, claims);
 }
 
 /// Testing
