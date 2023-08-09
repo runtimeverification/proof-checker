@@ -3,8 +3,8 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, BinaryIO
 
-from proof_generation.proof import Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, SVar, implies
 from proof_generation.instruction import Instruction
+from proof_generation.proof import Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, SVar, implies
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof
