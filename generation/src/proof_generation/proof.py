@@ -35,10 +35,22 @@ class Pattern(Term):
 class EVar(Pattern):
     name: int
 
+    @classmethod
+    def shorthand(cls):
+        return {
+            'name': ''
+        }
+
 
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
+
+    @classmethod
+    def shorthand(cls):
+        return {
+            'name': ''
+        }
 
 
 @dataclass(frozen=True)
@@ -82,6 +94,14 @@ class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
+    @classmethod
+    def shorthand(cls):
+        return {
+            '__name__': '\u2203',
+            'var': '',
+            'subpattern': ''
+        }
+
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(var, plug))
 
@@ -90,6 +110,14 @@ class Exists(Pattern):
 class Mu(Pattern):
     var: SVar
     subpattern: Pattern
+
+    @classmethod
+    def shorthand(cls):
+        return {
+            '__name__': '\u03BC',
+            'var': '',
+            'subpattern': '',
+        }
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(var, plug))
@@ -240,9 +268,6 @@ class ModusPonens(Proof):
         assert isinstance(right_conclusion, Implication)
         assert right_conclusion.left == self.left.conclusion(), (right_conclusion.left, self.left.conclusion())
         return right_conclusion.right
-
-    #def __repr__(self) -> str:
-        #return f'MP(\n\tleft={self.left.__repr__()}, \n\tright={self.right.__repr__()}\n)'
 
 
 def modus_ponens(left: Proof, right: Proof) -> Proof:
