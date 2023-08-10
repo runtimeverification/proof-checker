@@ -51,6 +51,14 @@ class Implication(Pattern):
     left: Pattern
     right: Pattern
 
+    @classmethod
+    def shorthand(cls):
+        return {
+            '__name__': 'Imp',
+            'left': '',
+            'right': ''
+        }
+
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         self.left.serialize(to_reuse, memory, claims, output)
         self.right.serialize(to_reuse, memory, claims, output)
@@ -96,6 +104,18 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     application_context: tuple[EVar, ...] = ()
 
+    @classmethod
+    def shorthand(cls):
+        return {
+            '__name__': 'MV',
+            'name': '',
+            'e_fresh': 'e_f',
+            's_fresh': 's_f',
+            'positive': 'pos',
+            'negative': 'neg',
+            'application_context': 'app_cntxt'
+        }
+
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         lists: list[tuple[EVar, ...] | tuple[SVar, ...]] = [
             self.e_fresh,
@@ -112,21 +132,6 @@ class MetaVar(Pattern):
         if var == self.name:
             return plug
         return self
-
-    def __repr__(self) -> str:
-        """
-        Use a shorter name and only print fields if they're not ().
-
-        Examples:
-        - MV(1)
-        - MV(2, application_context=something)
-        """
-        _repr = f'MV({self.name}'
-        for (field, value) in self.__dict__.items():
-            if field != 'name' and value != ():
-                _repr += f', {field}={value}'
-        _repr += ')'
-        return _repr
 
 
 @dataclass(frozen=True)
@@ -190,6 +195,15 @@ class Instantiate(Proof):
     var: int
     plug: Pattern
 
+    @classmethod
+    def shorthand(cls):
+        return {
+            '__name__': 'Inst',
+            'subproof': '',
+            'var': '',
+            'plug': ''
+        }
+
     def well_formed(self) -> bool:
         return True
 
@@ -201,14 +215,20 @@ class Instantiate(Proof):
     def conclusion(self) -> Pattern:
         return self.subproof.conclusion().instantiate(self.var, self.plug)
 
-    
-
 
 @dataclass(frozen=True)
 class ModusPonens(Proof):
     left: Proof
     right: Proof
     ...
+
+    @classmethod
+    def shorthand(cls):
+        return {
+            '__name__': 'MP',
+            'left': '',
+            'right': ''
+        }
 
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         self.left.serialize(to_reuse, memory, claims, output)

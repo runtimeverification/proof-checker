@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING, BinaryIO
-from pprint import pprint
 
+from proof_generation.format import SuccintPrinter as SP
 from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2
 
 if TYPE_CHECKING:
@@ -58,7 +58,8 @@ class Propositional:
 
 if __name__ == '__main__':
 
-    pprint(Propositional().imp_reflexivity())
+    sp = SP()
+    sp.pprint(Propositional().imp_reflexivity())
 
     _exe, claim_path, proof_path = sys.argv
     with open(claim_path, 'wb') as claim_out:
