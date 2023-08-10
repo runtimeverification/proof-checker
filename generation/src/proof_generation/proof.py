@@ -181,7 +181,7 @@ class Instantiate(Proof):
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         self.subproof.serialize(to_reuse, memory, claims, output)
         self.plug.serialize(to_reuse, memory, claims, output)
-        output.write(bytes([Instruction.Instantiate, self.var]))
+        output.write(bytes([Instruction.Instantiate, 1, self.var]))
 
     def conclusion(self) -> Pattern:
         return self.subproof.conclusion().instantiate(self.var, self.plug)

@@ -587,21 +587,42 @@ class PropagationOr(Proof):
 Using a rule of meta inference, we may instantiate metatheorems.
 This allows us to instantiate axiom and theorem schemas, such as
 $\phi \limplies \phi$.
+For performance and conveniency reasons, we support *simultaneous* instantiations
+that can instantiate several metavars at once, where all pluggings are isolated (they do
+not cause side-effects among each other).
+This means:
+
+```
+    (0 -> 1)[0 |-> (0 -> 1), 1 |-> 2]
+~>  ((0 -> 1) -> 2)
+```
+
+As one can see, the metavar with id `1` replaced .
+Multiple instantiations in a sequence are common, and this makes them much
+simpler to perform without the need to introduce any fresh names to prevent these
+side-effects.
+Moreover, only *one* well-formedness check is needed afterwards, which can save
+lots of execution cycles.
+Conventional sequential instantiations are still trivially supported in the
+obvious way.
+Here's the blueprint:
 
 
 ```python
 class InstantiateSchema(Proof):
     subproof : Proof
-    metavar_id: u32
-    instantiation: Pattern
+    metavar_ids: list(u32)
+    instantiations: list(Pattern)
 
     def well_formed():
         # Fails if the instantiation does not meet the
         # disjoint/positive/freshness/application ctx
         # criterea of the metavar.
 
+        # Fails if metavar_ids.length != instantiations.length
+
     def conclusion():
-        return subproof.meta_substitute(metavar, instantiation)
+        return subproof.meta_substitute(metavar_ids, instantiations)
 ```
 
 TODO: Could we just merge this with `InstantiateSchema`?
@@ -610,13 +631,15 @@ We may also use metavariables to represent notation.
 ```python
 class InstantiateNotation(Pattern):
     notation: Pattern
-    metavar_id: u32
-    instantiation: Pattern
+    metavar_id: list(u32)
+    instantiations: list(Pattern)
 
     def well_formed():
         # Fails if the instantiation does not meet the
         # disjoint/positive/freshness/application ctx
         # criterea of the metavar.
+
+        # Fails if metavar_ids.length != instantiations.length
 
     def conclusion():
         return notation.meta_substitute(metavar, instantiation)
@@ -732,8 +755,8 @@ Otherwise, execution aborts, and verification fails.
 :   Consume a meta-pattern `phi` and a pattern `psi` from the stack, and push a
     corresponding substitution `phi[psi/metavar_id]`.
 
-`Instantiate <metavar_id:u32>`
-:   Consume a `Proof` and `Pattern` off the stack, and push the instantiated proof term to the stack,
+`Instantiate n:u32 [metavar_id:u32]*n`
+:   Consume a `Proof` and n `Pattern`'s' off the stack, and push the instantiated proof term to the stack,
     checking wellformedness as needed.
 
 ### Inference rules
