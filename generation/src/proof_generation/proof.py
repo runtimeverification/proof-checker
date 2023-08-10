@@ -40,6 +40,9 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
+    def serialize_impl(self, _to_reuse: set[Term], _memory: list[Term], _claims: list[Pattern], output: BinaryIO) -> None:
+        output.write(bytes([Instruction.SVar, self.name]))
+
     def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return self
 
@@ -85,6 +88,10 @@ class Exists(Pattern):
 class Mu(Pattern):
     var: SVar
     subpattern: Pattern
+
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        self.subpattern.serialize(to_reuse, memory, claims, output)
+        output.write(bytes([Instruction.Mu, self.var.name]))
 
     def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(var, plug))

@@ -20,15 +20,15 @@ class Propositional:
 
     def notation(self) -> set[Pattern]:
         """Returns a list patterns that we will want to reuse."""
-        return {self.phi0, self.phi0_implies_phi0}
+        return {self.phi0, self.phi0_implies_phi0, self.bot_implies_phi0}
 
     def claims(self) -> list[Pattern]:
         """Returns a list statements for theorems that we want to publish."""
-        return [self.phi0_implies_phi0]
+        return [self.bot_implies_phi0, self.phi0_implies_phi0]
 
     def proofs(self) -> list[Proof]:
         """Returns a list of proofs for the claims."""
-        return [self.imp_reflexivity()]
+        return [self.imp_reflexivity(), self.bot_elim()]
 
     def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
         claims_memory: list[Term] = []
@@ -44,6 +44,7 @@ class Propositional:
 
     phi0: MetaVar = MetaVar(0)
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
+    bot_implies_phi0: Pattern = implies(bot, phi0)
 
     def imp_reflexivity(self) -> Proof:
         return modus_ponens(
@@ -79,8 +80,6 @@ class Propositional:
 
 
 if __name__ == '__main__':
-
-    print(Propositional().bot_elim().conclusion())
 
     _exe, claim_path, proof_path = sys.argv
     with open(claim_path, 'wb') as claim_out:

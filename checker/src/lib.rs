@@ -324,6 +324,11 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 
 fn instantiate(p: Rc<Pattern>, vars: &Vec<u8>, plugs: &Vec<Rc<Pattern>>) -> Rc<Pattern> {
     match p.as_ref() {
+        Pattern::SVar(_) => p,
+        Pattern::Mu { var, subpattern } => mu(
+            *var,
+            instantiate(Rc::clone(&subpattern), vars, plugs),
+        ),
         Pattern::Implication { left, right } => implies(
             instantiate(Rc::clone(&left), vars, plugs),
             instantiate(Rc::clone(&right), vars, plugs),
@@ -473,6 +478,11 @@ fn execute_instructions<'a>(
                 let id = next().expect("Expected var_id for the exists binder");
                 let subpattern = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(exists(id, subpattern)))
+            }
+            Instruction::Mu => {
+                let id = next().expect("Expected var_id for the exists binder");
+                let subpattern = pop_stack_pattern(stack);
+                stack.push(Term::Pattern(mu(id, subpattern)))
             }
             Instruction::MetaVar => {
                 let id = next().expect("Insufficient parameters for MetaVar instruction");
