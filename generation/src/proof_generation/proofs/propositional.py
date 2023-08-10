@@ -30,7 +30,7 @@ class Propositional:
         """Returns a list of proofs for the claims."""
         return [self.imp_reflexivity()]
 
-    def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
+    def serialize(self, proofs_out: BinaryIO, claims_out: BinaryIO) -> None:
         claims_memory: list[Term] = []
         for claim in self.claims():
             claim.serialize(set(self.notation()), claims_memory, [], claims_out)
@@ -56,7 +56,7 @@ class Propositional:
 
 
 if __name__ == '__main__':
-    _exe, claim_path, proof_path = sys.argv
-    with open(claim_path, 'wb') as claim_out:
-        with open(proof_path, 'wb') as proof_out:
-            Propositional().serialize(claim_out, proof_out)
+    _exe, proof_path, claim_path = sys.argv
+    with open(proof_path, 'wb') as proof_out:
+        with open(claim_path, 'wb') as claim_out:
+            Propositional().serialize(proof_out, claim_out)

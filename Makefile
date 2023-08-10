@@ -52,7 +52,7 @@ PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 
 .build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*"  ".build/proofs/$*.ml-claim" "$@"
+	poetry -C generation run python -m "proof_generation.proofs.$*" "$@" ".build/proofs/$*.ml-claim"
 
 CHECK_PROOF=./bin/proof-diff
 proofs/%.ml-proof.gen: .build/proofs/%.ml-proof FORCE
