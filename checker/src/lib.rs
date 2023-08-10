@@ -325,10 +325,9 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 fn instantiate(p: Rc<Pattern>, vars: &Vec<u8>, plugs: &Vec<Rc<Pattern>>) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::SVar(_) => p,
-        Pattern::Mu { var, subpattern } => mu(
-            *var,
-            instantiate(Rc::clone(&subpattern), vars, plugs),
-        ),
+        Pattern::Mu { var, subpattern } => {
+            mu(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
+        }
         Pattern::Implication { left, right } => implies(
             instantiate(Rc::clone(&left), vars, plugs),
             instantiate(Rc::clone(&right), vars, plugs),

@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, BinaryIO
 
-from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2, prop3, bot, neg
+from proof_generation.proof import MetaVar, bot, implies, modus_ponens, neg, prop1, prop2, prop3
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof, Term
@@ -62,25 +62,24 @@ class Propositional:
         pat2 = neg(neg(self.phi0))
 
         return modus_ponens(
-                # ((bot -> neg neg 0) -> (bot -> 0)))
+            # ((bot -> neg neg 0) -> (bot -> 0)))
+            modus_ponens(
+                # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
+                prop2.instantiate((0, 1, 2), (bot, pat2, self.phi0)),
+                # (bot -> (neg neg 0 -> 0))
                 modus_ponens(
-                    # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
-                    prop2.instantiate((0, 1, 2), (bot, pat2, self.phi0)),
-                    # (bot -> (neg neg 0 -> 0))
-                    modus_ponens(
-                        # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                        prop1.instantiate((0, 1), (pat1, bot)),
-                        # (neg neg 0 -> 0)
-                        prop3.instantiate((0,), (self.phi0,))
-                    )
+                    # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
+                    prop1.instantiate((0, 1), (pat1, bot)),
+                    # (neg neg 0 -> 0)
+                    prop3.instantiate((0,), (self.phi0,)),
                 ),
-                # (bot -> (neg phi0 -> bot))
-                prop1.instantiate((0, 1), (bot, neg(self.phi0)))
-            )
+            ),
+            # (bot -> (neg phi0 -> bot))
+            prop1.instantiate((0, 1), (bot, neg(self.phi0))),
+        )
 
 
 if __name__ == '__main__':
-
     _exe, claim_path, proof_path = sys.argv
     with open(claim_path, 'wb') as claim_out:
         with open(proof_path, 'wb') as proof_out:

@@ -40,7 +40,9 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
-    def serialize_impl(self, _to_reuse: set[Term], _memory: list[Term], _claims: list[Pattern], output: BinaryIO) -> None:
+    def serialize_impl(
+        self, _to_reuse: set[Term], _memory: list[Term], _claims: list[Pattern], output: BinaryIO
+    ) -> None:
         output.write(bytes([Instruction.SVar, self.name]))
 
     def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
@@ -247,6 +249,7 @@ class Prop2(Proof):
 
 
 prop2 = Prop2()
+
 
 @dataclass(frozen=True)
 class Prop3(Proof):
