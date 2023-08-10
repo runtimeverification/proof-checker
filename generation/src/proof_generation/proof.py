@@ -37,9 +37,7 @@ class EVar(Pattern):
 
     @classmethod
     def shorthand(cls):
-        return {
-            'name': ''
-        }
+        return {'name': ''}
 
 
 @dataclass(frozen=True)
@@ -48,9 +46,7 @@ class SVar(Pattern):
 
     @classmethod
     def shorthand(cls):
-        return {
-            'name': ''
-        }
+        return {'name': ''}
 
 
 @dataclass(frozen=True)
@@ -65,11 +61,7 @@ class Implication(Pattern):
 
     @classmethod
     def shorthand(cls):
-        return {
-            '__name__': 'Imp',
-            'left': '',
-            'right': ''
-        }
+        return {'__name__': 'Imp', 'left': '', 'right': ''}
 
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         self.left.serialize(to_reuse, memory, claims, output)
@@ -96,11 +88,7 @@ class Exists(Pattern):
 
     @classmethod
     def shorthand(cls):
-        return {
-            '__name__': '\u2203',
-            'var': '',
-            'subpattern': ''
-        }
+        return {'__name__': '\u2203', 'var': '', 'subpattern': ''}
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(var, plug))
@@ -141,7 +129,7 @@ class MetaVar(Pattern):
             's_fresh': 's_f',
             'positive': 'pos',
             'negative': 'neg',
-            'application_context': 'app_cntxt'
+            'application_context': 'app_cntxt',
         }
 
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
@@ -225,12 +213,7 @@ class Instantiate(Proof):
 
     @classmethod
     def shorthand(cls):
-        return {
-            '__name__': 'Inst',
-            'subproof': '',
-            'var': '',
-            'plug': ''
-        }
+        return {'__name__': 'Inst', 'subproof': '', 'var': '', 'plug': ''}
 
     def well_formed(self) -> bool:
         return True
@@ -252,11 +235,7 @@ class ModusPonens(Proof):
 
     @classmethod
     def shorthand(cls):
-        return {
-            '__name__': 'MP',
-            'left': '',
-            'right': ''
-        }
+        return {'__name__': 'MP', 'left': '', 'right': ''}
 
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         self.left.serialize(to_reuse, memory, claims, output)
