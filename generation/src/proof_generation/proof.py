@@ -237,3 +237,15 @@ class Prop2(Proof):
 
 
 prop2 = Prop2()
+
+@dataclass(frozen=True)
+class Prop3(Proof):
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        output.write(bytes([Instruction.Prop3]))
+
+    def conclusion(self) -> Pattern:
+        phi0: MetaVar = MetaVar(0)
+        return implies(implies(implies(phi0, bot), bot), phi0)
+
+
+prop3 = Prop3()
