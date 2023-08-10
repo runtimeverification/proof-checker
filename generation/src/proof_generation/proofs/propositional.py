@@ -47,10 +47,10 @@ class Propositional:
 
     def imp_reflexivity(self) -> Proof:
         return modus_ponens(
-            prop1.instantiate(1, self.phi0),
+            prop1.instantiate(tuple([1]), tuple([self.phi0])),
             modus_ponens(
-                prop1.instantiate(1, self.phi0_implies_phi0),
-                prop2.instantiate(1, self.phi0_implies_phi0).instantiate(2, self.phi0),
+                prop1.instantiate(tuple([1]), tuple([self.phi0_implies_phi0])),
+                prop2.instantiate(tuple([1, 2]), tuple([self.phi0_implies_phi0, self.phi0])),
             ),
         )
 

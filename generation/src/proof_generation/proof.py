@@ -27,7 +27,7 @@ class Term:
 
 
 class Pattern(Term):
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         raise NotImplementedError
 
 
@@ -56,7 +56,7 @@ class Implication(Pattern):
         self.right.serialize(to_reuse, memory, claims, output)
         output.write(bytes([Instruction.Implication]))
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Implication(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
 
 
@@ -65,7 +65,7 @@ class Application(Pattern):
     left: Pattern
     right: Pattern
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Application(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
 
 
@@ -74,7 +74,7 @@ class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(var, plug))
 
 
@@ -83,7 +83,7 @@ class Mu(Pattern):
     var: SVar
     subpattern: Pattern
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(var, plug))
 
 
@@ -108,9 +108,9 @@ class MetaVar(Pattern):
             output.write(bytes([Instruction.List, len(list), *[var.name for var in list]]))
         output.write(bytes([Instruction.MetaVar, self.name]))
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
-        if var == self.name:
-            return plug
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
+        if self.name in var:
+            return plug[var.index(self.name)]
         return self
 
 
@@ -162,7 +162,7 @@ def neg(p: Pattern) -> Pattern:
 
 @dataclass(frozen=True)
 class Proof(Term):
-    def instantiate(self: Proof, var: int, plug: Pattern) -> Proof:
+    def instantiate(self: Proof, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Proof:
         return Instantiate(self, var, plug)
 
     def conclusion(self) -> Pattern:
@@ -172,16 +172,17 @@ class Proof(Term):
 @dataclass(frozen=True)
 class Instantiate(Proof):
     subproof: Proof
-    var: int
-    plug: Pattern
+    var: tuple[int, ...]
+    plug: tuple[Pattern, ...]
 
     def well_formed(self) -> bool:
-        return True
+        return len(self.var) == len(self.plug)
 
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
         self.subproof.serialize(to_reuse, memory, claims, output)
-        self.plug.serialize(to_reuse, memory, claims, output)
-        output.write(bytes([Instruction.Instantiate, 1, self.var]))
+        for p in reversed(self.plug):
+            p.serialize(to_reuse, memory, claims, output)
+        output.write(bytes([Instruction.Instantiate, len(self.var)] + list(self.var)))
 
     def conclusion(self) -> Pattern:
         return self.subproof.conclusion().instantiate(self.var, self.plug)
