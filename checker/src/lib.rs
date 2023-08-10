@@ -687,6 +687,36 @@ pub fn verify<'a>(
 /// Testing
 /// =======
 
+#[ignore]
+#[test]
+fn test_negative_disjoint() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![]);
+    assert!(!phi0_s_fresh_0.well_formed());
+}
+
+#[ignore]
+#[test]
+fn test_positive_disjoint() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![], vec![0]);
+    assert!(!phi0_s_fresh_0.well_formed());
+}
+
+#[ignore]
+#[test]
+fn test_wellformedness_fresh() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
+    assert!(phi0_s_fresh_0.well_formed());
+}
+
+#[ignore]
+#[test]
+#[should_panic]
+fn test_instantiate_fresh() {
+    let svar_0 = svar(0);
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
+    _ = instantiate(phi0_s_fresh_0, &vec![0], &vec![svar_0]);
+}
+
 #[test]
 fn test_efresh() {
     let evar = evar(1);
