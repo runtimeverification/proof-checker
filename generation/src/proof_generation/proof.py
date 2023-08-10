@@ -207,7 +207,7 @@ class ModusPonens(Proof):
 
 
 def modus_ponens(left: Proof, right: Proof) -> Proof:
-    return ModusPonens(left, right)
+    return ModusPonens(right, left)
 
 
 @dataclass(frozen=True)
