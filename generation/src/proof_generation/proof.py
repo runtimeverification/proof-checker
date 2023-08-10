@@ -283,17 +283,10 @@ class Instantiate(Proof):
     def well_formed(self) -> bool:
         return True
 
-    def serialize_impl(
-        self,
-        notation: set[Pattern],
-        lemmas: set[Pattern],
-        memory: list[tuple[bool, Pattern]],
-        claims: list[Pattern],
-        output: BinaryIO,
-    ) -> None:
-        self.subproof.serialize(notation, lemmas, memory, claims, output)
-        self.plug.serialize(notation, lemmas, memory, claims, output)
-        output.write(bytes([Instruction.Instantiate, self.var]))
+    def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
+        self.subproof.serialize(to_reuse, memory, claims, output)
+        self.plug.serialize(to_reuse, memory, claims, output)
+        output.write(bytes([Instruction.Instantiate, 1, self.var]))
 
     def conclusion(self) -> Pattern:
         return self.subproof.conclusion().instantiate(self.var, self.plug)

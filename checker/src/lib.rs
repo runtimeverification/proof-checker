@@ -361,14 +361,14 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 /// Substitution utilities
 /// ----------------------
 
-fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
+fn instantiate(p: Rc<Pattern>, vars: &Vec<u8>, plugs: &Vec<Rc<Pattern>>) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::EVar(_) => p,
         Pattern::SVar(_) => p,
         Pattern::Symbol(_) => p,
         Pattern::Implication { left, right } => implies(
-            instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
-            instantiate(Rc::clone(&right), var_id, plug),
+            instantiate(Rc::clone(&left), vars, plugs),
+            instantiate(Rc::clone(&right), vars, plugs),
         ),
         Pattern::Application { left, right } => app(
             instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
@@ -386,11 +386,11 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
             s_fresh,
             ..
         } => {
-            if *id == var_id {
+            if let Some(pos) = vars.iter().position(|&x| x == *id) {
                 // TODO: Improve performance
                 // This introduces 3000 cycles on proof of phi -> phi with empty e_fresh, s_fresh
                 for evar in e_fresh {
-                    if !plug.e_fresh(*evar) {
+                    if !plugs[pos].e_fresh(*evar) {
                         panic!(
                             "Instantiation of MetaVar {} breaks a freshness constraint: EVar {}",
                             id, evar
@@ -398,7 +398,7 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
                     }
                 }
                 for svar in s_fresh {
-                    if !plug.s_fresh(*svar) {
+                    if !plugs[pos].s_fresh(*svar) {
                         panic!(
                             "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
                             id, svar
@@ -406,7 +406,7 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
                     }
                 }
 
-                return plug;
+                return Rc::clone(&plugs[pos]);
             }
 
             p
@@ -601,12 +601,21 @@ fn execute_instructions<'a>(
                 }
             },
             Instruction::Instantiate => {
-                let id = next().expect("Insufficient parameters for MetaVar instruction");
-                let plug = pop_stack_pattern(stack);
+                let n = next().expect("Insufficient parameters for Instantiate instruction");
+                let mut ids: Vec<u8> = vec![];
+                let mut plugs: Vec<Rc<Pattern>> = vec![];
+
+                let mut i = 0;
+                while i < n {
+                    ids.push(next().expect("Insufficient parameters for Instantiate instruction"));
+                    plugs.push(pop_stack_pattern(stack));
+                    i += 1;
+                }
+
                 let metaterm = pop_stack(stack);
                 match metaterm {
-                    Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, id, plug))),
-                    Term::Proved(p) => stack.push(Term::Proved(instantiate(p, id, plug))),
+                    Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, &ids, &plugs))),
+                    Term::Proved(p) => stack.push(Term::Proved(instantiate(p, &ids, &plugs))),
                     Term::List(_) => panic!("Cannot Instantiate list."),
                 }
             }
@@ -986,7 +995,7 @@ fn test_phi_implies_phi_impl() {
         Instruction::MetaVar as u8, 0,         // Stack: p1 ; phi0
         Instruction::Save as u8,               // phi0 save at 0
 
-        Instruction::Instantiate as u8, 1,     // Stack: (p2: phi0 -> (phi0 -> phi0))
+        Instruction::Instantiate as u8, 1, 1,     // Stack: (p2: phi0 -> (phi0 -> phi0))
 
         Instruction::Prop1 as u8,              // Stack: p2 ; p1
         Instruction::Load as u8, 0,            // Stack: p2 ; p1 ; phi0
@@ -994,14 +1003,14 @@ fn test_phi_implies_phi_impl() {
         Instruction::Implication as u8,        // Stack: p2 ; p1 ; phi1; phi0 -> phi0
         Instruction::Save as u8,               // phi0 -> phi0 save at 1
 
-        Instruction::Instantiate as u8, 1,     // Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
+        Instruction::Instantiate as u8, 1, 1,     // Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
 
         Instruction::Prop2 as u8,              // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
         Instruction::Load as u8, 1,
-        Instruction::Instantiate as u8, 1,     // Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
+        Instruction::Instantiate as u8, 1, 1,     // Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
 
         Instruction::Load as u8, 0,
-        Instruction::Instantiate as u8, 2,     // Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0))
+        Instruction::Instantiate as u8, 1, 2,     // Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0))
 
         Instruction::ModusPonens as u8,        // Stack: p2 ; (p2 -> (phi0 -> phi0))
         Instruction::ModusPonens as u8,        // Stack: phi0 -> phi0
