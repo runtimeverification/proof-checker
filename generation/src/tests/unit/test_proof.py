@@ -99,7 +99,7 @@ def test_prove_imp_reflexivity() -> None:
         Instruction.MetaVar, 0,         # Stack: p1 ; phi0
         Instruction.Save,               # phi0 save at 0
 
-        Instruction.Instantiate, 1,     # Stack: (p2: phi0 -> (phi0 -> phi0))
+        Instruction.Instantiate, 1, 1,     # Stack: (p2: phi0 -> (phi0 -> phi0))
 
         Instruction.Prop1,              # Stack: p2 ; p1
         Instruction.Load, 0,            # Stack: p2 ; p1 ; phi0
@@ -107,14 +107,14 @@ def test_prove_imp_reflexivity() -> None:
         Instruction.Implication,        # Stack: p2 ; p1 ; phi1; phi0 -> phi0
         Instruction.Save,               # phi0 -> phi0 save at 1
 
-        Instruction.Instantiate, 1,     # Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
+        Instruction.Instantiate, 1, 1,     # Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
 
         Instruction.Prop2,              # Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
         Instruction.Load, 1,
-        Instruction.Instantiate, 1,     # Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
+        Instruction.Instantiate, 1, 1,     # Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
 
         Instruction.Load, 0,
-        Instruction.Instantiate, 2,     # Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0)))
+        Instruction.Instantiate, 1, 2,     # Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0)))
 
         Instruction.ModusPonens,        # Stack: p2 ; (p2 -> (phi0 -> phi0))
         Instruction.ModusPonens,        # Stack: phi0 -> phi0
