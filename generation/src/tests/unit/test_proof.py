@@ -57,10 +57,10 @@ def test_conclusion() -> None:
         implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0)),
     )
 
-    step4 = modus_ponens(step2, step4)
+    step4 = modus_ponens(step4, step2)
     assert step4.conclusion() == implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0))
 
-    step5 = modus_ponens(step1, step4)
+    step5 = modus_ponens(step4, step1)
     assert step5.conclusion() == implies(phi0, phi0)
 
 
