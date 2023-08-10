@@ -8,7 +8,11 @@ class SuccintPrinter(PrettyPrinter):
         return obj in {(), None}
 
     def _pprint_dataclass(self, object, stream, indent, allowance, context, level):
-        
+        '''
+        Use shorthands for field names if the object's class offer them.
+        Field names (but not values) are omitted if corr. shorthand is the empty-string.
+        Fields are omitted entirely if the value is "empty-like".
+        '''
         shorthand = {}
         if hasattr(object.__class__, 'shorthand'):
             shorthand = object.__class__.shorthand()
@@ -27,7 +31,7 @@ class SuccintPrinter(PrettyPrinter):
         last_index = len(items) - 1
         for i, (key, ent) in enumerate(items):
             last = i == last_index
-            if len(key) > 0 and not SuccintPrinter._is_empty(ent):
+            if len(key) > 0:
                 write(key)
                 write('=')
 
