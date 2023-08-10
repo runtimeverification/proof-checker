@@ -770,7 +770,7 @@ Otherwise, execution aborts, and verification fails.
       and a claim from the queue of claims and assert that they are equal.
 
     Note that since the claims form a stack, they must be proved in the reverse order they
-    were proved in[^claims-stack-vs-queue].
+    were declared in[^claims-stack-vs-queue].
 
 [^claims-stack-vs-queue]: This is convenient for the current implementation, but we may want to revist it later.
 
