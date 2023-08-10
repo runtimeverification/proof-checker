@@ -640,7 +640,7 @@ fn test_wellformedness_fresh() {
 fn test_instantiate_fresh() {
     let svar_0 = svar(0);
     let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
-    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
+    _ = instantiate(phi0_s_fresh_0, &vec![0], &vec![svar_0]);
 }
 
 #[test]
