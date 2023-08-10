@@ -55,8 +55,6 @@ class Propositional:
         )
 
     def bot_elim(self) -> Proof:
-        # neg 0
-        pat0 = implies(bot, neg(neg(self.phi0)))
         # neg neg 0 -> 0
         pat1 = implies(neg(neg(self.phi0)), self.phi0)
         # neg neg 2

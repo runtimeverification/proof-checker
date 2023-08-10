@@ -40,6 +40,9 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
+        return self
+
 
 @dataclass(frozen=True)
 class Symbol(Pattern):
@@ -245,7 +248,7 @@ class Prop3(Proof):
 
     def conclusion(self) -> Pattern:
         phi0: MetaVar = MetaVar(0)
-        return implies(implies(implies(phi0, bot), bot), phi0)
+        return implies(neg(neg(phi0)), phi0)
 
 
 prop3 = Prop3()
