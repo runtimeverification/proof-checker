@@ -769,7 +769,7 @@ Otherwise, execution aborts, and verification fails.
     * During the `proof` phase consume a proof from the stack
       and a claim from the queue of claims and assert that they are equal.
 
-    Note that since the claim form a stack, the must be proved in the reverse order they
+    Note that since the claims form a stack, they must be proved in the reverse order they
     were proved in[^claims-stack-vs-queue].
 
 [^claims-stack-vs-queue]: This is convenient for the current implementation, but we may want to revist it later.
