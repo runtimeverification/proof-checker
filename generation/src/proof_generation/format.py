@@ -1,12 +1,13 @@
 import dataclasses as _dataclasses
 from pprint import PrettyPrinter
 
-from proof_generation.proof import Implication, MetaVar, bot
+from proof_generation.proof import Implication, MetaVar, bot, Instantiate, Prop1, Prop2
 
 
 class MLPrinter(PrettyPrinter):
-    def __init__(self, indent=1):
+    def __init__(self, indent=1, desugar_axioms=False):
         # Hardcode width to 1 because otherwise some formatting doesn't work :shrug
+        self.desugar_axioms = desugar_axioms
         return super().__init__(
             indent=indent, width=1, depth=None, stream=None, compact=False, sort_dicts=True, underscore_numbers=False
         )
@@ -21,6 +22,12 @@ class MLPrinter(PrettyPrinter):
         Field names (but not values) are omitted if corr. shorthand is the empty-string.
         Fields are omitted entirely if the value is "empty-like".
         """
+
+        # Desugar axioms to their conclusions
+        if self.desugar_axioms and (isinstance(object, Prop1) or isinstance(object, Prop2)):
+            self._pprint_dataclass(object.conclusion(), stream, indent, allowance, context, level)
+            return
+
         cls_name = object.__class__
         shorthand = {}
         if hasattr(cls_name, 'shorthand'):
@@ -40,11 +47,11 @@ class MLPrinter(PrettyPrinter):
 
         # Pretty-print negation
         if isinstance(object, Implication) and object.right == bot:
-            stream.write('\u00AC')
-
             # Recompute indent
             indent -= len(cls_output_name) + 1
             indent += 1
+
+            stream.write('\u00AC')
 
             # Don't print bot anymore
             items.remove(('', object.right))
@@ -62,14 +69,18 @@ class MLPrinter(PrettyPrinter):
 
             stream.write(phi_name)
 
-            # Avoid duplication when formatting field values further down
-            cls_output_name = ""
+            # Don't print name anymore
             items.remove(('', object.name))
 
-        if len(items) > 0:
-            stream.write(cls_output_name + '(')
-            self._format_namespace_items(items, stream, indent, allowance, context, level)
-            stream.write(')')
+            if len(items) > 0:
+                stream.write('(')
+                self._format_namespace_items(items, stream, indent, allowance, context, level)
+                stream.write(')')    
+            return
+
+        stream.write(cls_output_name + '(')
+        self._format_namespace_items(items, stream, indent, allowance, context, level)
+        stream.write(')')
 
     def _format_namespace_items(self, items, stream, indent, allowance, context, level) -> None:
         write = stream.write
