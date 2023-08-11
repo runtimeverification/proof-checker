@@ -77,9 +77,9 @@ class Propositional(ProofExp):
         return self.modus_ponens(
             self.modus_ponens(
                 self.prop2().instantiate(1, self.phi0_implies_phi0).instantiate(2, self.phi0),
-                self.prop1().instantiate(1, self.phi0_implies_phi0)
+                self.prop1().instantiate(1, self.phi0_implies_phi0),
             ),
-            self.prop1().instantiate(1, self.phi0)
+            self.prop1().instantiate(1, self.phi0),
         )
 
     def imp_transitivity(self, transitivity0: Proof, transitivity1: Proof) -> Proof:
@@ -99,12 +99,10 @@ class Propositional(ProofExp):
         return self.modus_ponens(
             self.modus_ponens(
                 self.prop2().instantiate(1, phi1).instantiate(2, phi2).instantiate(0, MetaVar(1)),
-                self.modus_ponens(
-                    self.prop1().instantiate(0, transitivity1_conc),
-                    transitivity1
-                ),
+                self.modus_ponens(self.prop1().instantiate(0, transitivity1_conc), transitivity1),
             ).instantiate(1, phi0),
-            transitivity0)
+            transitivity0,
+        )
 
     def top_intro(self) -> Proof:
         return self.imp_reflexivity().instantiate(0, self.bot())
