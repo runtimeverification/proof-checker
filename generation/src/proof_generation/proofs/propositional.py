@@ -17,8 +17,9 @@ class ProofExp:
     def prop2(self) -> Proof:
         return Prop2()
 
+    # Flipping wrapper for easier-to-read proofs from MM files
     def modus_ponens(self, left: Proof, right: Proof) -> Proof:
-        return ModusPonens(left, right)
+        return ModusPonens(right, left)
 
 
 class Propositional(ProofExp):
@@ -74,33 +75,36 @@ class Propositional(ProofExp):
 
     def imp_reflexivity(self) -> Proof:
         return self.modus_ponens(
-            self.prop1().instantiate(1, self.phi0),
             self.modus_ponens(
-                self.prop1().instantiate(1, self.phi0_implies_phi0),
                 self.prop2().instantiate(1, self.phi0_implies_phi0).instantiate(2, self.phi0),
+                self.prop1().instantiate(1, self.phi0_implies_phi0)
             ),
+            self.prop1().instantiate(1, self.phi0)
         )
 
-    def imp_transitivity(self, left: Proof, right: Proof) -> Proof:
-        left_conc = left.conclusion()
-        match left_conc:
+    def imp_transitivity(self, transitivity0: Proof, transitivity1: Proof) -> Proof:
+        transitivity0_conc = transitivity0.conclusion()
+        match transitivity0_conc:
             case Implication(phi0, phi1):
                 pass
             case _:
                 raise AssertionError('Expected implication')
-        right_conc = right.conclusion()
-        match right_conc:
+        transitivity1_conc = transitivity1.conclusion()
+        match transitivity1_conc:
             case Implication(phi1_r, phi2):
                 assert phi1_r == phi1
             case _:
                 raise AssertionError('Expected implication')
 
-        step1 = self.modus_ponens(right, self.prop1().instantiate(0, right_conc))
-        step2 = self.modus_ponens(
-            step1,
-            self.prop2().instantiate(1, phi1).instantiate(2, phi2).instantiate(0, MetaVar(1)),
-        )
-        return self.modus_ponens(left, step2.instantiate(1, phi0))
+        return self.modus_ponens(
+            self.modus_ponens(
+                self.prop2().instantiate(1, phi1).instantiate(2, phi2).instantiate(0, MetaVar(1)),
+                self.modus_ponens(
+                    self.prop1().instantiate(0, transitivity1_conc),
+                    transitivity1
+                ),
+            ).instantiate(1, phi0),
+            transitivity0)
 
     def top_intro(self) -> Proof:
         return self.imp_reflexivity().instantiate(0, self.bot())
