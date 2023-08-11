@@ -746,22 +746,118 @@ fn test_wellformedness_fresh() {
 }
 
 #[test]
+#[allow(non_snake_case)]
 fn test_positivity() {
-    let svar = svar(1);
-    let not_svar = not(Rc::clone(&svar));
+    let X0 = svar(0);
+    let X1 = svar(1);
+    let X2 = svar(2);
+    let neg_X1 = not(Rc::clone(&X1));
 
-    assert!(!not_svar.positive(1));
-    assert!(not_svar.positive(2));
-    assert!(not_svar.negative(1));
-    assert!(not_svar.negative(2));
+    // EVar
+    let evar1 = evar(1);
+    assert!(evar1.positive(1));
+    assert!(evar1.negative(1));
+    assert!(evar1.positive(2));
+    assert!(evar1.negative(2));
 
-    let pat = implies(Rc::clone(&not_svar), Rc::clone(&not_svar));
+    // SVar
+    assert!(X1.positive(1));
+    assert!(!X1.negative(1));
+    assert!(X1.positive(2));
+    assert!(X1.negative(2));
 
-    assert!(!pat.positive(1));
-    assert!(pat.positive(2));
+    // Application
+    let appX1X2 = app(Rc::clone(&X1), Rc::clone(&X2));
+    assert!(appX1X2.positive(1));
+    assert!(appX1X2.positive(2));
+    assert!(appX1X2.positive(3));
+    assert!(!appX1X2.negative(1));
+    assert!(!appX1X2.negative(2));
+    assert!(appX1X2.negative(3));
 
-    let pat2 = implies(Rc::clone(&not_svar), Rc::clone(&svar));
-    assert!(pat2.positive(1));
+    // Implication
+    let impliesX1X2 = implies(Rc::clone(&X1), Rc::clone(&X2));
+    assert!(!impliesX1X2.positive(1));
+    assert!(impliesX1X2.positive(2));
+    assert!(impliesX1X2.positive(3));
+    assert!(impliesX1X2.negative(1));
+    assert!(!impliesX1X2.negative(2));
+    assert!(impliesX1X2.negative(3));
+
+    let impliesX1X1 = implies(Rc::clone(&X1), Rc::clone(&X1));
+    assert!(!impliesX1X1.positive(1));
+    assert!(!impliesX1X1.negative(1));
+
+    // Exists
+    let existsX1X2 = exists(1, Rc::clone(&X2));
+    assert!(existsX1X2.positive(1));
+    assert!(existsX1X2.positive(2));
+    assert!(existsX1X2.positive(3));
+    assert!(existsX1X2.negative(1));
+    assert!(!existsX1X2.negative(2));
+    assert!(existsX1X2.negative(3));
+
+    // Mu
+    let muX1x1 = mu(1, Rc::clone(&evar1));
+    assert!(muX1x1.positive(1));
+    assert!(muX1x1.positive(2));
+    assert!(muX1x1.negative(1));
+    assert!(muX1x1.negative(2));
+
+    let muX1X1 = mu(1, Rc::clone(&X1));
+    assert!(muX1X1.positive(1));
+    assert!(muX1X1.negative(1));
+
+    let muX1X2 = mu(1, Rc::clone(&X2));
+    assert!(muX1X2.positive(1));
+    assert!(muX1X2.positive(2));
+    assert!(muX1X2.positive(3));
+    assert!(muX1X2.negative(1));
+    assert!(!muX1X2.negative(2));
+    assert!(mu(1, implies(Rc::clone(&X2), Rc::clone(&X1))).negative(2));
+    assert!(muX1X2.negative(3));
+
+    // MetaVar
+    assert!(!metavar_unconstrained(1).positive(1));
+    assert!(!metavar_unconstrained(1).positive(2));
+    assert!(!metavar_unconstrained(1).negative(1));
+    assert!(!metavar_unconstrained(1).negative(2));
+
+    // Do not imply positivity from freshness
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).positive(1));
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).negative(1));
+    assert!(metavar_s_fresh(1, 1, vec![1], vec![1]).positive(1));
+    assert!(metavar_s_fresh(1, 1, vec![1], vec![1]).negative(1));
+    assert!(metavar_s_fresh(1, 1, vec![1], vec![]).positive(1));
+    assert!(metavar_s_fresh(1, 1, vec![], vec![1]).negative(1));
+
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).positive(2));
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).negative(2));
+
+    // ESubst
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X0)).positive(0));
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X1)).positive(0));
+    assert!(!esubst(metavar_s_fresh(0, 1, vec![1], vec![]), 0, Rc::clone(&X1)).positive(0));
+
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X0)).negative(0));
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X1)).negative(0));
+    assert!(!esubst(metavar_s_fresh(0, 1, vec![1], vec![]), 0, Rc::clone(&X1)).negative(0));
+
+    // Combinations
+    assert!(!neg_X1.positive(1));
+    assert!(neg_X1.positive(2));
+    assert!(neg_X1.negative(1));
+    assert!(neg_X1.negative(2));
+
+    let negX1_implies_negX1 = implies(Rc::clone(&neg_X1), Rc::clone(&neg_X1));
+    assert!(!negX1_implies_negX1.positive(1));
+    assert!(negX1_implies_negX1.positive(2));
+    assert!(!negX1_implies_negX1.negative(1));
+    assert!(negX1_implies_negX1.negative(2));
+
+    let negX1_implies_X1 = implies(Rc::clone(&neg_X1), Rc::clone(&X1));
+    assert!(negX1_implies_X1.positive(1));
+    assert!(!negX1_implies_X1.negative(1));
 }
 
 #[test]
