@@ -167,7 +167,7 @@ class Exists(Pattern):
         output.write(bytes([Instruction.Exists, self.var.name]))
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
-        return Exists(self.var, self.subpattern.instantiate(self.var.name, plug))
+        return Exists(self.var, self.subpattern.instantiate(var, plug))
 
 
 @dataclass(frozen=True)
