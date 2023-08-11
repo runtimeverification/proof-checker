@@ -751,6 +751,7 @@ fn test_positivity() {
     let X0 = svar(0);
     let X1 = svar(1);
     let X2 = svar(2);
+    let c1 = symbol(1);
     let neg_X1 = not(Rc::clone(&X1));
 
     // EVar
@@ -765,6 +766,12 @@ fn test_positivity() {
     assert!(!X1.negative(1));
     assert!(X1.positive(2));
     assert!(X1.negative(2));
+
+    // Symbol
+    assert!(c1.positive(1));
+    assert!(c1.negative(1));
+    assert!(c1.positive(2));
+    assert!(c1.negative(2));
 
     // Application
     let appX1X2 = app(Rc::clone(&X1), Rc::clone(&X2));
