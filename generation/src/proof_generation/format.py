@@ -1,6 +1,6 @@
 import dataclasses as _dataclasses
 from pprint import PrettyPrinter
-from proof_generation.proof import MetaVar
+from proof_generation.proof import MetaVar, Mu, Implication, bot
 
 
 class SuccintPrinter(PrettyPrinter):
@@ -21,12 +21,42 @@ class SuccintPrinter(PrettyPrinter):
         cls_output_name: str = shorthand.get('__name__', object.__class__.__name__)
 
         indent += len(cls_output_name) + 1
+        # https://docs.python.org/3.7/library/dataclasses.html#dataclasses.dataclass
+        # Fields order is guaranteed to be definition order
         items = [(shorthand.get(f.name, f.name), getattr(object, f.name)) for f in _dataclasses.fields(object)]
         items = list(filter((lambda item: not SuccintPrinter._is_empty(item[1])), items))
 
+        # Pretty-print bottom
+        if object == bot:
+            stream.write('\u22A5')
+            return 
+
+        # Pretty-print negation
+        if isinstance(object, Implication) and object.right == bot:
+            stream.write('\u00AC')
+
+            #Recompute indent
+            indent -= len(cls_output_name) + 1
+            indent += 1
+
+            # Don't print bot anymore
+            items.remove(('', object.right))
+
+            self._format_namespace_items(items, stream, indent, allowance, context, level)
+            return
+
         # Special formatting for MetaVars
         if isinstance(object, MetaVar):
-            stream.write(f'phi{object.name}')
+            phi_name = f'phi{object.name}'
+
+            #Recompute indent
+            indent -= len(cls_output_name) + 1
+            indent += len(phi_name)
+
+            stream.write(phi_name)
+
+            #Avoid duplication when formatting field values further down
+            cls_output_name = ""
             items.remove(('', object.name))
         
         if len(items) > 0:
