@@ -57,7 +57,10 @@ class Propositional:
 
 
 if __name__ == '__main__':
-    sp = SuccintPrinter()
+    #TODO: Hardcode in class
+    sp = SuccintPrinter(width=1)
+
+    #sp.pprint(EVar(0))
     sp.pprint(Mu(SVar(0), Exists(EVar(0), MetaVar(0))))
 
     _exe, claim_path, proof_path = sys.argv

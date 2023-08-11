@@ -1,5 +1,6 @@
 import dataclasses as _dataclasses
 from pprint import PrettyPrinter
+from proof_generation.proof import MetaVar
 
 
 class SuccintPrinter(PrettyPrinter):
@@ -13,17 +14,25 @@ class SuccintPrinter(PrettyPrinter):
         Field names (but not values) are omitted if corr. shorthand is the empty-string.
         Fields are omitted entirely if the value is "empty-like".
         """
+        cls_name = object.__class__
         shorthand = {}
-        if hasattr(object.__class__, 'shorthand'):
-            shorthand = object.__class__.shorthand()
-        cls_name = shorthand.get('__name__', object.__class__.__name__)
+        if hasattr(cls_name, 'shorthand'):
+            shorthand = cls_name.shorthand()
+        cls_output_name: str = shorthand.get('__name__', object.__class__.__name__)
 
-        indent += len(cls_name) + 1
+        indent += len(cls_output_name) + 1
         items = [(shorthand.get(f.name, f.name), getattr(object, f.name)) for f in _dataclasses.fields(object)]
         items = list(filter((lambda item: not SuccintPrinter._is_empty(item[1])), items))
-        stream.write(cls_name + '(')
-        self._format_namespace_items(items, stream, indent, allowance, context, level)
-        stream.write(')')
+
+        # Special formatting for MetaVars
+        if isinstance(object, MetaVar):
+            stream.write(f'phi{object.name}')
+            items.remove(('', object.name))
+        
+        if len(items) > 0:
+            stream.write(cls_output_name + '(')
+            self._format_namespace_items(items, stream, indent, allowance, context, level)
+            stream.write(')')
 
     def _format_namespace_items(self, items, stream, indent, allowance, context, level) -> None:
         write = stream.write
