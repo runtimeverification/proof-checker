@@ -587,7 +587,7 @@ class PropagationOr(Proof):
 Using a rule of meta inference, we may instantiate metatheorems.
 This allows us to instantiate axiom and theorem schemas, such as
 $\phi \limplies \phi$.
-For performance and conveniency reasons, we support *simultaneous* instantiations
+For performance and convenience reasons, we support *simultaneous* instantiations
 that can instantiate several metavars at once, where all pluggings are isolated (they do
 not cause side-effects among each other).
 This means:
