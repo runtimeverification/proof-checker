@@ -897,6 +897,48 @@ fn test_wellformedness_positive() {
 }
 
 #[test]
+#[allow(non_snake_case)]
+fn test_wellformedness_instantiate() {
+    let x0 = evar(0);
+    let X0 = svar(0);
+    let c0 = symbol(0);
+    let x0_implies_x0 = implies(Rc::clone(&x0), Rc::clone(&x0));
+    let appx0x0 = app(Rc::clone(&x0), Rc::clone(&x0));
+    let existsx0x0 = exists(0, Rc::clone(&x0));
+    let muX0x0 = mu(0, Rc::clone(&x0));
+
+    // Concrete patterns are unaffected by instantiate
+    assert!(instantiate(Rc::clone(&x0), 0, Rc::clone(&X0)) == x0);
+    assert!(instantiate(Rc::clone(&x0), 1, Rc::clone(&X0)) == x0);
+    assert!(instantiate(Rc::clone(&X0), 0, Rc::clone(&x0)) == X0);
+    assert!(instantiate(Rc::clone(&X0), 1, Rc::clone(&x0)) == X0);
+    assert!(instantiate(Rc::clone(&c0), 0, Rc::clone(&x0)) == c0);
+    assert!(instantiate(Rc::clone(&c0), 1, Rc::clone(&x0)) == c0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), 0, Rc::clone(&x0)) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), 1, Rc::clone(&x0)) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&appx0x0), 0, Rc::clone(&x0)) == appx0x0);
+    assert!(instantiate(Rc::clone(&appx0x0), 1, Rc::clone(&x0)) == appx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), 0, Rc::clone(&X0)) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), 1, Rc::clone(&X0)) == existsx0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), 0, Rc::clone(&x0)) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), 1, Rc::clone(&x0)) == muX0x0);
+
+    let phi0 = metavar_unconstrained(0);
+    let phi0_implies_phi0 = implies(Rc::clone(&phi0), Rc::clone(&phi0));
+    let appphi0phi0 = app(Rc::clone(&x0), Rc::clone(&x0));
+    let existsx0phi0 = exists(0, Rc::clone(&phi0));
+    let muX0phi0 = mu(0, Rc::clone(&phi0));
+    assert!(instantiate(Rc::clone(&phi0_implies_phi0), 0, Rc::clone(&x0)) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&phi0_implies_phi0), 1, Rc::clone(&x0)) == phi0_implies_phi0);
+    assert!(instantiate(Rc::clone(&appphi0phi0), 0, Rc::clone(&x0)) == appx0x0);
+    assert!(instantiate(Rc::clone(&appphi0phi0), 1, Rc::clone(&x0)) == appphi0phi0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), 0, Rc::clone(&x0)) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), 1, Rc::clone(&x0)) == existsx0phi0);
+    assert!(instantiate(Rc::clone(&muX0phi0), 0, Rc::clone(&x0)) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0phi0), 1, Rc::clone(&x0)) == muX0phi0);
+}
+
+#[test]
 fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
