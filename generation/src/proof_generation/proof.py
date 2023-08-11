@@ -36,7 +36,7 @@ class EVar(Pattern):
     name: int
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {'name': ''}
 
 
@@ -45,7 +45,7 @@ class SVar(Pattern):
     name: int
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {'name': ''}
 
 
@@ -60,7 +60,7 @@ class Implication(Pattern):
     right: Pattern
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {'__name__': 'Imp', 'left': '', 'right': ''}
 
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:
@@ -87,7 +87,7 @@ class Exists(Pattern):
     subpattern: Pattern
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {'__name__': '\u2203', 'var': '', 'subpattern': ''}
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
@@ -100,7 +100,7 @@ class Mu(Pattern):
     subpattern: Pattern
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {
             '__name__': '\u03BC',
             'var': '',
@@ -121,7 +121,7 @@ class MetaVar(Pattern):
     application_context: tuple[EVar, ...] = ()
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {
             '__name__': 'MV',
             'name': '',
@@ -212,7 +212,7 @@ class Instantiate(Proof):
     plug: Pattern
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {'__name__': 'Inst', 'subproof': '', 'var': '', 'plug': ''}
 
     def well_formed(self) -> bool:
@@ -234,7 +234,7 @@ class ModusPonens(Proof):
     ...
 
     @classmethod
-    def shorthand(cls):
+    def shorthand(cls) -> dict[str, str]:
         return {'__name__': 'MP', 'left': '', 'right': ''}
 
     def serialize_impl(self, to_reuse: set[Term], memory: list[Term], claims: list[Pattern], output: BinaryIO) -> None:

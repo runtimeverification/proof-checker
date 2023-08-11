@@ -1,11 +1,12 @@
 import dataclasses as _dataclasses
 from pprint import PrettyPrinter
+from typing import Any
 
-from proof_generation.proof import Implication, MetaVar, bot, Instantiate, Prop1, Prop2
+from proof_generation.proof import Implication, MetaVar, Prop1, Prop2, bot
 
 
 class MLPrinter(PrettyPrinter):
-    def __init__(self, indent=1, desugar_axioms=False):
+    def __init__(self, indent: int = 1, desugar_axioms: bool = False):
         # Hardcode width to 1 because otherwise some formatting doesn't work :shrug
         self.desugar_axioms = desugar_axioms
         return super().__init__(
@@ -13,10 +14,12 @@ class MLPrinter(PrettyPrinter):
         )
 
     @staticmethod
-    def _is_empty(obj) -> bool:
+    def _is_empty(obj: Any) -> bool:
         return obj in {(), None}
 
-    def _pprint_dataclass(self, object, stream, indent, allowance, context, level) -> None:
+    def _pprint_dataclass(
+        self, object: Any, stream: Any, indent: int, allowance: Any, context: Any, level: Any
+    ) -> None:
         """
         Use shorthands for field names if the object's class offer them.
         Field names (but not values) are omitted if corr. shorthand is the empty-string.
@@ -75,14 +78,16 @@ class MLPrinter(PrettyPrinter):
             if len(items) > 0:
                 stream.write('(')
                 self._format_namespace_items(items, stream, indent, allowance, context, level)
-                stream.write(')')    
+                stream.write(')')
             return
 
         stream.write(cls_output_name + '(')
         self._format_namespace_items(items, stream, indent, allowance, context, level)
         stream.write(')')
 
-    def _format_namespace_items(self, items, stream, indent, allowance, context, level) -> None:
+    def _format_namespace_items(
+        self, items: list[Any], stream: Any, indent: int, allowance: Any, context: Any, level: Any
+    ) -> None:
         write = stream.write
         delimnl = ',\n' + ' ' * indent
         last_index = len(items) - 1
@@ -97,6 +102,6 @@ class MLPrinter(PrettyPrinter):
                 # recursive dataclass repr.
                 write('...')
             else:
-                self._format(ent, stream, indent + len(key) + 1, allowance if last else 1, context, level)
+                self._format(ent, stream, indent + len(key) + 1, allowance if last else 1, context, level)  # type: ignore
             if not last:
                 write(delimnl)
