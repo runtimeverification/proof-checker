@@ -73,6 +73,7 @@ class Propositional(ProofExp):
     # Proofs
     # ======
 
+    # phi0 -> phi0
     def imp_reflexivity(self) -> Proof:
         return self.modus_ponens(
             self.modus_ponens(
@@ -82,15 +83,16 @@ class Propositional(ProofExp):
             self.prop1().instantiate(1, self.phi0),
         )
 
-    def imp_transitivity(self, transitivity0: Proof, transitivity1: Proof) -> Proof:
-        transitivity0_conc = transitivity0.conclusion()
-        match transitivity0_conc:
+    # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
+    def imp_transitivity(self, phi0_imp_phi1: Proof, phi1_imp_phi2: Proof) -> Proof:
+        phi0_imp_phi1_conc = phi0_imp_phi1.conclusion()
+        match phi0_imp_phi1_conc:
             case Implication(phi0, phi1):
                 pass
             case _:
                 raise AssertionError('Expected implication')
-        transitivity1_conc = transitivity1.conclusion()
-        match transitivity1_conc:
+        phi1_imp_phi2_conc = phi1_imp_phi2.conclusion()
+        match phi1_imp_phi2_conc:
             case Implication(phi1_r, phi2):
                 assert phi1_r == phi1
             case _:
@@ -99,9 +101,9 @@ class Propositional(ProofExp):
         return self.modus_ponens(
             self.modus_ponens(
                 self.prop2().instantiate(1, phi1).instantiate(2, phi2).instantiate(0, MetaVar(1)),
-                self.modus_ponens(self.prop1().instantiate(0, transitivity1_conc), transitivity1),
+                self.modus_ponens(self.prop1().instantiate(0, phi1_imp_phi2_conc), phi1_imp_phi2),
             ).instantiate(1, phi0),
-            transitivity0,
+            phi0_imp_phi1,
         )
 
     def top_intro(self) -> Proof:
