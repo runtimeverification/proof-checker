@@ -22,10 +22,12 @@ def test_instantiate() -> None:
 
     assert exists(0, phi0).instantiate(0, phi1) == exists(0, phi1)
     assert exists(0, phi0).instantiate(0, phi0_ef0) == exists(0, phi0_ef0)
+    assert exists(0, phi1).instantiate(1, phi0_ef0) == exists(0, phi0_ef0)
     assert exists(0, phi1).instantiate(2, phi0_ef0) == exists(0, phi1)
 
     assert mu(0, phi0).instantiate(0, phi1) == mu(0, phi1)
     assert mu(0, phi0).instantiate(0, phi0_ef0) == mu(0, phi0_ef0)
+    assert mu(0, phi1).instantiate(1, phi0_ef0) == mu(0, phi0_ef0)
     assert mu(0, phi1).instantiate(2, phi0_ef0) == mu(0, phi1)
 
 
