@@ -3,8 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, BinaryIO
 
-from proof_generation.format import SuccintPrinter
-from proof_generation.proof import EVar, Exists, MetaVar, Mu, SVar, implies, modus_ponens, prop1, prop2, bot
+from proof_generation.proof import MetaVar, implies, modus_ponens, prop1, prop2
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof, Term
@@ -57,14 +56,6 @@ class Propositional:
 
 
 if __name__ == '__main__':
-    #TODO: Hardcode in class
-    sp = SuccintPrinter(width=1)
-
-    #sp.pprint(EVar(0))
-    sp.pprint(bot)
-    sp.pprint(implies(MetaVar(0), bot))
-    sp.pprint(Mu(SVar(0), Exists(EVar(0), implies(MetaVar(0), bot))))
-
     _exe, claim_path, proof_path = sys.argv
     with open(claim_path, 'wb') as claim_out:
         with open(proof_path, 'wb') as proof_out:

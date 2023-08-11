@@ -1,9 +1,16 @@
 import dataclasses as _dataclasses
 from pprint import PrettyPrinter
-from proof_generation.proof import MetaVar, Mu, Implication, bot
+
+from proof_generation.proof import Implication, MetaVar, bot
 
 
-class SuccintPrinter(PrettyPrinter):
+class MLPrinter(PrettyPrinter):
+    def __init__(self, indent=1):
+        # Hardcode width to 1 because otherwise some formatting doesn't work :shrug
+        return super().__init__(
+            indent=indent, width=1, depth=None, stream=None, compact=False, sort_dicts=True, underscore_numbers=False
+        )
+
     @staticmethod
     def _is_empty(obj) -> bool:
         return obj in {(), None}
@@ -24,18 +31,18 @@ class SuccintPrinter(PrettyPrinter):
         # https://docs.python.org/3.7/library/dataclasses.html#dataclasses.dataclass
         # Fields order is guaranteed to be definition order
         items = [(shorthand.get(f.name, f.name), getattr(object, f.name)) for f in _dataclasses.fields(object)]
-        items = list(filter((lambda item: not SuccintPrinter._is_empty(item[1])), items))
+        items = list(filter((lambda item: not MLPrinter._is_empty(item[1])), items))
 
         # Pretty-print bottom
         if object == bot:
             stream.write('\u22A5')
-            return 
+            return
 
         # Pretty-print negation
         if isinstance(object, Implication) and object.right == bot:
             stream.write('\u00AC')
 
-            #Recompute indent
+            # Recompute indent
             indent -= len(cls_output_name) + 1
             indent += 1
 
@@ -49,16 +56,16 @@ class SuccintPrinter(PrettyPrinter):
         if isinstance(object, MetaVar):
             phi_name = f'phi{object.name}'
 
-            #Recompute indent
+            # Recompute indent
             indent -= len(cls_output_name) + 1
             indent += len(phi_name)
 
             stream.write(phi_name)
 
-            #Avoid duplication when formatting field values further down
+            # Avoid duplication when formatting field values further down
             cls_output_name = ""
             items.remove(('', object.name))
-        
+
         if len(items) > 0:
             stream.write(cls_output_name + '(')
             self._format_namespace_items(items, stream, indent, allowance, context, level)
