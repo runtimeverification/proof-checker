@@ -17,8 +17,9 @@ class ProofExp:
     def prop2(self) -> Proof:
         return Prop2()
 
-    # Flipping wrapper for easier-to-read proofs from MM files
     def modus_ponens(self, left: Proof, right: Proof) -> Proof:
+        """ This wrapper flips the order of arguments for modus ponens, 
+            so that ITP proof scripts from the proof-generation repo look the same. 
         return ModusPonens(right, left)
 
 
