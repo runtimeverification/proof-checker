@@ -64,7 +64,7 @@ class MLPrinter(PrettyPrinter):
 
         # Special formatting for MetaVars
         if isinstance(object, MetaVar):
-            phi_name = f'phi{object.name}'
+            phi_name = f'\u03C6{object.name}'
 
             # Recompute indent
             indent -= len(cls_output_name) + 1

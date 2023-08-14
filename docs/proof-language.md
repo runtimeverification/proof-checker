@@ -210,6 +210,14 @@ abstract class Pattern(Term):
         # returns true iff svar is not a free set variable in this pattern
     ...
 
+    def positive(svar):
+        # returns true iff all free occurrences of svar in this pattern are positive
+    ...
+
+    def negative(svar):
+        # returns true iff all free occurences of svar in this pattern are negative
+    ...
+
 abstract class Proof(Term):
     abstract def conclusion:
         ...
@@ -234,6 +242,12 @@ class Symbol(Pattern):
     def s_fresh(svar):
         return True
 
+    def positive(svar):
+        return True
+
+    def negative(svar):
+        return True
+
 class SVar(Pattern):
     name: u32
 
@@ -243,6 +257,13 @@ class SVar(Pattern):
     def s_fresh(svar):
         return svar != name
 
+    def positive(svar):
+        return True
+
+    def negative(svar):
+        return svar != name
+
+
 class EVar(Pattern):
     name: u32
 
@@ -250,6 +271,12 @@ class EVar(Pattern):
         return evar != name
 
     def s_fresh(svar):
+        return True
+
+    def positive(svar):
+        return True
+
+    def negative(svar):
         return True
 
 class Implication(Pattern):
@@ -262,6 +289,12 @@ class Implication(Pattern):
     def s_fresh(svar):
         return left.s_fresh(svar) and right.s_fresh(svar)
 
+    def positive(svar):
+        return left.negative(svar) and right.positive(svar)
+
+    def negative(svar):
+        return left.positive(svar) and right.negative(svar)
+
 class Application(Pattern):
     left: Pattern
     right: Pattern
@@ -271,6 +304,12 @@ class Application(Pattern):
 
     def s_fresh(svar):
         return left.s_fresh(svar) and right.s_fresh(svar)
+
+    def positive(svar):
+        return left.positive(svar) and right.positive(svar)
+
+    def negative(svar):
+        return left.negative(svar) and right.negative(svar)
 
 class Exists(Pattern):
     var: u32
@@ -282,6 +321,12 @@ class Exists(Pattern):
     def s_fresh(svar):
         return subpattern.s_fresh(svar)
 
+    def positive(svar):
+        return subpattern.positive(svar)
+
+    def negative(svar):
+        return subpattern.negative(svar)
+
 class Mu(Pattern):
     var: u32
     subpattern: Pattern
@@ -291,6 +336,12 @@ class Mu(Pattern):
 
     def s_fresh(svar):
         return var == svar or subpattern.s_fresh(svar)
+
+    def positive(svar):
+        return svar == var or subpattern.positive(svar)
+
+    def negative(svar):
+        return svar == var or subpattern.negative(svar)
 
     def well_formed():
         return super.well_formed()
@@ -324,6 +375,12 @@ class MetaVar(Pattern):
 
     def s_fresh(svar):
         return svar in s_fresh
+
+    def positive(svar):
+        return svar in positive
+
+    def negative(svar):
+        return svar in negative
 
     # Should check whether the metavar is instantiable, as uninstantiable metavars might lead to issues
     # (see https://github.com/runtimeverification/proof-checker/issues/8)
@@ -378,6 +435,30 @@ class ESubst(Pattern):
         # (see explanation for e_fresh)
         return pattern.s_fresh(svar) and plug.s_fresh(svar) # fresh-after-subst
 
+    # Best-effort for now, as we can't handle (pattern.positive(var) returns something else
+    # than intended, as positive takes set variable, not var: EVar)
+    def positive(svar):
+        # Both pattern and plug need to be checked, as
+        # the substitution is well-formed by assumption
+        # and svar != var in ESubst
+
+        # Note that the unsubstituted var in pattern
+        # do not influence the result, as var: EVar
+
+        # If svar notin FV(plug), so plug has no influence on the result
+
+        return pattern.positive(svar) and plug.s_fresh(svar)
+
+    # Best-effort for now, as we can't handle (pattern.positive(var) returns something else
+    # than intended, as positive takes a set variable, not var: EVar)
+    def negative(svar):
+        # Both pattern and plug need to be checked, as
+        # the substitution is well-formed by assumption
+        # and svar != var in ESubst
+        # Note that the unsubstituted var in pattern
+        # do not influence the result, as var: EVar
+        return pattern.negative(svar) and plug.s_fresh(svar)
+
     # TODO: Well-formedness checking
 
 class SSubst(Pattern):
@@ -421,6 +502,50 @@ class SSubst(Pattern):
         # free instances of var => we know that those won't affect
         # the result as svar != var
         return pattern.s_fresh(svar) and plug.s_fresh(svar) # subst-after-subst
+
+    # Note that the case where occurence of svar is positive in SSubst by some paths being positive by pat.pos + plug.pos
+    # and some paths being positive by pat.neg + plug.neg cannot happen, as plug is fixed and we're checking for plug.s_fresh(svar)!
+    # Consider such a scenario can happen for a contradiction:
+    # then svar has a negative occurrence by the simple fact that plug contains
+    # at least one free instance of svar, contradiction with assuming all occurrences of svar in the result are positive
+    def positive(svar):
+        plug_positive_svar =
+                plug.s_fresh(svar) # svar notin FV(plug), so plug has no influence on the result
+            or  pattern.positive(var) and plug.positive(svar)
+            or  pattern.negative(var) and plug.negative(svar)
+
+        if svar == var:
+            # All free occurrences of svar are being replaced with plug,
+            # so positivity only depends on plug
+            return plug_positive_svar
+
+        # Both pattern and plug need to be checked, as
+        # the substitution is well-formed by assumption so
+        # there is at least one occurrence of var being replaced
+
+        # Note that the unsubstituted var in pattern
+        # does not influence the result, as svar != var
+        return pattern.positive(svar) and plug_positive_svar
+
+    # For a sketch of correctness, see comment on positive(svar)
+    def negative(svar):
+        plug_negative_svar =
+                plug.s_fresh(svar)
+            or  pattern.positive(var) and plug.negative(svar)
+            or  pattern.negative(var) and plug.positive(svar)
+
+        if svar == var:
+            # All free occurrences of svar are being replaced with plug,
+            # so negativity only depends on plug
+            return plug_negative_svar
+
+        # Both pattern and plug need to be checked, as
+        # the substitution is well-formed by assumption so
+        # there is at least one occurrence of var being replaced
+
+        # Note that the unsubstituted var in pattern
+        # does not influence the result, as svar != var
+        return pattern.negative(svar) and plug_negative_svar
 ```
 
 
@@ -587,10 +712,13 @@ Otherwise, execution aborts, and verification fails.
 `Symbol <u32>`
 :   Push a `Symbol` onto the stack.
 
-`Implication`/`Application`/`Exists`/`Mu`
+`Implication`/`Application`
 :   Consume the two patterns from the stack,
-    and push an implication/application/exists/mu to the stack
-    with appropriate arguments, performing well formedness checks as needed.
+    and push an implication/application to the stack
+    with appropriate arguments.
+
+`Exists <var_id:u32>`/`Mu <var_id:u32>`
+:   Consume a pattern from the stack, and push the corresponding pattern to the stack, if well-formed.
 
 ### Axiom Schemas
 
@@ -637,10 +765,14 @@ Otherwise, execution aborts, and verification fails.
 
 `Publish`
 :   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms.
-    * During the `claim` phase consume a pattern from the stack and push it to the queue of claims.
+    * During the `claim` phase consume a pattern from the stack and push it to the stack of claims.
     * During the `proof` phase consume a proof from the stack
       and a claim from the queue of claims and assert that they are equal.
 
+    Note that since the claims form a stack, they must be proved in the reverse order they
+    were declared in[^claims-stack-vs-queue].
+
+[^claims-stack-vs-queue]: This is convenient for the current implementation, but we may want to revist it later.
 
 ### Stack manipulation.
 
