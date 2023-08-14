@@ -58,10 +58,6 @@ class Pattern(Term):
 class EVar(Pattern):
     name: int
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'name': ''}
-
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
 
@@ -79,10 +75,6 @@ class EVar(Pattern):
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
-
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'name': ''}
 
     def instantiate(self, var: int, plug: Pattern) -> Pattern:
         return self
@@ -120,10 +112,6 @@ class Symbol(Pattern):
 class Implication(Pattern):
     left: Pattern
     right: Pattern
-
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': 'Imp', 'left': '', 'right': ''}
 
     def serialize_impl(
         self,
@@ -167,10 +155,6 @@ class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': '\u2203', 'var': '', 'subpattern': ''}
-
     def serialize_impl(
         self,
         notation: set[Pattern],
@@ -190,14 +174,6 @@ class Exists(Pattern):
 class Mu(Pattern):
     var: SVar
     subpattern: Pattern
-
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {
-            '__name__': '\u03BC',
-            'var': '',
-            'subpattern': '',
-        }
 
     def serialize_impl(
         self,
@@ -222,18 +198,6 @@ class MetaVar(Pattern):
     positive: tuple[SVar, ...] = ()
     negative: tuple[SVar, ...] = ()
     application_context: tuple[EVar, ...] = ()
-
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {
-            '__name__': 'MV',
-            'name': '',
-            'e_fresh': 'e_f',
-            's_fresh': 's_f',
-            'positive': 'pos',
-            'negative': 'neg',
-            'application_context': 'app_cntxt',
-        }
 
     def serialize_impl(
         self,
@@ -294,14 +258,6 @@ def mu(var: int, subpattern: Pattern) -> Pattern:
     return Mu(SVar(var), subpattern)
 
 
-X = SVar(0)
-bot = Mu(X, X)
-
-
-def neg(p: Pattern) -> Pattern:
-    return implies(p, bot)
-
-
 # Proofs
 # ======
 
@@ -323,10 +279,6 @@ class Instantiate(Proof):
     subproof: Proof
     var: int
     plug: Pattern
-
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': 'Inst', 'subproof': '', 'var': '', 'plug': ''}
 
     def well_formed(self) -> bool:
         return True
@@ -352,10 +304,6 @@ class ModusPonens(Proof):
     left: Proof
     right: Proof
     ...
-
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': 'MP', 'left': '', 'right': ''}
 
     def serialize_impl(
         self,
