@@ -386,3 +386,59 @@ class Prop2(Proof):
         return Implication(
             Implication(phi0, Implication(phi1, phi2)), Implication(Implication(phi0, phi1), Implication(phi0, phi2))
         )
+
+
+# Proof Expressions
+# =================
+
+
+class ProofExp:
+    # Patterns
+    # ========
+
+    def implies(self, left: Pattern, right: Pattern) -> Pattern:
+        return Implication(left, right)
+
+    def app(self, left: Pattern, right: Pattern) -> Pattern:
+        return Application(left, right)
+
+    def exists(self, var: int, subpattern: Pattern) -> Pattern:
+        return Exists(EVar(var), subpattern)
+
+    def mu(self, var: int, subpattern: Pattern) -> Pattern:
+        return Mu(SVar(var), subpattern)
+
+    def metavar(
+        self,
+        name: int,
+        e_fresh: tuple[EVar, ...] = (),
+        s_fresh: tuple[SVar, ...] = (),
+        positive: tuple[SVar, ...] = (),
+        negative: tuple[SVar, ...] = (),
+        application_context: tuple[EVar, ...] = (),
+    ) -> Pattern:
+        return MetaVar(name, e_fresh, s_fresh, positive, negative, application_context)
+
+    # Standard sugar
+    # --------------
+
+    def bot(self) -> Pattern:
+        return self.mu(0, SVar(0))
+
+    def neg(self, p: Pattern) -> Pattern:
+        return self.implies(p, self.bot())
+
+    def top(self) -> Pattern:
+        return self.neg(self.bot())
+
+    # Proof Rules
+    # -----------
+
+    def prop1(self) -> Proof:
+        return Prop1()
+
+    def prop2(self) -> Proof:
+        return Prop2()
+
+    def modus_ponens(self, left: Proof, right: Proof) -> Proof:
+        return ModusPonens(left, right)
