@@ -274,34 +274,6 @@ class SSubst(Pattern):
     plug: Pattern
 
 
-# Shortcuts and Sugar
-# ===================
-
-
-def implies(left: Pattern, right: Pattern) -> Pattern:
-    return Implication(left, right)
-
-
-def app(left: Pattern, right: Pattern) -> Pattern:
-    return Application(left, right)
-
-
-def exists(var: int, subpattern: Pattern) -> Pattern:
-    return Exists(EVar(var), subpattern)
-
-
-def mu(var: int, subpattern: Pattern) -> Pattern:
-    return Mu(SVar(var), subpattern)
-
-
-X = SVar(0)
-bot = Mu(X, X)
-
-
-def neg(p: Pattern) -> Pattern:
-    return implies(p, bot)
-
-
 # Proofs
 # ======
 
@@ -392,7 +364,7 @@ class Prop1(Proof):
     def conclusion(self) -> Pattern:
         phi0: MetaVar = MetaVar(0)
         phi1: MetaVar = MetaVar(1)
-        return implies(phi0, implies(phi1, phi0))
+        return Implication(phi0, Implication(phi1, phi0))
 
 
 @dataclass(frozen=True)
@@ -411,4 +383,6 @@ class Prop2(Proof):
         phi0: MetaVar = MetaVar(0)
         phi1: MetaVar = MetaVar(1)
         phi2: MetaVar = MetaVar(2)
-        return implies(implies(phi0, implies(phi1, phi2)), implies(implies(phi0, phi1), implies(phi0, phi2)))
+        return Implication(
+            Implication(phi0, Implication(phi1, phi2)), Implication(Implication(phi0, phi1), Implication(phi0, phi2))
+        )
