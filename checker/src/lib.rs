@@ -361,24 +361,24 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 /// Substitution utilities
 /// ----------------------
 
-fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
+fn instantiate(p: Rc<Pattern>, vars: &[u8], plugs: &[Rc<Pattern>]) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::EVar(_) => p,
         Pattern::SVar(_) => p,
         Pattern::Symbol(_) => p,
         Pattern::Implication { left, right } => implies(
-            instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
-            instantiate(Rc::clone(&right), var_id, plug),
+            instantiate(Rc::clone(&left), vars, plugs),
+            instantiate(Rc::clone(&right), vars, plugs),
         ),
         Pattern::Application { left, right } => app(
-            instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
-            instantiate(Rc::clone(&right), var_id, plug),
+            instantiate(Rc::clone(&left), vars, plugs),
+            instantiate(Rc::clone(&right), vars, plugs),
         ),
         Pattern::Exists { var, subpattern } => {
-            exists(*var, instantiate(Rc::clone(&subpattern), var_id, plug))
+            exists(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
         }
         Pattern::Mu { var, subpattern } => {
-            mu(*var, instantiate(Rc::clone(&subpattern), var_id, plug))
+            mu(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
         }
         Pattern::MetaVar {
             id,
@@ -386,11 +386,11 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
             s_fresh,
             ..
         } => {
-            if *id == var_id {
+            if let Some(pos) = vars.iter().position(|&x| x == *id) {
                 // TODO: Improve performance
                 // This introduces 3000 cycles on proof of phi -> phi with empty e_fresh, s_fresh
                 for evar in e_fresh {
-                    if !plug.e_fresh(*evar) {
+                    if !plugs[pos].e_fresh(*evar) {
                         panic!(
                             "Instantiation of MetaVar {} breaks a freshness constraint: EVar {}",
                             id, evar
@@ -398,7 +398,7 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
                     }
                 }
                 for svar in s_fresh {
-                    if !plug.s_fresh(*svar) {
+                    if !plugs[pos].s_fresh(*svar) {
                         panic!(
                             "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
                             id, svar
@@ -406,7 +406,11 @@ fn instantiate(p: Rc<Pattern>, var_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
                     }
                 }
 
-                return plug;
+                if pos >= plugs.len() {
+                    panic!("Substitution does not contain a corresponding value.")
+                }
+
+                return Rc::clone(&plugs[pos]);
             }
 
             p
@@ -601,12 +605,21 @@ fn execute_instructions<'a>(
                 }
             },
             Instruction::Instantiate => {
-                let id = next().expect("Insufficient parameters for MetaVar instruction");
-                let plug = pop_stack_pattern(stack);
+                let n = next().expect("Insufficient parameters for Instantiate instruction");
+                let mut ids: Vec<u8> = vec![];
+                let mut plugs: Vec<Rc<Pattern>> = vec![];
+
+                let mut i = 0;
+                while i < n {
+                    ids.push(next().expect("Insufficient parameters for Instantiate instruction"));
+                    plugs.push(pop_stack_pattern(stack));
+                    i += 1;
+                }
+
                 let metaterm = pop_stack(stack);
                 match metaterm {
-                    Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, id, plug))),
-                    Term::Proved(p) => stack.push(Term::Proved(instantiate(p, id, plug))),
+                    Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, &ids, &plugs))),
+                    Term::Proved(p) => stack.push(Term::Proved(instantiate(p, &ids, &plugs))),
                     Term::List(_) => panic!("Cannot Instantiate list."),
                 }
             }
@@ -735,7 +748,7 @@ fn test_sfresh() {
 fn test_instantiate_fresh() {
     let svar_0 = svar(0);
     let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
-    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
+    _ = instantiate(phi0_s_fresh_0, &[0], &[svar_0]);
 }
 
 #[test]
@@ -915,34 +928,216 @@ fn test_wellformedness_instantiate() {
     let muX0x0 = mu(0, Rc::clone(&x0));
 
     // Concrete patterns are unaffected by instantiate
-    assert!(instantiate(Rc::clone(&x0), 0, Rc::clone(&X0)) == x0);
-    assert!(instantiate(Rc::clone(&x0), 1, Rc::clone(&X0)) == x0);
-    assert!(instantiate(Rc::clone(&X0), 0, Rc::clone(&x0)) == X0);
-    assert!(instantiate(Rc::clone(&X0), 1, Rc::clone(&x0)) == X0);
-    assert!(instantiate(Rc::clone(&c0), 0, Rc::clone(&x0)) == c0);
-    assert!(instantiate(Rc::clone(&c0), 1, Rc::clone(&x0)) == c0);
-    assert!(instantiate(Rc::clone(&x0_implies_x0), 0, Rc::clone(&x0)) == x0_implies_x0);
-    assert!(instantiate(Rc::clone(&x0_implies_x0), 1, Rc::clone(&x0)) == x0_implies_x0);
-    assert!(instantiate(Rc::clone(&appx0x0), 0, Rc::clone(&x0)) == appx0x0);
-    assert!(instantiate(Rc::clone(&appx0x0), 1, Rc::clone(&x0)) == appx0x0);
-    assert!(instantiate(Rc::clone(&existsx0x0), 0, Rc::clone(&X0)) == existsx0x0);
-    assert!(instantiate(Rc::clone(&existsx0x0), 1, Rc::clone(&X0)) == existsx0x0);
-    assert!(instantiate(Rc::clone(&muX0x0), 0, Rc::clone(&x0)) == muX0x0);
-    assert!(instantiate(Rc::clone(&muX0x0), 1, Rc::clone(&x0)) == muX0x0);
+    assert!(instantiate(Rc::clone(&x0), &[0], &[Rc::clone(&X0)]) == x0);
+    assert!(instantiate(Rc::clone(&x0), &[1], &[Rc::clone(&X0)]) == x0);
+    assert!(instantiate(Rc::clone(&X0), &[0], &[Rc::clone(&x0)]) == X0);
+    assert!(instantiate(Rc::clone(&X0), &[1], &[Rc::clone(&x0)]) == X0);
+    assert!(instantiate(Rc::clone(&c0), &[0], &[Rc::clone(&x0)]) == c0);
+    assert!(instantiate(Rc::clone(&c0), &[1], &[Rc::clone(&x0)]) == c0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), &[0], &[Rc::clone(&x0)]) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), &[1], &[Rc::clone(&x0)]) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&appx0x0), &[0], &[Rc::clone(&x0)]) == appx0x0);
+    assert!(instantiate(Rc::clone(&appx0x0), &[1], &[Rc::clone(&x0)]) == appx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), &[0], &[Rc::clone(&X0)]) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), &[1], &[Rc::clone(&X0)]) == existsx0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), &[0], &[Rc::clone(&x0)]) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), &[1], &[Rc::clone(&x0)]) == muX0x0);
 
     let phi0 = metavar_unconstrained(0);
     let phi0_implies_phi0 = implies(Rc::clone(&phi0), Rc::clone(&phi0));
     let appphi0phi0 = app(Rc::clone(&x0), Rc::clone(&x0));
     let existsx0phi0 = exists(0, Rc::clone(&phi0));
     let muX0phi0 = mu(0, Rc::clone(&phi0));
-    assert!(instantiate(Rc::clone(&phi0_implies_phi0), 0, Rc::clone(&x0)) == x0_implies_x0);
-    assert!(instantiate(Rc::clone(&phi0_implies_phi0), 1, Rc::clone(&x0)) == phi0_implies_phi0);
-    assert!(instantiate(Rc::clone(&appphi0phi0), 0, Rc::clone(&x0)) == appx0x0);
-    assert!(instantiate(Rc::clone(&appphi0phi0), 1, Rc::clone(&x0)) == appphi0phi0);
-    assert!(instantiate(Rc::clone(&existsx0phi0), 0, Rc::clone(&x0)) == existsx0x0);
-    assert!(instantiate(Rc::clone(&existsx0phi0), 1, Rc::clone(&x0)) == existsx0phi0);
-    assert!(instantiate(Rc::clone(&muX0phi0), 0, Rc::clone(&x0)) == muX0x0);
-    assert!(instantiate(Rc::clone(&muX0phi0), 1, Rc::clone(&x0)) == muX0phi0);
+    let existsx0X0 = exists(0, Rc::clone(&X0));
+    assert!(instantiate(Rc::clone(&phi0_implies_phi0), &[0], &[Rc::clone(&x0)]) == x0_implies_x0);
+    assert!(
+        instantiate(Rc::clone(&phi0_implies_phi0), &[1], &[Rc::clone(&x0)]) == phi0_implies_phi0
+    );
+    assert!(instantiate(Rc::clone(&appphi0phi0), &[0], &[Rc::clone(&x0)]) == appx0x0);
+    assert!(instantiate(Rc::clone(&appphi0phi0), &[1], &[Rc::clone(&x0)]) == appphi0phi0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), &[0], &[Rc::clone(&x0)]) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), &[1], &[Rc::clone(&x0)]) == existsx0phi0);
+    assert!(instantiate(Rc::clone(&muX0phi0), &[0], &[Rc::clone(&x0)]) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0phi0), &[1], &[Rc::clone(&x0)]) == muX0phi0);
+
+    // Simultaneous instantiations
+    let phi1 = metavar_unconstrained(1);
+    let muX0phi1 = mu(0, Rc::clone(&phi1));
+    let muX0X0 = mu(0, Rc::clone(&X0));
+    // Empty substs have no effect
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[1, 2],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0phi0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[2, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0phi0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[1, 2],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0phi0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[2, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0phi0
+    );
+
+    // Order matters if corresponding value is not moved
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[1, 0],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0x0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[1, 0],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0x0
+    );
+
+    // Order does not matter if corresponding value is moved
+    let muX0phi0_implies_ph1 = implies(Rc::clone(&muX0phi0), Rc::clone(&phi1));
+    let muX0x0_implies_X0 = implies(Rc::clone(&muX0x0), Rc::clone(&X0));
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0x0_implies_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&x0)]
+        ) == muX0x0_implies_X0
+    );
+    let muX0phi0_app_ph1 = app(Rc::clone(&muX0phi0), Rc::clone(&phi1));
+    let muX0x0_app_X0 = app(Rc::clone(&muX0x0), Rc::clone(&X0));
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0x0_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&x0)]
+        ) == muX0x0_app_X0
+    );
+
+    // No side-effects
+    let muX0ph1_implies_X0 = implies(Rc::clone(&muX0phi1), Rc::clone(&X0));
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[0, 1],
+            &[Rc::clone(&phi1), Rc::clone(&X0)]
+        ) == muX0ph1_implies_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&phi1)]
+        ) == muX0ph1_implies_X0
+    );
+    let muX0ph1_app_X0 = app(Rc::clone(&muX0phi1), Rc::clone(&X0));
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1],
+            &[Rc::clone(&phi1), Rc::clone(&X0)]
+        ) == muX0ph1_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&phi1)]
+        ) == muX0ph1_app_X0
+    );
+
+    // First comes first
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1, 1],
+            &[Rc::clone(&phi1), Rc::clone(&X0), Rc::clone(&x0)]
+        ) == muX0ph1_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[1, 0, 0],
+            &[Rc::clone(&X0), Rc::clone(&phi1), Rc::clone(&x0)]
+        ) == muX0ph1_app_X0
+    );
+
+    // Extra values are ignored
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1, 1],
+            &[
+                Rc::clone(&phi1),
+                Rc::clone(&X0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0)
+            ]
+        ) == muX0ph1_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1, 2],
+            &[Rc::clone(&phi1), Rc::clone(&X0)]
+        ) == muX0ph1_app_X0
+    );
+}
+
+#[test]
+#[should_panic]
+fn test_illformed_instantiation() {
+    let phi0 = metavar_unconstrained(0);
+
+    _ = instantiate(Rc::clone(&phi0), &[1, 0], &[Rc::clone(&phi0)]);
 }
 
 #[test]
@@ -986,7 +1181,7 @@ fn test_phi_implies_phi_impl() {
         Instruction::MetaVar as u8, 0,         // Stack: p1 ; phi0
         Instruction::Save as u8,               // phi0 save at 0
 
-        Instruction::Instantiate as u8, 1,     // Stack: (p2: phi0 -> (phi0 -> phi0))
+        Instruction::Instantiate as u8, 1, 1,     // Stack: (p2: phi0 -> (phi0 -> phi0))
 
         Instruction::Prop1 as u8,              // Stack: p2 ; p1
         Instruction::Load as u8, 0,            // Stack: p2 ; p1 ; phi0
@@ -994,14 +1189,14 @@ fn test_phi_implies_phi_impl() {
         Instruction::Implication as u8,        // Stack: p2 ; p1 ; phi1; phi0 -> phi0
         Instruction::Save as u8,               // phi0 -> phi0 save at 1
 
-        Instruction::Instantiate as u8, 1,     // Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
+        Instruction::Instantiate as u8, 1, 1,     // Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
 
         Instruction::Prop2 as u8,              // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
         Instruction::Load as u8, 1,
-        Instruction::Instantiate as u8, 1,     // Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
+        Instruction::Instantiate as u8, 1, 1,     // Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
 
         Instruction::Load as u8, 0,
-        Instruction::Instantiate as u8, 2,     // Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0))
+        Instruction::Instantiate as u8, 1, 2,     // Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0))
 
         Instruction::ModusPonens as u8,        // Stack: p2 ; (p2 -> (phi0 -> phi0))
         Instruction::ModusPonens as u8,        // Stack: phi0 -> phi0

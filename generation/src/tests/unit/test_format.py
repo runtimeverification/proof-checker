@@ -30,14 +30,15 @@ imp_refl = Propositional().imp_reflexivity()
         (
             mlp,
             imp_refl,
-            'MP(Inst(Prop1(),\n         1,\n         φ0),\n   MP(Inst(Prop1(),\n             1,\n             Imp(φ0,\n                  φ0)),\n       Inst(Inst(Prop2(),\n                   1,\n                   Imp(φ0,\n                        φ0)),\n             2,\n             φ0)))',
+            'MP(Inst(Prop1(),\n         (1,),\n         (φ0,)),\n   MP(Inst(Prop1(),\n             (1,),\n             (Imp(φ0,\n                   φ0),)),\n       Inst(Prop2(),\n             (1,\n               2),\n             (Imp(φ0,\n                   φ0),\n               φ0))))',
         ),
         (
             mlpd,
             imp_refl,
-            'MP(Inst(Imp(φ0,\n              Imp(φ1,\n                   φ0)),\n         1,\n         φ0),\n   MP(Inst(Imp(φ0,\n                  Imp(φ1,\n                       φ0)),\n             1,\n             Imp(φ0,\n                  φ0)),\n       Inst(Inst(Imp(Imp(φ0,\n                             Imp(φ1,\n                                  φ2)),\n                        Imp(Imp(φ0,\n                                  φ1),\n                             Imp(φ0,\n                                  φ2))),\n                   1,\n                   Imp(φ0,\n                        φ0)),\n             2,\n             φ0)))',
+            'MP(Inst(Imp(φ0,\n              Imp(φ1,\n                   φ0)),\n         (1,),\n         (φ0,)),\n   MP(Inst(Imp(φ0,\n                  Imp(φ1,\n                       φ0)),\n             (1,),\n             (Imp(φ0,\n                   φ0),)),\n       Inst(Imp(Imp(φ0,\n                       Imp(φ1,\n                            φ2)),\n                  Imp(Imp(φ0,\n                            φ1),\n                       Imp(φ0,\n                            φ2))),\n             (1,\n               2),\n             (Imp(φ0,\n                   φ0),\n               φ0))))',
         ),
     ],
 )
 def test_pformat(formatter: PrettyPrinter, input_: Proof, expected: str) -> None:
+    print(formatter.pformat(input_))
     assert formatter.pformat(input_) == expected
