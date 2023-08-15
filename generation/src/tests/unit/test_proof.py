@@ -59,10 +59,10 @@ def test_conclusion() -> None:
         implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0)),
     )
 
-    step4 = ModusPonens(step2, step4)
+    step4 = ModusPonens(step4, step2)
     assert step4.conclusion() == implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi0))
 
-    step5 = ModusPonens(step1, step4)
+    step5 = ModusPonens(step4, step1)
     assert step5.conclusion() == implies(phi0, phi0)
 
 
@@ -91,33 +91,30 @@ def test_prove_imp_reflexivity() -> None:
     prop.imp_reflexivity().serialize({prop.phi0, prop.phi0_implies_phi0}, set(), [], [prop.phi0_implies_phi0], out)
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
-        Instruction.Prop1,              # (p1: phi0 -> (phi1 -> phi0))
+        Instruction.Prop2,              # Stack: prop2
 
         Instruction.List, 0,
         Instruction.List, 0,
         Instruction.List, 0,
         Instruction.List, 0,
         Instruction.List, 0,
-        Instruction.MetaVar, 0,         # Stack: p1 ; phi0
-        Instruction.Save,               # phi0 save at 0
+        Instruction.MetaVar, 0,         # Stack: prop2 ; $ph0
+        Instruction.Save,               # @0
+        Instruction.Load, 0,            # Stack: prop2 ; $ph0 ; $ph0
+        Instruction.Load, 0,            # Stack: prop2[ph0 -> ph0/0] ; ph0
+        Instruction.Implication,        # Stack: prop2 ; $ph0 -> ph0
+        Instruction.Save,               # @1
+        Instruction.Instantiate, 2, 1, 2, # Stack: prop2[ph0 -> ph0/0]
 
-        Instruction.Instantiate, 1, 1,     # Stack: (p2: phi0 -> (phi0 -> phi0))
+        Instruction.Prop1,              # Stack: p1 ; prop1
+        Instruction.Load, 1,            # Stack: p1 ; prop1 ; $ph0 -> ph0
+        Instruction.Instantiate, 1, 1,  # Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
+        Instruction.ModusPonens,        # Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
 
-        Instruction.Prop1,              # Stack: p2 ; p1
-        Instruction.Load, 0,            # Stack: p2 ; p1 ; phi0
-        Instruction.Load, 0,            # Stack: p2 ; p1 ; phi0 ; phi0
-        Instruction.Implication,        # Stack: p2 ; p1 ; phi1; phi0 -> phi0
-        Instruction.Save,               # phi0 -> phi0 save at 1
+        Instruction.Prop1,              # Stack: p3 ; prop1
+        Instruction.Load, 0,            # Stack: p3 ; prop1 ; ph0
+        Instruction.Instantiate, 1, 1,  # Stack: p3 ; ph0 -> ph0 -> ph0
 
-        Instruction.Instantiate, 1, 1,     # Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
-
-        Instruction.Prop2,              # Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
-        Instruction.Load, 0,
-        Instruction.Load, 1,
-
-        Instruction.Instantiate, 2, 1, 2,     # Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0)))
-
-        Instruction.ModusPonens,        # Stack: p2 ; (p2 -> (phi0 -> phi0))
         Instruction.ModusPonens,        # Stack: phi0 -> phi0
         Instruction.Publish,
     ])

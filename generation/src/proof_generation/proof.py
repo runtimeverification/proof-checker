@@ -371,10 +371,10 @@ class ModusPonens(Proof):
         output.write(bytes([Instruction.ModusPonens]))
 
     def conclusion(self) -> Pattern:
-        right_conclusion = self.right.conclusion()
-        assert isinstance(right_conclusion, Implication)
-        assert right_conclusion.left == self.left.conclusion(), (right_conclusion.left, self.left.conclusion())
-        return right_conclusion.right
+        left_conclusion = self.left.conclusion()
+        assert isinstance(left_conclusion, Implication)
+        assert left_conclusion.left == self.right.conclusion(), (left_conclusion.left, self.right.conclusion())
+        return left_conclusion.right
 
 
 @dataclass(frozen=True)
