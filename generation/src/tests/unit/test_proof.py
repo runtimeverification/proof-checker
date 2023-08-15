@@ -20,15 +20,15 @@ def test_instantiate() -> None:
     assert app(phi0, phi0).instantiate((0,), (phi1,)) == app(phi1, phi1)
     assert app(phi0, phi1).instantiate((2,), (phi0_ef0,)) == app(phi0, phi1)
 
-    assert exists(0, phi0).instantiate((0,), phi1) == exists(0, phi1)
-    assert exists(0, phi0).instantiate((0,), phi0_ef0) == exists(0, phi0_ef0)
-    assert exists(0, phi1).instantiate((1,), phi0_ef0) == exists(0, phi0_ef0)
-    assert exists(0, phi1).instantiate((2,), phi0_ef0) == exists(0, phi1)
+    assert exists(0, phi0).instantiate((0,), (phi1,)) == exists(0, phi1)
+    assert exists(0, phi0).instantiate((0,), (phi0_ef0,)) == exists(0, phi0_ef0)
+    assert exists(0, phi1).instantiate((1,), (phi0_ef0,)) == exists(0, phi0_ef0)
+    assert exists(0, phi1).instantiate((2,), (phi0_ef0,)) == exists(0, phi1)
 
-    assert mu(0, phi0).instantiate((0,), phi1) == mu(0, phi1)
-    assert mu(0, phi0).instantiate((0,), phi0_ef0) == mu(0, phi0_ef0)
-    assert mu(0, phi1).instantiate((1,), phi0_ef0) == mu(0, phi0_ef0)
-    assert mu(0, phi1).instantiate((2,), phi0_ef0) == mu(0, phi1)
+    assert mu(0, phi0).instantiate((0,), (phi1,)) == mu(0, phi1)
+    assert mu(0, phi0).instantiate((0,), (phi0_ef0,)) == mu(0, phi0_ef0)
+    assert mu(0, phi1).instantiate((1,), (phi0_ef0,)) == mu(0, phi0_ef0)
+    assert mu(0, phi1).instantiate((2,), (phi0_ef0,)) == mu(0, phi1)
 
 
 def test_conclusion() -> None:
@@ -37,17 +37,17 @@ def test_conclusion() -> None:
     phi2 = MetaVar(2)
     prop = Propositional()
 
-    step1 = Prop1().instantiate((1,), phi0)
+    step1 = Prop1().instantiate((1,), (phi0,))
     assert step1.conclusion() == implies(phi0, implies(phi0, phi0))
 
-    step2 = Prop1().instantiate((1,), prop.phi0_implies_phi0)
+    step2 = Prop1().instantiate((1,), (prop.phi0_implies_phi0,))
     assert step2.conclusion() == implies(phi0, implies(prop.phi0_implies_phi0, phi0))
 
     assert Prop2().conclusion() == implies(
         implies(phi0, implies(phi1, phi2)), implies(implies(phi0, phi1), implies(phi0, phi2))
     )
 
-    step3 = Prop2().instantiate((1,), prop.phi0_implies_phi0)
+    step3 = Prop2().instantiate((1,), (prop.phi0_implies_phi0,))
     assert step3.conclusion() == implies(
         implies(phi0, implies(prop.phi0_implies_phi0, phi2)),
         implies(implies(phi0, prop.phi0_implies_phi0), implies(phi0, phi2)),
