@@ -573,17 +573,21 @@ fn execute_instructions<'a>(
             Instruction::Prop3 => {
                 stack.push(Term::Proved(Rc::clone(&prop3)));
             }
-            Instruction::ModusPonens => match pop_stack_proved(stack).as_ref() {
-                Pattern::Implication { left, right } => {
-                    if *left.as_ref() != *pop_stack_proved(stack).as_ref() {
-                        panic!("Antecedents do not match for modus ponens.")
+            Instruction::ModusPonens => {
+                let premise2 = pop_stack_proved(stack);
+                let premise1 = pop_stack_proved(stack);
+                match premise2.as_ref() {
+                    Pattern::Implication { left, right } => {
+                        if *left.as_ref() != *premise1.as_ref() {
+                            panic!("Antecedents do not match for modus ponens.")
+                        }
+                        stack.push(Term::Proved(Rc::clone(&right)))
                     }
-                    stack.push(Term::Proved(Rc::clone(&right)))
+                    _ => {
+                        panic!("Expected an implication as a first parameter.")
+                    }
                 }
-                _ => {
-                    panic!("Expected an implication as a first parameter.")
-                }
-            },
+            }
             Instruction::Quantifier => {
                 stack.push(Term::Proved(Rc::clone(&quantifier)));
             }
