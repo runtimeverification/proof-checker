@@ -361,7 +361,7 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 /// Substitution utilities
 /// ----------------------
 
-fn instantiate(p: Rc<Pattern>, vars: &Vec<u8>, plugs: &Vec<Rc<Pattern>>) -> Rc<Pattern> {
+fn instantiate(p: Rc<Pattern>, vars: &[u8], plugs: &[Rc<Pattern>]) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::EVar(_) => p,
         Pattern::SVar(_) => p,
@@ -744,7 +744,7 @@ fn test_sfresh() {
 fn test_instantiate_fresh() {
     let svar_0 = svar(0);
     let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
-    _ = instantiate(phi0_s_fresh_0, &vec![0], &vec![svar_0]);
+    _ = instantiate(phi0_s_fresh_0, &[0], &[svar_0]);
 }
 
 #[test]
@@ -924,34 +924,34 @@ fn test_wellformedness_instantiate() {
     let muX0x0 = mu(0, Rc::clone(&x0));
 
     // Concrete patterns are unaffected by instantiate
-    assert!(instantiate(Rc::clone(&x0), &vec![0], &vec![Rc::clone(&X0)]) == x0);
-    assert!(instantiate(Rc::clone(&x0), &vec![1], &vec![Rc::clone(&X0)]) == x0);
-    assert!(instantiate(Rc::clone(&X0), &vec![0], &vec![Rc::clone(&x0)]) == X0);
-    assert!(instantiate(Rc::clone(&X0), &vec![1], &vec![Rc::clone(&x0)]) == X0);
-    assert!(instantiate(Rc::clone(&c0), &vec![0], &vec![Rc::clone(&x0)]) == c0);
-    assert!(instantiate(Rc::clone(&c0), &vec![1], &vec![Rc::clone(&x0)]) == c0);
-    assert!(instantiate(Rc::clone(&x0_implies_x0), &vec![0], &vec![Rc::clone(&x0)]) == x0_implies_x0);
-    assert!(instantiate(Rc::clone(&x0_implies_x0), &vec![1], &vec![Rc::clone(&x0)]) == x0_implies_x0);
-    assert!(instantiate(Rc::clone(&appx0x0), &vec![0], &vec![Rc::clone(&x0)]) == appx0x0);
-    assert!(instantiate(Rc::clone(&appx0x0), &vec![1], &vec![Rc::clone(&x0)]) == appx0x0);
-    assert!(instantiate(Rc::clone(&existsx0x0), &vec![0], &vec![Rc::clone(&X0)]) == existsx0x0);
-    assert!(instantiate(Rc::clone(&existsx0x0), &vec![1], &vec![Rc::clone(&X0)]) == existsx0x0);
-    assert!(instantiate(Rc::clone(&muX0x0), &vec![0], &vec![Rc::clone(&x0)]) == muX0x0);
-    assert!(instantiate(Rc::clone(&muX0x0), &vec![1], &vec![Rc::clone(&x0)]) == muX0x0);
+    assert!(instantiate(Rc::clone(&x0), &[0], &[Rc::clone(&X0)]) == x0);
+    assert!(instantiate(Rc::clone(&x0), &[1], &[Rc::clone(&X0)]) == x0);
+    assert!(instantiate(Rc::clone(&X0), &[0], &[Rc::clone(&x0)]) == X0);
+    assert!(instantiate(Rc::clone(&X0), &[1], &[Rc::clone(&x0)]) == X0);
+    assert!(instantiate(Rc::clone(&c0), &[0], &[Rc::clone(&x0)]) == c0);
+    assert!(instantiate(Rc::clone(&c0), &[1], &[Rc::clone(&x0)]) == c0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), &[0], &[Rc::clone(&x0)]) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), &[1], &[Rc::clone(&x0)]) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&appx0x0), &[0], &[Rc::clone(&x0)]) == appx0x0);
+    assert!(instantiate(Rc::clone(&appx0x0), &[1], &[Rc::clone(&x0)]) == appx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), &[0], &[Rc::clone(&X0)]) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), &[1], &[Rc::clone(&X0)]) == existsx0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), &[0], &[Rc::clone(&x0)]) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), &[1], &[Rc::clone(&x0)]) == muX0x0);
 
     let phi0 = metavar_unconstrained(0);
     let phi0_implies_phi0 = implies(Rc::clone(&phi0), Rc::clone(&phi0));
     let appphi0phi0 = app(Rc::clone(&x0), Rc::clone(&x0));
     let existsx0phi0 = exists(0, Rc::clone(&phi0));
     let muX0phi0 = mu(0, Rc::clone(&phi0));
-    assert!(instantiate(Rc::clone(&phi0_implies_phi0), &vec![0], &vec![Rc::clone(&x0)]) == x0_implies_x0);
-    assert!(instantiate(Rc::clone(&phi0_implies_phi0), &vec![1], &vec![Rc::clone(&x0)]) == phi0_implies_phi0);
-    assert!(instantiate(Rc::clone(&appphi0phi0), &vec![0], &vec![Rc::clone(&x0)]) == appx0x0);
-    assert!(instantiate(Rc::clone(&appphi0phi0), &vec![1], &vec![Rc::clone(&x0)]) == appphi0phi0);
-    assert!(instantiate(Rc::clone(&existsx0phi0), &vec![0], &vec![Rc::clone(&x0)]) == existsx0x0);
-    assert!(instantiate(Rc::clone(&existsx0phi0), &vec![1], &vec![Rc::clone(&x0)]) == existsx0phi0);
-    assert!(instantiate(Rc::clone(&muX0phi0), &vec![0], &vec![Rc::clone(&x0)]) == muX0x0);
-    assert!(instantiate(Rc::clone(&muX0phi0), &vec![1], &vec![Rc::clone(&x0)]) == muX0phi0);
+    assert!(instantiate(Rc::clone(&phi0_implies_phi0), &[0], &[Rc::clone(&x0)]) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&phi0_implies_phi0), &[1], &[Rc::clone(&x0)]) == phi0_implies_phi0);
+    assert!(instantiate(Rc::clone(&appphi0phi0), &[0], &[Rc::clone(&x0)]) == appx0x0);
+    assert!(instantiate(Rc::clone(&appphi0phi0), &[1], &[Rc::clone(&x0)]) == appphi0phi0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), &[0], &[Rc::clone(&x0)]) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), &[1], &[Rc::clone(&x0)]) == existsx0phi0);
+    assert!(instantiate(Rc::clone(&muX0phi0), &[0], &[Rc::clone(&x0)]) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0phi0), &[1], &[Rc::clone(&x0)]) == muX0phi0);
 }
 
 #[test]
