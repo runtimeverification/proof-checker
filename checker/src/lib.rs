@@ -965,42 +965,171 @@ fn test_wellformedness_instantiate() {
     let muX0phi1 = mu(0, Rc::clone(&phi1));
     let muX0X0 = mu(0, Rc::clone(&X0));
     // Empty substs have no effect
-    assert!(instantiate(Rc::clone(&existsx0phi0), &[1, 2], &[Rc::clone(&x0), Rc::clone(&X0)]) == existsx0phi0);
-    assert!(instantiate(Rc::clone(&existsx0phi0), &[2, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == existsx0phi0);
-    assert!(instantiate(Rc::clone(&muX0phi0), &[1, 2], &[Rc::clone(&x0), Rc::clone(&X0)]) == muX0phi0);
-    assert!(instantiate(Rc::clone(&muX0phi0), &[2, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == muX0phi0);
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[1, 2],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0phi0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[2, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0phi0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[1, 2],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0phi0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[2, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0phi0
+    );
 
     // Order matters if corresponding value is not moved
-    assert!(instantiate(Rc::clone(&existsx0phi0), &[1, 0], &[Rc::clone(&x0), Rc::clone(&X0)]) == existsx0X0);
-    assert!(instantiate(Rc::clone(&existsx0phi0), &[0, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == existsx0x0);
-    assert!(instantiate(Rc::clone(&muX0phi0), &[1, 0], &[Rc::clone(&x0), Rc::clone(&X0)]) == muX0X0);
-    assert!(instantiate(Rc::clone(&muX0phi0), &[0, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == muX0x0);
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[1, 0],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&existsx0phi0),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == existsx0x0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[1, 0],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0x0
+    );
 
     // Order does not matter if corresponding value is moved
     let muX0phi0_implies_ph1 = implies(Rc::clone(&muX0phi0), Rc::clone(&phi1));
     let muX0x0_implies_X0 = implies(Rc::clone(&muX0x0), Rc::clone(&X0));
-    assert!(instantiate(Rc::clone(&muX0phi0_implies_ph1), &[0, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == muX0x0_implies_X0);
-    assert!(instantiate(Rc::clone(&muX0phi0_implies_ph1), &[1, 0], &[Rc::clone(&X0), Rc::clone(&x0)]) == muX0x0_implies_X0);
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0x0_implies_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&x0)]
+        ) == muX0x0_implies_X0
+    );
     let muX0phi0_app_ph1 = app(Rc::clone(&muX0phi0), Rc::clone(&phi1));
     let muX0x0_app_X0 = app(Rc::clone(&muX0x0), Rc::clone(&X0));
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[0, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == muX0x0_app_X0);
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[1, 0], &[Rc::clone(&X0), Rc::clone(&x0)]) == muX0x0_app_X0);
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1],
+            &[Rc::clone(&x0), Rc::clone(&X0)]
+        ) == muX0x0_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&x0)]
+        ) == muX0x0_app_X0
+    );
 
     // No side-effects
     let muX0ph1_implies_X0 = implies(Rc::clone(&muX0phi1), Rc::clone(&X0));
-    assert!(instantiate(Rc::clone(&muX0phi0_implies_ph1), &[0, 1], &[Rc::clone(&phi1), Rc::clone(&X0)]) == muX0ph1_implies_X0);
-    assert!(instantiate(Rc::clone(&muX0phi0_implies_ph1), &[1, 0], &[Rc::clone(&X0), Rc::clone(&phi1)]) == muX0ph1_implies_X0);
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[0, 1],
+            &[Rc::clone(&phi1), Rc::clone(&X0)]
+        ) == muX0ph1_implies_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_implies_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&phi1)]
+        ) == muX0ph1_implies_X0
+    );
     let muX0ph1_app_X0 = app(Rc::clone(&muX0phi1), Rc::clone(&X0));
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[0, 1], &[Rc::clone(&phi1), Rc::clone(&X0)]) == muX0ph1_app_X0);
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[1, 0], &[Rc::clone(&X0), Rc::clone(&phi1)]) == muX0ph1_app_X0);
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1],
+            &[Rc::clone(&phi1), Rc::clone(&X0)]
+        ) == muX0ph1_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[1, 0],
+            &[Rc::clone(&X0), Rc::clone(&phi1)]
+        ) == muX0ph1_app_X0
+    );
 
     // First comes first
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[0, 1, 1], &[Rc::clone(&phi1), Rc::clone(&X0), Rc::clone(&x0)]) == muX0ph1_app_X0);
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[1, 0, 0], &[Rc::clone(&X0), Rc::clone(&phi1), Rc::clone(&x0)]) == muX0ph1_app_X0);
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1, 1],
+            &[Rc::clone(&phi1), Rc::clone(&X0), Rc::clone(&x0)]
+        ) == muX0ph1_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[1, 0, 0],
+            &[Rc::clone(&X0), Rc::clone(&phi1), Rc::clone(&x0)]
+        ) == muX0ph1_app_X0
+    );
 
     // Extra values are ignored
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[0, 1, 1], &[Rc::clone(&phi1), Rc::clone(&X0), Rc::clone(&x0), Rc::clone(&x0), Rc::clone(&x0), Rc::clone(&x0), Rc::clone(&x0), Rc::clone(&x0)]) == muX0ph1_app_X0);
-    assert!(instantiate(Rc::clone(&muX0phi0_app_ph1), &[0, 1, 2], &[Rc::clone(&phi1), Rc::clone(&X0)]) == muX0ph1_app_X0);
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1, 1],
+            &[
+                Rc::clone(&phi1),
+                Rc::clone(&X0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0),
+                Rc::clone(&x0)
+            ]
+        ) == muX0ph1_app_X0
+    );
+    assert!(
+        instantiate(
+            Rc::clone(&muX0phi0_app_ph1),
+            &[0, 1, 2],
+            &[Rc::clone(&phi1), Rc::clone(&X0)]
+        ) == muX0ph1_app_X0
+    );
 }
 
 #[test]
