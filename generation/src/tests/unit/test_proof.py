@@ -3,7 +3,7 @@ from __future__ import annotations
 from io import BytesIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import Application, EVar, Exists, Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, SVar
+from proof_generation.proof import Application, EVar, Exists, Implication, MetaVar, Mu, SVar
 from proof_generation.proofs.propositional import Propositional
 
 
@@ -33,37 +33,21 @@ def test_instantiate() -> None:
 
 def test_conclusion() -> None:
     phi0 = MetaVar(0)
-    phi1 = MetaVar(1)
-    phi2 = MetaVar(2)
+    MetaVar(1)
+    MetaVar(2)
+    phi0_implies_phi0 = Implication(phi0, phi0)
     prop = Propositional()
-
-    step1 = Prop1().instantiate((1,), (phi0,))
-    assert step1.conclusion() == Implication(phi0, Implication(phi0, phi0))
-
-    step2 = Prop1().instantiate((1,), (prop.phi0_implies_phi0(),))
-    assert step2.conclusion() == Implication(phi0, Implication(prop.phi0_implies_phi0(), phi0))
-
-    assert Prop2().conclusion() == Implication(
-        Implication(phi0, Implication(phi1, phi2)), Implication(Implication(phi0, phi1), Implication(phi0, phi2))
-    )
-
-    step3 = Prop2().instantiate((1,), (prop.phi0_implies_phi0(),))
-    assert step3.conclusion() == Implication(
-        Implication(phi0, Implication(prop.phi0_implies_phi0(), phi2)),
-        Implication(Implication(phi0, prop.phi0_implies_phi0()), Implication(phi0, phi2)),
-    )
-
-    step4 = step3.instantiate((2,), (phi0,))
-    assert step4.conclusion() == Implication(
-        Implication(phi0, Implication(prop.phi0_implies_phi0(), phi0)),
-        Implication(Implication(phi0, prop.phi0_implies_phi0()), Implication(phi0, phi0)),
-    )
-
-    step4 = ModusPonens(step4, step2)
-    assert step4.conclusion() == Implication(Implication(phi0, prop.phi0_implies_phi0()), Implication(phi0, phi0))
-
-    step5 = ModusPonens(step4, step1)
-    assert step5.conclusion() == Implication(phi0, phi0)
+    # fmt: off
+    prop.modus_ponens(
+        prop.modus_ponens(
+                prop.prop2().instantiate((1, 2), (prop.phi0_implies_phi0(),prop.phi0()))
+                    .assertc(Implication(Implication(phi0, Implication(phi0_implies_phi0, phi0)), Implication(Implication(phi0, phi0_implies_phi0), Implication(phi0, phi0)))),
+                prop.prop1().instantiate((1,), (prop.phi0_implies_phi0(),))
+                    .assertc(Implication(phi0, Implication(prop.phi0_implies_phi0(), phi0))),
+        ).assertc(Implication(Implication(phi0, prop.phi0_implies_phi0()), Implication(phi0, phi0))),
+        prop.prop1().instantiate((1,), (phi0,))
+    ).assertc(Implication(phi0, phi0))
+    # fmt: on
 
 
 def test_serialize_phi_implies_phi() -> None:

@@ -286,6 +286,10 @@ class Proof(Term):
     def conclusion(self) -> Pattern:
         raise NotImplementedError
 
+    def assertc(self, pattern: Pattern) -> Proof:
+        assert self.conclusion() == pattern
+        return self
+
     def __post_init__(self) -> None:
         self.conclusion()
 
