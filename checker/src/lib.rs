@@ -374,6 +374,10 @@ fn instantiate(p: Rc<Pattern>, vars: &Vec<u8>, plugs: &Vec<Rc<Pattern>>) -> Rc<P
             instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
             instantiate(Rc::clone(&right), var_id, plug),
         ),
+        Pattern::Application { left, right } => app(
+            instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
+            instantiate(Rc::clone(&right), var_id, plug),
+        ),
         Pattern::Exists { var, subpattern } => {
             exists(*var, instantiate(Rc::clone(&subpattern), var_id, plug))
         }

@@ -328,6 +328,10 @@ class Instantiate(Proof):
     def shorthand(cls) -> dict[str, str]:
         return {'__name__': 'Inst', 'subproof': '', 'var': '', 'plug': ''}
 
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {'__name__': 'Inst', 'subproof': '', 'var': '', 'plug': ''}
+
     def well_formed(self) -> bool:
         return len(self.var) == len(self.plug)
 
