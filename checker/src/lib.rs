@@ -17,7 +17,7 @@ use alloc::vec::Vec;
 pub enum Instruction {
     List = 1,
     // Patterns
-    EVar, SVar, Symbol, Implication, Application, Mu, Exists,
+    EVar, SVar, Symbol, Implication, Application, Exists, Mu,
     // Meta Patterns,
     MetaVar, ESubst, SSubst,
     // Axiom Schemas,
@@ -161,13 +161,13 @@ impl Pattern {
 
     fn s_fresh(&self, svar: u8) -> bool {
         match self {
-            Pattern::SVar(name) => *name != svar,
             Pattern::EVar(_) => true,
+            Pattern::SVar(name) => *name != svar,
             Pattern::Symbol(_) => true,
             Pattern::Implication { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
             Pattern::Application { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
-            Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
+            Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
             Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar),
             Pattern::ESubst { pattern, plug, .. } =>
                 // Assume: substitution is well-formed => plug occurs in the result
@@ -184,19 +184,58 @@ impl Pattern {
         }
     }
 
-    // TODO: Implement positivity checking
-    fn positive(&self, _svar: u8) -> bool {
-        unimplemented!("Positivity is not implemented yet.")
+    #[allow(dead_code)]
+    fn positive(&self, svar: u8) -> bool {
+        match self {
+            Pattern::EVar(_) => true,
+            Pattern::SVar(_) => true,
+            Pattern::Symbol(_) => true,
+            Pattern::Implication { left, right } => left.negative(svar) && right.positive(svar),
+            Pattern::Application { left, right } => left.positive(svar) && right.positive(svar),
+            Pattern::Exists { subpattern, .. } => subpattern.positive(svar),
+            Pattern::Mu { var, subpattern } => svar == *var || subpattern.positive(svar),
+            Pattern::MetaVar { positive, .. } => positive.contains(&svar),
+            Pattern::ESubst { pattern, plug, .. } =>
+            // best-effort for now, see spec
+            {
+                pattern.positive(svar) && plug.s_fresh(svar)
+            }
+            _ => {
+                unimplemented!("positive unimplemented for this case");
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    fn negative(&self, svar: u8) -> bool {
+        match self {
+            Pattern::EVar(_) => true,
+            Pattern::SVar(name) => *name != svar,
+            Pattern::Symbol(_) => true,
+            Pattern::Implication { left, right } => left.positive(svar) && right.negative(svar),
+            Pattern::Application { left, right } => left.negative(svar) && right.negative(svar),
+            Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
+            Pattern::Mu { var, subpattern } => svar == *var || subpattern.negative(svar),
+            Pattern::MetaVar { negative, .. } => negative.contains(&svar),
+            Pattern::ESubst { pattern, plug, .. } =>
+            // best-effort for now, see spec
+            {
+                pattern.negative(svar) && plug.s_fresh(svar)
+            }
+            _ => {
+                unimplemented!("negative unimplemented for this case");
+            }
+        }
     }
 
     #[allow(dead_code)]
     fn well_formed(&self) -> bool {
         match self {
+            Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::MetaVar { .. } => {
                 // TODO: Should basically determin whether metavar is instantiable
                 unimplemented!("Well-formedness checking is unimplemented yet for metavars.");
             }
-            Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::ESubst {
                 pattern,
                 evar_id,
@@ -324,10 +363,23 @@ fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
 
 fn instantiate(p: Rc<Pattern>, vars: &Vec<u8>, plugs: &Vec<Rc<Pattern>>) -> Rc<Pattern> {
     match p.as_ref() {
+        Pattern::EVar(_) => p,
+        Pattern::SVar(_) => p,
+        Pattern::Symbol(_) => p,
         Pattern::Implication { left, right } => implies(
             instantiate(Rc::clone(&left), vars, plugs),
             instantiate(Rc::clone(&right), vars, plugs),
         ),
+        Pattern::Application { left, right } => app(
+            instantiate(Rc::clone(&left), var_id, Rc::clone(&plug)),
+            instantiate(Rc::clone(&right), var_id, plug),
+        ),
+        Pattern::Exists { var, subpattern } => {
+            exists(*var, instantiate(Rc::clone(&subpattern), var_id, plug))
+        }
+        Pattern::Mu { var, subpattern } => {
+            mu(*var, instantiate(Rc::clone(&subpattern), var_id, plug))
+        }
         Pattern::MetaVar {
             id,
             e_fresh,
@@ -367,7 +419,7 @@ fn instantiate(p: Rc<Pattern>, vars: &Vec<u8>, plugs: &Vec<Rc<Pattern>>) -> Rc<P
 /// =============
 
 type Stack = Vec<Term>;
-type Claims = Vec<Term>;
+type Claims = Vec<Rc<Pattern>>;
 type Memory = Vec<Entry>;
 
 /// Stack utilities
@@ -401,11 +453,17 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
 /// Main implementation
 /// -------------------
 
+pub enum ExecutionPhase {
+    Claim,
+    Proof,
+}
+
 fn execute_instructions<'a>(
     next: &mut impl FnMut() -> Option<u8>,
     stack: &mut Stack,
     memory: &mut Memory,
     claims: &mut Claims,
+    phase: ExecutionPhase,
 ) {
     // Metavars
     let phi0 = metavar_unconstrained(0);
@@ -473,6 +531,11 @@ fn execute_instructions<'a>(
                 let id = next().expect("Expected var_id for the exists binder");
                 let subpattern = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(exists(id, subpattern)))
+            }
+            Instruction::Mu => {
+                let id = next().expect("Expected var_id for the exists binder");
+                let subpattern = pop_stack_pattern(stack);
+                stack.push(Term::Pattern(mu(id, subpattern)))
             }
             Instruction::MetaVar => {
                 let id = next().expect("Insufficient parameters for MetaVar instruction");
@@ -571,14 +634,22 @@ fn execute_instructions<'a>(
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
                 }
             }
-            Instruction::Publish => {
-                let claim = pop_stack_pattern(claims);
-                let theorem = pop_stack_proved(stack);
-
-                if claim != theorem {
-                    panic!("This proof does not prove the requested claim");
+            Instruction::Publish => match phase {
+                ExecutionPhase::Claim => {
+                    let claim = pop_stack_pattern(stack);
+                    claims.push(claim)
                 }
-            }
+                ExecutionPhase::Proof => {
+                    let claim = claims.pop().expect("Insufficient claims.");
+                    let theorem = pop_stack_proved(stack);
+                    if claim != theorem {
+                        panic!(
+                            "This proof does not prove the requested claim: {:?}, theorem: {:?}",
+                            claim, theorem
+                        );
+                    }
+                }
+            },
             _ => {
                 unimplemented!("Instruction: {}", instr_u32)
             }
@@ -590,58 +661,31 @@ pub fn verify<'a>(
     proof_next_byte: &mut impl FnMut() -> Option<u8>,
     claims_next_byte: &mut impl FnMut() -> Option<u8>,
 ) -> (Stack, Memory, Claims) {
-    let mut claim_stack = vec![];
-    let mut claim_memory = vec![];
+    let mut stack = vec![];
+    let mut memory = vec![];
+    let mut claims = vec![];
     execute_instructions(
         claims_next_byte,
-        &mut claim_stack,
-        &mut claim_memory,
-        &mut vec![],
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Claim,
     );
 
-    let mut proof_stack = vec![];
-    let mut proof_memory = vec![];
+    stack.clear();
+    memory.clear();
     execute_instructions(
         proof_next_byte,
-        &mut proof_stack,
-        &mut proof_memory,
-        &mut claim_stack,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Proof,
     );
-    return (proof_stack, proof_memory, claim_stack);
+    return (stack, memory, claims);
 }
 
 /// Testing
 /// =======
-
-#[ignore]
-#[test]
-fn test_negative_disjoint() {
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![]);
-    assert!(!phi0_s_fresh_0.well_formed());
-}
-
-#[ignore]
-#[test]
-fn test_positive_disjoint() {
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![], vec![0]);
-    assert!(!phi0_s_fresh_0.well_formed());
-}
-
-#[ignore]
-#[test]
-fn test_wellformedness_fresh() {
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
-    assert!(phi0_s_fresh_0.well_formed());
-}
-
-#[ignore]
-#[test]
-#[should_panic]
-fn test_instantiate_fresh() {
-    let svar_0 = svar(0);
-    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
-    _ = instantiate(phi0_s_fresh_0, &vec![0], &vec![svar_0]);
-}
 
 #[test]
 fn test_efresh() {
@@ -693,6 +737,221 @@ fn test_sfresh() {
 
     let metaapplication2 = Pattern::Application { left, right: mvar };
     assert!(metaapplication2.s_fresh(2));
+}
+
+#[test]
+#[should_panic]
+fn test_instantiate_fresh() {
+    let svar_0 = svar(0);
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
+    _ = instantiate(phi0_s_fresh_0, 0, svar_0);
+}
+
+#[test]
+#[ignore]
+fn test_wellformedness_fresh() {
+    let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
+    assert!(phi0_s_fresh_0.well_formed());
+}
+
+#[test]
+#[allow(non_snake_case)]
+fn test_positivity() {
+    let X0 = svar(0);
+    let X1 = svar(1);
+    let X2 = svar(2);
+    let c1 = symbol(1);
+    let neg_X1 = not(Rc::clone(&X1));
+
+    // EVar
+    let evar1 = evar(1);
+    assert!(evar1.positive(1));
+    assert!(evar1.negative(1));
+    assert!(evar1.positive(2));
+    assert!(evar1.negative(2));
+
+    // SVar
+    assert!(X1.positive(1));
+    assert!(!X1.negative(1));
+    assert!(X1.positive(2));
+    assert!(X1.negative(2));
+
+    // Symbol
+    assert!(c1.positive(1));
+    assert!(c1.negative(1));
+    assert!(c1.positive(2));
+    assert!(c1.negative(2));
+
+    // Application
+    let appX1X2 = app(Rc::clone(&X1), Rc::clone(&X2));
+    assert!(appX1X2.positive(1));
+    assert!(appX1X2.positive(2));
+    assert!(appX1X2.positive(3));
+    assert!(!appX1X2.negative(1));
+    assert!(!appX1X2.negative(2));
+    assert!(appX1X2.negative(3));
+
+    // Implication
+    let impliesX1X2 = implies(Rc::clone(&X1), Rc::clone(&X2));
+    assert!(!impliesX1X2.positive(1));
+    assert!(impliesX1X2.positive(2));
+    assert!(impliesX1X2.positive(3));
+    assert!(impliesX1X2.negative(1));
+    assert!(!impliesX1X2.negative(2));
+    assert!(impliesX1X2.negative(3));
+
+    let impliesX1X1 = implies(Rc::clone(&X1), Rc::clone(&X1));
+    assert!(!impliesX1X1.positive(1));
+    assert!(!impliesX1X1.negative(1));
+
+    // Exists
+    let existsX1X2 = exists(1, Rc::clone(&X2));
+    assert!(existsX1X2.positive(1));
+    assert!(existsX1X2.positive(2));
+    assert!(existsX1X2.positive(3));
+    assert!(existsX1X2.negative(1));
+    assert!(!existsX1X2.negative(2));
+    assert!(existsX1X2.negative(3));
+
+    // Mu
+    let muX1x1 = mu(1, Rc::clone(&evar1));
+    assert!(muX1x1.positive(1));
+    assert!(muX1x1.positive(2));
+    assert!(muX1x1.negative(1));
+    assert!(muX1x1.negative(2));
+
+    let muX1X1 = mu(1, Rc::clone(&X1));
+    assert!(muX1X1.positive(1));
+    assert!(muX1X1.negative(1));
+
+    let muX1X2 = mu(1, Rc::clone(&X2));
+    assert!(muX1X2.positive(1));
+    assert!(muX1X2.positive(2));
+    assert!(muX1X2.positive(3));
+    assert!(muX1X2.negative(1));
+    assert!(!muX1X2.negative(2));
+    assert!(mu(1, implies(Rc::clone(&X2), Rc::clone(&X1))).negative(2));
+    assert!(muX1X2.negative(3));
+
+    // MetaVar
+    assert!(!metavar_unconstrained(1).positive(1));
+    assert!(!metavar_unconstrained(1).positive(2));
+    assert!(!metavar_unconstrained(1).negative(1));
+    assert!(!metavar_unconstrained(1).negative(2));
+
+    // Do not imply positivity from freshness
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).positive(1));
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).negative(1));
+    assert!(metavar_s_fresh(1, 1, vec![1], vec![1]).positive(1));
+    assert!(metavar_s_fresh(1, 1, vec![1], vec![1]).negative(1));
+    assert!(metavar_s_fresh(1, 1, vec![1], vec![]).positive(1));
+    assert!(metavar_s_fresh(1, 1, vec![], vec![1]).negative(1));
+
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).positive(2));
+    assert!(!metavar_s_fresh(1, 1, vec![], vec![]).negative(2));
+
+    // ESubst
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X0)).positive(0));
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X1)).positive(0));
+    assert!(!esubst(metavar_s_fresh(0, 1, vec![1], vec![]), 0, Rc::clone(&X1)).positive(0));
+
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X0)).negative(0));
+    assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X1)).negative(0));
+    assert!(!esubst(metavar_s_fresh(0, 1, vec![1], vec![]), 0, Rc::clone(&X1)).negative(0));
+
+    // Combinations
+    assert!(!neg_X1.positive(1));
+    assert!(neg_X1.positive(2));
+    assert!(neg_X1.negative(1));
+    assert!(neg_X1.negative(2));
+
+    let negX1_implies_negX1 = implies(Rc::clone(&neg_X1), Rc::clone(&neg_X1));
+    assert!(!negX1_implies_negX1.positive(1));
+    assert!(negX1_implies_negX1.positive(2));
+    assert!(!negX1_implies_negX1.negative(1));
+    assert!(negX1_implies_negX1.negative(2));
+
+    let negX1_implies_X1 = implies(Rc::clone(&neg_X1), Rc::clone(&X1));
+    assert!(negX1_implies_X1.positive(1));
+    assert!(!negX1_implies_X1.negative(1));
+}
+
+#[test]
+fn test_wellformedness_positive() {
+    let svar = svar(1);
+    let mux_x = mu(1, Rc::clone(&svar));
+    assert!(mux_x.well_formed());
+
+    let mux_x2 = mu(2, not(Rc::clone(&svar)));
+    assert!(mux_x2.well_formed());
+
+    let mux_x3 = mu(2, not(symbol(1)));
+    assert!(mux_x3.well_formed());
+
+    let mux_x = mu(1, not(Rc::clone(&svar)));
+    assert!(!mux_x.well_formed());
+
+    let phi = metavar_s_fresh(97, 2, vec![], vec![]);
+    let mux_phi = mu(1, phi);
+    assert!(!mux_phi.well_formed());
+
+    // Even though freshness implies positivity, we do not want to do any
+    // additional reasoning and let everything on the prover
+    let phi2 = metavar_s_fresh(98, 1, vec![], vec![]);
+    let mux_phi2 = mu(1, phi2);
+    assert!(!mux_phi2.well_formed());
+
+    // It's ok if 2 is negative, the only thing we care about is that 2 is guaranteed to be positive
+    // (we can instantiate without this variable)
+    let phi3 = metavar_s_fresh(99, 1, vec![2], vec![2]);
+    let mux_phi3 = mu(2, phi3);
+    assert!(mux_phi3.well_formed());
+
+    let phi4 = metavar_s_fresh(100, 1, vec![2], vec![]);
+    let mux_phi4 = mu(2, phi4);
+    assert!(mux_phi4.well_formed());
+}
+
+#[test]
+#[allow(non_snake_case)]
+fn test_wellformedness_instantiate() {
+    let x0 = evar(0);
+    let X0 = svar(0);
+    let c0 = symbol(0);
+    let x0_implies_x0 = implies(Rc::clone(&x0), Rc::clone(&x0));
+    let appx0x0 = app(Rc::clone(&x0), Rc::clone(&x0));
+    let existsx0x0 = exists(0, Rc::clone(&x0));
+    let muX0x0 = mu(0, Rc::clone(&x0));
+
+    // Concrete patterns are unaffected by instantiate
+    assert!(instantiate(Rc::clone(&x0), 0, Rc::clone(&X0)) == x0);
+    assert!(instantiate(Rc::clone(&x0), 1, Rc::clone(&X0)) == x0);
+    assert!(instantiate(Rc::clone(&X0), 0, Rc::clone(&x0)) == X0);
+    assert!(instantiate(Rc::clone(&X0), 1, Rc::clone(&x0)) == X0);
+    assert!(instantiate(Rc::clone(&c0), 0, Rc::clone(&x0)) == c0);
+    assert!(instantiate(Rc::clone(&c0), 1, Rc::clone(&x0)) == c0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), 0, Rc::clone(&x0)) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&x0_implies_x0), 1, Rc::clone(&x0)) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&appx0x0), 0, Rc::clone(&x0)) == appx0x0);
+    assert!(instantiate(Rc::clone(&appx0x0), 1, Rc::clone(&x0)) == appx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), 0, Rc::clone(&X0)) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0x0), 1, Rc::clone(&X0)) == existsx0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), 0, Rc::clone(&x0)) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0x0), 1, Rc::clone(&x0)) == muX0x0);
+
+    let phi0 = metavar_unconstrained(0);
+    let phi0_implies_phi0 = implies(Rc::clone(&phi0), Rc::clone(&phi0));
+    let appphi0phi0 = app(Rc::clone(&x0), Rc::clone(&x0));
+    let existsx0phi0 = exists(0, Rc::clone(&phi0));
+    let muX0phi0 = mu(0, Rc::clone(&phi0));
+    assert!(instantiate(Rc::clone(&phi0_implies_phi0), 0, Rc::clone(&x0)) == x0_implies_x0);
+    assert!(instantiate(Rc::clone(&phi0_implies_phi0), 1, Rc::clone(&x0)) == phi0_implies_phi0);
+    assert!(instantiate(Rc::clone(&appphi0phi0), 0, Rc::clone(&x0)) == appx0x0);
+    assert!(instantiate(Rc::clone(&appphi0phi0), 1, Rc::clone(&x0)) == appphi0phi0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), 0, Rc::clone(&x0)) == existsx0x0);
+    assert!(instantiate(Rc::clone(&existsx0phi0), 1, Rc::clone(&x0)) == existsx0phi0);
+    assert!(instantiate(Rc::clone(&muX0phi0), 0, Rc::clone(&x0)) == muX0x0);
+    assert!(instantiate(Rc::clone(&muX0phi0), 1, Rc::clone(&x0)) == muX0phi0);
 }
 
 #[test]

@@ -735,10 +735,13 @@ Otherwise, execution aborts, and verification fails.
 `Symbol <u32>`
 :   Push a `Symbol` onto the stack.
 
-`Implication`/`Application`/`Exists`/`Mu`
+`Implication`/`Application`
 :   Consume the two patterns from the stack,
-    and push an implication/application/exists/mu to the stack
-    with appropriate arguments, performing well formedness checks as needed.
+    and push an implication/application to the stack
+    with appropriate arguments.
+
+`Exists <var_id:u32>`/`Mu <var_id:u32>`
+:   Consume a pattern from the stack, and push the corresponding pattern to the stack, if well-formed.
 
 ### Axiom Schemas
 
@@ -785,10 +788,14 @@ Otherwise, execution aborts, and verification fails.
 
 `Publish`
 :   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms.
-    * During the `claim` phase consume a pattern from the stack and push it to the queue of claims.
+    * During the `claim` phase consume a pattern from the stack and push it to the stack of claims.
     * During the `proof` phase consume a proof from the stack
       and a claim from the queue of claims and assert that they are equal.
 
+    Note that since the claims form a stack, they must be proved in the reverse order they
+    were declared in[^claims-stack-vs-queue].
+
+[^claims-stack-vs-queue]: This is convenient for the current implementation, but we may want to revist it later.
 
 ### Stack manipulation.
 
