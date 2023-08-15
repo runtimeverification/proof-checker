@@ -62,7 +62,7 @@ class EVar(Pattern):
     def shorthand(cls) -> dict[str, str]:
         return {'name': ''}
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return self
 
     def serialize_impl(
@@ -84,7 +84,7 @@ class SVar(Pattern):
     def shorthand(cls) -> dict[str, str]:
         return {'name': ''}
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return self
 
     def serialize_impl(
@@ -102,7 +102,7 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: int
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return self
 
     def serialize_impl(

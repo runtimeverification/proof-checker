@@ -945,7 +945,9 @@ fn test_wellformedness_instantiate() {
     let existsx0phi0 = exists(0, Rc::clone(&phi0));
     let muX0phi0 = mu(0, Rc::clone(&phi0));
     assert!(instantiate(Rc::clone(&phi0_implies_phi0), &[0], &[Rc::clone(&x0)]) == x0_implies_x0);
-    assert!(instantiate(Rc::clone(&phi0_implies_phi0), &[1], &[Rc::clone(&x0)]) == phi0_implies_phi0);
+    assert!(
+        instantiate(Rc::clone(&phi0_implies_phi0), &[1], &[Rc::clone(&x0)]) == phi0_implies_phi0
+    );
     assert!(instantiate(Rc::clone(&appphi0phi0), &[0], &[Rc::clone(&x0)]) == appx0x0);
     assert!(instantiate(Rc::clone(&appphi0phi0), &[1], &[Rc::clone(&x0)]) == appphi0phi0);
     assert!(instantiate(Rc::clone(&existsx0phi0), &[0], &[Rc::clone(&x0)]) == existsx0x0);
