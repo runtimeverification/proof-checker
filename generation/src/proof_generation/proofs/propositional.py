@@ -4,7 +4,7 @@ import sys
 from typing import TYPE_CHECKING, BinaryIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, Prop3, SVar, implies, neg, bot
+from proof_generation.proof import Implication, MetaVar, ModusPonens, Prop1, Prop2, Prop3, bot, implies, neg
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof

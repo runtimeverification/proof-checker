@@ -429,4 +429,3 @@ class Prop3(Proof):
     def conclusion(self) -> Pattern:
         phi0: MetaVar = MetaVar(0)
         return implies(neg(neg(phi0)), phi0)
-
