@@ -109,7 +109,7 @@ pub enum Pattern {
         s_fresh: Vec<u8>,
         positive: Vec<u8>,
         negative: Vec<u8>,
-        application_context: Vec<u8>,
+        app_ctx_holes: Vec<u8>,
     },
     ESubst {
         pattern: Rc<Pattern>,
@@ -320,7 +320,7 @@ fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
         s_fresh: vec![],
         positive: vec![],
         negative: vec![],
-        application_context: vec![],
+        app_ctx_holes: vec![],
     });
 }
 
@@ -340,7 +340,7 @@ fn metavar_s_fresh(var_id: u8, fresh: u8, positive: Vec<u8>, negative: Vec<u8>) 
         s_fresh: vec![fresh],
         positive,
         negative,
-        application_context: vec![],
+        app_ctx_holes: vec![],
     });
 }
 
@@ -539,7 +539,7 @@ fn execute_instructions<'a>(
             }
             Instruction::MetaVar => {
                 let id = next().expect("Insufficient parameters for MetaVar instruction");
-                let application_context = pop_stack_list(stack);
+                let app_ctx_holes = pop_stack_list(stack);
                 let negative = pop_stack_list(stack);
                 let positive = pop_stack_list(stack);
                 let s_fresh = pop_stack_list(stack);
@@ -550,7 +550,7 @@ fn execute_instructions<'a>(
                     s_fresh,
                     positive,
                     negative,
-                    application_context,
+                    app_ctx_holes,
                 })));
             }
             Instruction::ESubst => {

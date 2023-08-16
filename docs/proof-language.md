@@ -368,7 +368,7 @@ class MetaVar(Pattern):
     s_fresh: set[u32]             # Set variables that must not occur free in an instatiation
     positive: set[u32]            # Set variables that must only occur positively in an instatiation
     negative: set[u32]            # Set variables that must only occur negatively in an instatiation
-    application_context: set[u32] # Element variables that must only occur as a hole variable in an application context.
+    app_ctx_holes: set[u32] # Element variables that must only occur as a hole variable in an application context.
 
     def e_fresh(evar):
         return evar in e_fresh
@@ -573,7 +573,7 @@ class Quantifier(Proof):
 class PropagationOr(Proof):
     def conclusion():
         hole = EVar('#hole')
-        C = MetaVar(application_context=(EVar('#hole'),))
+        C = MetaVar(app_ctx_holes=(EVar('#hole'),))
         phi1 = MetaVar('#phi1')
         phi2 = MetaVar('#phi2')
         return Implication(ESubst(C, or(phi1, phi2), hole), or(ESubst(C, phi1, hole), ESubst(C, phi2, hole)))
