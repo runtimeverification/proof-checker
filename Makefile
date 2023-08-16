@@ -50,14 +50,13 @@ PROOFS=$(wildcard proofs/*.ml-proof)
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 
-.build/proofs/%.ml-proof: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*"  ".build/proofs/$*.ml-claim" "$@"
-
 CHECK_PROOF=./bin/proof-diff
-proofs/%.ml-proof.gen: .build/proofs/%.ml-proof FORCE
-	${CHECK_PROOF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
+proofs/%.ml-proof.gen: FORCE
+	@mkdir -p $(dir $@)
+	@rm -f ".build/proofs/$*.ml-claim" ".build/proofs/$*.ml-proof"
+	poetry -C generation run python -m "proof_generation.proofs.$*"  ".build/proofs/$*.ml-claim" ".build/proofs/$*.ml-proof"
 	${CHECK_PROOF} ".build/proofs/$*.ml-proof" "proofs/$*.ml-proof"
+	${CHECK_PROOF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
 
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
