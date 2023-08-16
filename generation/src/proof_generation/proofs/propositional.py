@@ -1,26 +1,12 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import (
-    Claim,
-    Implication,
-    MetaVar,
-    Mu,
-    Pattern,
-    ProofExp,
-    Proved,
-    SerializingInterpreter,
-    SVar,
-)
+from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
 
 if TYPE_CHECKING:
-    from proof_generation.proof import BasicInterpreter
-
-PatternExpression = Callable[[], Pattern]
-ProvedExpression = Callable[[], Proved]
+    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
 
 
 class Propositional(ProofExp):
@@ -114,18 +100,4 @@ class Propositional(ProofExp):
 
 
 if __name__ == '__main__':
-    _exe, claim_path, proof_path = sys.argv
-
-    with open(claim_path, 'wb') as claim_out:
-        claims = list(map(Claim, Propositional.claims()))
-        prop = Propositional(SerializingInterpreter(claims=claims, out=claim_out))
-        for claim_expr in reversed(prop.claim_expressions()):
-            prop.publish_claim(claim_expr())
-
-    with open(proof_path, 'wb') as proof_out:
-        claims = list(map(Claim, Propositional.claims()))
-        prop = Propositional(SerializingInterpreter(claims=claims, out=proof_out))
-        for proof_expr in prop.proof_expressions():
-            prop.publish(proof_expr())
-
-    print('Done.')
+    Propositional.main(sys.argv)

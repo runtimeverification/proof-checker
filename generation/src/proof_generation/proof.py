@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import BinaryIO, TextIO
 
 from proof_generation.instruction import Instruction
-
-# from proof_generation.instruction import Instruction
 
 
 class Term:
@@ -619,12 +619,26 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         return ret
 
 
+PatternExpression = Callable[[], Pattern]
+ProvedExpression = Callable[[], Proved]
+
+
 class ProofExp:
     interpreter: BasicInterpreter
 
     def __init__(self, interpreter: BasicInterpreter) -> None:
         self.interpreter = interpreter
         self.notation: dict[str, Pattern] = {}
+
+    @staticmethod
+    def claims() -> list[Pattern]:
+        raise NotImplementedError
+
+    def claim_expressions(self) -> list[PatternExpression]:
+        raise NotImplementedError
+
+    def proof_expressions(self) -> list[ProvedExpression]:
+        raise NotImplementedError
 
     # Patterns
     # ========
@@ -703,3 +717,22 @@ class ProofExp:
     def publish_claim(self, pattern: Pattern) -> Pattern:
         self.interpreter.publish_claim(pattern)
         return pattern
+
+    @classmethod
+    def serialize(cls, claims_path: Path, proofs_path: Path) -> None:
+        with open(claims_path, 'wb') as claim_out:
+            claims = list(map(Claim, cls.claims()))
+            proof_exp = cls(SerializingInterpreter(claims=claims, out=claim_out))
+            for claim_expr in reversed(proof_exp.claim_expressions()):
+                proof_exp.publish_claim(claim_expr())
+
+        with open(proofs_path, 'wb') as proof_out:
+            claims = list(map(Claim, cls.claims()))
+            proof_exp = cls(SerializingInterpreter(claims=claims, out=proof_out))
+            for proof_expr in proof_exp.proof_expressions():
+                proof_exp.publish(proof_expr())
+
+    @classmethod
+    def main(cls, argv: list[str]) -> None:
+        _exe, claims_path, proofs_path = argv
+        cls.serialize(Path(claims_path), Path(proofs_path))
