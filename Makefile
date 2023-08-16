@@ -52,8 +52,8 @@ PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 
 CHECK_PROOF=./bin/proof-diff
 proofs/%.ml-proof.gen: FORCE
-	@mkdir -p $(dir $@)
-	@rm -f ".build/proofs/$*.ml-claim" ".build/proofs/$*.ml-proof"
+	@mkdir -p .build/proofs || true
+	@rm -f ".build/proofs/$*.pretty-claim" ".build/proofs/$*.pretty-proof" ".build/proofs/$*.ml-claim" ".build/proofs/$*.ml-proof"
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary ".build/proofs/$*.ml-claim" ".build/proofs/$*.ml-proof"
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty ".build/proofs/$*.pretty-claim" ".build/proofs/$*.pretty-proof"
 	colordiff -U3 --label actual ".build/proofs/$*.pretty-claim" --label expected "proofs/$*.pretty-claim"
