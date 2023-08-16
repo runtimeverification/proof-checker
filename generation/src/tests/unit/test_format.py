@@ -18,7 +18,7 @@ mlpd = MLPrinter(desugar_axioms=True)
 
 
 not_phi0 = neg(MetaVar(0))
-some_diverse_pattern = Mu(SVar(0), Exists(EVar(0), implies(MetaVar(25, e_fresh=(EVar(5),)), bot)))
+some_diverse_pattern = Mu(SVar(0), Exists(EVar(0), implies(MetaVar(25, e_fresh=(EVar(5),)), bot())))
 imp_refl = Propositional().imp_reflexivity()
 
 

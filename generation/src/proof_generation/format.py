@@ -44,12 +44,12 @@ class MLPrinter(PrettyPrinter):
         items = list(filter((lambda item: not MLPrinter._is_empty(item[1])), items))
 
         # Pretty-print bottom
-        if object == bot:
+        if object == bot():
             stream.write('\u22A5')
             return
 
         # Pretty-print negation
-        if isinstance(object, Implication) and object.right == bot:
+        if isinstance(object, Implication) and object.right == bot():
             # Recompute indent
             indent -= len(cls_output_name) + 1
             indent += 1
