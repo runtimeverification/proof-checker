@@ -50,7 +50,7 @@ class Term:
 
 
 class Pattern(Term):
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         raise NotImplementedError
 
 
@@ -58,7 +58,11 @@ class Pattern(Term):
 class EVar(Pattern):
     name: int
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {'name': ''}
+
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return self
 
     def serialize_impl(
@@ -76,7 +80,11 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {'name': ''}
+
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return self
 
     def serialize_impl(
@@ -94,7 +102,7 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: int
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return self
 
     def serialize_impl(
@@ -113,6 +121,10 @@ class Implication(Pattern):
     left: Pattern
     right: Pattern
 
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {'__name__': 'Imp', 'left': '', 'right': ''}
+
     def serialize_impl(
         self,
         notation: set[Pattern],
@@ -125,7 +137,7 @@ class Implication(Pattern):
         self.right.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Implication]))
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Implication(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
 
 
@@ -146,7 +158,7 @@ class Application(Pattern):
         self.right.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Application]))
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Application(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
 
 
@@ -154,6 +166,10 @@ class Application(Pattern):
 class Exists(Pattern):
     var: EVar
     subpattern: Pattern
+
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {'__name__': '\u2203', 'var': '', 'subpattern': ''}
 
     def serialize_impl(
         self,
@@ -166,7 +182,7 @@ class Exists(Pattern):
         self.subpattern.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Exists, self.var.name]))
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(var, plug))
 
 
@@ -174,6 +190,14 @@ class Exists(Pattern):
 class Mu(Pattern):
     var: SVar
     subpattern: Pattern
+
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {
+            '__name__': '\u03BC',
+            'var': '',
+            'subpattern': '',
+        }
 
     def serialize_impl(
         self,
@@ -186,7 +210,7 @@ class Mu(Pattern):
         self.subpattern.serialize(notation, lemmas, memory, claims, output)
         output.write(bytes([Instruction.Mu, self.var.name]))
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(var, plug))
 
 
@@ -198,6 +222,18 @@ class MetaVar(Pattern):
     positive: tuple[SVar, ...] = ()
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
+
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {
+            '__name__': 'MV',
+            'name': '',
+            'e_fresh': 'e_f',
+            's_fresh': 's_f',
+            'positive': 'pos',
+            'negative': 'neg',
+            'application_context': 'app_cntxt',
+        }
 
     def serialize_impl(
         self,
@@ -218,9 +254,9 @@ class MetaVar(Pattern):
             output.write(bytes([Instruction.List, len(list), *[var.name for var in list]]))
         output.write(bytes([Instruction.MetaVar, self.name]))
 
-    def instantiate(self, var: int, plug: Pattern) -> Pattern:
-        if var == self.name:
-            return plug
+    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
+        if self.name in var:
+            return plug[var.index(self.name)]
         return self
 
 
@@ -258,13 +294,21 @@ def mu(var: int, subpattern: Pattern) -> Pattern:
     return Mu(SVar(var), subpattern)
 
 
+X = SVar(0)
+bot = Mu(X, X)
+
+
+def neg(p: Pattern) -> Pattern:
+    return implies(p, bot)
+
+
 # Proofs
 # ======
 
 
 @dataclass(frozen=True)
 class Proof(Term):
-    def instantiate(self: Proof, var: int, plug: Pattern) -> Proof:
+    def instantiate(self: Proof, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Proof:
         return Instantiate(self, var, plug)
 
     def conclusion(self) -> Pattern:
@@ -277,11 +321,15 @@ class Proof(Term):
 @dataclass(frozen=True)
 class Instantiate(Proof):
     subproof: Proof
-    var: int
-    plug: Pattern
+    var: tuple[int, ...]
+    plug: tuple[Pattern, ...]
+
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {'__name__': 'Inst', 'subproof': '', 'var': '', 'plug': ''}
 
     def well_formed(self) -> bool:
-        return True
+        return len(self.var) == len(self.plug)
 
     def serialize_impl(
         self,
@@ -292,8 +340,9 @@ class Instantiate(Proof):
         output: BinaryIO,
     ) -> None:
         self.subproof.serialize(notation, lemmas, memory, claims, output)
-        self.plug.serialize(notation, lemmas, memory, claims, output)
-        output.write(bytes([Instruction.Instantiate, self.var]))
+        for p in reversed(self.plug):
+            p.serialize(notation, lemmas, memory, claims, output)
+        output.write(bytes([Instruction.Instantiate, len(self.var)] + list(self.var)))
 
     def conclusion(self) -> Pattern:
         return self.subproof.conclusion().instantiate(self.var, self.plug)
@@ -304,6 +353,10 @@ class ModusPonens(Proof):
     left: Proof
     right: Proof
     ...
+
+    @classmethod
+    def shorthand(cls) -> dict[str, str]:
+        return {'__name__': 'MP', 'left': '', 'right': ''}
 
     def serialize_impl(
         self,
