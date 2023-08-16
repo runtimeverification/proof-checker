@@ -606,6 +606,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(id)
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
+        self.out.write('\n')
         return ret
 
     def publish(self, proved: Proved) -> None:
@@ -733,6 +734,28 @@ class ProofExp:
                 proof_exp.publish(proof_expr())
 
     @classmethod
+    def pretty_print(cls, claims_path: Path, proofs_path: Path) -> None:
+        with open(claims_path, 'w') as claim_out:
+            claims = list(map(Claim, cls.claims()))
+            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=claim_out))
+            for claim_expr in reversed(proof_exp.claim_expressions()):
+                proof_exp.publish_claim(claim_expr())
+
+        with open(proofs_path, 'w') as proof_out:
+            claims = list(map(Claim, cls.claims()))
+            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=proof_out))
+            for proof_expr in proof_exp.proof_expressions():
+                proof_exp.publish(proof_expr())
+
+    @classmethod
     def main(cls, argv: list[str]) -> None:
-        _exe, claims_path, proofs_path = argv
-        cls.serialize(Path(claims_path), Path(proofs_path))
+        usage = 'Usage: {} binary|pretty claim-file proof-file'
+        assert len(argv) == 4, usage
+        _exe, mode, claims_path, proofs_path = argv
+        match mode:
+            case 'binary':
+                cls.serialize(Path(claims_path), Path(proofs_path))
+            case 'pretty':
+                cls.pretty_print(Path(claims_path), Path(proofs_path))
+            case _:
+                raise AssertionError(usage)
