@@ -68,8 +68,7 @@ test-proof-gen: ${PROOF_GEN_TARGETS}
 PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
 
 proofs/%.ml-proof.verify: proofs/%.ml-proof
-	cargo run --bin checker $< proofs/$*.ml-claim
-
+	cargo run --bin checker proofs/$*.ml-claim $< 
 test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
 
