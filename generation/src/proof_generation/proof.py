@@ -221,7 +221,7 @@ class MetaVar(Pattern):
     s_fresh: tuple[SVar, ...] = ()
     positive: tuple[SVar, ...] = ()
     negative: tuple[SVar, ...] = ()
-    application_context: tuple[EVar, ...] = ()
+    app_ctx_holes: tuple[EVar, ...] = ()
 
     @classmethod
     def shorthand(cls) -> dict[str, str]:
@@ -248,7 +248,7 @@ class MetaVar(Pattern):
             self.s_fresh,
             self.positive,
             self.negative,
-            self.application_context,
+            self.app_ctx_holes,
         ]
         for list in lists:
             output.write(bytes([Instruction.List, len(list), *[var.name for var in list]]))
