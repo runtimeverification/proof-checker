@@ -1,86 +1,100 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, BinaryIO
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
-from proof_generation.instruction import Instruction
-from proof_generation.proof import Implication, ProofExp
+from proof_generation.proof import (
+    Claim,
+    Implication,
+    MetaVar,
+    Mu,
+    Pattern,
+    ProofExp,
+    Proved,
+    SerializingInterpreter,
+    SVar,
+)
 
 if TYPE_CHECKING:
-    from proof_generation.proof import Pattern, Proof
+    from proof_generation.proof import BasicInterpreter
+
+PatternExpression = Callable[[], Pattern]
+ProvedExpression = Callable[[], Proved]
 
 
 class Propositional(ProofExp):
-    def theory(self) -> list[Pattern]:
-        """Returns a list of axioms. In this case we do not rely on any axioms."""
-        return []
+    def __init__(self, interpreter: BasicInterpreter) -> None:
+        super().__init__(interpreter)
 
-    def lemmas(self) -> set[Pattern]:
-        """Returns a list statements for internal lemmas that we should reuse."""
-        return set(self.claims())
+    @staticmethod
+    def claims() -> list[Pattern]:
+        phi0 = MetaVar(0)
+        bot = Mu(SVar(0), SVar(0))
+        top = Implication(bot, bot)
+        return [Implication(phi0, phi0), top]
 
-    def notation(self) -> set[Pattern]:
-        """Returns a list patterns that we will want to reuse."""
-        return {self.phi0(), self.bot(), self.top(), self.phi0_implies_phi0()}
+    def claim_expressions(self) -> list[PatternExpression]:
+        return [self.phi0_implies_phi0, self.top]
 
-    def claims(self) -> list[Pattern]:
-        """Returns a list statements for theorems that we want to publish."""
-        return [self.phi0_implies_phi0(), self.top()]
-
-    def proofs(self) -> list[Proof]:
-        """Returns a list of proofs for the claims."""
-        return [self.imp_reflexivity(), self.top_intro()]
-
-    def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
-        claims_memory: list[tuple[bool, Pattern]] = []
-        for claim in reversed(self.claims()):
-            claim.serialize(self.notation(), set(), claims_memory, [], claims_out)
-            claims_out.write(bytes([Instruction.Publish]))
-
-        claims: list[Pattern] = self.claims()
-        proofs_memory: list[tuple[bool, Pattern]] = []
-        for proof in self.proofs():
-            proof.serialize(self.notation(), self.lemmas(), proofs_memory, claims, proofs_out)
-        assert claims == []
+    def proof_expressions(self) -> list[ProvedExpression]:
+        return [self.imp_reflexivity, self.top_intro]
 
     # Notation
     # ========
 
     def phi0(self) -> Pattern:
-        return self.metavar(0)
+        if ret := self.load_notation('phi0'):
+            return ret
+        return self.save_notation('phi0', self.metavar(0))
 
     def phi0_implies_phi0(self) -> Pattern:
-        phi0 = self.metavar(0)
-        return self.implies(phi0, phi0)
+        if ret := self.load_notation('phi0-implies-phi0'):
+            return ret
+        return self.save_notation('phi0-implies-phi0', self.implies(self.phi0(), self.phi0()))
+
+    def bot(self) -> Pattern:
+        if ret := self.load_notation('bot'):
+            return ret
+        return self.save_notation('bot', self.mu(0, self.svar(0)))
+
+    def neg_notation(self) -> Pattern:
+        if ret := self.load_notation('neg'):
+            return ret
+        return self.save_notation('neg', self.implies(self.phi0(), self.bot()))
+
+    def neg(self, p: PatternExpression) -> Pattern:
+        return self.instantiate_notation(self.neg_notation(), (0,), (p(),))
+
+    def top(self) -> Pattern:
+        if ret := self.load_notation('top'):
+            return ret
+        return self.save_notation('top', self.neg(self.bot))
 
     # Proofs
     # ======
 
     # phi0 -> phi0
-    def imp_reflexivity(self) -> Proof:
+    def imp_reflexivity(self) -> Proved:
+        # fmt: off
         return self.modus_ponens(
             self.modus_ponens(
-                self.prop2().instantiate(
-                    (
-                        1,
-                        2,
-                    ),
-                    (self.phi0_implies_phi0(), self.phi0()),
-                ),
+                self.prop2().instantiate((1, 2,), (self.phi0_implies_phi0(), self.phi0()),),
                 self.prop1().instantiate((1,), (self.phi0_implies_phi0(),)),
             ),
             self.prop1().instantiate((1,), (self.phi0(),)),
         )
 
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
-    def imp_transitivity(self, phi0_imp_phi0: Proof, phi1_imp_phi2: Proof) -> Proof:
-        phi0_imp_phi1_conc = phi0_imp_phi0.conclusion()
+    def imp_transitivity(self, phi0_imp_phi0: Proved, phi1_imp_phi2: Proved) -> Proved:
+        phi0_imp_phi1_conc = phi0_imp_phi0.conclusion
+
         match phi0_imp_phi1_conc:
             case Implication(phi0, phi1):
                 pass
             case _:
                 raise AssertionError('Expected implication')
-        phi1_imp_phi2_conc = phi1_imp_phi2.conclusion()
+        phi1_imp_phi2_conc = phi1_imp_phi2.conclusion
         match phi1_imp_phi2_conc:
             case Implication(phi1_r, phi2):
                 assert phi1_r == phi1
@@ -95,12 +109,23 @@ class Propositional(ProofExp):
             phi0_imp_phi0,
         )
 
-    def top_intro(self) -> Proof:
+    def top_intro(self) -> Proved:
         return self.imp_reflexivity().instantiate((0,), (self.bot(),))
 
 
 if __name__ == '__main__':
     _exe, claim_path, proof_path = sys.argv
+
     with open(claim_path, 'wb') as claim_out:
-        with open(proof_path, 'wb') as proof_out:
-            Propositional().serialize(claim_out, proof_out)
+        claims = list(map(Claim, Propositional.claims()))
+        prop = Propositional(SerializingInterpreter(claims=claims, out=claim_out))
+        for claim_expr in reversed(prop.claim_expressions()):
+            prop.publish_claim(claim_expr())
+
+    with open(proof_path, 'wb') as proof_out:
+        claims = list(map(Claim, Propositional.claims()))
+        prop = Propositional(SerializingInterpreter(claims=claims, out=proof_out))
+        for proof_expr in prop.proof_expressions():
+            prop.publish(proof_expr())
+
+    print('Done.')
