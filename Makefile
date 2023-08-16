@@ -49,7 +49,6 @@ PROOFS=$(wildcard proofs/*.ml-proof)
 # ----------------
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
-
 .build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*"  ".build/proofs/$*.ml-claim" "$@"
@@ -66,20 +65,22 @@ test-proof-gen: ${PROOF_GEN_TARGETS}
 # ----------------
 
 PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
-
 proofs/%.ml-proof.verify: proofs/%.ml-proof
 	cargo run --bin checker $< proofs/$*.ml-claim
 
 test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
+PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
+.build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof FORCE
+	cargo run --bin checker $< .build/proofs/$*.ml-claim
+
+proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
 # Risc0
 # -----
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
-
 proofs/%.ml-proof.zk: proofs/%.ml-proof
 	cargo run --bin host $^ proofs/$*.ml-claim
 
 test-zk: ${PROOF_ZK_TARGETS}
-
