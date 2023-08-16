@@ -4,7 +4,7 @@ import sys
 from typing import TYPE_CHECKING, BinaryIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, SVar, implies
+from proof_generation.proof import Implication, MetaVar, ModusPonens, Mu, Prop1, Prop2, Prop3, SVar, implies, neg, bot
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern, Proof
@@ -16,6 +16,9 @@ class ProofExp:
 
     def prop2(self) -> Proof:
         return Prop2()
+
+    def prop3(self) -> Proof:
+        return Prop3()
 
     def modus_ponens(self, left: Proof, right: Proof) -> Proof:
         """This wrapper flips the order of arguments for modus ponens,
@@ -34,15 +37,15 @@ class Propositional(ProofExp):
 
     def notation(self) -> set[Pattern]:
         """Returns a list patterns that we will want to reuse."""
-        return {self.phi0, self.bot(), self.top(), self.phi0_implies_phi0}
+        return {self.phi0, bot(), self.top, self.phi0_implies_phi0}
 
     def claims(self) -> list[Pattern]:
         """Returns a list statements for theorems that we want to publish."""
-        return [self.phi0_implies_phi0, self.top()]
+        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0]
 
     def proofs(self) -> list[Proof]:
         """Returns a list of proofs for the claims."""
-        return [self.imp_reflexivity(), self.top_intro()]
+        return [self.imp_reflexivity(), self.top_intro(), self.bot_elim()]
 
     def serialize(self, claims_out: BinaryIO, proofs_out: BinaryIO) -> None:
         claims_memory: list[tuple[bool, Pattern]] = []
@@ -61,15 +64,8 @@ class Propositional(ProofExp):
 
     phi0: MetaVar = MetaVar(0)
     phi0_implies_phi0: Pattern = implies(phi0, phi0)
-
-    def bot(self) -> Pattern:
-        return Mu(SVar(0), SVar(0))
-
-    def neg(self, p: Pattern) -> Pattern:
-        return implies(p, self.bot())
-
-    def top(self) -> Pattern:
-        return self.neg(self.bot())
+    top: Pattern = neg(bot())
+    bot_implies_phi0 = implies(bot(), phi0)
 
     # Proofs
     # ======
@@ -108,7 +104,30 @@ class Propositional(ProofExp):
         )
 
     def top_intro(self) -> Proof:
-        return self.imp_reflexivity().instantiate((0,), (self.bot(),))
+        return self.imp_reflexivity().instantiate((0,), (bot(),))
+
+    def bot_elim(self) -> Proof:
+        # neg neg 0 -> 0
+        pat1 = implies(neg(neg(self.phi0)), self.phi0)
+        # neg neg 2
+        pat2 = neg(neg(self.phi0))
+
+        return self.modus_ponens(
+            # ((bot -> neg neg 0) -> (bot -> 0)))
+            self.modus_ponens(
+                # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
+                self.prop2().instantiate((0, 1, 2), (bot(), pat2, self.phi0)),
+                # (bot -> (neg neg 0 -> 0))
+                self.modus_ponens(
+                    # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
+                    self.prop1().instantiate((0, 1), (pat1, bot())),
+                    # (neg neg 0 -> 0)
+                    self.prop3().instantiate((0,), (self.phi0,)),
+                ),
+            ),
+            # (bot -> (neg phi0 -> bot))
+            self.prop1().instantiate((0, 1), (bot(), neg(self.phi0))),
+        )
 
 
 if __name__ == '__main__':

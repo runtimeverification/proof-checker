@@ -294,12 +294,12 @@ def mu(var: int, subpattern: Pattern) -> Pattern:
     return Mu(SVar(var), subpattern)
 
 
-X = SVar(0)
-bot = Mu(X, X)
+def bot() -> Pattern:
+    return Mu(SVar(0), SVar(0))
 
 
 def neg(p: Pattern) -> Pattern:
-    return implies(p, bot)
+    return implies(p, bot())
 
 
 # Proofs
@@ -412,3 +412,21 @@ class Prop2(Proof):
         phi1: MetaVar = MetaVar(1)
         phi2: MetaVar = MetaVar(2)
         return implies(implies(phi0, implies(phi1, phi2)), implies(implies(phi0, phi1), implies(phi0, phi2)))
+
+
+@dataclass(frozen=True)
+class Prop3(Proof):
+    def serialize_impl(
+        self,
+        notation: set[Pattern],
+        lemmas: set[Pattern],
+        memory: list[tuple[bool, Pattern]],
+        claims: list[Pattern],
+        output: BinaryIO,
+    ) -> None:
+        output.write(bytes([Instruction.Prop3]))
+
+    def conclusion(self) -> Pattern:
+        phi0: MetaVar = MetaVar(0)
+        return implies(neg(neg(phi0)), phi0)
+
