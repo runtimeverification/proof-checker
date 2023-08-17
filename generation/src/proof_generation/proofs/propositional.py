@@ -60,7 +60,7 @@ class Propositional(ProofExp):
     def bot_implies_phi0(self) -> Pattern:
         if ret := self.load_notation('bot-implies-phi0'):
             return ret
-        return self.save_notation('bot-implies-phi0', self.implies(self.phi0(), self.bot()))
+        return self.save_notation('bot-implies-phi0', self.implies(self.bot(), self.phi0()))
 
     # Proofs
     # ======
@@ -112,9 +112,9 @@ class Propositional(ProofExp):
                 # (bot -> (neg neg 0 -> 0))
                 self.modus_ponens(
                     # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.prop1().instantiate((0, 1), (self.implies(
-                                self.neg(lambda: self.neg(self.phi0)), self.phi0()
-                            ), self.bot()
+                    self.prop1().instantiate((0, 1), (
+                            self.implies(self.neg(lambda: self.neg(self.phi0)), self.phi0()),
+                            self.bot()
                         )),
                     # (neg neg 0 -> 0)
                     self.prop3().instantiate((0,), (self.phi0(),)),
