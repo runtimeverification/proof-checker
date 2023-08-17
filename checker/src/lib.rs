@@ -573,17 +573,21 @@ fn execute_instructions<'a>(
             Instruction::Prop3 => {
                 stack.push(Term::Proved(Rc::clone(&prop3)));
             }
-            Instruction::ModusPonens => match pop_stack_proved(stack).as_ref() {
-                Pattern::Implication { left, right } => {
-                    if *left.as_ref() != *pop_stack_proved(stack).as_ref() {
-                        panic!("Antecedents do not match for modus ponens.")
+            Instruction::ModusPonens => {
+                let premise2 = pop_stack_proved(stack);
+                let premise1 = pop_stack_proved(stack);
+                match premise1.as_ref() {
+                    Pattern::Implication { left, right } => {
+                        if *left.as_ref() != *premise2.as_ref() {
+                            panic!("Antecedents do not match for modus ponens.\nleft.psi:\n{:?}\n\n right:\n{:?}\n", left.as_ref(), premise2.as_ref())
+                        }
+                        stack.push(Term::Proved(Rc::clone(&right)))
                     }
-                    stack.push(Term::Proved(Rc::clone(&right)))
+                    _ => {
+                        panic!("Expected an implication as a first parameter.")
+                    }
                 }
-                _ => {
-                    panic!("Expected an implication as a first parameter.")
-                }
-            },
+            }
             Instruction::Quantifier => {
                 stack.push(Term::Proved(Rc::clone(&quantifier)));
             }
@@ -1171,35 +1175,33 @@ fn test_construct_phi_implies_phi() {
 fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
     let proof : Vec<u8> = vec![
-        Instruction::Prop1 as u8,              // (p1: phi0 -> (phi1 -> phi0))
+        Instruction::Prop2 as u8,                   // Stack: prop2
 
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
         Instruction::List as u8, 0,
-        Instruction::MetaVar as u8, 0,         // Stack: p1 ; phi0
-        Instruction::Save as u8,               // phi0 save at 0
+        Instruction::MetaVar as u8, 0,              // Stack: prop2 ; $ph0
+        Instruction::Save as u8,                    // @0
+        Instruction::Load as u8, 0,                 // Stack: prop2 ; $ph0 ; $ph0
+        Instruction::Implication as u8,             // Stack: prop2 ; $ph0 -> ph0
+        Instruction::Save as u8,                    // @1
+        Instruction::Instantiate as u8, 1, 1,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+        Instruction::Load as u8, 0,                 // Stack: prop2 ; ph0 -> ph0 ; ph0
+        Instruction::Instantiate as u8, 1, 2,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
 
-        Instruction::Instantiate as u8, 1, 1,     // Stack: (p2: phi0 -> (phi0 -> phi0))
+        Instruction::Prop1 as u8,                   // Stack: p1 ; prop1
+        Instruction::Load as u8, 1,                 // Stack: p1 ; prop1 ; $ph0 -> ph0
+        Instruction::Instantiate as u8, 1, 1,       // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
 
-        Instruction::Prop1 as u8,              // Stack: p2 ; p1
-        Instruction::Load as u8, 0,            // Stack: p2 ; p1 ; phi0
-        Instruction::Load as u8, 0,            // Stack: p2 ; p1 ; phi0 ; phi0
-        Instruction::Implication as u8,        // Stack: p2 ; p1 ; phi1; phi0 -> phi0
-        Instruction::Save as u8,               // phi0 -> phi0 save at 1
+        Instruction::ModusPonens as u8,             // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
 
-        Instruction::Instantiate as u8, 1, 1,     // Stack: p2 ; (p3: phi0 -> ((phi0 -> phi0) -> phi0))
+        Instruction::Prop1 as u8,                   // Stack: p3 ; prop1
+        Instruction::Load as u8, 0,                 // Stack: p3 ; prop1 ; ph0
+        Instruction::Instantiate as u8, 1, 1,       // Stack: p3 ; ph0 -> ph0 -> ph0
 
-        Instruction::Prop2 as u8,              // Stack: p2 ; p3; (p4: (phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2))
-        Instruction::Load as u8, 1,
-        Instruction::Instantiate as u8, 1, 1,     // Stack: p2 ; p3; (p4: (phi0 -> ((phi0 -> phi0) -> phi2)) -> (p2 -> (phi0 -> phi2))
-
-        Instruction::Load as u8, 0,
-        Instruction::Instantiate as u8, 1, 2,     // Stack: p2 ; p3; (p4: p3 -> (p2 -> (phi0 -> phi0))
-
-        Instruction::ModusPonens as u8,        // Stack: p2 ; (p2 -> (phi0 -> phi0))
-        Instruction::ModusPonens as u8,        // Stack: phi0 -> phi0
+        Instruction::ModusPonens as u8,             // Stack: phi0 -> phi0
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
