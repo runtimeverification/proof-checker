@@ -314,7 +314,7 @@ class StatefulInterpreter(BasicInterpreter):
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         *self.stack, expected_subpattern = self.stack
         assert expected_subpattern == subpattern
-        ret =  super().mu(var, subpattern)
+        ret = super().mu(var, subpattern)
         self.stack.append(ret)
         return ret
 
@@ -380,7 +380,6 @@ class StatefulInterpreter(BasicInterpreter):
 
 
 class SerializingInterpreter(StatefulInterpreter):
-
     def __init__(self, claims: list[Claim], out: BinaryIO) -> None:
         super().__init__(claims)
         self.out = out
