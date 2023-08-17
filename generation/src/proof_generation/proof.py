@@ -300,7 +300,7 @@ class StatefulInterpreter(BasicInterpreter):
         *self.stack, expected_left, expected_right = self.stack
         assert expected_left == left
         assert expected_right == right
-        ret = Application(left, right)
+        ret = super().app(left, right)
         self.stack.append(ret)
         return ret
 
