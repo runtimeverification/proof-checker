@@ -213,10 +213,11 @@ class BasicInterpreter:
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
+        bot: Pattern = Mu(0, SVar(0))
         return Proved(
             self,
             Implication(
-                Implication(Implication(phi0, Mu(0, SVar(0))), Mu(0, SVar(0))), phi0
+                Implication(Implication(phi0, bot), bot), phi0
             )
         )
 
