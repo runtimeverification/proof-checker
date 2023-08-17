@@ -44,8 +44,6 @@ def test_instantiate() -> None:
 
 def test_conclusion() -> None:
     phi0 = MetaVar(0)
-    MetaVar(1)
-    MetaVar(2)
     phi0_implies_phi0 = Implication(phi0, phi0)
     prop = Propositional(StatefulInterpreter([]))
     prop.modus_ponens(
