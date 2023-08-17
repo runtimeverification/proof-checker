@@ -73,7 +73,6 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/
 	${BIN_DIFF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
 
 
-
 test-proof-gen: ${PROOF_GEN_TARGETS}
 
 # Proof checking
@@ -86,7 +85,7 @@ proofs/%.ml-proof.verify: proofs/%.ml-proof
 test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
-.build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof FORCE
+.build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof .build/proofs/%.ml-claim
 	cargo run --bin checker $< .build/proofs/$*.ml-claim
 
 proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
