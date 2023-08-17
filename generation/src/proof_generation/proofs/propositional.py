@@ -112,10 +112,9 @@ class Propositional(ProofExp):
                 # (bot -> (neg neg 0 -> 0))
                 self.modus_ponens(
                     # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.prop1().instantiate((0, 1), (
-                            self.implies(self.neg(lambda: self.neg(self.phi0)), self.phi0()),
-                            self.bot()
-                        )),
+                    self.prop1().instantiate(
+                        (0, 1), (self.implies(self.neg(lambda: self.neg(self.phi0)), self.phi0()), self.bot())
+                    ),
                     # (neg neg 0 -> 0)
                     self.prop3().instantiate((0,), (self.phi0(),)),
                 ),
