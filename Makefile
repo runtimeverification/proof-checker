@@ -50,16 +50,28 @@ PROOFS=$(wildcard proofs/*.ml-proof)
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 
-CHECK_PROOF=./bin/proof-diff
-proofs/%.ml-proof.gen: FORCE
-	@mkdir -p .build/proofs || true
-	@rm -f ".build/proofs/$*.pretty-claim" ".build/proofs/$*.pretty-proof" ".build/proofs/$*.ml-claim" ".build/proofs/$*.ml-proof"
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary ".build/proofs/$*.ml-claim" ".build/proofs/$*.ml-proof"
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty ".build/proofs/$*.pretty-claim" ".build/proofs/$*.pretty-proof"
-	colordiff -U3 --label actual ".build/proofs/$*.pretty-claim" --label expected "proofs/$*.pretty-claim"
-	colordiff -U3 --label actual ".build/proofs/$*.pretty-proof" --label expected "proofs/$*.pretty-proof"
-	${CHECK_PROOF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
-	${CHECK_PROOF} ".build/proofs/$*.ml-proof" "proofs/$*.ml-proof"
+.build/proofs/%.ml-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
+
+.build/proofs/%.ml-claim: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" binary claim $@
+
+.build/proofs/%.pretty-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty proof $@
+
+.build/proofs/%.pretty-claim: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
+
+BIN_DIFF=./bin/proof-diff
+DIFF=colordiff -U3
+proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim
+	${DIFF} ".build/proofs/$*.pretty-claim" "proofs/$*.pretty-claim"
+	${DIFF} ".build/proofs/$*.pretty-proof" "proofs/$*.pretty-proof"
+	${BIN_DIFF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
 
 
 

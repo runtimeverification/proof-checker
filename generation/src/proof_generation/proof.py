@@ -720,42 +720,51 @@ class ProofExp:
         return pattern
 
     @classmethod
-    def serialize(cls, claims_path: Path, proofs_path: Path) -> None:
-        with open(claims_path, 'wb') as claim_out:
+    def serialize_claims(cls, output: Path) -> None:
+        with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(claims=claims, out=claim_out))
+            proof_exp = cls(SerializingInterpreter(claims=claims, out=out))
             for claim_expr in reversed(proof_exp.claim_expressions()):
                 proof_exp.publish_claim(claim_expr())
 
-        with open(proofs_path, 'wb') as proof_out:
+    @classmethod
+    def serialize_proofs(cls, output: Path) -> None:
+        with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(claims=claims, out=proof_out))
+            proof_exp = cls(SerializingInterpreter(claims=claims, out=out))
             for proof_expr in proof_exp.proof_expressions():
                 proof_exp.publish(proof_expr())
 
     @classmethod
-    def pretty_print(cls, claims_path: Path, proofs_path: Path) -> None:
-        with open(claims_path, 'w') as claim_out:
+    def pretty_print_claims(cls, output: Path) -> None:
+        with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=claim_out))
+            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=out))
             for claim_expr in reversed(proof_exp.claim_expressions()):
                 proof_exp.publish_claim(claim_expr())
 
-        with open(proofs_path, 'w') as proof_out:
+    @classmethod
+    def pretty_print_proofs(cls, output: Path) -> None:
+        with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=proof_out))
+            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=out))
             for proof_expr in proof_exp.proof_expressions():
                 proof_exp.publish(proof_expr())
 
     @classmethod
     def main(cls, argv: list[str]) -> None:
-        usage = 'Usage: {} binary|pretty claim-file proof-file'
+        usage = 'Usage: {} binary|pretty claim|proof output-file'
         assert len(argv) == 4, usage
-        _exe, mode, claims_path, proofs_path = argv
-        match mode:
-            case 'binary':
-                cls.serialize(Path(claims_path), Path(proofs_path))
-            case 'pretty':
-                cls.pretty_print(Path(claims_path), Path(proofs_path))
+        _exe, format, mode, output_path = argv
+
+        match (format, mode):
+            case ('pretty', 'claim'):
+                cls.pretty_print_claims(Path(output_path))
+            case ('pretty', 'proof'):
+                cls.pretty_print_proofs(Path(output_path))
+            case ('binary', 'claim'):
+                cls.serialize_claims(Path(output_path))
+            case ('binary', 'proof'):
+                cls.serialize_proofs(Path(output_path))
             case _:
                 raise AssertionError(usage)
