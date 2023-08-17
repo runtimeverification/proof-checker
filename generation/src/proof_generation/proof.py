@@ -214,6 +214,7 @@ class BasicInterpreter:
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
         return Proved(
+            self,
             Implication(
                 Implication(Implication(phi0, Mu(0, SVar(0))), Mu(0, SVar(0))), phi0
             )
@@ -336,6 +337,11 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
+    def prop3(self) -> Proved:
+        ret = super().prop3()
+        self.stack.append(ret)
+        return ret
+
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         *self.stack, expected_left, expected_right = self.stack
         assert expected_left == left, f'expected: {expected_left}\ngot: {left}'
@@ -451,6 +457,11 @@ class SerializingInterpreter(StatefulInterpreter):
     def prop2(self) -> Proved:
         ret = super().prop2()
         self.out.write(bytes([Instruction.Prop2]))
+        return ret
+
+    def prop3(self) -> Proved:
+        ret = super().prop3()
+        self.out.write(bytes([Instruction.Prop3]))
         return ret
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
@@ -576,6 +587,12 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def prop2(self) -> Proved:
         ret = super().prop2()
         self.out.write('Prop2')
+        self.out.write('\n')
+        return ret
+
+    def prop3(self) -> Proved:
+        ret = super().prop3()
+        self.out.write('Prop3')
         self.out.write('\n')
         return ret
 

@@ -100,25 +100,28 @@ class Propositional(ProofExp):
             phi0_imp_phi0,
         )
 
-    def top_intro(self) -> Proof:
+    def top_intro(self) -> Proved:
         return self.imp_reflexivity().instantiate((0,), (self.bot(),))
 
-    def bot_elim(self) -> Proof:
+    def bot_elim(self) -> Proved:
         return self.modus_ponens(
             # ((bot -> neg neg 0) -> (bot -> 0)))
             self.modus_ponens(
                 # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
-                self.prop2().instantiate((0, 1, 2), (self.bot(), self.neg(self.neg(self.phi0())), self.phi0())),
+                self.prop2().instantiate((0, 1, 2), (self.bot(), self.neg(lambda: self.neg(self.phi0)), self.phi0())),
                 # (bot -> (neg neg 0 -> 0))
                 self.modus_ponens(
                     # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.prop1().instantiate((0, 1), (self.implies(self.neg(self.neg(self.phi0())), self.phi0()), self.bot())),
+                    self.prop1().instantiate((0, 1), (self.implies(
+                                self.neg(lambda: self.neg(self.phi0)), self.phi0()
+                            ), self.bot()
+                        )),
                     # (neg neg 0 -> 0)
                     self.prop3().instantiate((0,), (self.phi0(),)),
                 ),
             ),
-            # (bot -> (neg phi0 -> bot))
-            self.prop1().instantiate((0, 1), (self.bot(), self.neg(self.phi0()))),
+            # (bot -> (neg neg phi0))
+            self.prop1().instantiate((0, 1), (self.bot(), self.neg(self.phi0))),
         )
 
 
