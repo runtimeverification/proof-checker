@@ -314,7 +314,7 @@ class StatefulInterpreter(BasicInterpreter):
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         *self.stack, expected_subpattern = self.stack
         assert expected_subpattern == subpattern
-        ret = Mu(SVar(var), subpattern)
+        ret =  super().mu(var, subpattern)
         self.stack.append(ret)
         return ret
 
