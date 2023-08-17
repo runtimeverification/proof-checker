@@ -71,6 +71,7 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/
 	${DIFF} ".build/proofs/$*.pretty-claim" "proofs/$*.pretty-claim"
 	${DIFF} ".build/proofs/$*.pretty-proof" "proofs/$*.pretty-proof"
 	${BIN_DIFF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
+	${BIN_DIFF} ".build/proofs/$*.ml-proof" "proofs/$*.ml-proof"
 
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
