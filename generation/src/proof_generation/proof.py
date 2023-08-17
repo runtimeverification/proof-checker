@@ -307,7 +307,7 @@ class StatefulInterpreter(BasicInterpreter):
     def exists(self, var: int, subpattern: Pattern) -> Pattern:
         *self.stack, expected_subpattern = self.stack
         assert expected_subpattern == subpattern
-        ret = Exists(EVar(var), subpattern)
+        ret = super().exists(var, subpattern)
         self.stack.append(ret)
         return ret
 
