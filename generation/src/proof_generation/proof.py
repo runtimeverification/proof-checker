@@ -213,7 +213,7 @@ class BasicInterpreter:
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
-        bot: Pattern = Mu(0, SVar(0))
+        bot: Pattern = Mu(SVar(0), SVar(0))
         return Proved(self, Implication(Implication(Implication(phi0, bot), bot), phi0))
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
