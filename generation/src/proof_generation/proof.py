@@ -380,9 +380,6 @@ class StatefulInterpreter(BasicInterpreter):
 
 
 class SerializingInterpreter(StatefulInterpreter):
-    """A Proof interpreter that also keeps track of the verifier state,
-    such as the memory, stack and claims remaining.
-    """
 
     def __init__(self, claims: list[Claim], out: BinaryIO) -> None:
         super().__init__(claims)
