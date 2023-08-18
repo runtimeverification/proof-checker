@@ -1,5 +1,6 @@
 all: check test-unit test-system test-zk
 .PHONY: all
+.SECONDARY:
 FORCE:
 
 

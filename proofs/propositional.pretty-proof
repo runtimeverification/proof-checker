@@ -37,3 +37,38 @@ Mu 0
 Save
 Instantiate 0
 Publish
+Prop2
+Load bot=2
+Load phi0=0
+Load bot=2
+Implication
+Save
+Load neg=3
+Load phi0=0
+Instantiate 0
+Instantiate 0
+Load phi0=0
+Instantiate 0, 1, 2
+Prop1
+Load neg=3
+Load neg=3
+Load phi0=0
+Instantiate 0
+Instantiate 0
+Load phi0=0
+Implication
+Load bot=2
+Instantiate 0, 1
+Prop3
+Load phi0=0
+Instantiate 0
+ModusPonens
+ModusPonens
+Prop1
+Load bot=2
+Load neg=3
+Load phi0=0
+Instantiate 0
+Instantiate 0, 1
+ModusPonens
+Publish
