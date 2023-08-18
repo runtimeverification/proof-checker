@@ -46,14 +46,13 @@ Save
 Load neg=3
 Load phi0=0
 Instantiate 0
+Save
 Instantiate 0
 Load phi0=0
 Instantiate 0, 1, 2
 Prop1
 Load neg=3
-Load neg=3
-Load phi0=0
-Instantiate 0
+Load neg-phi0=3
 Instantiate 0
 Load phi0=0
 Implication
