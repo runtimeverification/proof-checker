@@ -10,16 +10,15 @@ fn file_to_next(arg_index: usize, handler: impl FnOnce() -> String) -> impl FnMu
 }
 
 pub fn main() {
-    println!("{}", std::env::args().len());
-
     let proof_index;
     let claim_index;
 
-    // If there are at least two non-trivial arguments, the claim comes first
     if std::env::args().len() >= 3 {
+        // If both claim and proof are present, the claim comes first
         proof_index = 2;
         claim_index = 1
     } else {
+        // Otherwise, the single non-trivial argument is the proof
         proof_index = 1;
         claim_index = 2;
     }

@@ -78,7 +78,7 @@ test-proof-verify: ${PROOF_VERIFY_TARGETS}
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --bin host $^ proofs/$*.ml-claim
+	cargo run --bin host proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
 
