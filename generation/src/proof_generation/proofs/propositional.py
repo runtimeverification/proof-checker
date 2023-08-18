@@ -18,13 +18,13 @@ class Propositional(ProofExp):
         phi0 = MetaVar(0)
         bot = Mu(SVar(0), SVar(0))
         top = Implication(bot, bot)
-        return [Implication(phi0, phi0), top]
+        return [Implication(phi0, phi0), top, Implication(bot, phi0)]
 
     def claim_expressions(self) -> list[PatternExpression]:
-        return [self.phi0_implies_phi0, self.top]
+        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0]
 
     def proof_expressions(self) -> list[ProvedExpression]:
-        return [self.imp_reflexivity, self.top_intro]
+        return [self.imp_reflexivity, self.top_intro, self.bot_elim]
 
     # Notation
     # ========
@@ -56,6 +56,16 @@ class Propositional(ProofExp):
         if ret := self.load_notation('top'):
             return ret
         return self.save_notation('top', self.neg(self.bot))
+
+    def neg_phi0(self) -> Pattern:
+        if ret := self.load_notation('neg-phi0'):
+            return ret
+        return self.save_notation('neg-phi0', self.neg(self.phi0))
+
+    def bot_implies_phi0(self) -> Pattern:
+        if ret := self.load_notation('bot-implies-phi0'):
+            return ret
+        return self.save_notation('bot-implies-phi0', self.implies(self.bot(), self.phi0()))
 
     # Proofs
     # ======
@@ -97,6 +107,24 @@ class Propositional(ProofExp):
 
     def top_intro(self) -> Proved:
         return self.imp_reflexivity().instantiate((0,), (self.bot(),))
+
+    def bot_elim(self) -> Proved:
+        return self.modus_ponens(
+            # ((bot -> neg neg 0) -> (bot -> 0)))
+            self.modus_ponens(
+                # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
+                self.prop2().instantiate((0, 1, 2), (self.bot(), self.neg(self.neg_phi0), self.phi0())),
+                # (bot -> (neg neg 0 -> 0))
+                self.modus_ponens(
+                    # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
+                    self.prop1().instantiate((0, 1), (self.implies(self.neg(self.neg_phi0), self.phi0()), self.bot())),
+                    # (neg neg 0 -> 0)
+                    self.prop3().instantiate((0,), (self.phi0(),)),
+                ),
+            ),
+            # (bot -> (neg neg phi0))
+            self.prop1().instantiate((0, 1), (self.bot(), self.neg(self.phi0))),
+        )
 
 
 if __name__ == '__main__':

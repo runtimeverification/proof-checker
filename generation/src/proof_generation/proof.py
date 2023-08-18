@@ -211,6 +211,11 @@ class BasicInterpreter:
             ),
         )
 
+    def prop3(self) -> Proved:
+        phi0: MetaVar = MetaVar(0)
+        bot: Pattern = Mu(SVar(0), SVar(0))
+        return Proved(self, Implication(Implication(Implication(phi0, bot), bot), phi0))
+
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion
         assert isinstance(left_conclusion, Implication)
@@ -325,6 +330,11 @@ class StatefulInterpreter(BasicInterpreter):
 
     def prop2(self) -> Proved:
         ret = super().prop2()
+        self.stack.append(ret)
+        return ret
+
+    def prop3(self) -> Proved:
+        ret = super().prop3()
         self.stack.append(ret)
         return ret
 
@@ -443,6 +453,11 @@ class SerializingInterpreter(StatefulInterpreter):
     def prop2(self) -> Proved:
         ret = super().prop2()
         self.out.write(bytes([Instruction.Prop2]))
+        return ret
+
+    def prop3(self) -> Proved:
+        ret = super().prop3()
+        self.out.write(bytes([Instruction.Prop3]))
         return ret
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
@@ -571,6 +586,12 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('\n')
         return ret
 
+    def prop3(self) -> Proved:
+        ret = super().prop3()
+        self.out.write('Prop3')
+        self.out.write('\n')
+        return ret
+
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         ret = super().modus_ponens(left, right)
         self.out.write('ModusPonens')
@@ -680,6 +701,9 @@ class ProofExp:
 
     def prop2(self) -> Proved:
         return self.interpreter.prop2()
+
+    def prop3(self) -> Proved:
+        return self.interpreter.prop3()
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         return self.interpreter.modus_ponens(left, right)
