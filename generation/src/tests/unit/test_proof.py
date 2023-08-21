@@ -22,24 +22,24 @@ def test_instantiate() -> None:
     phi0 = MetaVar(0)
     phi0_ef0 = MetaVar(0, e_fresh=(EVar(0),))
     phi1 = MetaVar(1)
-    assert phi0.instantiate((0,), (phi0_ef0,)) == phi0_ef0
-    assert phi0.instantiate((1,), (phi0_ef0,)) == phi0
+    assert phi0.instantiate({0: phi0_ef0}) == phi0_ef0
+    assert phi0.instantiate({1: phi0_ef0}) == phi0
 
-    assert Implication(phi0, phi0).instantiate((0,), (phi1,)) == Implication(phi1, phi1)
-    assert Implication(phi0, phi1).instantiate((2,), (phi0_ef0,)) == Implication(phi0, phi1)
+    assert Implication(phi0, phi0).instantiate({0: phi1}) == Implication(phi1, phi1)
+    assert Implication(phi0, phi1).instantiate({2: phi0_ef0}) == Implication(phi0, phi1)
 
-    assert Application(phi0, phi0).instantiate((0,), (phi1,)) == Application(phi1, phi1)
-    assert Application(phi0, phi1).instantiate((2,), (phi0_ef0,)) == Application(phi0, phi1)
+    assert Application(phi0, phi0).instantiate({0: phi1}) == Application(phi1, phi1)
+    assert Application(phi0, phi1).instantiate({2: phi0_ef0}) == Application(phi0, phi1)
 
-    assert Exists(EVar(0), phi0).instantiate((0,), (phi1,)) == Exists(EVar(0), phi1)
-    assert Exists(EVar(0), phi0).instantiate((0,), (phi0_ef0,)) == Exists(EVar(0), phi0_ef0)
-    assert Exists(EVar(0), phi1).instantiate((1,), (phi0_ef0,)) == Exists(EVar(0), phi0_ef0)
-    assert Exists(EVar(0), phi1).instantiate((2,), (phi0_ef0,)) == Exists(EVar(0), phi1)
+    assert Exists(EVar(0), phi0).instantiate({0: phi1}) == Exists(EVar(0), phi1)
+    assert Exists(EVar(0), phi0).instantiate({0: phi0_ef0}) == Exists(EVar(0), phi0_ef0)
+    assert Exists(EVar(0), phi1).instantiate({1: phi0_ef0}) == Exists(EVar(0), phi0_ef0)
+    assert Exists(EVar(0), phi1).instantiate({2: phi0_ef0}) == Exists(EVar(0), phi1)
 
-    assert Mu(SVar(0), phi0).instantiate((0,), (phi1,)) == Mu(SVar(0), phi1)
-    assert Mu(SVar(0), phi0).instantiate((0,), (phi0_ef0,)) == Mu(SVar(0), phi0_ef0)
-    assert Mu(SVar(0), phi1).instantiate((1,), (phi0_ef0,)) == Mu(SVar(0), phi0_ef0)
-    assert Mu(SVar(0), phi1).instantiate((2,), (phi0_ef0,)) == Mu(SVar(0), phi1)
+    assert Mu(SVar(0), phi0).instantiate({0: phi1}) == Mu(SVar(0), phi1)
+    assert Mu(SVar(0), phi0).instantiate({0: phi0_ef0}) == Mu(SVar(0), phi0_ef0)
+    assert Mu(SVar(0), phi1).instantiate({1: phi0_ef0}) == Mu(SVar(0), phi0_ef0)
+    assert Mu(SVar(0), phi1).instantiate({2: phi0_ef0}) == Mu(SVar(0), phi1)
 
 
 def test_conclusion() -> None:
@@ -49,7 +49,7 @@ def test_conclusion() -> None:
     prop.modus_ponens(
         prop.modus_ponens(
             prop.prop2()
-            .instantiate((1, 2), (prop.phi0_implies_phi0(), prop.phi0()))
+            .instantiate({1: prop.phi0_implies_phi0(), 2: prop.phi0()})
             .assertc(
                 Implication(
                     Implication(phi0, Implication(phi0_implies_phi0, phi0)),
@@ -57,10 +57,10 @@ def test_conclusion() -> None:
                 )
             ),
             prop.prop1()
-            .instantiate((1,), (prop.phi0_implies_phi0(),))
+            .instantiate({1: prop.phi0_implies_phi0()})
             .assertc(Implication(phi0, Implication(phi0_implies_phi0, phi0))),
         ).assertc(Implication(Implication(phi0, phi0_implies_phi0), Implication(phi0, phi0))),
-        prop.prop1().instantiate((1,), (prop.phi0(),)),
+        prop.prop1().instantiate({1: prop.phi0()}),
     ).assertc(Implication(phi0, phi0))
 
 
