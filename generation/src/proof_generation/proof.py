@@ -347,19 +347,19 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        expected_plugs = tuple(self.stack[-len(delta) :])
+        expected_plugs = self.stack[-len(delta) :]
         *self.stack, expected_proved = self.stack[0 : -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
-        assert expected_plugs == delta.values(), f'expected: {expected_plugs}\ngot: {delta.values()}'
+        assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
         self.stack.append(ret)
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        expected_plugs = tuple(self.stack[-len(delta) :])
+        expected_plugs = self.stack[-len(delta) :]
         *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
-        assert expected_plugs == delta.values(), f'expected: {expected_plugs}\ngot: {delta.values()}'
+        assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
         self.stack.append(ret)
         return ret
