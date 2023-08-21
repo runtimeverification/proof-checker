@@ -13,7 +13,7 @@ class Term:
 
 
 class Pattern(Term):
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
 
@@ -25,7 +25,7 @@ class EVar(Pattern):
     def shorthand(cls) -> dict[str, str]:
         return {'name': ''}
 
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
 
@@ -37,7 +37,7 @@ class SVar(Pattern):
     def shorthand(cls) -> dict[str, str]:
         return {'name': ''}
 
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
 
@@ -45,7 +45,7 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: int
 
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
 
@@ -58,8 +58,8 @@ class Implication(Pattern):
     def shorthand(cls) -> dict[str, str]:
         return {'__name__': 'Imp', 'left': '', 'right': ''}
 
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
-        return Implication(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        return Implication(self.left.instantiate(delta), self.right.instantiate(delta))
 
 
 @dataclass(frozen=True)
@@ -67,8 +67,8 @@ class Application(Pattern):
     left: Pattern
     right: Pattern
 
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
-        return Application(self.left.instantiate(var, plug), self.right.instantiate(var, plug))
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        return Application(self.left.instantiate(delta), self.right.instantiate(delta))
 
 
 @dataclass(frozen=True)
@@ -80,8 +80,8 @@ class Exists(Pattern):
     def shorthand(cls) -> dict[str, str]:
         return {'__name__': '\u2203', 'var': '', 'subpattern': ''}
 
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
-        return Exists(self.var, self.subpattern.instantiate(var, plug))
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        return Exists(self.var, self.subpattern.instantiate(delta))
 
 
 @dataclass(frozen=True)
@@ -97,8 +97,8 @@ class Mu(Pattern):
             'subpattern': '',
         }
 
-    def instantiate(self, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Pattern:
-        return Mu(self.var, self.subpattern.instantiate(vars, plugs))
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        return Mu(self.var, self.subpattern.instantiate(delta))
 
 
 @dataclass(frozen=True)
@@ -122,9 +122,9 @@ class MetaVar(Pattern):
             'application_context': 'app_cntxt',
         }
 
-    def instantiate(self, var: tuple[int, ...], plug: tuple[Pattern, ...]) -> Pattern:
-        if self.name in var:
-            return plug[var.index(self.name)]
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        if self.name in delta:
+            return delta[self.name]
         return self
 
 
@@ -147,8 +147,8 @@ class Proved:
     interpreter: BasicInterpreter
     conclusion: Pattern
 
-    def instantiate(self: Proved, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Proved:
-        return self.interpreter.instantiate(self, vars, plugs)
+    def instantiate(self: Proved, delta: dict[int, Pattern]) -> Proved:
+        return self.interpreter.instantiate(self, delta)
 
     def assertc(self, pattern: Pattern) -> Proved:
         assert self.conclusion == pattern
@@ -222,11 +222,11 @@ class BasicInterpreter:
         assert left_conclusion.left == right.conclusion, (left_conclusion.left, right.conclusion)
         return Proved(self, left_conclusion.right)
 
-    def instantiate(self, proved: Proved, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Proved:
-        return Proved(self, proved.conclusion.instantiate(vars, plugs))
+    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        return Proved(self, proved.conclusion.instantiate(delta))
 
-    def instantiate_notation(self, pattern: Pattern, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Pattern:
-        return pattern.instantiate(vars, plugs)
+    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        return pattern.instantiate(delta)
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ...
@@ -346,21 +346,21 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def instantiate(self, proved: Proved, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Proved:
-        expected_plugs = tuple(self.stack[-len(plugs) :])
-        *self.stack, expected_proved = self.stack[0 : -len(plugs)]
+    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        expected_plugs = tuple(self.stack[-len(delta) :])
+        *self.stack, expected_proved = self.stack[0 : -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
-        assert expected_plugs == plugs, f'expected: {expected_plugs}\ngot: {plugs}'
-        ret = super().instantiate(proved, vars, plugs)
+        assert expected_plugs == delta.values(), f'expected: {expected_plugs}\ngot: {delta.values()}'
+        ret = super().instantiate(proved, delta)
         self.stack.append(ret)
         return ret
 
-    def instantiate_notation(self, pattern: Pattern, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Pattern:
-        expected_plugs = tuple(self.stack[-len(plugs) :])
-        *self.stack, expected_pattern = self.stack[0 : -len(plugs)]
+    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        expected_plugs = tuple(self.stack[-len(delta) :])
+        *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
-        assert expected_plugs == plugs, f'expected: {expected_plugs}\ngot: {plugs}'
-        ret = super().instantiate_notation(pattern, vars, plugs)
+        assert expected_plugs == delta.values(), f'expected: {expected_plugs}\ngot: {delta.values()}'
+        ret = super().instantiate_notation(pattern, delta)
         self.stack.append(ret)
         return ret
 
@@ -465,14 +465,14 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.ModusPonens]))
         return ret
 
-    def instantiate(self, proved: Proved, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Proved:
-        ret = super().instantiate(proved, vars, plugs)
-        self.out.write(bytes([Instruction.Instantiate, len(vars), *reversed(vars)]))
+    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        ret = super().instantiate(proved, delta)
+        self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
 
-    def instantiate_notation(self, pattern: Pattern, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Pattern:
-        ret = super().instantiate_notation(pattern, vars, plugs)
-        self.out.write(bytes([Instruction.Instantiate, len(vars), *reversed(vars)]))
+    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        ret = super().instantiate_notation(pattern, delta)
+        self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
 
     def save(self, id: str, term: Pattern | Proved) -> None:
@@ -598,17 +598,17 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('\n')
         return ret
 
-    def instantiate(self, proved: Proved, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Proved:
-        ret = super().instantiate(proved, vars, plugs)
+    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        ret = super().instantiate(proved, delta)
         self.out.write('Instantiate ')
-        self.out.write(', '.join(map(str, vars)))
+        self.out.write(', '.join(map(str, delta.keys())))
         self.out.write('\n')
         return ret
 
-    def instantiate_notation(self, pattern: Pattern, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Pattern:
-        ret = super().instantiate_notation(pattern, vars, plugs)
+    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        ret = super().instantiate_notation(pattern, delta)
         self.out.write('Instantiate ')
-        self.out.write(', '.join(map(str, vars)))
+        self.out.write(', '.join(map(str, delta.keys())))
         self.out.write('\n')
         return ret
 
@@ -708,11 +708,11 @@ class ProofExp:
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         return self.interpreter.modus_ponens(left, right)
 
-    def instantiate(self, proved: Proved, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Proved:
-        return self.interpreter.instantiate(proved, vars, plugs)
+    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        return self.interpreter.instantiate(proved, delta)
 
-    def instantiate_notation(self, pattern: Pattern, vars: tuple[int, ...], plugs: tuple[Pattern, ...]) -> Pattern:
-        return self.interpreter.instantiate_notation(pattern, vars, plugs)
+    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        return self.interpreter.instantiate_notation(pattern, delta)
 
     def load_notation(self, id: str) -> Pattern | None:
         if not id in self.notation:
