@@ -611,7 +611,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         return ret
 
     def save(self, id: str, term: Pattern | Proved) -> None:
-        ret = super().save(id, term)
+        super().save(id, term)
         self.out.write('Save // ')
         self.out.write(id)
         self.out.write('=')
@@ -619,7 +619,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('\n')
 
     def load(self, id: str) -> None:
-        ret = super().load(id)
+        super().load(id)
         self.out.write('Load ')
         self.out.write(str(list(self.memory.values()).index(self.memory[id])))
         self.out.write(' // ')
@@ -629,11 +629,11 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('\n')
 
     def publish(self, proved: Proved) -> None:
-        ret = super().publish(proved)
+        super().publish(proved)
         self.out.write('Publish\n')
 
     def publish_claim(self, pattern: Pattern) -> None:
-        ret = super().publish_claim(pattern)
+        super().publish_claim(pattern)
         self.out.write('Publish\n')
 
 
