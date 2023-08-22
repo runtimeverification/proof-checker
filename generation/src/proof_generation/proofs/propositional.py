@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
 
 if TYPE_CHECKING:
-    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
+    from proof_generation.proof import StatefulInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
 
 
 class Propositional(ProofExp):
-    def __init__(self, interpreter: BasicInterpreter) -> None:
+    def __init__(self, interpreter: StatefulInterpreter) -> None:
         super().__init__(interpreter)
 
     @staticmethod
