@@ -717,8 +717,10 @@ class ProofExp:
     def load_notation(self, id: str) -> Pattern | None:
         if id not in self.interpreter.memory:
             return None
+        ret = self.interpreter.memory[id]
+        assert isinstance(ret, Pattern)
         self.interpreter.load(id)
-        return self.interpreter.memory[id]
+        return ret
 
     def save_notation(self, id: str, pattern: Pattern) -> Pattern:
         assert id not in self.interpreter.memory
