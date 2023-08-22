@@ -1,14 +1,29 @@
+Matching Logic Checker
+======================
+
 This repository implements a matching-logic proof checker for the binary format
-described in [proof-language.md].
+described in [docs/proof-language.md](docs/proof-language.md).
 
-*   The core logic of the checker is being implement in the package under [checker/].
-*   We use Risc0 to provide a ZKed implementation of the above, under [risc0/].
-*   We are porting metamath proofs from [https://github.com/runtimeverification/proof-generation]
-    in the directory [generation/].
-*   The directory, [proofs/] contains some example proofs.
+*   The core logic of the checker is being implemented in the package under [checker/](checker/).
+*   We use Risc0 to provide a ZKed implementation of the above, under [risc0/](risc0/).
+*   We are porting proofs from [the Metamath-based project](https://github.com/runtimeverification/proof-generation) in the directory [generation/](generation/). 
+    * See [this issue](https://github.com/runtimeverification/proof-checker/issues/16) for detailed instructions on how to port a proof.
+*   You can find some example proofs in [proofs/](proofs/).
 
-Running Tests
+Dependencies
 =============
+Apart from Rust and Python, you will likely need to:
+
+`sudo apt-get install colordiff`
+
+Usage 
+=============
+
+You will need to activate the project's `poetry` environment:
+```
+poetry install
+poetry shell
+```
 
 To run all tests, run `make`.
 You may also use specific targets to run a subset of tests:
@@ -29,3 +44,8 @@ You may also use specific targets to run a subset of tests:
     An individual proof may be checked by running
     `make proofs/<name>.ml-proof.zk`
 
+You can inspect the [Makefile](Makefile) to explore more granular commands. For example, examining `test-system` reveals that you can use
+
+`cargo run --bin checker <ML-PROOF> <ML-CLAIM>` 
+
+to run the checker on arbitrary proofs/claims.

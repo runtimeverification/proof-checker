@@ -17,7 +17,7 @@ to practice. We want to instrument each of these tools with enough information
 to generate formal matching logic proofs.
 
 There are two things we need to make this work. First, we need a *proof
-checker*---a program that can takes as input a matching logic proof and checks
+checker*---a program that takes as input a matching logic proof and checks
 that it is correct. We need this program to be small and simple, so we can
 easily verify it (at first by manual inspection, and eventually through formal
 verification). It also needs to be fast and efficient to be practical, since
@@ -37,9 +37,9 @@ logic proofs using it massive (we've seen some that are gigabytes), and
 impractical.
 
 This has motivated us to define our own compact binary format,
-tailored to matching logic. It's essence is a giant postfix/reverse polish
+tailored to matching logic. Its essence is a giant postfix/reverse polish
 notation representation of a matching logic proof as a DAG. We think that this
-is will allow us to greatly speed up proof checking.
+will allow us to greatly speed up proof checking.
 
 
 FAQ
@@ -137,7 +137,7 @@ Besides being a binary rather than ASCII encoding, there are two major changes.
 ## Relation to postfix notation/RPN
 
 The format may be viewed as a generalization
-of postfix notation (incidentally also called Lukaseiwicz notation),
+of postfix notation (incidentally also called Lukasiewicz notation),
 for an expression computing the conclusion of a proof.
 
 We also allow marking subexpressions (i.e. either proofs or patterns) for reuse. This
@@ -368,7 +368,7 @@ class MetaVar(Pattern):
     s_fresh: set[u32]             # Set variables that must not occur free in an instatiation
     positive: set[u32]            # Set variables that must only occur positively in an instatiation
     negative: set[u32]            # Set variables that must only occur negatively in an instatiation
-    application_context: set[u32] # Element variables that must only occur as a hole variable in an application context.
+    app_ctx_holes: set[u32] # Element variables that must occur as a hole variable in an application context.
 
     def e_fresh(evar):
         return evar in e_fresh
@@ -558,7 +558,7 @@ Axiom schemas are `Proof`s that do not need any input arguments.
 They may use `MetaVar`s to represent their schematic nature.
 
 ```python
-class Lukaseiwicz(Proof):
+class Lukasiewicz(Proof):
     def conclusion():
         phi1 = MetaVar('phi1')
         return Implication(Implication(Implication(MetaVar(phi1) , ...)...)...)
@@ -573,7 +573,7 @@ class Quantifier(Proof):
 class PropagationOr(Proof):
     def conclusion():
         hole = EVar('#hole')
-        C = MetaVar(application_context=(EVar('#hole'),))
+        C = MetaVar(app_ctx_holes=(EVar('#hole'),))
         phi1 = MetaVar('#phi1')
         phi2 = MetaVar('#phi2')
         return Implication(ESubst(C, or(phi1, phi2), hole), or(ESubst(C, phi1, hole), ESubst(C, phi2, hole)))
@@ -745,7 +745,7 @@ Otherwise, execution aborts, and verification fails.
 
 ### Axiom Schemas
 
-`Lukaseiwicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
+`Lukasiewicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
 :   Push proof term corresponding to axiom schema onto the stack.
 
 ### Meta inference
@@ -810,7 +810,7 @@ Otherwise, execution aborts, and verification fails.
 Future considerations
 =====================
 
--   De Brujin-like nameless representation: A nameless representation would
+-   De Bruijn-like nameless representation: A nameless representation would
     simplify substitution and well-formedness checking.
 -   Since we are constructing an on-the-wire format for machine use, there are
     other nameless representations we may consider. For example, we can consider

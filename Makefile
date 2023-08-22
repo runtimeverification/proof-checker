@@ -1,5 +1,6 @@
 all: check test-unit test-system test-zk
 .PHONY: all
+.SECONDARY:
 FORCE:
 
 
@@ -49,15 +50,29 @@ PROOFS=$(wildcard proofs/*.ml-proof)
 # ----------------
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
-
 .build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*"  ".build/proofs/$*.ml-claim" "$@"
+	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
 
-CHECK_PROOF=./bin/proof-diff
-proofs/%.ml-proof.gen: .build/proofs/%.ml-proof FORCE
-	${CHECK_PROOF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
-	${CHECK_PROOF} ".build/proofs/$*.ml-proof" "proofs/$*.ml-proof"
+.build/proofs/%.ml-claim: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" binary claim $@
+
+.build/proofs/%.pretty-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty proof $@
+
+.build/proofs/%.pretty-claim: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
+
+BIN_DIFF=./bin/proof-diff
+DIFF=colordiff -U3
+proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim
+	${DIFF} ".build/proofs/$*.pretty-claim" "proofs/$*.pretty-claim"
+	${DIFF} ".build/proofs/$*.pretty-proof" "proofs/$*.pretty-proof"
+	${BIN_DIFF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
+	${BIN_DIFF} ".build/proofs/$*.ml-proof" "proofs/$*.ml-proof"
 
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
@@ -66,19 +81,21 @@ test-proof-gen: ${PROOF_GEN_TARGETS}
 # ----------------
 
 PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
-
 proofs/%.ml-proof.verify: proofs/%.ml-proof
 	cargo run --bin checker proofs/$*.ml-claim $< 
 test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
+PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
+.build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof .build/proofs/%.ml-claim
+	cargo run --bin checker $< .build/proofs/$*.ml-claim
+
+proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
 # Risc0
 # -----
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
-
 proofs/%.ml-proof.zk: proofs/%.ml-proof
 	cargo run --bin host proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
-
