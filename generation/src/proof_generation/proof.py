@@ -718,6 +718,7 @@ class ProofExp:
         self.interpreter.stack.append(p)
         return p
 
+    # TODO: Instantiate uses memo automatically
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return self.interpreter.instantiate(proved, delta)
 
