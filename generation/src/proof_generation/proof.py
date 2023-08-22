@@ -612,7 +612,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
-        self.out.write('Save ')
+        self.out.write('Save // ')
         self.out.write(id)
         self.out.write('=')
         self.out.write(str(term))
@@ -620,7 +620,9 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     def load(self, id: str) -> None:
         ret = super().load(id)
-        self.out.write('Load ')
+        self.out.write('Load')
+        self.out.write(str(list(self.memory.values).index(self.memory[id])))
+        self.out.write(' // ')
         self.out.write(id)
         self.out.write('=')
         self.out.write(str(self.memory[id]))
