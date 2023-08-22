@@ -646,6 +646,7 @@ class ProofExp:
 
     def __init__(self, interpreter: StatefulInterpreter) -> None:
         self.interpreter = interpreter
+        self.memoization: dict[Pattern, str] = {}
 
     @staticmethod
     def claims() -> list[Pattern]:
@@ -656,6 +657,44 @@ class ProofExp:
 
     def proof_expressions(self) -> list[ProvedExpression]:
         raise NotImplementedError
+
+    def walk(self, p: Pattern) -> Pattern:
+        match p:
+            case EVar(name):
+                return self.evar(name)
+            case SVar(name):
+                return self.svar(name)
+            case Symbol(name):
+                return self.symbol(name)
+            case Implication(left, right):
+                return self.implies(self.walk(left), self.walk(right))
+            case Application(left, right):
+                return self.app(self.walk(left), self.walk(right))
+            case Exists(var, subpattern):
+                return self.exists(var.name, self.walk(subpattern))
+            case Mu(var, subpattern):
+                return self.mu(var.name, self.walk(subpattern))
+            case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
+                # TODO: Walking through the variables (so that they are on stack)
+                return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+        return p
+
+    # TODO: p will be memoized, so that it can be reused with load/save
+    # TODO: memo will also be able to "build up the term" in a serializable
+    # manner to fix those issues with instantiations
+    def memo(self, p: Pattern) -> Pattern:
+        if p in self.memoization:
+            self.interpreter.load(self.memoization[p])
+        else:
+            self.walk(p)
+            self.memoization[p] = str(len(self.interpreter.memory))
+            self.interpreter.save(self.memoization[p], p)
+        return p
+
+    # TODO: Use some type-narrowing to do this
+    def memo2(self, p: Proved) -> Proved:
+        self.interpreter.stack.append(p)
+        return p
 
     # Patterns
     # ========
@@ -707,20 +746,14 @@ class ProofExp:
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         return self.interpreter.modus_ponens(left, right)
 
-    # TODO: p will be memoized, so that it can be reused with load/save
-    # TODO: memo will also be able to "build up the term" in a serializable
-    # manner to fix those issues with instantiations
-    def memo(self, p: Pattern) -> Pattern:
-        self.interpreter.stack.append(p)
-        return p
-
-    # TODO: Use some type-narrowing to do this
-    def memo2(self, p: Proved) -> Proved:
-        self.interpreter.stack.append(p)
-        return p
-
     # TODO: Instantiate will use memo automatically for all Patterns
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        return self.interpreter.instantiate(proved, delta)
+
+    def instantiate_memo(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        for pat in delta.values():
+            self.memo(pat)
+
         return self.interpreter.instantiate(proved, delta)
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
