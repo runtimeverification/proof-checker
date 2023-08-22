@@ -154,9 +154,6 @@ class Proved:
         assert self.conclusion == pattern
         return self
 
-    def get_conclusion(self) -> Proved:
-        return self
-
 
 # Proof Expressions
 # =================
@@ -710,6 +707,16 @@ class ProofExp:
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         return self.interpreter.modus_ponens(left, right)
+
+    # TODO: p will be memoized, so that it can be reused with load/save
+    def memo(self, p: Pattern) -> Pattern:
+        self.interpreter.stack.append(p)
+        return p
+
+    # TODO: Use some type-narrowing to do this
+    def memo2(self, p: Proved) -> Proved:
+        self.interpreter.stack.append(p)
+        return p
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return self.interpreter.instantiate(proved, delta)
