@@ -113,10 +113,10 @@ class Propositional(ProofExp):
 
         return self.modus_ponens(
             self.modus_ponens(
-                self.prop2().instantiate({1: phi1, 2: phi2, 0: self.metavar(1)}),
-                self.modus_ponens(self.prop1().instantiate({0: phi1_imp_phi2_conc}), phi1_imp_phi2.get_conclusion()),
-            ).instantiate({1: phi0}),
-            phi0_imp_phi1.get_conclusion(),
+                self.prop2().instantiate({1: self.memo(phi1), 2: self.memo(phi2), 0: self.metavar(1)}),
+                self.modus_ponens(self.prop1().instantiate({0: self.memo(phi1_imp_phi2_conc)}), self.memo2(phi1_imp_phi2)),
+            ).instantiate({1: self.memo(phi0)}),
+            self.memo2(phi0_imp_phi1),
         )
 
     def top_intro(self) -> Proved:
