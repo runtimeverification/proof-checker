@@ -646,7 +646,7 @@ class ProofExp:
 
     def __init__(self, interpreter: StatefulInterpreter) -> None:
         self.interpreter = interpreter
-        self.notation: dict[str, Pattern] = {}
+        self.memoization: = []
 
     @staticmethod
     def claims() -> list[Pattern]:
@@ -709,6 +709,8 @@ class ProofExp:
         return self.interpreter.modus_ponens(left, right)
 
     # TODO: p will be memoized, so that it can be reused with load/save
+    # TODO: memo will also be able to "build up the term" in a serializable
+    # manner to fix those issues with instantiations
     def memo(self, p: Pattern) -> Pattern:
         self.interpreter.stack.append(p)
         return p
@@ -718,7 +720,7 @@ class ProofExp:
         self.interpreter.stack.append(p)
         return p
 
-    # TODO: Instantiate uses memo automatically
+    # TODO: Instantiate will use memo automatically for all Patterns
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return self.interpreter.instantiate(proved, delta)
 
