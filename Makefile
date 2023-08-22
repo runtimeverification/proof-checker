@@ -87,7 +87,7 @@ test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
 .build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof .build/proofs/%.ml-claim
-	cargo run --bin checker $< .build/proofs/$*.ml-claim
+	cargo run --bin checker .build/proofs/$*.ml-claim $< 
 
 proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
