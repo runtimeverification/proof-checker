@@ -231,7 +231,7 @@ class BasicInterpreter:
     def save(self, id: str, term: Pattern | Proved) -> None:
         ...
 
-    def load(self, id: str, term: Pattern | Proved) -> None:
+    def load(self, id: str) -> None:
         ...
 
     def publish(self, term: Proved) -> None:
@@ -253,12 +253,12 @@ class StatefulInterpreter(BasicInterpreter):
 
     claims: list[Claim]
     stack: list[Pattern | Proved]
-    memory: list[Pattern | Proved]
+    memory: dict[str, Pattern | Proved]
 
     def __init__(self, claims: list[Claim]) -> None:
         super().__init__()
         self.stack = []
-        self.memory = []
+        self.memory = {}
         self.claims = claims
 
     def print_state(self) -> None:
@@ -366,13 +366,13 @@ class StatefulInterpreter(BasicInterpreter):
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         assert self.stack[-1] == term, f'expected: {self.stack[-1]}\ngot: {term}'
-        self.memory.append(term)
+        self.memory[id] = term
         super().save(id, term)
 
-    def load(self, id: str, term: Pattern | Proved) -> None:
-        assert term in self.memory
-        self.stack.append(term)
-        super().load(id, term)
+    def load(self, id: str) -> None:
+        assert id in self.memory
+        self.stack.append(self.memory[id])
+        super().load(id)
 
     def publish(self, proved: Proved) -> None:
         # TODO: This should only be enabled in the claims proofs phase.
@@ -478,12 +478,10 @@ class SerializingInterpreter(StatefulInterpreter):
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
         self.out.write(bytes([Instruction.Save]))
-        return ret
 
-    def load(self, id: str, term: Pattern | Proved) -> None:
-        ret = super().load(id, term)
-        self.out.write(bytes([Instruction.Load, self.memory.index(term)]))
-        return ret
+    def load(self, id: str) -> None:
+        ret = super().load(id)
+        self.out.write(bytes([Instruction.Load, list(self.memory.values()).index(self.memory[id])]))
 
     def publish(self, proved: Proved) -> None:
         super().publish(proved)
@@ -615,26 +613,22 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
         self.out.write('Save\n')
-        return ret
 
-    def load(self, id: str, term: Pattern | Proved) -> None:
-        ret = super().load(id, term)
+    def load(self, id: str) -> None:
+        ret = super().load(id)
         self.out.write('Load ')
         self.out.write(id)
         self.out.write('=')
-        self.out.write(str(self.memory.index(term)))
+        self.out.write(str(list(self.memory.values()).index(term)))
         self.out.write('\n')
-        return ret
 
     def publish(self, proved: Proved) -> None:
         ret = super().publish(proved)
         self.out.write('Publish\n')
-        return ret
 
     def publish_claim(self, pattern: Pattern) -> None:
         ret = super().publish_claim(pattern)
         self.out.write('Publish\n')
-        return ret
 
 
 PatternExpression = Callable[[], Pattern]
@@ -642,9 +636,9 @@ ProvedExpression = Callable[[], Proved]
 
 
 class ProofExp:
-    interpreter: BasicInterpreter
+    interpreter: StatefulInterpreter
 
-    def __init__(self, interpreter: BasicInterpreter) -> None:
+    def __init__(self, interpreter: StatefulInterpreter) -> None:
         self.interpreter = interpreter
         self.notation: dict[str, Pattern] = {}
 
@@ -715,15 +709,14 @@ class ProofExp:
         return self.interpreter.instantiate_notation(pattern, delta)
 
     def load_notation(self, id: str) -> Pattern | None:
-        if not id in self.notation:
+        if id not in self.interpreter.memory:
             return None
-        ret = self.notation[id]
-        self.interpreter.load(id, ret)
-        return ret
+        self.interpreter.load(id)
+        return self.interpreter.memory[id]
 
     def save_notation(self, id: str, pattern: Pattern) -> Pattern:
-        assert not id in self.notation
-        self.notation[id] = pattern
+        assert id not in self.interpreter.memory
+        self.interpreter.memory[id] = pattern
         self.interpreter.save(id, pattern)
         return pattern
 
