@@ -646,7 +646,6 @@ class ProofExp:
 
     def __init__(self, interpreter: StatefulInterpreter) -> None:
         self.interpreter = interpreter
-        self.memoization: = []
 
     @staticmethod
     def claims() -> list[Pattern]:
