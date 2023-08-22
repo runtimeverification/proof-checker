@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
 
 if TYPE_CHECKING:
-    from proof_generation.proof import StatefulInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
+    from proof_generation.proof import Pattern, PatternExpression, Proved, ProvedExpression, StatefulInterpreter
 
 
 class Propositional(ProofExp):

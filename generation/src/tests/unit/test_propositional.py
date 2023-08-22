@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from proof_generation.proof import StatefulInterpreter, Implication, Proved, Symbol
+from proof_generation.proof import Implication, Proved, StatefulInterpreter, Symbol
 from proof_generation.proofs.propositional import Propositional
 
 
