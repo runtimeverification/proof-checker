@@ -476,11 +476,11 @@ class SerializingInterpreter(StatefulInterpreter):
         return ret
 
     def save(self, id: str, term: Pattern | Proved) -> None:
-        ret = super().save(id, term)
+        super().save(id, term)
         self.out.write(bytes([Instruction.Save]))
 
     def load(self, id: str) -> None:
-        ret = super().load(id)
+        super().load(id)
         self.out.write(bytes([Instruction.Load, list(self.memory.values()).index(self.memory[id])]))
 
     def publish(self, proved: Proved) -> None:
@@ -612,14 +612,18 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
-        self.out.write('Save\n')
+        self.out.write('Save ')
+        self.out.write(id)
+        self.out.write('=')
+        self.out.write(str(term))
+        self.out.write('\n')
 
     def load(self, id: str) -> None:
         ret = super().load(id)
         self.out.write('Load ')
         self.out.write(id)
         self.out.write('=')
-        self.out.write(str(list(self.memory.values()).index(term)))
+        self.out.write(str(self.memory[id]))
         self.out.write('\n')
 
     def publish(self, proved: Proved) -> None:

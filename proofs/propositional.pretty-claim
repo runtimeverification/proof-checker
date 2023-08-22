@@ -4,32 +4,32 @@ List=pos len=0
 List=neg len=0 
 List=appctx len=0 
 MetaVar 0
-Save
+Save phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 SVar 0
 Mu 0
-Save
+Save bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=0
+Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=0
+Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Save
+Save peirce-bot=Implication(left=Implication(left=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0))), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
 Publish
-Load bot=1
-Load phi0=0
+Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Save
+Save bot-implies-phi0=Implication(left=Mu(var=SVar(name=0), subpattern=SVar(name=0)), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
 Publish
-Load phi0=0
-Load bot=1
+Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Save
-Load bot=1
+Save neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
+Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Instantiate 0
-Save
+Save top=Implication(left=Mu(var=SVar(name=0), subpattern=SVar(name=0)), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
 Publish
-Load phi0=0
-Load phi0=0
+Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Save
+Save phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
 Publish
