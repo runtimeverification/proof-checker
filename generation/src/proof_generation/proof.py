@@ -154,6 +154,9 @@ class Proved:
         assert self.conclusion == pattern
         return self
 
+    def get_conclusion(self) -> Proved:
+        return self
+
 
 # Proof Expressions
 # =================
