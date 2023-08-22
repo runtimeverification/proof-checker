@@ -1,6 +1,3 @@
-SVar 0
-Mu 0
-Save
 List=eFresh len=0 
 List=sFresh len=0 
 List=pos len=0 
@@ -8,19 +5,31 @@ List=neg len=0
 List=appctx len=0 
 MetaVar 0
 Save
+SVar 0
+Mu 0
+Save
+Implication
+Load phi0=0
+Implication
+Load phi0=0
 Implication
 Save
 Publish
-Load phi0=1
-Load bot=0
+Load bot=1
+Load phi0=0
 Implication
 Save
-Load bot=0
+Publish
+Load phi0=0
+Load bot=1
+Implication
+Save
+Load bot=1
 Instantiate 0
 Save
 Publish
-Load phi0=1
-Load phi0=1
+Load phi0=0
+Load phi0=0
 Implication
 Save
 Publish

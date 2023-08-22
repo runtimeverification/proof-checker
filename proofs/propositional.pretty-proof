@@ -71,3 +71,166 @@ Instantiate 0
 Instantiate 0, 1
 ModusPonens
 Publish
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Load phi0=0
+Instantiate 0, 1, 2
+Prop1
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0, 1
+Prop3
+Load phi0=0
+Instantiate 0
+ModusPonens
+ModusPonens
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Instantiate 0, 1, 2
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Implication
+Instantiate 0, 1, 2
+Prop1
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0, 1
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Instantiate 0, 1, 2
+ModusPonens
+ModusPonens
+Prop1
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0, 1
+Prop2
+Load phi0-implies-phi0=1
+Load phi0=0
+Instantiate 1, 2
+Prop1
+Load phi0-implies-phi0=1
+Instantiate 1
+ModusPonens
+Prop1
+Load phi0=0
+Instantiate 1
+ModusPonens
+Load phi0=0
+Load bot=2
+Implication
+Instantiate 0
+ModusPonens
+ModusPonens
+ModusPonens
+Prop2
+Load phi0-implies-phi0=1
+Load phi0=0
+Instantiate 1, 2
+Prop1
+Load phi0-implies-phi0=1
+Instantiate 1
+ModusPonens
+Prop1
+Load phi0=0
+Instantiate 1
+ModusPonens
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0
+ModusPonens
+ModusPonens
+Publish
