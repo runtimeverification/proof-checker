@@ -5,230 +5,230 @@ List=pos len=0
 List=neg len=0 
 List=appctx len=0 
 MetaVar 0
-Save phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Save // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Save phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Save // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1, 2
 Prop1
-Load phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 1 // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
 Instantiate 1
 ModusPonens
 Prop1
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1
 ModusPonens
 Publish
 Prop2
-Load phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 1 // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1, 2
 Prop1
-Load phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 1 // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
 Instantiate 1
 ModusPonens
 Prop1
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1
 ModusPonens
 SVar 0
 Mu 0
-Save bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Save // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Instantiate 0
 Publish
 Prop2
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Save neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
-Load neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Save // neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
+Load 3 // neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 0
-Save neg-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
+Save // neg-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
 Instantiate 0
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 0, 1, 2
 Prop1
-Load neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
-Load neg-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
+Load 3 // neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
+Load 3 // neg-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
 Instantiate 0
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Instantiate 0, 1
 Prop3
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 0
 ModusPonens
 ModusPonens
 Prop1
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
-Load neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 3 // neg=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Mu(var=SVar(name=0), subpattern=SVar(name=0)))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 0
 Instantiate 0, 1
 ModusPonens
 Publish
 Prop2
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 0, 1, 2
 Prop1
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
 Instantiate 0, 1
 Prop3
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 0
 ModusPonens
 ModusPonens
 Prop2
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
 Instantiate 0, 1, 2
 Prop2
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
 Implication
 Instantiate 0, 1, 2
 Prop1
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
-Implication
-Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
-Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
-Implication
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
 Implication
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Implication
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Implication
+Implication
+Implication
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Implication
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
 Instantiate 0, 1
 Prop2
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Instantiate 0, 1, 2
 ModusPonens
 ModusPonens
 Prop1
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
 Instantiate 0, 1
 Prop2
-Load phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 1 // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1, 2
 Prop1
-Load phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 1 // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
 Instantiate 1
 ModusPonens
 Prop1
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1
 ModusPonens
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
 Instantiate 0
 ModusPonens
 ModusPonens
 ModusPonens
 Prop2
-Load phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 1 // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1, 2
 Prop1
-Load phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
+Load 1 // phi0-implies-phi0=Implication(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()))
 Instantiate 1
 ModusPonens
 Prop1
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Instantiate 1
 ModusPonens
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
-Load bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 2 // bot=Mu(var=SVar(name=0), subpattern=SVar(name=0))
 Implication
-Load phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
+Load 0 // phi0=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())
 Implication
 Instantiate 0
 ModusPonens

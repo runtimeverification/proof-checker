@@ -620,8 +620,8 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     def load(self, id: str) -> None:
         ret = super().load(id)
-        self.out.write('Load')
-        self.out.write(str(list(self.memory.values).index(self.memory[id])))
+        self.out.write('Load ')
+        self.out.write(str(list(self.memory.values()).index(self.memory[id])))
         self.out.write(' // ')
         self.out.write(id)
         self.out.write('=')
