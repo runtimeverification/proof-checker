@@ -9,8 +9,10 @@ if TYPE_CHECKING:
     from proof_generation.proof import Pattern, PatternExpression, Proved, ProvedExpression, StatefulInterpreter
 
 
+bot = Mu(SVar(0), SVar(0))
+
+
 def bot_elim(self) -> Proved:
-    bot = Mu(SVar(0), SVar(0))
     phi0 = MetaVar(0)
 
     def neg(p: Pattern) -> Pattern:
@@ -33,6 +35,11 @@ def bot_elim(self) -> Proved:
         self.prop1().instantiate({0: bot, 1: neg(phi0)}),
     )
 
+
+def bot_implies_phi0(self) -> Pattern:
+    return self.implies(bot, MetaVar(0))
+
+
 class Propositional(ProofExp):
     def __init__(self, interpreter: StatefulInterpreter) -> None:
         super().__init__(interpreter)
@@ -47,7 +54,7 @@ class Propositional(ProofExp):
         ]
 
     def claim_expressions(self) -> list[PatternExpression]:
-        return [self.bot_implies_phi0]
+        return [bot_implies_phi0]
 
     def proof_expressions(self) -> list[ProvedExpression]:
         return [bot_elim]
@@ -87,11 +94,6 @@ class Propositional(ProofExp):
         if ret := self.load_notation('neg-phi0'):
             return ret
         return self.save_notation('neg-phi0', self.neg(self.phi0))
-
-    def bot_implies_phi0(self) -> Pattern:
-        if ret := self.load_notation('bot-implies-phi0'):
-            return ret
-        return self.save_notation('bot-implies-phi0', self.implies(self.bot(), self.phi0()))
 
     def peirce_bot_phi0(self) -> Pattern:
         if ret := self.load_notation('peirce-bot'):
