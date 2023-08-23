@@ -412,9 +412,7 @@ class StatefulInterpreter(BasicInterpreter):
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
         return p
 
-    # TODO: p will be memoized, so that it can be reused with load/save
-    # TODO: memo will also be able to "build up the term" in a serializable
-    # manner to fix those issues with instantiations
+    # TODO: extract to a "MemoizedInterpreter"
     def memo(self, p: Pattern) -> Pattern:
         if p in self.memoization:
             self.load(self.memoization[p])
@@ -424,7 +422,8 @@ class StatefulInterpreter(BasicInterpreter):
             self.save(self.memoization[p], p)
         return p
 
-    # TODO: Use some type-narrowing to do this
+    # TODO: Use some type-narrowing/overloading to avoid having two functions
+    # This will basically just put Proved on stack for functions like imp_transitivity
     def memo2(self, p: Proved) -> Proved:
         self.stack.append(p)
         return p
