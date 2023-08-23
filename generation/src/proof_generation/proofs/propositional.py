@@ -20,29 +20,18 @@ class Propositional(ProofExp):
         top = Implication(bot, bot)
         neg_phi0 = Implication(phi0, bot)
         return [
-            Implication(phi0, phi0),                                        # Reflexivity
-            top,                                                            # Top
-            Implication(bot, phi0),                                         # Bot_elim
-            Implication(Implication(neg_phi0, bot), phi0),                  # Contradiction
-            Implication(Implication(Implication(phi0, bot), phi0), phi0),   # Pierce_bot
+            Implication(phi0, phi0),  # Reflexivity
+            top,  # Top
+            Implication(bot, phi0),  # Bot_elim
+            Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
+            Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Pierce_bot
         ]
 
     def claim_expressions(self) -> list[PatternExpression]:
-        return [
-            self.phi0_implies_phi0,
-            self.top,
-            self.bot_implies_phi0,
-            self.contradiction_claim,
-            self.peirce_bot_phi0
-        ]
+        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0, self.contradiction_claim, self.peirce_bot_phi0]
 
     def proof_expressions(self) -> list[ProvedExpression]:
-        return [
-            self.imp_reflexivity,
-            self.top_intro,
-            self.bot_elim,
-            self.contradiction_proof,
-            self.peirce_bot]
+        return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.contradiction_proof, self.peirce_bot]
 
     # Notation
     # ========
@@ -91,7 +80,7 @@ class Propositional(ProofExp):
         return self.save_notation(
             'contradiction',
             # (neg phi0 -> bot) -> phi0
-            self.implies(self.implies(self.neg_phi0(), self.bot()), self.phi0())
+            self.implies(self.implies(self.neg_phi0(), self.bot()), self.phi0()),
         )
 
     def peirce_bot_phi0(self) -> Pattern:
