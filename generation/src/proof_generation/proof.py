@@ -347,8 +347,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_proved = self.stack[0 : -len(delta)]
+        expected_plugs = self.stack[-len(delta):]
+        *self.stack, expected_proved = self.stack[0: -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
@@ -356,8 +356,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_pattern = self.stack[0 : -len(delta)]
+        expected_plugs = self.stack[-len(delta):]
+        *self.stack, expected_pattern = self.stack[0: -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
@@ -529,10 +529,10 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         negative: tuple[SVar, ...] = (),
         application_context: tuple[EVar, ...] = (),
     ) -> Pattern:
-        def write_list(name: str, l: tuple[EVar, ...] | tuple[SVar, ...]) -> None:
+        def write_list(name: str, lst: tuple[EVar, ...] | tuple[SVar, ...]) -> None:
             self.out.write(f'List={name} ')
-            self.out.write(f'len={len(l)} ')
-            for item in l:
+            self.out.write(f'len={len(lst)} ')
+            for item in lst:
                 self.out.write(str(item))
                 self.out.write(' ')
             self.out.write('\n')
@@ -715,14 +715,14 @@ class ProofExp:
         return self.interpreter.instantiate_notation(pattern, delta)
 
     def load_notation(self, id: str) -> Pattern | None:
-        if not id in self.notation:
+        if id not in self.notation:
             return None
         ret = self.notation[id]
         self.interpreter.load(id, ret)
         return ret
 
     def save_notation(self, id: str, pattern: Pattern) -> Pattern:
-        assert not id in self.notation
+        assert id not in self.notation
         self.notation[id] = pattern
         self.interpreter.save(id, pattern)
         return pattern
