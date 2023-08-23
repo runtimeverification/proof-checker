@@ -1,0 +1,240 @@
+Prop2
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 0
+Save
+Load phi0=0
+Implication
+Save
+Load phi0=0
+Instantiate 1, 2
+Prop1
+Load phi0-implies-phi0=1
+Instantiate 1
+ModusPonens
+Prop1
+Load phi0=0
+Instantiate 1
+ModusPonens
+Publish
+Prop2
+Load phi0-implies-phi0=1
+Load phi0=0
+Instantiate 1, 2
+Prop1
+Load phi0-implies-phi0=1
+Instantiate 1
+ModusPonens
+Prop1
+Load phi0=0
+Instantiate 1
+ModusPonens
+SVar 0
+Mu 0
+Save
+Instantiate 0
+Publish
+Prop2
+Load bot=2
+Load phi0=0
+Load bot=2
+Implication
+Save
+Load neg=3
+Load phi0=0
+Instantiate 0
+Save
+Instantiate 0
+Load phi0=0
+Instantiate 0, 1, 2
+Prop1
+Load neg=3
+Load neg-phi0=3
+Instantiate 0
+Load phi0=0
+Implication
+Load bot=2
+Instantiate 0, 1
+Prop3
+Load phi0=0
+Instantiate 0
+ModusPonens
+ModusPonens
+Prop1
+Load bot=2
+Load neg=3
+Load phi0=0
+Instantiate 0
+Instantiate 0, 1
+ModusPonens
+Publish
+Prop3
+Load phi0=0
+Instantiate 0
+Publish
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Load phi0=0
+Instantiate 0, 1, 2
+Prop1
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0, 1
+Prop3
+Load phi0=0
+Instantiate 0
+ModusPonens
+ModusPonens
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Instantiate 0, 1, 2
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Implication
+Instantiate 0, 1, 2
+Prop1
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load bot=2
+Implication
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0, 1
+Prop2
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Instantiate 0, 1, 2
+ModusPonens
+ModusPonens
+Prop1
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Implication
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0, 1
+Prop2
+Load phi0-implies-phi0=1
+Load phi0=0
+Instantiate 1, 2
+Prop1
+Load phi0-implies-phi0=1
+Instantiate 1
+ModusPonens
+Prop1
+Load phi0=0
+Instantiate 1
+ModusPonens
+Load phi0=0
+Load bot=2
+Implication
+Instantiate 0
+ModusPonens
+ModusPonens
+ModusPonens
+Prop2
+Load phi0-implies-phi0=1
+Load phi0=0
+Instantiate 1, 2
+Prop1
+Load phi0-implies-phi0=1
+Instantiate 1
+ModusPonens
+Prop1
+Load phi0=0
+Instantiate 1
+ModusPonens
+Load phi0=0
+Load bot=2
+Implication
+Load phi0=0
+Implication
+Instantiate 0
+ModusPonens
+ModusPonens
+Publish
