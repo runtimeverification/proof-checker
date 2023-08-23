@@ -73,6 +73,7 @@ class Implication(Pattern):
     def __str__(self) -> str:
         return f'({str(self.left)} --> {str(self.right)})'
 
+
 @dataclass(frozen=True)
 class Application(Pattern):
     left: Pattern
@@ -185,6 +186,7 @@ class Proved:
 
     def __str__(self) -> str:
         return str(self.conclusion)
+
 
 # Proof Expressions
 # =================
@@ -378,8 +380,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        expected_plugs = self.stack[-len(delta):]
-        *self.stack, expected_proved = self.stack[0: -len(delta)]
+        expected_plugs = self.stack[-len(delta) :]
+        *self.stack, expected_proved = self.stack[0 : -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
@@ -387,8 +389,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        expected_plugs = self.stack[-len(delta):]
-        *self.stack, expected_pattern = self.stack[0: -len(delta)]
+        expected_plugs = self.stack[-len(delta) :]
+        *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
@@ -529,44 +531,43 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def __init__(self, claims: list[Claim], out: TextIO) -> None:
         super().__init__(claims)
         self.out = out
-        self._notation = None
+        self._notation: dict[str, Pattern] = {}
 
     def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
         self._notation = notation
 
     @property
     def notation(self) -> dict[Pattern, str]:
-        if self._notation is None:
-            return {}
-        else:
-            return {v: k for k, v in self._notation.items()}
+        return {v: k for k, v in self._notation.items()}
 
     @staticmethod
     def pretty(func: Callable) -> Callable:
-        def wrapper(*args, **kwargs):
-            self, *args = args
+        def wrapper(*args: Pattern | dict | PrettyPrintingInterpreter, **kwargs: dict) -> Pattern | Proved:
+            self, *nargs = args
+            assert isinstance(self, PrettyPrintingInterpreter)
             # Find and call the super method.
-            result = getattr(super(type(self), self), func.__name__)(*args, **kwargs)
+            result = getattr(super(type(self), self), func.__name__)(*nargs, **kwargs)
             # Call the pretty printing function.
-            func(self, *args, **kwargs)
+            func(self, *nargs, **kwargs)
             self.out.write('\n')
             # Print stack
             self._print_stack()
             return result
+
         return wrapper
 
     @pretty
-    def evar(self, id: int):
+    def evar(self, id: int) -> None:
         self.out.write('EVar ')
         self.out.write(str(id))
 
     @pretty
-    def svar(self, id: int):
+    def svar(self, id: int) -> None:
         self.out.write('SVar ')
         self.out.write(str(id))
 
     @pretty
-    def symbol(self, id: int):
+    def symbol(self, id: int) -> None:
         self.out.write('Symbol ')
         self.out.write(str(id))
 
@@ -579,7 +580,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         positive: tuple[SVar, ...] = (),
         negative: tuple[SVar, ...] = (),
         application_context: tuple[EVar, ...] = (),
-    ):
+    ) -> None:
         def write_list(name: str, lst: tuple[EVar, ...] | tuple[SVar, ...]) -> None:
             self.out.write(f'List={name} ')
             self.out.write(f'len={len(lst)} ')
@@ -597,69 +598,69 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(str(id))
 
     @pretty
-    def implies(self, left: Pattern, right: Pattern):
+    def implies(self, left: Pattern, right: Pattern) -> None:
         self.out.write('Implication')
 
     @pretty
-    def app(self, left: Pattern, right: Pattern):
+    def app(self, left: Pattern, right: Pattern) -> None:
         self.out.write('Application')
 
     @pretty
-    def exists(self, var: int, subpattern: Pattern):
+    def exists(self, var: int, subpattern: Pattern) -> None:
         self.out.write('Exists ')
         self.out.write(str(var))
 
     @pretty
-    def mu(self, var: int, subpattern: Pattern):
+    def mu(self, var: int, subpattern: Pattern) -> None:
         self.out.write('Mu ')
         self.out.write(str(var))
 
     @pretty
-    def prop1(self):
+    def prop1(self) -> None:
         self.out.write('Prop1')
 
     @pretty
-    def prop2(self):
+    def prop2(self) -> None:
         self.out.write('Prop2')
 
     @pretty
-    def prop3(self):
+    def prop3(self) -> None:
         self.out.write('Prop3')
 
     @pretty
-    def modus_ponens(self, left: Proved, right: Proved):
+    def modus_ponens(self, left: Proved, right: Proved) -> None:
         self.out.write('ModusPonens')
 
     @pretty
-    def instantiate(self, proved: Proved, delta: dict[int, Pattern]):
+    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
     @pretty
-    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]):
+    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
     @pretty
-    def save(self, id: str, term: Pattern | Proved):
+    def save(self, id: str, term: Pattern | Proved) -> None:
         self.out.write('Save')
 
     @pretty
-    def load(self, id: str, term: Pattern | Proved):
+    def load(self, id: str, term: Pattern | Proved) -> None:
         self.out.write('Load ')
         self.out.write(id)
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
 
     @pretty
-    def publish(self, proved: Proved):
+    def publish(self, proved: Proved) -> None:
         self.out.write('Publish\n')
 
     @pretty
-    def publish_claim(self, pattern: Pattern):
+    def publish_claim(self, pattern: Pattern) -> None:
         self.out.write('Publish\n')
 
-    def _print_stack(self):
+    def _print_stack(self) -> None:
         self.out.write('Stack:\n')
         for i, item in enumerate(self.stack):
             if isinstance(item, Proved):
