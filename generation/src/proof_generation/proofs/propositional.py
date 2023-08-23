@@ -9,6 +9,30 @@ if TYPE_CHECKING:
     from proof_generation.proof import Pattern, PatternExpression, Proved, ProvedExpression, StatefulInterpreter
 
 
+def bot_elim(self) -> Proved:
+    bot = Mu(SVar(0), SVar(0))
+    phi0 = MetaVar(0)
+
+    def neg(p: Pattern) -> Pattern:
+        return Implication(p, bot)
+
+    return self.modus_ponens(
+        # ((bot -> neg neg 0) -> (bot -> 0)))
+        self.modus_ponens(
+            # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
+            self.prop2().instantiate({0: bot, 1: neg(neg(phi0)), 2: phi0}),
+            # (bot -> (neg neg 0 -> 0))
+            self.modus_ponens(
+                # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
+                self.prop1().instantiate({0: Implication(neg(neg(phi0)), phi0), 1: bot}),
+                # (neg neg 0 -> 0)
+                self.prop3().instantiate({0: phi0}),
+            ),
+        ),
+        # (bot -> (neg neg phi0))
+        self.prop1().instantiate({0: bot, 1: neg(phi0)}),
+    )
+
 class Propositional(ProofExp):
     def __init__(self, interpreter: StatefulInterpreter) -> None:
         super().__init__(interpreter)
@@ -19,17 +43,14 @@ class Propositional(ProofExp):
         bot = Mu(SVar(0), SVar(0))
         top = Implication(bot, bot)
         return [
-            Implication(phi0, phi0),
-            top,
             Implication(bot, phi0),
-            Implication(Implication(Implication(phi0, bot), phi0), phi0),
         ]
 
     def claim_expressions(self) -> list[PatternExpression]:
-        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0, self.peirce_bot_phi0]
+        return [self.bot_implies_phi0]
 
     def proof_expressions(self) -> list[ProvedExpression]:
-        return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.peirce_bot]
+        return [bot_elim]
 
     # Notation
     # ========
@@ -123,24 +144,6 @@ class Propositional(ProofExp):
 
     def top_intro(self) -> Proved:
         return self.imp_reflexivity().instantiate({0: self.bot()})
-
-    def bot_elim(self) -> Proved:
-        return self.modus_ponens(
-            # ((bot -> neg neg 0) -> (bot -> 0)))
-            self.modus_ponens(
-                # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
-                self.prop2().instantiate({0: self.bot(), 1: self.neg(self.neg_phi0), 2: self.phi0()}),
-                # (bot -> (neg neg 0 -> 0))
-                self.modus_ponens(
-                    # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.prop1().instantiate({0: self.implies(self.neg(self.neg_phi0), self.phi0()), 1: self.bot()}),
-                    # (neg neg 0 -> 0)
-                    self.prop3().instantiate({0: self.phi0()}),
-                ),
-            ),
-            # (bot -> (neg neg phi0))
-            self.prop1().instantiate({0: self.bot(), 1: self.neg(self.phi0)}),
-        )
 
     # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
