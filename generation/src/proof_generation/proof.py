@@ -699,104 +699,6 @@ class ProofExp:
     def proof_expressions(self) -> list[ProvedExpression]:
         raise NotImplementedError
 
-    def walk(self, p: Pattern) -> Pattern:
-        match p:
-            case EVar(name):
-                return self.evar(name)
-            case SVar(name):
-                return self.svar(name)
-            case Symbol(name):
-                return self.symbol(name)
-            case Implication(left, right):
-                return self.implies(self.walk(left), self.walk(right))
-            case Application(left, right):
-                return self.app(self.walk(left), self.walk(right))
-            case Exists(var, subpattern):
-                return self.exists(var.name, self.walk(subpattern))
-            case Mu(var, subpattern):
-                return self.mu(var.name, self.walk(subpattern))
-            case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
-                # TODO: Walking through the variables (so that they are on stack)
-                return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
-        return p
-
-    # TODO: p will be memoized, so that it can be reused with load/save
-    # TODO: memo will also be able to "build up the term" in a serializable
-    # manner to fix those issues with instantiations
-    def memo(self, p: Pattern) -> Pattern:
-        if p in self.memoization:
-            self.interpreter.load(self.memoization[p])
-        else:
-            self.walk(p)
-            self.memoization[p] = str(len(self.interpreter.memory))
-            self.interpreter.save(self.memoization[p], p)
-        return p
-
-    # TODO: Use some type-narrowing to do this
-    def memo2(self, p: Proved) -> Proved:
-        self.interpreter.stack.append(p)
-        return p
-
-    # Patterns
-    # ========
-
-    def svar(self, id: int) -> Pattern:
-        return self.interpreter.svar(id)
-
-    def evar(self, id: int) -> Pattern:
-        return self.interpreter.evar(id)
-
-    def symbol(self, id: int) -> Pattern:
-        return self.interpreter.symbol(id)
-
-    def implies(self, left: Pattern, right: Pattern) -> Pattern:
-        return self.interpreter.implies(left, right)
-
-    def app(self, left: Pattern, right: Pattern) -> Pattern:
-        return self.interpreter.app(left, right)
-
-    def exists(self, var: int, subpattern: Pattern) -> Pattern:
-        return self.interpreter.exists(var, subpattern)
-
-    def mu(self, var: int, subpattern: Pattern) -> Pattern:
-        return self.interpreter.mu(var, subpattern)
-
-    def metavar(
-        self,
-        name: int,
-        e_fresh: tuple[EVar, ...] = (),
-        s_fresh: tuple[SVar, ...] = (),
-        positive: tuple[SVar, ...] = (),
-        negative: tuple[SVar, ...] = (),
-        application_context: tuple[EVar, ...] = (),
-    ) -> Pattern:
-        return self.interpreter.metavar(name, e_fresh, s_fresh, positive, negative, application_context)
-
-    # Proof Rules
-    # -----------
-
-    def prop1(self) -> Proved:
-        return self.interpreter.prop1()
-
-    def prop2(self) -> Proved:
-        return self.interpreter.prop2()
-
-    def prop3(self) -> Proved:
-        return self.interpreter.prop3()
-
-    def modus_ponens(self, left: Proved, right: Proved) -> Proved:
-        return self.interpreter.modus_ponens(left, right)
-
-    # TODO: Instantiate will use memo automatically for all Patterns
-    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        return self.interpreter.instantiate(proved, delta)
-
-    def instantiate_memo(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        for pat in delta.values():
-            self.memo(pat)
-
-        return self.interpreter.instantiate(proved, delta)
-
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return self.interpreter.instantiate_notation(pattern, delta)
 
@@ -830,9 +732,10 @@ class ProofExp:
     def serialize_claims(cls, output: Path) -> None:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(claims=claims, out=out))
-            for claim_expr in reversed(proof_exp.claim_expressions()):
-                proof_exp.publish_claim(claim_expr())
+            interpreter = SerializingInterpreter(claims=claims, out=out)
+            proof_exp = cls(interpreter)
+            for claim in reversed(claims):
+                proof_exp.publish_claim(interpreter.walk(claim.pattern))
 
     @classmethod
     def serialize_proofs(cls, output: Path) -> None:
@@ -847,9 +750,10 @@ class ProofExp:
     def pretty_print_claims(cls, output: Path) -> None:
         with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=out))
-            for claim_expr in reversed(proof_exp.claim_expressions()):
-                proof_exp.publish_claim(claim_expr())
+            interpreter = PrettyPrintingInterpreter(claims=claims, out=out)
+            proof_exp = cls(interpreter)
+            for claim in reversed(claims):
+                proof_exp.publish_claim(interpreter.walk(claim.pattern))
 
     @classmethod
     def pretty_print_proofs(cls, output: Path) -> None:
