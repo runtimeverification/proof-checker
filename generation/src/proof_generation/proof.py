@@ -344,8 +344,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        expected_plugs = self.stack[-len(delta):]
-        *self.stack, expected_proved = self.stack[0: -len(delta)]
+        expected_plugs = self.stack[-len(delta) :]
+        *self.stack, expected_proved = self.stack[0 : -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
@@ -353,8 +353,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        expected_plugs = self.stack[-len(delta):]
-        *self.stack, expected_pattern = self.stack[0: -len(delta)]
+        expected_plugs = self.stack[-len(delta) :]
+        *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
@@ -519,7 +519,9 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
                 if print_stack:
                     self.print_stack()
                 return result
+
             return wrapper
+
         return decorator
 
     @pretty()
@@ -624,7 +626,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     @pretty()
     def publish_claim(self, pattern: Pattern) -> None:
-        self.out.write('Publish\n')
+        self.out.write('Publish')
 
     def pretty_print_pattern(self, p: Pattern) -> str:
         if p in self.notation:
