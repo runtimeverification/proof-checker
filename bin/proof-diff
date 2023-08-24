@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-actual=$1; shift
-[[ -f $actual ]] || { echo >&2 "File '$actual' does not exist."; exit 1; }
 expected=$1; shift
 [[ -f $expected ]] || { echo >&2 "File '$expected' does not exist."; exit 1; }
+actual=$1; shift
+[[ -f $actual ]] || { echo >&2 "File '$actual' does not exist."; exit 1; }
 
-colordiff -U3 --label actual <(hexdump -C $actual) --label expected <(hexdump -C $expected)
+colordiff -U3 --label expected <(hexdump -C $expected) --label actual <(hexdump -C $actual)
