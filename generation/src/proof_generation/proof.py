@@ -21,30 +21,22 @@ class Pattern(Term):
 class EVar(Pattern):
     name: int
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'name': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
     def __str__(self) -> str:
-        return f'e_{self.name}'
+        return f'x{self.name}'
 
 
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'name': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
     def __str__(self) -> str:
-        return f's_{self.name}'
+        return f'X{self.name}'
 
 
 @dataclass(frozen=True)
@@ -63,10 +55,6 @@ class Implication(Pattern):
     left: Pattern
     right: Pattern
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': 'Imp', 'left': '', 'right': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Implication(self.left.instantiate(delta), self.right.instantiate(delta))
 
@@ -83,7 +71,7 @@ class Application(Pattern):
         return Application(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def __str__(self) -> str:
-        return f'{str(self.left)}({str(self.right)})'
+        return f'(app ({str(self.left)}) ({str(self.right)}))'
 
 
 @dataclass(frozen=True)
@@ -91,15 +79,11 @@ class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': '\u2203', 'var': '', 'subpattern': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(delta))
 
     def __str__(self) -> str:
-        return f'(exists {str(self.var)} . {str(self.subpattern)})'
+        return f'(\u2203 {str(self.var)} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -107,19 +91,11 @@ class Mu(Pattern):
     var: SVar
     subpattern: Pattern
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {
-            '__name__': '\u03BC',
-            'var': '',
-            'subpattern': '',
-        }
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(delta))
 
     def __str__(self) -> str:
-        return f'(mu {str(self.var)} . {str(self.subpattern)})'
+        return f'(\u03BC {str(self.var)} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -131,25 +107,13 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {
-            '__name__': 'MV',
-            'name': '',
-            'e_fresh': 'e_f',
-            's_fresh': 's_f',
-            'positive': 'pos',
-            'negative': 'neg',
-            'application_context': 'app_cntxt',
-        }
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         if self.name in delta:
             return delta[self.name]
         return self
 
     def __str__(self) -> str:
-        return f'MV({self.name})'
+        return f'phi{self.name}'
 
 
 @dataclass(frozen=True)
@@ -159,7 +123,7 @@ class ESubst(Pattern):
     plug: Pattern
 
     def __str__(self) -> str:
-        return f'[{str(self.var)} := {str(self.plug)} | {str(self.pattern)}]'
+        return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
 
 @dataclass(frozen=True)
@@ -169,7 +133,7 @@ class SSubst(Pattern):
     plug: Pattern
 
     def __str__(self) -> str:
-        return f'[{str(self.var)} := {str(self.plug)} | {str(self.pattern)}]'
+        return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
 
 @dataclass
@@ -380,8 +344,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_proved = self.stack[0 : -len(delta)]
+        expected_plugs = self.stack[-len(delta):]
+        *self.stack, expected_proved = self.stack[0: -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
@@ -389,8 +353,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_pattern = self.stack[0 : -len(delta)]
+        expected_plugs = self.stack[-len(delta):]
+        *self.stack, expected_pattern = self.stack[0: -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
@@ -541,37 +505,39 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         return {v: k for k, v in self._notation.items()}
 
     @staticmethod
-    def pretty(func: Callable) -> Callable:
-        def wrapper(*args: Pattern | dict | PrettyPrintingInterpreter, **kwargs: dict) -> Pattern | Proved:
-            self, *nargs = args
-            assert isinstance(self, PrettyPrintingInterpreter)
-            # Find and call the super method.
-            result = getattr(super(type(self), self), func.__name__)(*nargs, **kwargs)
-            # Call the pretty printing function.
-            func(self, *nargs, **kwargs)
-            self.out.write('\n')
-            # Print stack
-            self._print_stack()
-            return result
+    def pretty(print_stack: bool = True) -> Callable:
+        def decorator(func: Callable) -> Callable:
+            def wrapper(*args: Pattern | dict | PrettyPrintingInterpreter, **kwargs: dict) -> Pattern | Proved:
+                self, *nargs = args
+                assert isinstance(self, PrettyPrintingInterpreter)
+                # Find and call the super method.
+                result = getattr(super(type(self), self), func.__name__)(*nargs, **kwargs)
+                # Call the pretty printing function.
+                func(self, *nargs, **kwargs)
+                self.out.write('\n')
+                # Print stack
+                if print_stack:
+                    self.print_stack()
+                return result
+            return wrapper
+        return decorator
 
-        return wrapper
-
-    @pretty
+    @pretty()
     def evar(self, id: int) -> None:
         self.out.write('EVar ')
         self.out.write(str(id))
 
-    @pretty
+    @pretty()
     def svar(self, id: int) -> None:
         self.out.write('SVar ')
         self.out.write(str(id))
 
-    @pretty
+    @pretty()
     def symbol(self, id: int) -> None:
         self.out.write('Symbol ')
         self.out.write(str(id))
 
-    @pretty
+    @pretty()
     def metavar(
         self,
         id: int,
@@ -597,90 +563,94 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('MetaVar ')
         self.out.write(str(id))
 
-    @pretty
+    @pretty()
     def implies(self, left: Pattern, right: Pattern) -> None:
         self.out.write('Implication')
 
-    @pretty
+    @pretty()
     def app(self, left: Pattern, right: Pattern) -> None:
         self.out.write('Application')
 
-    @pretty
+    @pretty()
     def exists(self, var: int, subpattern: Pattern) -> None:
         self.out.write('Exists ')
         self.out.write(str(var))
 
-    @pretty
+    @pretty()
     def mu(self, var: int, subpattern: Pattern) -> None:
         self.out.write('Mu ')
         self.out.write(str(var))
 
-    @pretty
+    @pretty()
     def prop1(self) -> None:
         self.out.write('Prop1')
 
-    @pretty
+    @pretty()
     def prop2(self) -> None:
         self.out.write('Prop2')
 
-    @pretty
+    @pretty()
     def prop3(self) -> None:
         self.out.write('Prop3')
 
-    @pretty
+    @pretty()
     def modus_ponens(self, left: Proved, right: Proved) -> None:
         self.out.write('ModusPonens')
 
-    @pretty
+    @pretty()
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
-    @pretty
+    @pretty()
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
-    @pretty
+    @pretty(print_stack=False)
     def save(self, id: str, term: Pattern | Proved) -> None:
         self.out.write('Save')
 
-    @pretty
+    @pretty()
     def load(self, id: str, term: Pattern | Proved) -> None:
         self.out.write('Load ')
         self.out.write(id)
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
 
-    @pretty
+    @pretty()
     def publish(self, proved: Proved) -> None:
-        self.out.write('Publish\n')
+        self.out.write('Publish')
 
-    @pretty
+    @pretty()
     def publish_claim(self, pattern: Pattern) -> None:
         self.out.write('Publish\n')
 
-    def _print_stack(self) -> None:
-        self.out.write('Stack:\n')
-        for i, item in enumerate(self.stack):
-            if isinstance(item, Proved):
-                item = item.conclusion
-            self.out.write(f'\tStack{i} {self._pretty_print_pattern(item)}\n')
-
-    def _pretty_print_pattern(self, p: Pattern) -> str:
+    def pretty_print_pattern(self, p: Pattern) -> str:
         if p in self.notation:
             return self.notation[p]
 
         match p:
             case Implication(left, right):
-                return f'({self._pretty_print_pattern(left)} -> {self._pretty_print_pattern(right)})'
+                return f'({self.pretty_print_pattern(left)} -> {self.pretty_print_pattern(right)})'
             case Application(left, right):
-                return f'{self._pretty_print_pattern(p.left)}({self._pretty_print_pattern(p.right)})'
+                return f'{self.pretty_print_pattern(left)}({self.pretty_print_pattern(right)})'
             case Exists(var, subpattern):
-                return f'(exists {str(var)} . {self._pretty_print_pattern(subpattern)})'
+                return f'(exists {str(var)} . {self.pretty_print_pattern(subpattern)})'
             case Mu(var, subpattern):
-                return f'(mu {self._pretty_print_pattern(p.var)} . {self._pretty_print_pattern(p.subpattern)})'
+                return f'(mu {self.pretty_print_pattern(var)} . {self.pretty_print_pattern(p.subpattern)})'
+            case ESubst(pattern, var, plug):
+                return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
+            case SSubst(pattern, var, plug):
+                return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
         return str(p)
+
+    def print_stack(self) -> None:
+        self.out.write('\tStack:\n')
+        for i, item in enumerate(reversed(self.stack)):
+            if isinstance(item, Proved):
+                item = item.conclusion
+            self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 
 
 PatternExpression = Callable[[], Pattern]
