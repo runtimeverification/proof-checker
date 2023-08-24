@@ -799,9 +799,20 @@ class ProofExp:
 
     @classmethod
     def main(cls, argv: list[str]) -> None:
-        usage = 'Usage: {} binary|pretty claim|proof output-file'
-        assert len(argv) == 4, usage
-        _exe, format, mode, output_path = argv
+        exe, *argv = argv
+        usage = f'Usage:\n\n python3 {exe} (binary|pretty) (claim|proof) output-file\n python3 {exe} --help\n\n'
+        examples = (
+            f'Examples:\n\npython3 {exe} binary claim a.out\n# outputs claims of ProofExp object in verifier-checkable binary format to file a.out\n\n'
+            + f'python3 {exe} pretty claim /dev/stdout\n# outputs claims of ProofExp object in human-readable format to standard output\n'
+        )
+
+        if len(argv) == 1:
+            assert argv[0] == '--help', usage
+            print(usage + examples)
+            return
+
+        assert len(argv) == 3, usage
+        format, mode, output_path = argv
 
         match (format, mode):
             case ('pretty', 'claim'):
