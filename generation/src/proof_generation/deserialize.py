@@ -4,6 +4,7 @@ from pprint import PrettyPrinter
 
 from proof_generation.instruction import Instruction
 from proof_generation.proof import (
+    StatefulInterpreter,
     Application,
     ESubst,
     EVar,
@@ -67,7 +68,7 @@ class Claims:
         return self.claims.pop()
 
 
-def deserialize_instructions(data):
+def deserialize_instructions(data, interpreter: StatefulInterpreter):
     stack = Stack()
     memory = Memory()
     claims = Claims()
@@ -79,61 +80,58 @@ def deserialize_instructions(data):
     def pop_stack_proved(stack):
         return stack.pop()
 
+    assert isinstance(interpreter, StatefulInterpreter)
+
     index = 0
 
     def next_byte():
         nonlocal index
         if index == len(data):
             return None
-        # print(index)
         ret = data[index]
         index += 1
         return ret
 
-    pp = PrettyPrinter()
-
     while byte := next_byte():
         instr_u32 = Instruction(byte)
-        pp.pprint(instr_u32)
-        pp.pprint(stack.stack)
 
         if instr_u32 == Instruction.List:
             length = next_byte()
             if length != 0:
                 raise ValueError("Length was supposed to be zero.")
-            stack.push(())
+            stack.push(interpreter.empty_list())
 
         elif instr_u32 == Instruction.EVar:
             id = next_byte()
-            stack.push(EVar(id))
+            stack.push(interpreter.evar(id))
 
         elif instr_u32 == Instruction.SVar:
             id = next_byte()
-            stack.push(SVar(id))
+            stack.push(interpreter.svar(id))
 
         elif instr_u32 == Instruction.Symbol:
             id = next_byte()
-            stack.push(Symbol(id))
+            stack.push(interpreter.symbol(id))
 
         elif instr_u32 == Instruction.Implication:
             right = pop_stack_pattern(stack)
             left = pop_stack_pattern(stack)
-            stack.push(Implication(left, right))
+            stack.push(interpreter.implication(left, right))
 
         elif instr_u32 == Instruction.Application:
             right = pop_stack_pattern(stack)
             left = pop_stack_pattern(stack)
-            stack.push(Application(left, right))
+            stack.push(interpreter.application(left, right))
 
         elif instr_u32 == Instruction.Exists:
             id = next_byte()
             subpattern = pop_stack_pattern(stack)
-            stack.push(Exists(EVar(id), subpattern))
+            stack.push(interpreter.exists(id, subpattern))
 
         elif instr_u32 == Instruction.Mu:
             id = next_byte()
             subpattern = pop_stack_pattern(stack)
-            stack.push(Mu(SVar(id), subpattern))
+            stack.push(interpreter.mu(id, subpattern))
 
         elif instr_u32 == Instruction.MetaVar:
             id = next_byte()
@@ -142,30 +140,31 @@ def deserialize_instructions(data):
             positive = pop_stack_pattern(stack)
             s_fresh = pop_stack_pattern(stack)
             e_fresh = pop_stack_pattern(stack)
-            stack.push(MetaVar(id, e_fresh, s_fresh, positive, negative, application_context))
+            stack.push(interpreter.metavar(id, e_fresh, s_fresh, positive, negative, application_context))
 
         elif instr_u32 == Instruction.ESubst:
             evar_id = next_byte()
             pattern = pop_stack_pattern(stack)
             plug = pop_stack_pattern(stack)
-            stack.push(ESubst(pattern, evar_id, plug))
+            stack.push(interpreter.esubst(pattern, evar_id, plug))
 
         elif instr_u32 == Instruction.Prop1:
-            stack.push(Prop1())
+            stack.push(interpreter.prop1())
 
         elif instr_u32 == Instruction.Prop2:
-            stack.push(Prop2())
+            stack.push(interpreter.prop2())
 
         elif instr_u32 == Instruction.ModusPonens:
             right = pop_stack_proved(stack)
             left = pop_stack_proved(stack)
-            stack.push(ModusPonens(left, right))
+            stack.push(interpreter.modusponens(left, right))
+
         elif instr_u32 == Instruction.Instantiate:
             id = next_byte()
             plug = pop_stack_pattern(stack)
             metaterm = stack.pop()
             if isinstance(metaterm, (Pattern, Proof)):
-                stack.push(Instantiate(metaterm, id, plug))
+                stack.push(interpreter.instantiate(metaterm, id, plug))
             else:
                 raise ValueError(f'Cannot Instantiate {type(metaterm)}.')
 
