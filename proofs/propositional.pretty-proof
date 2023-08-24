@@ -71,6 +71,10 @@ Instantiate 0
 Instantiate 0, 1
 ModusPonens
 Publish
+Prop3
+Load phi0=0
+Instantiate 0
+Publish
 Prop2
 Load phi0=0
 Load bot=2

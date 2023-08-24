@@ -15,15 +15,25 @@ Load phi0=0
 Implication
 Save
 Publish
+Load phi0=0
+Load bot=1
+Implication
+Save
+Load phi0=0
+Instantiate 0
+Save
+Load bot=1
+Implication
+Load phi0=0
+Implication
+Save
+Publish
 Load bot=1
 Load phi0=0
 Implication
 Save
 Publish
-Load phi0=0
-Load bot=1
-Implication
-Save
+Load neg=3
 Load bot=1
 Instantiate 0
 Save

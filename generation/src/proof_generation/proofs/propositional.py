@@ -18,18 +18,20 @@ class Propositional(ProofExp):
         phi0 = MetaVar(0)
         bot = Mu(SVar(0), SVar(0))
         top = Implication(bot, bot)
+        neg_phi0 = Implication(phi0, bot)
         return [
-            Implication(phi0, phi0),
-            top,
-            Implication(bot, phi0),
-            Implication(Implication(Implication(phi0, bot), phi0), phi0),
+            Implication(phi0, phi0),  # Reflexivity
+            top,  # Top
+            Implication(bot, phi0),  # Bot_elim
+            Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
+            Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Pierce_bot
         ]
 
     def claim_expressions(self) -> list[PatternExpression]:
-        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0, self.peirce_bot_phi0]
+        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0, self.contradiction_claim, self.peirce_bot_phi0]
 
     def proof_expressions(self) -> list[ProvedExpression]:
-        return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.peirce_bot]
+        return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.contradiction_proof, self.peirce_bot]
 
     # Notation
     # ========
@@ -71,6 +73,15 @@ class Propositional(ProofExp):
         if ret := self.load_notation('bot-implies-phi0'):
             return ret
         return self.save_notation('bot-implies-phi0', self.implies(self.bot(), self.phi0()))
+
+    def contradiction_claim(self) -> Pattern:
+        if ret := self.load_notation('contradiction'):
+            return ret
+        return self.save_notation(
+            'contradiction',
+            # (neg phi0 -> bot) -> phi0
+            self.implies(self.implies(self.neg_phi0(), self.bot()), self.phi0()),
+        )
 
     def peirce_bot_phi0(self) -> Pattern:
         if ret := self.load_notation('peirce-bot'):
@@ -139,6 +150,10 @@ class Propositional(ProofExp):
             # (bot -> (neg neg phi0))
             self.prop1().instantiate({0: self.bot(), 1: self.neg(self.phi0)}),
         )
+
+    # (neg phi0 -> bot) -> phi0
+    def contradiction_proof(self) -> Proved:
+        return self.prop3().instantiate({0: self.phi0()})
 
     # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
