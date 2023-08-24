@@ -777,7 +777,7 @@ class ProofExp:
         usage = f'Usage:\n\n python3 {exe} (binary|pretty) (claim|proof) output-file\n python3 {exe} --help\n\n'
         examples = (
             f'Examples:\n\npython3 {exe} binary claim a.out\n# outputs claims of ProofExp object in verifier-checkable binary format to file a.out\n\n'
-            + f'python3 {exe} binary claim /dev/stdout\n# outputs proofs of ProofExp object in human-readable format to standard output\n'
+            + f'python3 {exe} pretty claim /dev/stdout\n# outputs claims of ProofExp object in human-readable format to standard output\n'
         )
 
         if len(argv) == 1:
