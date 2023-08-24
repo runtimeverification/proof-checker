@@ -107,8 +107,8 @@ class Propositional(ProofExp):
         )
 
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
-    def imp_transitivity(self, phi0_imp_phi0: Proved, phi1_imp_phi2: Proved) -> Proved:
-        phi0_imp_phi1_conc = phi0_imp_phi0.conclusion
+    def imp_transitivity(self, phi0_imp_phi1: Proved, phi1_imp_phi2: Proved) -> Proved:
+        phi0_imp_phi1_conc = phi0_imp_phi1.conclusion
 
         match phi0_imp_phi1_conc:
             case Implication(phi0, phi1):
@@ -127,7 +127,7 @@ class Propositional(ProofExp):
                 self.prop2().instantiate({1: phi1, 2: phi2, 0: self.metavar(1)}),
                 self.modus_ponens(self.prop1().instantiate({0: phi1_imp_phi2_conc}), phi1_imp_phi2),
             ).instantiate({1: phi0}),
-            phi0_imp_phi0,
+            phi0_imp_phi1,
         )
 
     def top_intro(self) -> Proved:

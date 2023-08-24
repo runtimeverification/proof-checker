@@ -43,7 +43,7 @@ class Instruction(IntEnum):
     Substitution = 0x18
     KnasterTarski = 0x19
 
-    # Meta Incference rules
+    # Meta Inference rules
     Instantiate = 0x1A
 
     # Stack Manipulation
