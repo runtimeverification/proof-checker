@@ -8,11 +8,7 @@ from typing import BinaryIO, TextIO
 from proof_generation.instruction import Instruction
 
 
-class Term:
-    ...
-
-
-class Pattern(Term):
+class Pattern:
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
