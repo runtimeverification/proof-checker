@@ -130,7 +130,7 @@ SVar 0
 	2: phi0-implies-phi0
 Mu 0
 	Stack:
-	0: (mu X0 . X0)
+	0: (μ X0 . X0)
 	1: phi0-implies-phi0
 	2: phi0-implies-phi0
 Save

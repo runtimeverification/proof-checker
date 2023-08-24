@@ -59,7 +59,7 @@ class Implication(Pattern):
         return Implication(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def __str__(self) -> str:
-        return f'({str(self.left)} --> {str(self.right)})'
+        return f'({str(self.left)} -> {str(self.right)})'
 
 
 @dataclass(frozen=True)
@@ -632,15 +632,17 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         if p in self.notation:
             return self.notation[p]
 
+        # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
+        # like implication while keeping notations
         match p:
             case Implication(left, right):
                 return f'({self.pretty_print_pattern(left)} -> {self.pretty_print_pattern(right)})'
             case Application(left, right):
-                return f'{self.pretty_print_pattern(left)}({self.pretty_print_pattern(right)})'
+                return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
             case Exists(var, subpattern):
-                return f'(exists {str(var)} . {self.pretty_print_pattern(subpattern)})'
+                return f'(\u2203 {str(var)} . {self.pretty_print_pattern(subpattern)})'
             case Mu(var, subpattern):
-                return f'(mu {self.pretty_print_pattern(var)} . {self.pretty_print_pattern(p.subpattern)})'
+                return f'(\u03BC {self.pretty_print_pattern(var)} . {self.pretty_print_pattern(p.subpattern)})'
             case ESubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
