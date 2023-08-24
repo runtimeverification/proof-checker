@@ -4,42 +4,161 @@ List=pos len=0
 List=neg len=0 
 List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
 Save
 SVar 0
+	Stack:
+	0: X0
+	1: phi0
 Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: phi0
 Save
 Implication
+	Stack:
+	0: (phi0 -> bot)
 Load phi0=0
+	Stack:
+	0: phi0
+	1: (phi0 -> bot)
 Implication
+	Stack:
+	0: ((phi0 -> bot) -> phi0)
 Load phi0=0
+	Stack:
+	0: phi0
+	1: ((phi0 -> bot) -> phi0)
 Implication
+	Stack:
+	0: (((phi0 -> bot) -> phi0) -> phi0)
 Save
 Publish
+	Stack:
+	0: peirce-bot
 Load phi0=0
+	Stack:
+	0: phi0
+	1: peirce-bot
 Load bot=1
+	Stack:
+	0: bot
+	1: phi0
+	2: peirce-bot
 Implication
+	Stack:
+	0: (phi0 -> bot)
+	1: peirce-bot
 Save
 Load phi0=0
+	Stack:
+	0: phi0
+	1: neg
+	2: peirce-bot
 Instantiate 0
+	Stack:
+	0: neg
+	1: peirce-bot
 Save
 Load bot=1
+	Stack:
+	0: bot
+	1: neg-phi0
+	2: peirce-bot
 Implication
+	Stack:
+	0: (neg-phi0 -> bot)
+	1: peirce-bot
 Load phi0=0
+	Stack:
+	0: phi0
+	1: (neg-phi0 -> bot)
+	2: peirce-bot
 Implication
+	Stack:
+	0: ((neg-phi0 -> bot) -> phi0)
+	1: peirce-bot
 Save
 Publish
+	Stack:
+	0: contradiction
+	1: peirce-bot
 Load bot=1
+	Stack:
+	0: bot
+	1: contradiction
+	2: peirce-bot
 Load phi0=0
+	Stack:
+	0: phi0
+	1: bot
+	2: contradiction
+	3: peirce-bot
 Implication
+	Stack:
+	0: (bot -> phi0)
+	1: contradiction
+	2: peirce-bot
 Save
 Publish
+	Stack:
+	0: bot-implies-phi0
+	1: contradiction
+	2: peirce-bot
 Load neg=3
+	Stack:
+	0: neg-phi0
+	1: bot-implies-phi0
+	2: contradiction
+	3: peirce-bot
 Load bot=1
+	Stack:
+	0: bot
+	1: neg-phi0
+	2: bot-implies-phi0
+	3: contradiction
+	4: peirce-bot
 Instantiate 0
+	Stack:
+	0: (bot -> bot)
+	1: bot-implies-phi0
+	2: contradiction
+	3: peirce-bot
 Save
 Publish
+	Stack:
+	0: top
+	1: bot-implies-phi0
+	2: contradiction
+	3: peirce-bot
 Load phi0=0
+	Stack:
+	0: phi0
+	1: top
+	2: bot-implies-phi0
+	3: contradiction
+	4: peirce-bot
 Load phi0=0
+	Stack:
+	0: phi0
+	1: phi0
+	2: top
+	3: bot-implies-phi0
+	4: contradiction
+	5: peirce-bot
 Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: top
+	2: bot-implies-phi0
+	3: contradiction
+	4: peirce-bot
 Save
 Publish
+	Stack:
+	0: phi0-implies-phi0
+	1: top
+	2: bot-implies-phi0
+	3: contradiction
+	4: peirce-bot

@@ -21,24 +21,22 @@ class Pattern(Term):
 class EVar(Pattern):
     name: int
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'name': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
+
+    def __str__(self) -> str:
+        return f'x{self.name}'
 
 
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'name': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
+
+    def __str__(self) -> str:
+        return f'X{self.name}'
 
 
 @dataclass(frozen=True)
@@ -48,18 +46,20 @@ class Symbol(Pattern):
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
+    def __str__(self) -> str:
+        return str(self.name)
+
 
 @dataclass(frozen=True)
 class Implication(Pattern):
     left: Pattern
     right: Pattern
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': 'Imp', 'left': '', 'right': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Implication(self.left.instantiate(delta), self.right.instantiate(delta))
+
+    def __str__(self) -> str:
+        return f'({str(self.left)} -> {str(self.right)})'
 
 
 @dataclass(frozen=True)
@@ -70,18 +70,20 @@ class Application(Pattern):
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Application(self.left.instantiate(delta), self.right.instantiate(delta))
 
+    def __str__(self) -> str:
+        return f'(app ({str(self.left)}) ({str(self.right)}))'
+
 
 @dataclass(frozen=True)
 class Exists(Pattern):
     var: EVar
     subpattern: Pattern
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {'__name__': '\u2203', 'var': '', 'subpattern': ''}
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(delta))
+
+    def __str__(self) -> str:
+        return f'(\u2203 {str(self.var)} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -89,16 +91,11 @@ class Mu(Pattern):
     var: SVar
     subpattern: Pattern
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {
-            '__name__': '\u03BC',
-            'var': '',
-            'subpattern': '',
-        }
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(delta))
+
+    def __str__(self) -> str:
+        return f'(\u03BC {str(self.var)} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -110,22 +107,13 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
 
-    @classmethod
-    def shorthand(cls) -> dict[str, str]:
-        return {
-            '__name__': 'MV',
-            'name': '',
-            'e_fresh': 'e_f',
-            's_fresh': 's_f',
-            'positive': 'pos',
-            'negative': 'neg',
-            'application_context': 'app_cntxt',
-        }
-
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         if self.name in delta:
             return delta[self.name]
         return self
+
+    def __str__(self) -> str:
+        return f'phi{self.name}'
 
 
 @dataclass(frozen=True)
@@ -134,12 +122,18 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
+    def __str__(self) -> str:
+        return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
+
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
     pattern: MetaVar
     var: SVar
     plug: Pattern
+
+    def __str__(self) -> str:
+        return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
 
 @dataclass
@@ -153,6 +147,9 @@ class Proved:
     def assertc(self, pattern: Pattern) -> Proved:
         assert self.conclusion == pattern
         return self
+
+    def __str__(self) -> str:
+        return str(self.conclusion)
 
 
 # Proof Expressions
@@ -498,28 +495,51 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def __init__(self, claims: list[Claim], out: TextIO) -> None:
         super().__init__(claims)
         self.out = out
+        self._notation: dict[str, Pattern] = {}
 
-    def evar(self, id: int) -> Pattern:
-        ret = super().evar(id)
+    def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
+        self._notation = notation
+
+    @property
+    def notation(self) -> dict[Pattern, str]:
+        return {v: k for k, v in self._notation.items()}
+
+    @staticmethod
+    def pretty(print_stack: bool = True) -> Callable:
+        def decorator(func: Callable) -> Callable:
+            def wrapper(*args: Pattern | dict | PrettyPrintingInterpreter, **kwargs: dict) -> Pattern | Proved:
+                self, *nargs = args
+                assert isinstance(self, PrettyPrintingInterpreter)
+                # Find and call the super method.
+                result = getattr(super(type(self), self), func.__name__)(*nargs, **kwargs)
+                # Call the pretty printing function.
+                func(self, *nargs, **kwargs)
+                self.out.write('\n')
+                # Print stack
+                if print_stack:
+                    self.print_stack()
+                return result
+
+            return wrapper
+
+        return decorator
+
+    @pretty()
+    def evar(self, id: int) -> None:
         self.out.write('EVar ')
         self.out.write(str(id))
-        self.out.write('\n')
-        return ret
 
-    def svar(self, id: int) -> Pattern:
-        ret = super().svar(id)
+    @pretty()
+    def svar(self, id: int) -> None:
         self.out.write('SVar ')
         self.out.write(str(id))
-        self.out.write('\n')
-        return ret
 
-    def symbol(self, id: int) -> Pattern:
-        ret = super().symbol(id)
+    @pretty()
+    def symbol(self, id: int) -> None:
         self.out.write('Symbol ')
         self.out.write(str(id))
-        self.out.write('\n')
-        return ret
 
+    @pretty()
     def metavar(
         self,
         id: int,
@@ -528,16 +548,15 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         positive: tuple[SVar, ...] = (),
         negative: tuple[SVar, ...] = (),
         application_context: tuple[EVar, ...] = (),
-    ) -> Pattern:
-        def write_list(name: str, l: tuple[EVar, ...] | tuple[SVar, ...]) -> None:
+    ) -> None:
+        def write_list(name: str, lst: tuple[EVar, ...] | tuple[SVar, ...]) -> None:
             self.out.write(f'List={name} ')
-            self.out.write(f'len={len(l)} ')
-            for item in l:
+            self.out.write(f'len={len(lst)} ')
+            for item in lst:
                 self.out.write(str(item))
                 self.out.write(' ')
             self.out.write('\n')
 
-        ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
         write_list('eFresh', e_fresh)
         write_list('sFresh', s_fresh)
         write_list('pos', positive)
@@ -545,96 +564,97 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         write_list('appctx', application_context)
         self.out.write('MetaVar ')
         self.out.write(str(id))
-        self.out.write('\n')
-        return ret
 
-    def implies(self, left: Pattern, right: Pattern) -> Pattern:
-        ret = super().implies(left, right)
+    @pretty()
+    def implies(self, left: Pattern, right: Pattern) -> None:
         self.out.write('Implication')
-        self.out.write('\n')
-        return ret
 
-    def app(self, left: Pattern, right: Pattern) -> Pattern:
-        ret = super().app(left, right)
+    @pretty()
+    def app(self, left: Pattern, right: Pattern) -> None:
         self.out.write('Application')
-        self.out.write('\n')
-        return ret
 
-    def exists(self, var: int, subpattern: Pattern) -> Pattern:
-        ret = super().exists(var, subpattern)
+    @pretty()
+    def exists(self, var: int, subpattern: Pattern) -> None:
         self.out.write('Exists ')
         self.out.write(str(var))
-        self.out.write('\n')
-        return ret
 
-    def mu(self, var: int, subpattern: Pattern) -> Pattern:
-        ret = super().mu(var, subpattern)
+    @pretty()
+    def mu(self, var: int, subpattern: Pattern) -> None:
         self.out.write('Mu ')
         self.out.write(str(var))
-        self.out.write('\n')
-        return ret
 
-    def prop1(self) -> Proved:
-        ret = super().prop1()
+    @pretty()
+    def prop1(self) -> None:
         self.out.write('Prop1')
-        self.out.write('\n')
-        return ret
 
-    def prop2(self) -> Proved:
-        ret = super().prop2()
+    @pretty()
+    def prop2(self) -> None:
         self.out.write('Prop2')
-        self.out.write('\n')
-        return ret
 
-    def prop3(self) -> Proved:
-        ret = super().prop3()
+    @pretty()
+    def prop3(self) -> None:
         self.out.write('Prop3')
-        self.out.write('\n')
-        return ret
 
-    def modus_ponens(self, left: Proved, right: Proved) -> Proved:
-        ret = super().modus_ponens(left, right)
+    @pretty()
+    def modus_ponens(self, left: Proved, right: Proved) -> None:
         self.out.write('ModusPonens')
-        self.out.write('\n')
-        return ret
 
-    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        ret = super().instantiate(proved, delta)
+    @pretty()
+    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
-        self.out.write('\n')
-        return ret
 
-    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        ret = super().instantiate_notation(pattern, delta)
+    @pretty()
+    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
-        self.out.write('\n')
-        return ret
 
+    @pretty(print_stack=False)
     def save(self, id: str, term: Pattern | Proved) -> None:
-        ret = super().save(id, term)
-        self.out.write('Save\n')
-        return ret
+        self.out.write('Save')
 
+    @pretty()
     def load(self, id: str, term: Pattern | Proved) -> None:
-        ret = super().load(id, term)
         self.out.write('Load ')
         self.out.write(id)
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
-        self.out.write('\n')
-        return ret
 
+    @pretty()
     def publish(self, proved: Proved) -> None:
-        ret = super().publish(proved)
-        self.out.write('Publish\n')
-        return ret
+        self.out.write('Publish')
 
+    @pretty()
     def publish_claim(self, pattern: Pattern) -> None:
-        ret = super().publish_claim(pattern)
-        self.out.write('Publish\n')
-        return ret
+        self.out.write('Publish')
+
+    def pretty_print_pattern(self, p: Pattern) -> str:
+        if p in self.notation:
+            return self.notation[p]
+
+        # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
+        # like implication while keeping notations
+        match p:
+            case Implication(left, right):
+                return f'({self.pretty_print_pattern(left)} -> {self.pretty_print_pattern(right)})'
+            case Application(left, right):
+                return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
+            case Exists(var, subpattern):
+                return f'(\u2203 {str(var)} . {self.pretty_print_pattern(subpattern)})'
+            case Mu(var, subpattern):
+                return f'(\u03BC {self.pretty_print_pattern(var)} . {self.pretty_print_pattern(p.subpattern)})'
+            case ESubst(pattern, var, plug):
+                return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
+            case SSubst(pattern, var, plug):
+                return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
+        return str(p)
+
+    def print_stack(self) -> None:
+        self.out.write('\tStack:\n')
+        for i, item in enumerate(reversed(self.stack)):
+            if isinstance(item, Proved):
+                item = item.conclusion
+            self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 
 
 PatternExpression = Callable[[], Pattern]
@@ -715,14 +735,14 @@ class ProofExp:
         return self.interpreter.instantiate_notation(pattern, delta)
 
     def load_notation(self, id: str) -> Pattern | None:
-        if not id in self.notation:
+        if id not in self.notation:
             return None
         ret = self.notation[id]
         self.interpreter.load(id, ret)
         return ret
 
     def save_notation(self, id: str, pattern: Pattern) -> Pattern:
-        assert not id in self.notation
+        assert id not in self.notation
         self.notation[id] = pattern
         self.interpreter.save(id, pattern)
         return pattern
@@ -759,7 +779,10 @@ class ProofExp:
     def pretty_print_claims(cls, output: Path) -> None:
         with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=out))
+            interpreter = PrettyPrintingInterpreter(claims=claims, out=out)
+            proof_exp = cls(interpreter)
+            # TODO: A bit ugly
+            interpreter.plug_in_notation(proof_exp.notation)
             for claim_expr in reversed(proof_exp.claim_expressions()):
                 proof_exp.publish_claim(claim_expr())
 
@@ -767,7 +790,10 @@ class ProofExp:
     def pretty_print_proofs(cls, output: Path) -> None:
         with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(PrettyPrintingInterpreter(claims=claims, out=out))
+            interpreter = PrettyPrintingInterpreter(claims=claims, out=out)
+            proof_exp = cls(interpreter)
+            # TODO: A bit ugly
+            interpreter.plug_in_notation(proof_exp.notation)
             for proof_expr in proof_exp.proof_expressions():
                 proof_exp.publish(proof_expr())
 
