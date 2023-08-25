@@ -25,8 +25,8 @@ fn main() {
 
     // First, we construct an executor environment
     let env = ExecutorEnv::builder()
-        .stdin(proof_reader) // proof
-        .read_fd(10, claims_reader) // claims
+        .read_fd(10, claims_reader)
+        .stdin(proof_reader)
         .build()
         .unwrap();
 

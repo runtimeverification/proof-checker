@@ -666,8 +666,8 @@ fn execute_instructions<'a>(
 }
 
 pub fn verify<'a>(
-    proof_next_byte: &mut impl FnMut() -> Option<u8>,
     claims_next_byte: &mut impl FnMut() -> Option<u8>,
+    proof_next_byte: &mut impl FnMut() -> Option<u8>,
 ) -> (Stack, Memory, Claims) {
     let mut stack = vec![];
     let mut memory = vec![];
@@ -1160,7 +1160,7 @@ fn test_construct_phi_implies_phi() {
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(next, &mut (|| None));
+    let (stack, _journal, _memory) = verify(&mut (|| None), next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -1205,7 +1205,7 @@ fn test_phi_implies_phi_impl() {
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(next, &mut (|| None));
+    let (stack, _journal, _memory) = verify(&mut (|| None), next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -1234,7 +1234,7 @@ fn test_universal_quantification() {
 
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory2) = verify(next, &mut (|| None));
+    let (stack, _journal, _memory2) = verify(&mut (|| None), next);
 
     assert_eq!(stack, vec![Term::Proved(forall(0, Rc::clone(&phi0)))])
 }
