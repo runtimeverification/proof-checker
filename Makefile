@@ -82,12 +82,12 @@ test-proof-gen: ${PROOF_GEN_TARGETS}
 
 PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
 proofs/%.ml-proof.verify: proofs/%.ml-proof
-	cargo run --bin checker proofs/$*.ml-claim $<
+	cargo run --bin checker /dev/null proofs/$*.ml-claim $<
 test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
 .build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof .build/proofs/%.ml-claim
-	cargo run --bin checker .build/proofs/$*.ml-claim $<
+	cargo run --bin checker /dev/null .build/proofs/$*.ml-claim $<
 
 proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
@@ -96,6 +96,6 @@ proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --bin host proofs/$*.ml-claim $^
+	cargo run --bin host /dev/null proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}

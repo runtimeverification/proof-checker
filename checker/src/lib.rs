@@ -458,6 +458,7 @@ fn pop_stack_proved(stack: &mut Stack) -> Rc<Pattern> {
 /// -------------------
 
 pub enum ExecutionPhase {
+    Gamma,
     Claim,
     Proof,
 }
@@ -643,6 +644,9 @@ fn execute_instructions<'a>(
                 }
             }
             Instruction::Publish => match phase {
+                ExecutionPhase::Gamma => {
+                    panic!("Not implemented.")
+                }
                 ExecutionPhase::Claim => {
                     let claim = pop_stack_pattern(stack);
                     claims.push(claim)
@@ -666,12 +670,21 @@ fn execute_instructions<'a>(
 }
 
 pub fn verify<'a>(
+    gamma_next_byte: &mut impl FnMut() -> Option<u8>,
     claims_next_byte: &mut impl FnMut() -> Option<u8>,
     proof_next_byte: &mut impl FnMut() -> Option<u8>,
 ) -> (Stack, Memory, Claims) {
+    let mut claims = vec![];
     let mut stack = vec![];
     let mut memory = vec![];
-    let mut claims = vec![];
+
+    execute_instructions(
+        gamma_next_byte,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Gamma,
+    );
     execute_instructions(
         claims_next_byte,
         &mut stack,
@@ -679,7 +692,6 @@ pub fn verify<'a>(
         &mut claims,
         ExecutionPhase::Claim,
     );
-
     stack.clear();
     memory.clear();
     execute_instructions(
@@ -1160,7 +1172,7 @@ fn test_construct_phi_implies_phi() {
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(&mut (|| None), next);
+    let (stack, _journal, _memory) = verify(&mut (|| None), &mut (|| None), next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -1205,7 +1217,7 @@ fn test_phi_implies_phi_impl() {
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(&mut (|| None), next);
+    let (stack, _journal, _memory) = verify(&mut (|| None), &mut (|| None), next);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -1234,7 +1246,7 @@ fn test_universal_quantification() {
 
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory2) = verify(&mut (|| None), next);
+    let (stack, _journal, _memory2) = verify(&mut (|| None), &mut (|| None), next);
 
     assert_eq!(stack, vec![Term::Proved(forall(0, Rc::clone(&phi0)))])
 }
