@@ -1,26 +1,9 @@
 from enum import Enum
-from io import BytesIO
-from pprint import PrettyPrinter
+from io import BytesIO, StringIO, TextIOBase
 
+from pprint import PrettyPrinter
 from proof_generation.instruction import Instruction
-from proof_generation.proof import (
-    StatefulInterpreter,
-    Application,
-    ESubst,
-    EVar,
-    Exists,
-    Implication,
-    Instantiate,
-    MetaVar,
-    ModusPonens,
-    Mu,
-    Pattern,
-    Proof,
-    Prop1,
-    Prop2,
-    SVar,
-    Symbol,
-)
+from proof_generation.proof import Pattern, PrettyPrintingInterpreter, SerializingInterpreter, MetaVar, Implication, Claim
 from proof_generation.proofs.propositional import Propositional
 
 
@@ -28,59 +11,10 @@ class ExecutionPhase(Enum):
     Claim = 0
     Proof = 1
 
-
-class Stack:
-    def __init__(self):
-        self.stack = []
-
-    def push(self, item):
-        self.stack.append(item)
-
-    def pop(self):
-        return self.stack.pop()
-
-    def last(self):
-        return self.stack[-1]
-
-    def is_empty(self):
-        return len(self.stack) == 0
-
-
-class Memory:
-    def __init__(self):
-        self.entries = []
-
-    def push(self, entry):
-        self.entries.append(entry)
-
-    def get(self, index):
-        return self.entries[index]
-
-
-class Claims:
-    def __init__(self):
-        self.claims = []
-
-    def push(self, claim):
-        self.claims.append(claim)
-
-    def pop(self):
-        return self.claims.pop()
-
-
-def deserialize_instructions(data, interpreter: StatefulInterpreter):
-    stack = Stack()
-    memory = Memory()
-    claims = Claims()
+def deserialize_instructions(data, interpreter: PrettyPrintingInterpreter):
     phase = ExecutionPhase.Claim
 
-    def pop_stack_pattern(stack):
-        return stack.pop()
-
-    def pop_stack_proved(stack):
-        return stack.pop()
-
-    assert isinstance(interpreter, StatefulInterpreter)
+    assert isinstance(interpreter, PrettyPrintingInterpreter)
 
     index = 0
 
@@ -93,124 +27,123 @@ def deserialize_instructions(data, interpreter: StatefulInterpreter):
         return ret
 
     while byte := next_byte():
-        instr_u32 = Instruction(byte)
+        instruction = Instruction(byte)
+        #print(instruction)
 
-        if instr_u32 == Instruction.List:
+        if instruction == Instruction.List:
             length = next_byte()
             if length != 0:
                 raise ValueError("Length was supposed to be zero.")
-            stack.push(interpreter.empty_list())
+            interpreter.stack.append(())
 
-        elif instr_u32 == Instruction.EVar:
+        elif instruction == Instruction.EVar:
             id = next_byte()
-            stack.push(interpreter.evar(id))
+            _evar = interpreter.evar(id)
 
-        elif instr_u32 == Instruction.SVar:
+        elif instruction == Instruction.SVar:
             id = next_byte()
-            stack.push(interpreter.svar(id))
+            _svar = interpreter.svar(id)
 
-        elif instr_u32 == Instruction.Symbol:
+        elif instruction == Instruction.Symbol:
             id = next_byte()
-            stack.push(interpreter.symbol(id))
+            _symbol = interpreter.symbol(id)
 
-        elif instr_u32 == Instruction.Implication:
-            right = pop_stack_pattern(stack)
-            left = pop_stack_pattern(stack)
-            stack.push(interpreter.implication(left, right))
+        elif instruction == Instruction.Implication:
+            right = interpreter.stack[-1]
+            left = interpreter.stack[-2]
+            _implication = interpreter.implies(left, right)
 
-        elif instr_u32 == Instruction.Application:
-            right = pop_stack_pattern(stack)
-            left = pop_stack_pattern(stack)
-            stack.push(interpreter.application(left, right))
+        elif instruction == Instruction.Application:
+            right = interpreter.stack[-1]
+            left = interpreter.stack[-2]
+            _app = interpreter.app(left, right)
 
-        elif instr_u32 == Instruction.Exists:
+        elif instruction == Instruction.Exists:
             id = next_byte()
-            subpattern = pop_stack_pattern(stack)
-            stack.push(interpreter.exists(id, subpattern))
+            subpattern = interpreter.stack[-1]
+            _exists = interpreter.exists(id, subpattern)
 
-        elif instr_u32 == Instruction.Mu:
+        elif instruction == Instruction.Mu:
             id = next_byte()
-            subpattern = pop_stack_pattern(stack)
-            stack.push(interpreter.mu(id, subpattern))
+            subpattern = interpreter.stack[-1]
+            _mu = interpreter.mu(id, subpattern)
 
-        elif instr_u32 == Instruction.MetaVar:
+        elif instruction == Instruction.MetaVar:
             id = next_byte()
-            application_context = pop_stack_pattern(stack)
-            negative = pop_stack_pattern(stack)
-            positive = pop_stack_pattern(stack)
-            s_fresh = pop_stack_pattern(stack)
-            e_fresh = pop_stack_pattern(stack)
-            stack.push(interpreter.metavar(id, e_fresh, s_fresh, positive, negative, application_context))
+            app_ctxt_holes, negative, positive, s_fresh, e_fresh = reversed(interpreter.stack[-5:])
+            _metavar = interpreter.metavar(id, e_fresh, s_fresh, positive, negative, app_ctxt_holes)
 
-        elif instr_u32 == Instruction.ESubst:
-            evar_id = next_byte()
-            pattern = pop_stack_pattern(stack)
-            plug = pop_stack_pattern(stack)
-            stack.push(interpreter.esubst(pattern, evar_id, plug))
+        elif instruction == Instruction.Prop1:
+            _prop1 = interpreter.prop1()
 
-        elif instr_u32 == Instruction.Prop1:
-            stack.push(interpreter.prop1())
+        elif instruction == Instruction.Prop2:
+            _prop2 = interpreter.prop2()
 
-        elif instr_u32 == Instruction.Prop2:
-            stack.push(interpreter.prop2())
+        elif instruction == Instruction.ModusPonens:
+            right = interpreter.stack[-1]
+            left = interpreter.stack[-2]
+            _mp = interpreter.modus_ponens(left, right)
 
-        elif instr_u32 == Instruction.ModusPonens:
-            right = pop_stack_proved(stack)
-            left = pop_stack_proved(stack)
-            stack.push(interpreter.modusponens(left, right))
+        elif instruction == Instruction.Instantiate:
+            n = next_byte()
+            keys = [next_byte() for _ in range(n)]
+            values = interpreter.stack[-n:]
 
-        elif instr_u32 == Instruction.Instantiate:
+            delta = dict(zip(keys, values, strict=True))
+            proved = interpreter.stack[-(n + 1)]
+
+            print(delta, proved)
+            interpreter.instantiate(proved, delta)
+
+        elif instruction == Instruction.Pop:
+            interpreter.stack.pop()
+
+        elif instruction == Instruction.Save:
+            term = interpreter.stack[-1]
+            interpreter.save(len(interpreter.memory), term)
+
+        elif instruction == Instruction.Load:
             id = next_byte()
-            plug = pop_stack_pattern(stack)
-            metaterm = stack.pop()
-            if isinstance(metaterm, (Pattern, Proof)):
-                stack.push(interpreter.instantiate(metaterm, id, plug))
-            else:
-                raise ValueError(f'Cannot Instantiate {type(metaterm)}.')
-
-        elif instr_u32 == Instruction.Pop:
-            stack.pop()
-
-        elif instr_u32 == Instruction.Save:
-            entry = stack.last()
-            if isinstance(entry, Pattern):
-                memory.push((False, entry))
-            elif isinstance(entry, Proof):
-                memory.push((True, entry))
-            else:
-                raise ValueError("Cannot Save lists.")
-
-        elif instr_u32 == Instruction.Load:
-            at = next_byte()
             try:
-                entry = memory.get(at)
-                stack.push(entry[1])
+                term = interpreter.memory[id]
+                interpreter.load(id, term)
             except:
                 raise ValueError("Invalid entry type for Load instruction.")
 
-        elif instr_u32 == Instruction.Publish:
+        elif instruction == Instruction.Publish:
             if phase == ExecutionPhase.Claim:
-                claim = pop_stack_pattern(stack)
-                claims.push(claim)
+                claim = interpreter.stack[-1]
+                interpreter.claims.append(claim)
+                interpreter.publish_claim(claim)
             elif phase == ExecutionPhase.Proof:
-                claim = claims.pop()
-                theorem = pop_stack_proved(stack)
+                claim = interpreter.claims.pop()
+                theorem = interpreter.stack[-1]
+                interpreter.publish_claim(claim)
                 if claim != theorem:
                     raise ValueError(f"This proof does not prove the requested claim: {claim}, theorem: {theorem}")
 
         else:
-            raise NotImplementedError(f"Instruction: {instr_u32}")
+            raise NotImplementedError(f"Instruction: {instruction}")
 
-    return stack, memory, claims
+    return interpreter
 
 
-prop = Propositional()
+# out = BytesIO()
+# prop = Propositional(SerializingInterpreter([], out))
+
+# prop.phi0_implies_phi0()
+# ser = out.getvalue()
+
+# print(len(ser))
+
+# log = StringIO()
+# obj = deserialize_instructions(ser, PrettyPrintingInterpreter([], log))
+# print(log.getvalue())
+# print("######\n")
+# PrettyPrinter().pprint(obj.stack)
+
 out = BytesIO()
-prop.imp_reflexivity().serialize({prop.phi0, prop.phi0_implies_phi0}, set(), [], [prop.phi0_implies_phi0], out)
-ser = bytes(out.getbuffer())
-
-print(len(ser))
-
-obj = deserialize_instructions(ser)
-
-print(obj.conclusion())
+phi0 = MetaVar(0)
+phi0_implies_phi0 = Implication(phi0, phi0)
+prop = Propositional(SerializingInterpreter(claims=[Claim(phi0_implies_phi0)], out=out))
+proved = prop.publish(prop.imp_reflexivity())

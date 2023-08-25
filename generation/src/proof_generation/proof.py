@@ -290,7 +290,9 @@ class StatefulInterpreter(BasicInterpreter):
         application_context: tuple[EVar, ...] = (),
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
+        self.stack = self.stack[0: -5]
         self.stack.append(ret)
+
         return ret
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
@@ -620,7 +622,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def load(self, id: str, term: Pattern | Proved) -> None:
         ret = super().load(id, term)
         self.out.write('Load ')
-        self.out.write(id)
+        self.out.write(str(id))
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
         self.out.write('\n')
