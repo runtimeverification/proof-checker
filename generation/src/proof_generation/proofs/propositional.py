@@ -157,14 +157,26 @@ class Propositional(ProofExp):
 
     # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
-        return self.modus_ponens(
-            self.modus_ponens(
+        def phi0_bot_imp_ph0() -> Pattern:
+            # ((ph0 -> bot) -> ph0)
+            return self.implies(self.implies(self.phi0(), self.bot()), self.phi0())
+
+        def phi0_bot_imp_bot() -> Pattern:
+            # (ph0 -> bot) -> bot)
+            return self.implies(self.implies(self.phi0(), self.bot()), self.bot())
+
+        def phi0_bot_imp_phi0_bot() -> Pattern:
+            # (phi0 -> bot) -> (phi0->bot)
+            return self.implies(self.implies(self.phi0(), self.bot()), self.implies(self.phi0(), self.bot()))
+
+        def modus_ponens_1() -> Proved:
+            return self.modus_ponens(
                 self.prop2().instantiate(
                     {
                         # ((ph0 -> bot) -> ph0) = neg 0 -> 0
-                        0: self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
+                        0: phi0_bot_imp_ph0(),
                         # ((ph0 -> bot) -> bot) = neg 0 -> bot
-                        1: self.implies(self.implies(self.phi0(), self.bot()), self.bot()),
+                        1: phi0_bot_imp_bot(),
                         2: self.phi0(),
                     }
                 ),
@@ -172,104 +184,88 @@ class Propositional(ProofExp):
                     self.prop1().instantiate(
                         {
                             # (((ph0 -> bot) -> bot) -> ph0)
-                            0: self.implies(
-                                self.implies(self.implies(self.phi0(), self.bot()), self.bot()), self.phi0()
-                            ),
+                            0: self.implies(phi0_bot_imp_bot(), self.phi0()),
                             # ((ph0 -> bot) -> ph0)
-                            1: self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
+                            1: phi0_bot_imp_ph0(),
                         }
                     ),
                     # ph0
                     self.prop3().instantiate({0: self.phi0()}),
                 ),
-            ),
+            )
+
+        def modus_ponens_2() -> Proved:
+            return self.modus_ponens(
+                self.prop2().instantiate(
+                    {
+                        0: phi0_bot_imp_ph0(),
+                        1: phi0_bot_imp_phi0_bot(),
+                        # (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot)))
+                        2: self.implies(phi0_bot_imp_ph0(), phi0_bot_imp_bot()),
+                    }
+                ),
+                self.modus_ponens(
+                    self.prop1().instantiate(
+                        {
+                            # ((phi0 -> bot) -> (phi0 -> bot)) -> (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot))),
+                            0: self.implies(
+                                self.implies(
+                                    self.implies(self.phi0(), self.bot()),
+                                    self.implies(self.phi0(), self.bot()),
+                                ),
+                                self.implies(
+                                    phi0_bot_imp_ph0(),
+                                    phi0_bot_imp_bot(),
+                                ),
+                            ),
+                            1: phi0_bot_imp_ph0(),
+                        }
+                    ),
+                    self.prop2().instantiate(
+                        {
+                            0: self.implies(self.phi0(), self.bot()),
+                            1: self.phi0(),
+                            2: self.bot(),
+                        }
+                    ),
+                ),
+            )
+
+        def modus_ponens_3() -> Proved:
+            return self.modus_ponens(
+                # ((phi0 -> bot) -> (phi0 -> bot)) -> (((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> (phi0->bot)))
+                self.prop1().instantiate(
+                    {
+                        0: phi0_bot_imp_phi0_bot(),
+                        1: phi0_bot_imp_ph0(),
+                    }
+                ),
+                # ((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> phi0)
+                self.imp_reflexivity().instantiate(
+                    {
+                        # (phi0 -> bot)
+                        0: self.implies(self.phi0(), self.bot()),
+                    }
+                ),
+            )
+
+        return self.modus_ponens(
+            modus_ponens_1(),
             self.modus_ponens(
                 self.modus_ponens(
                     self.prop2().instantiate(
                         {
-                            # ((ph0 -> bot) -> ph0)
-                            0: self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
-                            # ((ph0 -> bot) -> ph0)
-                            1: self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
-                            # ((ph0 -> bot) -> bot
-                            2: self.implies(self.implies(self.phi0(), self.bot()), self.bot()),
+                            0: phi0_bot_imp_ph0(),
+                            1: phi0_bot_imp_ph0(),
+                            2: phi0_bot_imp_bot(),
                         }
                     ),
                     self.modus_ponens(
-                        self.modus_ponens(
-                            self.prop2().instantiate(
-                                {
-                                    # (ph0 -> bot) -> ph0)
-                                    0: self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
-                                    # ((phi0 -> bot) -> (phi0 -> bot))
-                                    1: self.implies(
-                                        self.implies(self.phi0(), self.bot()), self.implies(self.phi0(), self.bot())
-                                    ),
-                                    # (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot)))
-                                    2: self.implies(
-                                        self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
-                                        self.implies(self.implies(self.phi0(), self.bot()), self.bot()),
-                                    ),
-                                }
-                            ),
-                            self.modus_ponens(
-                                self.prop1().instantiate(
-                                    {
-                                        # ((phi0 -> bot) -> (phi0 -> bot)) -> (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot))),
-                                        0: self.implies(
-                                            self.implies(
-                                                self.implies(self.phi0(), self.bot()),
-                                                self.implies(self.phi0(), self.bot()),
-                                            ),
-                                            self.implies(
-                                                self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
-                                                self.implies(self.implies(self.phi0(), self.bot()), self.bot()),
-                                            ),
-                                        ),
-                                        # ((ph0 -> bot) -> ph0)
-                                        1: self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
-                                    }
-                                ),
-                                self.prop2().instantiate(
-                                    {
-                                        0: self.implies(self.phi0(), self.bot()),
-                                        1: self.phi0(),
-                                        2: self.bot(),
-                                    }
-                                ),
-                            ),
-                        ),
-                        self.modus_ponens(
-                            # ((phi0 -> bot) -> (phi0 -> bot)) -> (((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> (phi0->bot)))
-                            self.prop1().instantiate(
-                                {
-                                    # (phi0 -> bot) -> (phi0->bot)
-                                    0: self.implies(
-                                        self.implies(self.phi0(), self.bot()), self.implies(self.phi0(), self.bot())
-                                    ),
-                                    # (phi0 -> bot) -> phi0
-                                    1: self.implies(
-                                        self.implies(self.phi0(), self.bot()),
-                                        self.phi0(),
-                                    ),
-                                }
-                            ),
-                            # ((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> phi0)
-                            self.imp_reflexivity().instantiate(
-                                {
-                                    # (phi0 -> bot)
-                                    0: self.implies(self.phi0(), self.bot()),
-                                }
-                            ),
-                        ),
+                        modus_ponens_2(),
+                        modus_ponens_3(),
                     ),
                 ),
-                self.imp_reflexivity().instantiate(
-                    {
-                        # (phi0 -> bot) -> phi0
-                        0: self.implies(self.implies(self.phi0(), self.bot()), self.phi0()),
-                    }
-                ),
+                self.imp_reflexivity().instantiate({0: phi0_bot_imp_ph0()}),
             ),
         )
 
