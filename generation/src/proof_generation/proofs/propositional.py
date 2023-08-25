@@ -169,7 +169,7 @@ class Propositional(ProofExp):
             # (phi0 -> bot) -> (phi0->bot)
             return self.implies(self.implies(self.phi0(), self.bot()), self.implies(self.phi0(), self.bot()))
 
-        def modues_ponens_1() -> Proved:
+        def modus_ponens_1() -> Proved:
             return self.modus_ponens(
                 self.prop2().instantiate(
                     {
@@ -194,7 +194,7 @@ class Propositional(ProofExp):
                 ),
             )
 
-        def modues_ponens_2() -> Proved:
+        def modus_ponens_2() -> Proved:
             return self.modus_ponens(
                 self.prop2().instantiate(
                     {
@@ -231,7 +231,7 @@ class Propositional(ProofExp):
                 ),
             )
 
-        def modues_ponens_3() -> Proved:
+        def modus_ponens_3() -> Proved:
             return self.modus_ponens(
                 # ((phi0 -> bot) -> (phi0 -> bot)) -> (((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> (phi0->bot)))
                 self.prop1().instantiate(
@@ -250,7 +250,7 @@ class Propositional(ProofExp):
             )
 
         return self.modus_ponens(
-            modues_ponens_1(),
+            modus_ponens_1(),
             self.modus_ponens(
                 self.modus_ponens(
                     self.prop2().instantiate(
@@ -261,8 +261,8 @@ class Propositional(ProofExp):
                         }
                     ),
                     self.modus_ponens(
-                        modues_ponens_2(),
-                        modues_ponens_3(),
+                        modus_ponens_2(),
+                        modus_ponens_3(),
                     ),
                 ),
                 self.imp_reflexivity().instantiate({0: phi0_bot_imp_ph0()}),
