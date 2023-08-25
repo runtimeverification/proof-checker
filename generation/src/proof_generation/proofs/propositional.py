@@ -157,20 +157,19 @@ class Propositional(ProofExp):
 
     # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
-
-        def phi0_bot_imp_ph0():
+        def phi0_bot_imp_ph0() -> Pattern:
             # ((ph0 -> bot) -> ph0)
             return self.implies(self.implies(self.phi0(), self.bot()), self.phi0())
 
-        def phi0_bot_imp_bot():
+        def phi0_bot_imp_bot() -> Pattern:
             # (ph0 -> bot) -> bot)
             return self.implies(self.implies(self.phi0(), self.bot()), self.bot())
 
-        def phi0_bot_imp_phi0_bot():
+        def phi0_bot_imp_phi0_bot() -> Pattern:
             # (phi0 -> bot) -> (phi0->bot)
             return self.implies(self.implies(self.phi0(), self.bot()), self.implies(self.phi0(), self.bot()))
 
-        def modues_ponens_1():
+        def modues_ponens_1() -> Proved:
             return self.modus_ponens(
                 self.prop2().instantiate(
                     {
@@ -185,9 +184,7 @@ class Propositional(ProofExp):
                     self.prop1().instantiate(
                         {
                             # (((ph0 -> bot) -> bot) -> ph0)
-                            0: self.implies(
-                                phi0_bot_imp_bot(), self.phi0()
-                            ),
+                            0: self.implies(phi0_bot_imp_bot(), self.phi0()),
                             # ((ph0 -> bot) -> ph0)
                             1: phi0_bot_imp_ph0(),
                         }
@@ -197,7 +194,7 @@ class Propositional(ProofExp):
                 ),
             )
 
-        def modues_ponens_2():
+        def modues_ponens_2() -> Proved:
             return self.modus_ponens(
                 self.prop2().instantiate(
                     {
@@ -234,7 +231,7 @@ class Propositional(ProofExp):
                 ),
             )
 
-        def modues_ponens_3():
+        def modues_ponens_3() -> Proved:
             return self.modus_ponens(
                 # ((phi0 -> bot) -> (phi0 -> bot)) -> (((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> (phi0->bot)))
                 self.prop1().instantiate(
@@ -249,7 +246,7 @@ class Propositional(ProofExp):
                         # (phi0 -> bot)
                         0: self.implies(self.phi0(), self.bot()),
                     }
-                )
+                ),
             )
 
         return self.modus_ponens(
