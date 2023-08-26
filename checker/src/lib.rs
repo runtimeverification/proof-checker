@@ -35,8 +35,10 @@ pub enum Instruction {
     Publish,
 }
 
+type InstByte = u8;
+
 impl Instruction {
-    fn from(value: u8) -> Instruction {
+    fn from(value: InstByte) -> Instruction {
         match value {
             1 => Instruction::List,
             2 => Instruction::EVar,
@@ -82,11 +84,14 @@ impl Instruction {
 /// We only need to store the conclusion of things that are proved so far.
 /// We use the `Proved` variant for this.
 
+type Id = u8;
+type IdList = Vec<Id>;
+
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Pattern {
-    EVar(u8),
-    SVar(u8),
-    Symbol(u8),
+    EVar(Id),
+    SVar(Id),
+    Symbol(Id),
     Implication {
         left: Rc<Pattern>,
         right: Rc<Pattern>,
@@ -96,36 +101,36 @@ pub enum Pattern {
         right: Rc<Pattern>,
     },
     Exists {
-        var: u8,
+        var: Id,
         subpattern: Rc<Pattern>,
     },
     Mu {
-        var: u8,
+        var: Id,
         subpattern: Rc<Pattern>,
     },
     MetaVar {
-        id: u8,
-        e_fresh: Vec<u8>,
-        s_fresh: Vec<u8>,
-        positive: Vec<u8>,
-        negative: Vec<u8>,
-        app_ctx_holes: Vec<u8>,
+        id: Id,
+        e_fresh: IdList,
+        s_fresh: IdList,
+        positive: IdList,
+        negative: IdList,
+        app_ctx_holes: IdList,
     },
     ESubst {
         pattern: Rc<Pattern>,
-        evar_id: u8,
+        evar_id: Id,
         plug: Rc<Pattern>,
     },
     #[allow(dead_code)]
     SSubst {
         pattern: Rc<Pattern>,
-        svar_id: u8,
+        svar_id: Id,
         plug: Rc<Pattern>,
     },
 }
 
 impl Pattern {
-    fn e_fresh(&self, evar: u8) -> bool {
+    fn e_fresh(&self, evar: Id) -> bool {
         match self {
             Pattern::EVar(name) => *name != evar,
             Pattern::SVar(_) => true,
@@ -159,7 +164,7 @@ impl Pattern {
         }
     }
 
-    fn s_fresh(&self, svar: u8) -> bool {
+    fn s_fresh(&self, svar: Id) -> bool {
         match self {
             Pattern::EVar(_) => true,
             Pattern::SVar(name) => *name != svar,
@@ -185,7 +190,7 @@ impl Pattern {
     }
 
     #[allow(dead_code)]
-    fn positive(&self, svar: u8) -> bool {
+    fn positive(&self, svar: Id) -> bool {
         match self {
             Pattern::EVar(_) => true,
             Pattern::SVar(_) => true,
@@ -207,7 +212,7 @@ impl Pattern {
     }
 
     #[allow(dead_code)]
-    fn negative(&self, svar: u8) -> bool {
+    fn negative(&self, svar: Id) -> bool {
         match self {
             Pattern::EVar(_) => true,
             Pattern::SVar(name) => *name != svar,
@@ -273,7 +278,7 @@ impl Pattern {
 pub enum Term {
     Pattern(Rc<Pattern>),
     Proved(Rc<Pattern>),
-    List(Vec<u8>),
+    List(IdList),
 }
 #[derive(Debug, Eq, PartialEq)]
 pub enum Entry {
@@ -284,28 +289,28 @@ pub enum Entry {
 /// Pattern construction utilities
 /// ------------------------------
 
-fn evar(id: u8) -> Rc<Pattern> {
+fn evar(id: Id) -> Rc<Pattern> {
     return Rc::new(Pattern::EVar(id));
 }
 
-fn svar(id: u8) -> Rc<Pattern> {
+fn svar(id: Id) -> Rc<Pattern> {
     return Rc::new(Pattern::SVar(id));
 }
 
-fn symbol(id: u8) -> Rc<Pattern> {
+fn symbol(id: Id) -> Rc<Pattern> {
     return Rc::new(Pattern::Symbol(id));
 }
 
-fn exists(var: u8, subpattern: Rc<Pattern>) -> Rc<Pattern> {
+fn exists(var: Id, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Exists { var, subpattern });
 }
 
 // Does not do any well-formedness checks!!!!!
-fn mu(var: u8, subpattern: Rc<Pattern>) -> Rc<Pattern> {
+fn mu(var: Id, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Mu { var, subpattern });
 }
 
-fn esubst(pattern: Rc<Pattern>, evar_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
+fn esubst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::ESubst {
         pattern,
         evar_id,
@@ -313,7 +318,7 @@ fn esubst(pattern: Rc<Pattern>, evar_id: u8, plug: Rc<Pattern>) -> Rc<Pattern> {
     });
 }
 
-fn metavar_unconstrained(var_id: u8) -> Rc<Pattern> {
+fn metavar_unconstrained(var_id: Id) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
         e_fresh: vec![],
@@ -333,7 +338,7 @@ fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
 }
 
 #[cfg(test)]
-fn metavar_s_fresh(var_id: u8, fresh: u8, positive: Vec<u8>, negative: Vec<u8>) -> Rc<Pattern> {
+fn metavar_s_fresh(var_id: Id, fresh: Id, positive: IdList, negative: IdList) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
         e_fresh: vec![],
@@ -354,14 +359,14 @@ fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
 }
 
 #[allow(dead_code)]
-fn forall(evar: u8, pat: Rc<Pattern>) -> Rc<Pattern> {
+fn forall(evar: Id, pat: Rc<Pattern>) -> Rc<Pattern> {
     not(exists(evar, not(pat)))
 }
 
 /// Substitution utilities
 /// ----------------------
 
-fn instantiate(p: Rc<Pattern>, vars: &[u8], plugs: &[Rc<Pattern>]) -> Rc<Pattern> {
+fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern> {
     match p.as_ref() {
         Pattern::EVar(_) => p,
         Pattern::SVar(_) => p,
@@ -433,7 +438,7 @@ fn pop_stack(stack: &mut Stack) -> Term {
     return stack.pop().expect("Insufficient stack items.");
 }
 
-fn pop_stack_list(stack: &mut Stack) -> Vec<u8> {
+fn pop_stack_list(stack: &mut Stack) -> IdList {
     match pop_stack(stack) {
         Term::List(l) => return l,
         _ => panic!("Expected list on stack."),
@@ -464,7 +469,7 @@ pub enum ExecutionPhase {
 }
 
 fn execute_instructions<'a>(
-    next: &mut impl FnMut() -> Option<u8>,
+    next: &mut impl FnMut() -> Option<InstByte>,
     stack: &mut Stack,
     memory: &mut Memory,
     claims: &mut Claims,
@@ -508,17 +513,17 @@ fn execute_instructions<'a>(
             }
             // TODO: Add an abstraction for pushing these one-argument terms on stack?
             Instruction::EVar => {
-                let id = next().expect("Expected id for the EVar to be put on stack");
+                let id = next().expect("Expected id for the EVar to be put on stack") as Id;
 
                 stack.push(Term::Pattern(evar(id)));
             }
             Instruction::SVar => {
-                let id = next().expect("Expected id for the SVar to be put on stack");
+                let id = next().expect("Expected id for the SVar to be put on stack") as Id;
 
                 stack.push(Term::Pattern(svar(id)));
             }
             Instruction::Symbol => {
-                let id = next().expect("Expected id for the Symbol to be put on stack");
+                let id = next().expect("Expected id for the Symbol to be put on stack") as Id;
 
                 stack.push(Term::Pattern(symbol(id)));
             }
@@ -533,17 +538,17 @@ fn execute_instructions<'a>(
                 stack.push(Term::Pattern(app(left, right)))
             }
             Instruction::Exists => {
-                let id = next().expect("Expected var_id for the exists binder");
+                let id = next().expect("Expected var_id for the exists binder") as Id;
                 let subpattern = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(exists(id, subpattern)))
             }
             Instruction::Mu => {
-                let id = next().expect("Expected var_id for the exists binder");
+                let id = next().expect("Expected var_id for the exists binder") as Id;
                 let subpattern = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(mu(id, subpattern)))
             }
             Instruction::MetaVar => {
-                let id = next().expect("Insufficient parameters for MetaVar instruction");
+                let id = next().expect("Insufficient parameters for MetaVar instruction") as Id;
                 let app_ctx_holes = pop_stack_list(stack);
                 let negative = pop_stack_list(stack);
                 let positive = pop_stack_list(stack);
@@ -559,7 +564,7 @@ fn execute_instructions<'a>(
                 })));
             }
             Instruction::ESubst => {
-                let evar_id = next().expect("Insufficient parameters for ESubst instruction");
+                let evar_id = next().expect("Insufficient parameters for ESubst instruction") as Id;
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(esubst(pattern, evar_id, plug)));
@@ -611,12 +616,14 @@ fn execute_instructions<'a>(
             },
             Instruction::Instantiate => {
                 let n = next().expect("Insufficient parameters for Instantiate instruction");
-                let mut ids: Vec<u8> = vec![];
+                let mut ids: IdList = vec![];
                 let mut plugs: Vec<Rc<Pattern>> = vec![];
 
                 let mut i = 0;
                 while i < n {
-                    ids.push(next().expect("Insufficient parameters for Instantiate instruction"));
+                    ids.push(
+                        next().expect("Insufficient parameters for Instantiate instruction") as Id,
+                    );
                     plugs.push(pop_stack_pattern(stack));
                     i += 1;
                 }
@@ -670,9 +677,9 @@ fn execute_instructions<'a>(
 }
 
 pub fn verify<'a>(
-    gamma_next_byte: &mut impl FnMut() -> Option<u8>,
-    claims_next_byte: &mut impl FnMut() -> Option<u8>,
-    proof_next_byte: &mut impl FnMut() -> Option<u8>,
+    gamma_next_byte: &mut impl FnMut() -> Option<InstByte>,
+    claims_next_byte: &mut impl FnMut() -> Option<InstByte>,
+    proof_next_byte: &mut impl FnMut() -> Option<InstByte>,
 ) -> (Stack, Memory, Claims) {
     let mut claims = vec![];
     let mut stack = vec![];
@@ -1159,16 +1166,16 @@ fn test_illformed_instantiation() {
 #[test]
 fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
-    let proof : Vec<u8> = vec![
-        Instruction::List as u8, 0,     // E Fresh
-        Instruction::List as u8, 0,     // S Fresh
-        Instruction::List as u8, 0,     // Positive
-        Instruction::List as u8, 0,     // Negative
-        Instruction::List as u8, 0,     // Context
-        Instruction::MetaVar as u8, 0,  // Stack: Phi
-        Instruction::Save as u8,        // @ 0
-        Instruction::Load as u8, 0,     // Phi ; Phi
-        Instruction::Implication as u8, // Phi -> Phi
+    let proof : Vec<InstByte> = vec![
+        Instruction::List as InstByte, 0,     // E Fresh
+        Instruction::List as InstByte, 0,     // S Fresh
+        Instruction::List as InstByte, 0,     // Positive
+        Instruction::List as InstByte, 0,     // Negative
+        Instruction::List as InstByte, 0,     // Context
+        Instruction::MetaVar as InstByte, 0,  // Stack: Phi
+        Instruction::Save as InstByte,        // @ 0
+        Instruction::Load as InstByte, 0,     // Phi ; Phi
+        Instruction::Implication as InstByte, // Phi -> Phi
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
@@ -1186,34 +1193,34 @@ fn test_construct_phi_implies_phi() {
 #[test]
 fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
-    let proof : Vec<u8> = vec![
-        Instruction::Prop2 as u8,                   // Stack: prop2
+    let proof : Vec<InstByte> = vec![
+        Instruction::Prop2 as InstByte,                   // Stack: prop2
 
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::List as u8, 0,
-        Instruction::MetaVar as u8, 0,              // Stack: prop2 ; $ph0
-        Instruction::Save as u8,                    // @0
-        Instruction::Load as u8, 0,                 // Stack: prop2 ; $ph0 ; $ph0
-        Instruction::Implication as u8,             // Stack: prop2 ; $ph0 -> ph0
-        Instruction::Save as u8,                    // @1
-        Instruction::Instantiate as u8, 1, 1,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-        Instruction::Load as u8, 0,                 // Stack: prop2 ; ph0 -> ph0 ; ph0
-        Instruction::Instantiate as u8, 1, 2,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+        Instruction::List as InstByte, 0,
+        Instruction::List as InstByte, 0,
+        Instruction::List as InstByte, 0,
+        Instruction::List as InstByte, 0,
+        Instruction::List as InstByte, 0,
+        Instruction::MetaVar as InstByte, 0,              // Stack: prop2 ; $ph0
+        Instruction::Save as InstByte,                    // @0
+        Instruction::Load as InstByte, 0,                 // Stack: prop2 ; $ph0 ; $ph0
+        Instruction::Implication as InstByte,             // Stack: prop2 ; $ph0 -> ph0
+        Instruction::Save as InstByte,                    // @1
+        Instruction::Instantiate as InstByte, 1, 1,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+        Instruction::Load as InstByte, 0,                 // Stack: prop2 ; ph0 -> ph0 ; ph0
+        Instruction::Instantiate as InstByte, 1, 2,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
 
-        Instruction::Prop1 as u8,                   // Stack: p1 ; prop1
-        Instruction::Load as u8, 1,                 // Stack: p1 ; prop1 ; $ph0 -> ph0
-        Instruction::Instantiate as u8, 1, 1,       // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
+        Instruction::Prop1 as InstByte,                   // Stack: p1 ; prop1
+        Instruction::Load as InstByte, 1,                 // Stack: p1 ; prop1 ; $ph0 -> ph0
+        Instruction::Instantiate as InstByte, 1, 1,       // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
 
-        Instruction::ModusPonens as u8,             // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+        Instruction::ModusPonens as InstByte,             // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
 
-        Instruction::Prop1 as u8,                   // Stack: p3 ; prop1
-        Instruction::Load as u8, 0,                 // Stack: p3 ; prop1 ; ph0
-        Instruction::Instantiate as u8, 1, 1,       // Stack: p3 ; ph0 -> ph0 -> ph0
+        Instruction::Prop1 as InstByte,                   // Stack: p3 ; prop1
+        Instruction::Load as InstByte, 0,                 // Stack: p3 ; prop1 ; ph0
+        Instruction::Instantiate as InstByte, 1, 1,       // Stack: p3 ; ph0 -> ph0 -> ph0
 
-        Instruction::ModusPonens as u8,             // Stack: phi0 -> phi0
+        Instruction::ModusPonens as InstByte,             // Stack: phi0 -> phi0
     ];
     let mut iterator = proof.iter();
     let next = &mut (|| iterator.next().cloned());
@@ -1235,9 +1242,9 @@ fn test_universal_quantification() {
     let phi0 = metavar_unconstrained(0);
 
     #[rustfmt::skip]
-    let proof : Vec<u8> = vec![
-        Instruction::Load as u8, 0,                   // (p1: not(phi0) -> bot)
-        Instruction::Generalization as u8             // (p2: exists not(phi0) -> bot)
+    let proof : Vec<InstByte> = vec![
+        Instruction::Load as InstByte, 0,                   // (p1: not(phi0) -> bot)
+        Instruction::Generalization as InstByte             // (p2: exists not(phi0) -> bot)
     ];
     #[rustfmt::skip]
     let _memory: Memory = vec![
