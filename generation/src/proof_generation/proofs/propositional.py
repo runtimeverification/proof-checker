@@ -51,23 +51,13 @@ class Propositional(ProofExp):
             return ret
         return self.save_notation('bot', self.mu(0, self.svar(0)))
 
-    def neg_notation(self) -> Pattern:
-        if ret := self.load_notation('neg'):
-            return ret
-        return self.save_notation('neg', self.implies(self.phi0(), self.bot()))
-
-    def neg(self, p: PatternExpression) -> Pattern:
-        return self.instantiate_notation(self.neg_notation(), {0: p()})
+    def neg(self, p: Pattern) -> Pattern:
+        return self.implies(p, self.bot())
 
     def top(self) -> Pattern:
         if ret := self.load_notation('top'):
             return ret
-        return self.save_notation('top', self.neg(self.bot))
-
-    def neg_phi0(self) -> Pattern:
-        if ret := self.load_notation('neg-phi0'):
-            return ret
-        return self.save_notation('neg-phi0', self.neg(self.phi0))
+        return self.save_notation('top', self.neg(self.bot()))
 
     def bot_implies_phi0(self) -> Pattern:
         if ret := self.load_notation('bot-implies-phi0'):
@@ -80,7 +70,7 @@ class Propositional(ProofExp):
         return self.save_notation(
             'contradiction',
             # (neg phi0 -> bot) -> phi0
-            self.implies(self.implies(self.neg_phi0(), self.bot()), self.phi0()),
+            self.implies(self.implies(self.neg(self.phi0()), self.bot()), self.phi0()),
         )
 
     def peirce_bot_phi0(self) -> Pattern:
@@ -138,17 +128,17 @@ class Propositional(ProofExp):
             # ((bot -> neg neg 0) -> (bot -> 0)))
             self.modus_ponens(
                 # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
-                self.prop2().instantiate({0: self.bot(), 1: self.neg(self.neg_phi0), 2: self.phi0()}),
+                self.prop2().instantiate({0: self.bot(), 1: self.neg(self.neg(self.phi0())), 2: self.phi0()}),
                 # (bot -> (neg neg 0 -> 0))
                 self.modus_ponens(
                     # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.prop1().instantiate({0: self.implies(self.neg(self.neg_phi0), self.phi0()), 1: self.bot()}),
+                    self.prop1().instantiate({0: self.implies(self.neg(self.neg(self.phi0())), self.phi0()), 1: self.bot()}),
                     # (neg neg 0 -> 0)
                     self.prop3().instantiate({0: self.phi0()}),
                 ),
             ),
             # (bot -> (neg neg phi0))
-            self.prop1().instantiate({0: self.bot(), 1: self.neg(self.phi0)}),
+            self.prop1().instantiate({0: self.bot(), 1: self.neg(self.phi0())}),
         )
 
     # (neg phi0 -> bot) -> phi0

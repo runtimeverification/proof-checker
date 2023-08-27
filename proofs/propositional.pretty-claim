@@ -50,34 +50,23 @@ Implication
 	Stack:
 	0: (phi0 -> bot)
 	1: peirce-bot
-Save
-Load phi0=0
-	Stack:
-	0: phi0
-	1: neg
-	2: peirce-bot
-Instantiate 0
-	Stack:
-	0: neg
-	1: peirce-bot
-Save
 Load bot=1
 	Stack:
 	0: bot
-	1: neg-phi0
+	1: (phi0 -> bot)
 	2: peirce-bot
 Implication
 	Stack:
-	0: (neg-phi0 -> bot)
+	0: ((phi0 -> bot) -> bot)
 	1: peirce-bot
 Load phi0=0
 	Stack:
 	0: phi0
-	1: (neg-phi0 -> bot)
+	1: ((phi0 -> bot) -> bot)
 	2: peirce-bot
 Implication
 	Stack:
-	0: ((neg-phi0 -> bot) -> phi0)
+	0: (((phi0 -> bot) -> bot) -> phi0)
 	1: peirce-bot
 Save
 Publish
@@ -106,20 +95,20 @@ Publish
 	0: bot-implies-phi0
 	1: contradiction
 	2: peirce-bot
-Load neg=3
+Load bot=1
 	Stack:
-	0: neg-phi0
+	0: bot
 	1: bot-implies-phi0
 	2: contradiction
 	3: peirce-bot
 Load bot=1
 	Stack:
 	0: bot
-	1: neg-phi0
+	1: bot
 	2: bot-implies-phi0
 	3: contradiction
 	4: peirce-bot
-Instantiate 0
+Implication
 	Stack:
 	0: (bot -> bot)
 	1: bot-implies-phi0
