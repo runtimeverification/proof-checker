@@ -1163,6 +1163,21 @@ fn test_illformed_instantiation() {
     _ = instantiate(Rc::clone(&phi0), &[1, 0], &[Rc::clone(&phi0)]);
 }
 
+#[cfg(test)]
+fn execute_vector(
+    instrs: &Vec<InstByte>,
+    stack: &mut Stack,
+    memory: &mut Memory,
+    claims: &mut Claims,
+    phase: ExecutionPhase,
+)
+{
+    let mut iter = instrs.iter();
+    let next = &mut (|| iter.next().cloned());
+    return execute_instructions(next, stack, memory, claims, phase);
+}
+
+
 #[test]
 fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
@@ -1177,9 +1192,8 @@ fn test_construct_phi_implies_phi() {
         Instruction::Load as InstByte, 0,     // Phi ; Phi
         Instruction::Implication as InstByte, // Phi -> Phi
     ];
-    let mut iterator = proof.iter();
-    let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(&mut (|| None), &mut (|| None), next);
+    let mut stack = vec![];
+    execute_vector(&proof, &mut  stack, &mut vec![], &mut vec![], ExecutionPhase::Proof);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -1222,9 +1236,8 @@ fn test_phi_implies_phi_impl() {
 
         Instruction::ModusPonens as InstByte,             // Stack: phi0 -> phi0
     ];
-    let mut iterator = proof.iter();
-    let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory) = verify(&mut (|| None), &mut (|| None), next);
+    let mut stack = vec![];
+    execute_vector(&proof, &mut  stack, &mut vec![], &mut vec![], ExecutionPhase::Proof);
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
