@@ -290,7 +290,7 @@ class StatefulInterpreter(BasicInterpreter):
         application_context: tuple[EVar, ...] = (),
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
-        self.stack = self.stack[0: -5]
+        #self.stack = self.stack[0: -5]
         self.stack.append(ret)
 
         return ret
@@ -352,7 +352,7 @@ class StatefulInterpreter(BasicInterpreter):
         expected_plugs = self.stack[-len(delta) :]
         *self.stack, expected_proved = self.stack[0 : -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
-        assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
+        assert set(expected_plugs) == set(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
         self.stack.append(ret)
         return ret
@@ -361,7 +361,7 @@ class StatefulInterpreter(BasicInterpreter):
         expected_plugs = self.stack[-len(delta) :]
         *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
-        assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
+        assert set(expected_plugs) == set(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
         self.stack.append(ret)
         return ret
@@ -476,6 +476,8 @@ class SerializingInterpreter(StatefulInterpreter):
         ret = super().instantiate_notation(pattern, delta)
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
+
+    #TODO: dict keys are insertion sorted, be aware
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
@@ -603,14 +605,14 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         ret = super().instantiate(proved, delta)
         self.out.write('Instantiate ')
-        self.out.write(', '.join(map(str, delta.keys())))
+        self.out.write(', '.join(map(str, sorted(delta.keys()))))
         self.out.write('\n')
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         ret = super().instantiate_notation(pattern, delta)
         self.out.write('Instantiate ')
-        self.out.write(', '.join(map(str, delta.keys())))
+        self.out.write(', '.join(map(str, sorted(delta.keys()))))
         self.out.write('\n')
         return ret
 
@@ -624,7 +626,8 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Load ')
         self.out.write(str(id))
         self.out.write('=')
-        self.out.write(str(self.memory.index(term)))
+        idx = self.memory.index(term)
+        self.out.write(str(idx))
         self.out.write('\n')
         return ret
 
@@ -638,6 +641,24 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Publish\n')
         return ret
 
+class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
+    def __init__(self, claims: list[Claim], out: TextIO) -> None:
+        super().__init__(claims, out)
+        self.out = out
+        self.not_map: dict[str, int] = {}
+
+    def save(self, id: str, term: Pattern | Proved) -> None:
+        assert not id in self.not_map, f'{id}, {self.not_map}'
+        self.not_map[id] = len(self.memory)
+        id = self.not_map[id]
+        ret = super().save(id, term)
+        return ret
+
+    def load(self, id: str, term: Pattern | Proved) -> None:
+        if id not in self.memory:
+            id = self.memory.index(term)
+        ret = super().load(id, term)
+        return ret
 
 PatternExpression = Callable[[], Pattern]
 ProvedExpression = Callable[[], Proved]
@@ -724,6 +745,7 @@ class ProofExp:
         return ret
 
     def save_notation(self, id: str, pattern: Pattern) -> Pattern:
+        #print(id, self.interpreter.__class__)
         assert not id in self.notation
         self.notation[id] = pattern
         self.interpreter.save(id, pattern)

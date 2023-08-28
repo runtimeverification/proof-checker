@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from io import BytesIO
+from io import BytesIO, StringIO
 
 from proof_generation.instruction import Instruction
 from proof_generation.proof import (
@@ -13,9 +13,12 @@ from proof_generation.proof import (
     Mu,
     SerializingInterpreter,
     StatefulInterpreter,
+    PrettyPrintingInterpreter,
+    NotationlessPrettyPrinter,
     SVar,
 )
 from proof_generation.proofs.propositional import Propositional
+from proof_generation.deserialize import deserialize_instructions
 
 
 def test_instantiate() -> None:
@@ -120,3 +123,45 @@ def test_prove_imp_reflexivity() -> None:
         Instruction.Publish,
     ])
     # fmt: on
+
+def test_all_results() -> None:
+    out_ser = BytesIO()
+    prop_ser = Propositional(SerializingInterpreter([], out_ser)).imp_reflexivity()
+    out_pretty = StringIO()
+    prop_pretty = Propositional(NotationlessPrettyPrinter([], out_pretty)).imp_reflexivity()
+
+    out_ser_pretty = StringIO()
+    _ = deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_pretty))
+
+    print(out_pretty.getvalue())
+    print(out_ser_pretty.getvalue())
+    assert out_pretty.getvalue() == out_ser_pretty.getvalue()
+
+def test_all_results2() -> None:
+    out_ser = BytesIO()
+    prop_ser = Propositional(SerializingInterpreter([], out_ser)).top_intro()
+    out_pretty = StringIO()
+    prop_pretty = Propositional(NotationlessPrettyPrinter([], out_pretty)).top_intro()
+
+    out_ser_pretty = StringIO()
+    _ = deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_pretty))
+
+    print(out_pretty.getvalue())
+    print(out_ser_pretty.getvalue())
+    assert out_pretty.getvalue() == out_ser_pretty.getvalue()
+
+def test_all_results3() -> None:
+    out_ser = BytesIO()
+    prop_ser = Propositional(SerializingInterpreter([], out_ser)).bot_elim()
+    out_pretty = StringIO()
+    prop_pretty = Propositional(NotationlessPrettyPrinter([], out_pretty)).bot_elim()
+
+    print(out_pretty.getvalue())
+
+    out_ser_pretty = StringIO()
+    _ = deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_pretty))
+
+    print(out_ser_pretty.getvalue())
+    assert out_pretty.getvalue() == out_ser_pretty.getvalue()
+
+

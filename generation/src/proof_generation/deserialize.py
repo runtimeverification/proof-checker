@@ -3,7 +3,7 @@ from io import BytesIO, StringIO, TextIOBase
 
 from pprint import PrettyPrinter
 from proof_generation.instruction import Instruction
-from proof_generation.proof import Pattern, PrettyPrintingInterpreter, SerializingInterpreter, MetaVar, Implication, Claim
+from proof_generation.proof import Pattern, PrettyPrintingInterpreter, Proved, SerializingInterpreter, MetaVar, Implication, Claim
 from proof_generation.proofs.propositional import Propositional
 
 
@@ -15,6 +15,7 @@ def deserialize_instructions(data, interpreter: PrettyPrintingInterpreter):
     phase = ExecutionPhase.Claim
 
     assert isinstance(interpreter, PrettyPrintingInterpreter)
+    pp = PrettyPrinter()
 
     index = 0
 
@@ -28,7 +29,7 @@ def deserialize_instructions(data, interpreter: PrettyPrintingInterpreter):
 
     while byte := next_byte():
         instruction = Instruction(byte)
-        #print(instruction)
+        print(instruction)
 
         if instruction == Instruction.List:
             length = next_byte()
@@ -72,6 +73,7 @@ def deserialize_instructions(data, interpreter: PrettyPrintingInterpreter):
             id = next_byte()
             app_ctxt_holes, negative, positive, s_fresh, e_fresh = reversed(interpreter.stack[-5:])
             _metavar = interpreter.metavar(id, e_fresh, s_fresh, positive, negative, app_ctxt_holes)
+            interpreter.stack = interpreter.stack[0: -6] + [interpreter.stack[-1]]
 
         elif instruction == Instruction.Prop1:
             _prop1 = interpreter.prop1()
@@ -79,21 +81,29 @@ def deserialize_instructions(data, interpreter: PrettyPrintingInterpreter):
         elif instruction == Instruction.Prop2:
             _prop2 = interpreter.prop2()
 
+        elif instruction == Instruction.Prop3:
+            _prop3 = interpreter.prop3()
+
         elif instruction == Instruction.ModusPonens:
             right = interpreter.stack[-1]
             left = interpreter.stack[-2]
+            #pp.pprint(right.conclusion)
+            #pp.pprint(left.conclusion)
             _mp = interpreter.modus_ponens(left, right)
 
         elif instruction == Instruction.Instantiate:
             n = next_byte()
             keys = [next_byte() for _ in range(n)]
-            values = interpreter.stack[-n:]
+            values = reversed(interpreter.stack[-n:])
 
             delta = dict(zip(keys, values, strict=True))
-            proved = interpreter.stack[-(n + 1)]
+            target = interpreter.stack[-(n + 1)]
 
-            print(delta, proved)
-            interpreter.instantiate(proved, delta)
+            if isinstance(target, Proved):
+                interpreter.instantiate(target, delta)
+            else:
+                assert isinstance(target, Pattern), f'Trying to instantiate term of inadequate type {type(target)}.'
+                interpreter.instantiate_notation(target, delta)
 
         elif instruction == Instruction.Pop:
             interpreter.stack.pop()
@@ -147,3 +157,8 @@ phi0 = MetaVar(0)
 phi0_implies_phi0 = Implication(phi0, phi0)
 prop = Propositional(SerializingInterpreter(claims=[Claim(phi0_implies_phi0)], out=out))
 proved = prop.publish(prop.imp_reflexivity())
+
+log = StringIO()
+interpreter = deserialize_instructions(out.getvalue(), PrettyPrintingInterpreter([], log))
+#print(log.getvalue())
+#PrettyPrinter().pprint(interpreter.claims)
