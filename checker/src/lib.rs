@@ -652,7 +652,7 @@ fn execute_instructions<'a>(
             }
             Instruction::Publish => match phase {
                 ExecutionPhase::Gamma => {
-                    panic!("Not implemented.")
+                    memory.push(Entry::Proved(pop_stack_pattern(stack)))
                 }
                 ExecutionPhase::Claim => {
                     let claim = pop_stack_pattern(stack);
@@ -1180,6 +1180,14 @@ fn execute_vector(
 #[test]
 fn test_publish() {
     let proof = vec![Instruction::Publish as InstByte];
+
+    let mut stack = vec![Term::Pattern(symbol(0))];
+    let mut memory = vec![];
+    let mut claims = vec![];
+    execute_vector(&proof, &mut stack, &mut memory, &mut claims, ExecutionPhase::Gamma);
+    assert_eq!(stack, vec![]);
+    assert_eq!(memory, vec![Entry::Proved(symbol(0))]);
+    assert_eq!(claims, vec![]);
 
     let mut stack = vec![Term::Pattern(symbol(0))];
     let mut memory = vec![];
