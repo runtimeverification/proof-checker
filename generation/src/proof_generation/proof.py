@@ -352,7 +352,7 @@ class StatefulInterpreter(BasicInterpreter):
         expected_plugs = self.stack[-len(delta) :]
         *self.stack, expected_proved = self.stack[0 : -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
-        assert set(expected_plugs) == set(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
+        assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
         self.stack.append(ret)
         return ret
@@ -361,7 +361,7 @@ class StatefulInterpreter(BasicInterpreter):
         expected_plugs = self.stack[-len(delta) :]
         *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
-        assert set(expected_plugs) == set(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
+        assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
         self.stack.append(ret)
         return ret
@@ -605,14 +605,14 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         ret = super().instantiate(proved, delta)
         self.out.write('Instantiate ')
-        self.out.write(', '.join(map(str, sorted(delta.keys()))))
+        self.out.write(', '.join(map(str, delta.keys())))
         self.out.write('\n')
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         ret = super().instantiate_notation(pattern, delta)
         self.out.write('Instantiate ')
-        self.out.write(', '.join(map(str, sorted(delta.keys()))))
+        self.out.write(', '.join(map(str, delta.keys())))
         self.out.write('\n')
         return ret
 
@@ -626,8 +626,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Load ')
         self.out.write(str(id))
         self.out.write('=')
-        idx = self.memory.index(term)
-        self.out.write(str(idx))
+        self.out.write(str(self.memory.index(term)))
         self.out.write('\n')
         return ret
 

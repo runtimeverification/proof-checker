@@ -96,7 +96,7 @@ def deserialize_instructions(data, interpreter: PrettyPrintingInterpreter):
             keys = [next_byte() for _ in range(n)]
             values = reversed(interpreter.stack[-n:])
 
-            delta = dict(zip(keys, values, strict=True))
+            delta = dict(reversed(list(zip(keys, values, strict=True))))
             target = interpreter.stack[-(n + 1)]
 
             if isinstance(target, Proved):

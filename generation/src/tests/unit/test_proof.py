@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from io import BytesIO, StringIO
+from inspect import signature
 
 from proof_generation.instruction import Instruction
 from proof_generation.proof import (
@@ -14,6 +15,7 @@ from proof_generation.proof import (
     SerializingInterpreter,
     StatefulInterpreter,
     PrettyPrintingInterpreter,
+    Proved,
     NotationlessPrettyPrinter,
     SVar,
 )
@@ -125,17 +127,31 @@ def test_prove_imp_reflexivity() -> None:
     # fmt: on
 
 def test_all_results() -> None:
-    out_ser = BytesIO()
-    prop_ser = Propositional(SerializingInterpreter([], out_ser)).imp_reflexivity()
-    out_pretty = StringIO()
-    prop_pretty = Propositional(NotationlessPrettyPrinter([], out_pretty)).imp_reflexivity()
 
-    out_ser_pretty = StringIO()
-    _ = deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_pretty))
+    proofs = []
+    for (key, attr) in Propositional.__dict__.items():
+        if not callable(attr):
+            continue
+        sig = signature(attr)
+        print(sig.return_annotation)
+        if sig.return_annotation == 'Proved' and len(sig.parameters) == 1:
+            proofs.append(key)
 
-    print(out_pretty.getvalue())
-    print(out_ser_pretty.getvalue())
-    assert out_pretty.getvalue() == out_ser_pretty.getvalue()
+    for proof in proofs:
+        print(proof)
+        out_ser = BytesIO()
+        prop_ser = Propositional(SerializingInterpreter([], out_ser)).__getattribute__(proof)
+        out_pretty = StringIO()
+        prop_pretty = Propositional(NotationlessPrettyPrinter([], out_pretty)).__getattribute__(proof)
+
+        out_ser_pretty = StringIO()
+        _ = deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_pretty))
+
+        print(out_pretty.getvalue())
+        print(out_ser_pretty.getvalue())
+        assert out_pretty.getvalue() == out_ser_pretty.getvalue()
+
+    assert False
 
 def test_all_results2() -> None:
     out_ser = BytesIO()
