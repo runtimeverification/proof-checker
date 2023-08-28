@@ -651,9 +651,7 @@ fn execute_instructions<'a>(
                 }
             }
             Instruction::Publish => match phase {
-                ExecutionPhase::Gamma => {
-                    memory.push(Entry::Proved(pop_stack_pattern(stack)))
-                }
+                ExecutionPhase::Gamma => memory.push(Entry::Proved(pop_stack_pattern(stack))),
                 ExecutionPhase::Claim => {
                     let claim = pop_stack_pattern(stack);
                     claims.push(claim)
@@ -1170,8 +1168,7 @@ fn execute_vector(
     memory: &mut Memory,
     claims: &mut Claims,
     phase: ExecutionPhase,
-)
-{
+) {
     let mut iter = instrs.iter();
     let next = &mut (|| iter.next().cloned());
     return execute_instructions(next, stack, memory, claims, phase);
@@ -1184,7 +1181,13 @@ fn test_publish() {
     let mut stack = vec![Term::Pattern(symbol(0))];
     let mut memory = vec![];
     let mut claims = vec![];
-    execute_vector(&proof, &mut stack, &mut memory, &mut claims, ExecutionPhase::Gamma);
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Gamma,
+    );
     assert_eq!(stack, vec![]);
     assert_eq!(memory, vec![Entry::Proved(symbol(0))]);
     assert_eq!(claims, vec![]);
@@ -1192,7 +1195,13 @@ fn test_publish() {
     let mut stack = vec![Term::Pattern(symbol(0))];
     let mut memory = vec![];
     let mut claims = vec![];
-    execute_vector(&proof, &mut stack, &mut memory, &mut claims, ExecutionPhase::Claim);
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Claim,
+    );
     assert_eq!(stack, vec![]);
     assert_eq!(memory, vec![]);
     assert_eq!(claims, vec![symbol(0)]);
@@ -1200,12 +1209,17 @@ fn test_publish() {
     let mut stack = vec![Term::Proved(symbol(0))];
     let mut memory = vec![];
     let mut claims = vec![symbol(0)];
-    execute_vector(&proof, &mut stack, &mut memory, &mut claims, ExecutionPhase::Proof);
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Proof,
+    );
     assert_eq!(stack, vec![]);
     assert_eq!(memory, vec![]);
     assert_eq!(claims, vec![]);
 }
-
 
 #[test]
 fn test_construct_phi_implies_phi() {
@@ -1222,7 +1236,13 @@ fn test_construct_phi_implies_phi() {
         Instruction::Implication as InstByte, // Phi -> Phi
     ];
     let mut stack = vec![];
-    execute_vector(&proof, &mut  stack, &mut vec![], &mut vec![], ExecutionPhase::Proof);
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut vec![],
+        &mut vec![],
+        ExecutionPhase::Proof,
+    );
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
@@ -1266,7 +1286,13 @@ fn test_phi_implies_phi_impl() {
         Instruction::ModusPonens as InstByte,             // Stack: phi0 -> phi0
     ];
     let mut stack = vec![];
-    execute_vector(&proof, &mut  stack, &mut vec![], &mut vec![], ExecutionPhase::Proof);
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut vec![],
+        &mut vec![],
+        ExecutionPhase::Proof,
+    );
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
