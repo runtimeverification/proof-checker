@@ -172,7 +172,7 @@ class StatefulInterpreter(BasicInterpreter):
         application_context: tuple[EVar, ...] = (),
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
-        #self.stack = self.stack[0: -5]
+        # self.stack = self.stack[0: -5]
         self.stack.append(ret)
 
         return ret
@@ -359,7 +359,7 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
 
-    #TODO: dict keys are insertion sorted, be aware
+    # TODO: dict keys are insertion sorted, be aware
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
@@ -545,24 +545,26 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
                 item = item.conclusion
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 
+
 class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
     def __init__(self, claims: list[Claim], out: TextIO) -> None:
         super().__init__(claims, out)
         self.out = out
-        self.not_map: dict[str, int] = {}
+        self.not_map: dict[str, str] = {}
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         assert not id in self.not_map, f'{id}, {self.not_map}'
-        self.not_map[id] = len(self.memory)
+        self.not_map[id] = str(len(self.memory))
         id = self.not_map[id]
         ret = super().save(id, term)
         return ret
 
     def load(self, id: str, term: Pattern | Proved) -> None:
         if id not in self.memory:
-            id = self.memory.index(term)
+            id = str(self.memory.index(term))
         ret = super().load(id, term)
         return ret
+
 
 PatternExpression = Callable[[], Pattern]
 ProvedExpression = Callable[[], Proved]
