@@ -1177,6 +1177,27 @@ fn execute_vector(
     return execute_instructions(next, stack, memory, claims, phase);
 }
 
+#[test]
+fn test_publish() {
+    let proof = vec![Instruction::Publish as InstByte];
+
+    let mut stack = vec![Term::Pattern(symbol(0))];
+    let mut memory = vec![];
+    let mut claims = vec![];
+    execute_vector(&proof, &mut stack, &mut memory, &mut claims, ExecutionPhase::Claim);
+    assert_eq!(stack, vec![]);
+    assert_eq!(memory, vec![]);
+    assert_eq!(claims, vec![symbol(0)]);
+
+    let mut stack = vec![Term::Proved(symbol(0))];
+    let mut memory = vec![];
+    let mut claims = vec![symbol(0)];
+    execute_vector(&proof, &mut stack, &mut memory, &mut claims, ExecutionPhase::Proof);
+    assert_eq!(stack, vec![]);
+    assert_eq!(memory, vec![]);
+    assert_eq!(claims, vec![]);
+}
+
 
 #[test]
 fn test_construct_phi_implies_phi() {
