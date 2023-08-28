@@ -69,10 +69,10 @@ PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
 proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim
-	${DIFF} ".build/proofs/$*.pretty-claim" "proofs/$*.pretty-claim"
-	${DIFF} ".build/proofs/$*.pretty-proof" "proofs/$*.pretty-proof"
-	${BIN_DIFF} ".build/proofs/$*.ml-claim" "proofs/$*.ml-claim"
-	${BIN_DIFF} ".build/proofs/$*.ml-proof" "proofs/$*.ml-proof"
+	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
+	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
+	${BIN_DIFF} "proofs/$*.ml-claim" ".build/proofs/$*.ml-claim"
+	${BIN_DIFF} "proofs/$*.ml-proof" ".build/proofs/$*.ml-proof"
 
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
@@ -82,13 +82,12 @@ test-proof-gen: ${PROOF_GEN_TARGETS}
 
 PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
 proofs/%.ml-proof.verify: proofs/%.ml-proof
-	cargo run --bin checker $< proofs/$*.ml-claim
-
+	cargo run --bin checker proofs/$*.ml-claim $<
 test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
 .build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof .build/proofs/%.ml-claim
-	cargo run --bin checker $< .build/proofs/$*.ml-claim
+	cargo run --bin checker .build/proofs/$*.ml-claim $<
 
 proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
@@ -97,6 +96,6 @@ proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --bin host $^ proofs/$*.ml-claim
+	cargo run --bin host proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
