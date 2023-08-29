@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from proof_generation.instruction import Instruction
 from proof_generation.proof import Claim, Pattern, Proved
@@ -22,7 +22,7 @@ class DeserializingException(Exception):
 def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter, phase: ExecutionPhase) -> None:
     index = 0
 
-    def next_byte(err_msg: Optional[str] = None) -> Optional[int]:
+    def next_byte(err_msg: str | None = None) -> int | None:
         nonlocal index
         if index == len(data):
             if err_msg is None:
