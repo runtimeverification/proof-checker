@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from io import BytesIO, StringIO
 
+import pytest
+
 from proof_generation.deserialize import ExecutionPhase, deserialize_instructions
 from proof_generation.instruction import Instruction
 from proof_generation.proof import (
@@ -125,22 +127,24 @@ def test_prove_imp_reflexivity() -> None:
     # fmt: on
 
 
-def test_all_results() -> None:
-    # Construct a mock ProofExp to extract the claim and proof names
-    mock_prop = Propositional(None)
-    proofs = [(method.__name__, ExecutionPhase.Proof) for method in mock_prop.proof_expressions()]
-    claims = [(method.__name__, ExecutionPhase.Claim) for method in mock_prop.claim_expressions()]
-    targets = proofs + claims
+# Construct a mock ProofExp to extract the claim and proof names
+mock_prop = Propositional(SerializingInterpreter([], BytesIO()))
 
-    for target, phase in targets:
-        # Serialize the proof and deserialize the resulting bytes with the PrettyPrintingInterpreter
-        out_ser = BytesIO()
-        _ = Propositional(SerializingInterpreter([], out_ser)).__getattribute__(target)
-        out_ser_deser = StringIO()
-        _ = deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_deser), phase)
+proofs = [(method.__name__, ExecutionPhase.Proof) for method in mock_prop.proof_expressions()]
+claims = [(method.__name__, ExecutionPhase.Claim) for method in mock_prop.claim_expressions()]
 
-        # Prettyprint the proof directly, but ommit notation
-        out_pretty = StringIO()
-        _ = Propositional(NotationlessPrettyPrinter([], out_pretty)).__getattribute__(target)
 
-        assert out_pretty.getvalue() == out_ser_deser.getvalue()
+@pytest.mark.parametrize('test', proofs + claims)
+def test_deserialize(test: tuple[str, ExecutionPhase]) -> None:
+    (target, phase) = test
+    # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
+    out_ser = BytesIO()
+    _ = Propositional(SerializingInterpreter([], out_ser)).__getattribute__(target)
+    out_ser_deser = StringIO()
+    deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_deser), phase)
+
+    # Prettyprint the proof directly, but ommit notation
+    out_pretty = StringIO()
+    _ = Propositional(NotationlessPrettyPrinter([], out_pretty)).__getattribute__(target)
+
+    assert out_pretty.getvalue() == out_ser_deser.getvalue()

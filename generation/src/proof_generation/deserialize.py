@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 from enum import Enum
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import Pattern, PrettyPrintingInterpreter, Proved
+from proof_generation.proof import Pattern, Proved
+
+if TYPE_CHECKING:
+    from proof_generation.proof import PrettyPrintingInterpreter
 
 
 class ExecutionPhase(Enum):
@@ -14,11 +19,7 @@ class DeserializingException(Exception):
     pass
 
 
-def deserialize_instructions(
-    data: Any, interpreter: PrettyPrintingInterpreter, phase: ExecutionPhase
-) -> PrettyPrintingInterpreter:
-    assert isinstance(interpreter, PrettyPrintingInterpreter)
-
+def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter, phase: ExecutionPhase) -> None:
     index = 0
 
     def next_byte(err_msg: Optional[str] = None) -> Optional[int]:
@@ -37,7 +38,7 @@ def deserialize_instructions(
         if instruction == Instruction.List:
             length = next_byte('Expected list length.')
             if length != 0:
-                raise ValueError('Length was supposed to be zero.')
+                raise DeserializingException('Length was supposed to be zero.')
             interpreter.stack.append(())  # type: ignore
 
         elif instruction == Instruction.EVar:
@@ -94,6 +95,8 @@ def deserialize_instructions(
 
         elif instruction == Instruction.Instantiate:
             n = next_byte('Expected number of instantiations.')
+            assert n is not None
+
             keys = [next_byte() for _ in range(n)]
             values = reversed(interpreter.stack[-n:])
 
@@ -102,9 +105,10 @@ def deserialize_instructions(
 
             if isinstance(target, Proved):
                 interpreter.instantiate(target, delta)
-            else:
-                assert isinstance(target, Pattern), f'Trying to instantiate term of inadequate type {type(target)}.'
+            elif isinstance(target, Pattern):
                 interpreter.instantiate_notation(target, delta)
+            else:
+                raise DeserializingException(f'Cannot instantiate term {target}.')
 
         elif instruction == Instruction.Pop:
             interpreter.stack.pop()
@@ -115,11 +119,10 @@ def deserialize_instructions(
 
         elif instruction == Instruction.Load:
             id = next_byte('Expected index for Load instruction')
-            try:
-                term = interpreter.memory[id]
-                interpreter.load(id, term)
-            except BaseException:
-                raise ValueError('Invalid entry type for Load instruction.') from None
+            assert id is not None
+            if id >= len(interpreter.memory):
+                raise DeserializingException(f'Invalid index {id} for Load instruction.')
+            interpreter.load(id, interpreter.memory[id])
 
         elif instruction == Instruction.Publish:
             if phase == ExecutionPhase.Claim:
@@ -131,9 +134,8 @@ def deserialize_instructions(
                 theorem = interpreter.stack[-1]
                 interpreter.publish_claim(claim)
                 if claim != theorem:
-                    raise ValueError(f'This proof does not prove the requested claim: {claim}, theorem: {theorem}')
-
+                    raise DeserializingException(
+                        f'This proof does not prove the requested claim: {claim}, theorem: {theorem}'
+                    )
         else:
-            raise NotImplementedError(f'Instruction: {instruction}')
-
-    return interpreter
+            raise NotImplementedError(f'Unknown instruction: {instruction}')

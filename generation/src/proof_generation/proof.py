@@ -359,8 +359,6 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
 
-    # TODO: dict keys are insertion sorted, be aware
-
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
         self.out.write(bytes([Instruction.Save]))
@@ -550,18 +548,14 @@ class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
     def __init__(self, claims: list[Claim], out: TextIO) -> None:
         super().__init__(claims, out)
         self.out = out
-        self.not_map: dict[str, str] = {}
 
     def save(self, id: str, term: Pattern | Proved) -> None:
-        assert not id in self.not_map, f'{id}, {self.not_map}'
-        self.not_map[id] = str(len(self.memory))
-        id = self.not_map[id]
+        id = str(self.memory.index(term))
         ret = super().save(id, term)
         return ret
 
     def load(self, id: str, term: Pattern | Proved) -> None:
-        if id not in self.memory:
-            id = str(self.memory.index(term))
+        id = str(self.memory.index(term))
         ret = super().load(id, term)
         return ret
 
