@@ -172,7 +172,6 @@ class StatefulInterpreter(BasicInterpreter):
         application_context: tuple[EVar, ...] = (),
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
-        # self.stack = self.stack[0: -5]
         self.stack.append(ret)
 
         return ret

@@ -4,7 +4,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import Pattern, Proved
+from proof_generation.proof import Claim, Pattern, Proved
 
 if TYPE_CHECKING:
     from proof_generation.proof import PrettyPrintingInterpreter
@@ -126,14 +126,16 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter, 
 
         elif instruction == Instruction.Publish:
             if phase == ExecutionPhase.Claim:
-                claim = interpreter.stack[-1]
-                interpreter.claims.append(claim)  # type: ignore
-                interpreter.publish_claim(claim)
+                pattern = interpreter.stack[-1]
+                assert isinstance(pattern, Pattern)
+                interpreter.claims.append(Claim(pattern))
+                interpreter.publish_claim(pattern)
             elif phase == ExecutionPhase.Proof:
-                claim = interpreter.claims.pop()  # type: ignore
+                claim = interpreter.claims.pop()
                 theorem = interpreter.stack[-1]
-                interpreter.publish_claim(claim)
-                if claim != theorem:
+                assert isinstance(theorem, Proved)
+                interpreter.publish_claim(claim.pattern)
+                if claim.pattern != theorem.conclusion:
                     raise DeserializingException(
                         f'This proof does not prove the requested claim: {claim}, theorem: {theorem}'
                     )
