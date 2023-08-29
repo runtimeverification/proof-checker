@@ -9,14 +9,18 @@ class ExecutionPhase(Enum):
     Claim = 0
     Proof = 1
 
+
 class DeserializingException(Exception):
     pass
 
-def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) -> PrettyPrintingInterpreter:
-    phase = ExecutionPhase.Claim
+
+def deserialize_instructions(
+    data: Any, interpreter: PrettyPrintingInterpreter, phase: ExecutionPhase
+) -> PrettyPrintingInterpreter:
     assert isinstance(interpreter, PrettyPrintingInterpreter)
 
     index = 0
+
     def next_byte(err_msg: Optional[str] = None) -> Optional[int]:
         nonlocal index
         if index == len(data):
