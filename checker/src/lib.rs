@@ -599,6 +599,7 @@ fn execute_instructions<'a>(
             }
             Instruction::Generalization => match pop_stack_proved(stack).as_ref() {
                 Pattern::Implication { left, right } => {
+                    // TODO: Read this from the proof stream
                     let evar = 0;
 
                     if !right.e_fresh(evar) {
@@ -1303,25 +1304,25 @@ fn test_phi_implies_phi_impl() {
     )
 }
 
-// TODO: Actually pass just phi0 in memory
-#[ignore]
 #[test]
 fn test_universal_quantification() {
-    let phi0 = metavar_unconstrained(0);
-
     #[rustfmt::skip]
     let proof : Vec<InstByte> = vec![
-        Instruction::Load as InstByte, 0,                   // (p1: not(phi0) -> bot)
-        Instruction::Generalization as InstByte             // (p2: exists not(phi0) -> bot)
+        Instruction::Generalization as InstByte
     ];
-    #[rustfmt::skip]
-    let _memory: Memory = vec![
-        Entry::Proved(implies(not(Rc::clone(&phi0)), bot()))
-    ];
+    let mut stack = vec![Term::Proved(implies(symbol(0), symbol(1)))];
+    let mut memory = vec![];
+    let mut claims = vec![];
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        ExecutionPhase::Proof,
+    );
+    assert_eq!(stack, vec![Term::Proved(implies(exists(0, symbol(0)), symbol(1)))]);
+    assert_eq!(memory, vec![]);
+    assert_eq!(claims, vec![]);
 
-    let mut iterator = proof.iter();
-    let next = &mut (|| iterator.next().cloned());
-    let (stack, _journal, _memory2) = verify(&mut (|| None), &mut (|| None), next);
-
-    assert_eq!(stack, vec![Term::Proved(forall(0, Rc::clone(&phi0)))])
+    // TODO: Test case for when 0 is not fresh in rhs
 }
