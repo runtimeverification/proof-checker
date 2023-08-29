@@ -173,7 +173,6 @@ class StatefulInterpreter(BasicInterpreter):
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
         self.stack.append(ret)
-
         return ret
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
