@@ -115,14 +115,14 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter, 
 
         elif instruction == Instruction.Save:
             term = interpreter.stack[-1]
-            interpreter.save(len(interpreter.memory), term)
+            interpreter.save(str(len(interpreter.memory)), term)
 
         elif instruction == Instruction.Load:
             id = next_byte('Expected index for Load instruction')
             assert id is not None
             if id >= len(interpreter.memory):
                 raise DeserializingException(f'Invalid index {id} for Load instruction.')
-            interpreter.load(id, interpreter.memory[id])
+            interpreter.load(str(id), interpreter.memory[id])
 
         elif instruction == Instruction.Publish:
             if phase == ExecutionPhase.Claim:

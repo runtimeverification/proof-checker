@@ -396,7 +396,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
                 self, *nargs = args
                 assert isinstance(self, PrettyPrintingInterpreter)
                 # Find and call the super method.
-                result = getattr(super(type(self), self), func.__name__)(*nargs, **kwargs)
+                result = getattr(super(PrettyPrintingInterpreter, self), func.__name__)(*nargs, **kwargs)
                 # Call the pretty printing function.
                 func(self, *nargs, **kwargs)
                 self.out.write('\n')
@@ -424,7 +424,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Symbol ')
         self.out.write(str(id))
 
-    @pretty()
+    @pretty(print_stack=False)
     def metavar(
         self,
         id: int,
@@ -501,7 +501,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     @pretty()
     def load(self, id: str, term: Pattern | Proved) -> None:
         self.out.write('Load ')
-        self.out.write(str(id))
+        self.out.write(id)
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
 
@@ -548,7 +548,7 @@ class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
         self.out = out
 
     def save(self, id: str, term: Pattern | Proved) -> None:
-        id = str(self.memory.index(term))
+        id = str(len(self.memory))
         ret = super().save(id, term)
         return ret
 

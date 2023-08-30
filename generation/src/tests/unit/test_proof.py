@@ -139,12 +139,12 @@ def test_deserialize(test: tuple[str, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter([], out_ser)).__getattribute__(target)
+    _ = Propositional(SerializingInterpreter([], out_ser)).__getattribute__(target)()
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_deser), phase)
 
     # Prettyprint the proof directly, but ommit notation
     out_pretty = StringIO()
-    _ = Propositional(NotationlessPrettyPrinter([], out_pretty)).__getattribute__(target)
+    _ = Propositional(NotationlessPrettyPrinter([], out_pretty)).__getattribute__(target)()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
