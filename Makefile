@@ -3,6 +3,8 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
+clean-proofs: 
+	rm -rf .build/proofs
 
 # Syntax and formatting checks
 # ============================
