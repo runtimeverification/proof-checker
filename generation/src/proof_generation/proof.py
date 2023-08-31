@@ -140,7 +140,7 @@ class StatefulInterpreter(BasicInterpreter):
     stack: list[Pattern | Proved]
     memory: list[Pattern | Proved]
 
-    def __init__(self, claims: list[Claim], axioms: list[Proved]) -> None:
+    def __init__(self, claims: list[Claim] = [], axioms: list[Proved] = []) -> None:
         super().__init__()
         self.stack = []
         self.memory = axioms
@@ -279,7 +279,7 @@ class StatefulInterpreter(BasicInterpreter):
 
 
 class SerializingInterpreter(StatefulInterpreter):
-    def __init__(self, claims: list[Claim], axioms: list[Proved], out: BinaryIO) -> None:
+    def __init__(self, out: BinaryIO, claims: list[Claim] = [], axioms: list[Proved] = []) -> None:
         super().__init__(claims, axioms)
         self.out = out
 
@@ -388,7 +388,7 @@ class SerializingInterpreter(StatefulInterpreter):
 
 
 class PrettyPrintingInterpreter(StatefulInterpreter):
-    def __init__(self, claims: list[Claim], axioms: list[Proved], out: TextIO) -> None:
+    def __init__(self, out: TextIO, claims: list[Claim] = [], axioms: list[Proved] = []) -> None:
         super().__init__(claims, axioms)
         self.out = out
         self._notation: dict[str, Pattern] = {}
