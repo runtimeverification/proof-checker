@@ -376,7 +376,7 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.Publish]))
 
 
-class PrettyPrintingInterpreter(StatefulInterpreter):
+class PrettyPrintingTMP(StatefulInterpreter):
     def __init__(self, claims: list[Claim], out: TextIO) -> None:
         super().__init__(claims)
         self.out = out
@@ -392,9 +392,9 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     @staticmethod
     def pretty(print_stack: bool = True) -> Callable:
         def decorator(func: Callable) -> Callable:
-            def wrapper(*args: Pattern | dict | PrettyPrintingInterpreter, **kwargs: dict) -> Pattern | Proved:
+            def wrapper(*args: Pattern | dict | PrettyPrintingTMP, **kwargs: dict) -> Pattern | Proved:
                 self, *nargs = args
-                assert isinstance(self, PrettyPrintingInterpreter)
+                assert isinstance(self, PrettyPrintingTMP)
                 # Find and call the super method.
                 result = getattr(super(PrettyPrintingInterpreter, self), func.__name__)(*nargs, **kwargs)
                 # Call the pretty printing function.
