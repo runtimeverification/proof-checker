@@ -1,17 +1,22 @@
 from __future__ import annotations
+from functools import partial
 
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
+from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar, Proved, EVar
 
 if TYPE_CHECKING:
-    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
+    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, ProvedExpression
 
 
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
         super().__init__(interpreter)
+
+    @staticmethod
+    def axioms() -> list[Proved]:
+        return []
 
     @staticmethod
     def claims() -> list[Pattern]:
@@ -269,6 +274,25 @@ class Propositional(ProofExp):
             ),
         )
 
+class SmallTheory(Propositional):
+    @staticmethod
+    def axioms():
+        phi0_implies_phi1 = Implication(EVar(0), EVar(1))
+        phi1_implies_phi2 = Implication(EVar(1), EVar(2))
+        return [phi0_implies_phi1, phi1_implies_phi2]
+
+    def hydrate(self, term: Pattern):
+        return Proved(self.interpreter, term)
+
+    @staticmethod
+    def claims():
+        phi0_implies_phi2 = Implication(EVar(0), EVar(2))
+        return [phi0_implies_phi2]
+
+    def phi0_implies_phi2(self) -> Proved:
+        phi0_implies_phi1 = self.hydrate(SmallTheory.axioms()[0])
+        phi1_implies_phi2 = self.hydrate(SmallTheory.axioms()[1])
+        return super().imp_transitivity(phi0_implies_phi1, phi1_implies_phi2)
 
 if __name__ == '__main__':
     Propositional.main(sys.argv)

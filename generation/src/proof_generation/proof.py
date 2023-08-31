@@ -119,6 +119,9 @@ class BasicInterpreter:
     def publish(self, term: Proved) -> None:
         ...
 
+    def publish_axiom(self, term: Proved) -> None:
+        ...
+
     def publish_claim(self, term: Pattern) -> None:
         ...
 
@@ -137,10 +140,10 @@ class StatefulInterpreter(BasicInterpreter):
     stack: list[Pattern | Proved]
     memory: list[Pattern | Proved]
 
-    def __init__(self, claims: list[Claim]) -> None:
+    def __init__(self, claims: list[Claim], axioms: list[Proved]) -> None:
         super().__init__()
         self.stack = []
-        self.memory = []
+        self.memory = axioms
         self.claims = claims
 
     def print_state(self) -> None:
@@ -263,6 +266,10 @@ class StatefulInterpreter(BasicInterpreter):
         assert proved.conclusion == expected_claim.pattern
         assert self.stack[-1] == proved
 
+    def publish_axiom(self, axiom: Proved) -> None:
+        super().publish_axiom(axiom)
+        assert self.stack[-1] == axiom
+
     def publish_claim(self, pattern: Pattern) -> None:
         # TODO: This should only be enabled in the claims phase.
         super().publish_claim(pattern)
@@ -272,8 +279,8 @@ class StatefulInterpreter(BasicInterpreter):
 
 
 class SerializingInterpreter(StatefulInterpreter):
-    def __init__(self, claims: list[Claim], out: BinaryIO) -> None:
-        super().__init__(claims)
+    def __init__(self, claims: list[Claim], axioms: list[Proved], out: BinaryIO) -> None:
+        super().__init__(claims, axioms)
         self.out = out
 
     def evar(self, id: int) -> Pattern:
@@ -371,14 +378,18 @@ class SerializingInterpreter(StatefulInterpreter):
         super().publish(proved)
         self.out.write(bytes([Instruction.Publish]))
 
+    def publish_axiom(self, axiom: Proved) -> None:
+        super().publish(axiom)
+        self.out.write(bytes([Instruction.Publish]))
+
     def publish_claim(self, pattern: Pattern) -> None:
         super().publish_claim(pattern)
         self.out.write(bytes([Instruction.Publish]))
 
 
 class PrettyPrintingInterpreter(StatefulInterpreter):
-    def __init__(self, claims: list[Claim], out: TextIO) -> None:
-        super().__init__(claims)
+    def __init__(self, claims: list[Claim], axioms: list[Proved], out: TextIO) -> None:
+        super().__init__(claims, axioms)
         self.out = out
         self._notation: dict[str, Pattern] = {}
 
@@ -510,6 +521,10 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Publish')
 
     @pretty()
+    def publish_axiom(self, axiom: Proved) -> None:
+        self.out.write('Publish')
+
+    @pretty()
     def publish_claim(self, pattern: Pattern) -> None:
         self.out.write('Publish')
 
@@ -554,6 +569,10 @@ class ProofExp:
         self.notation: dict[str, Pattern] = {}
 
     @staticmethod
+
+    def axioms() -> list[Proved]:
+        raise NotImplementedError
+
     def claims() -> list[Pattern]:
         raise NotImplementedError
 

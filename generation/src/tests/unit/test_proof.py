@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from io import BytesIO
-
 from proof_generation.instruction import Instruction
 from proof_generation.proof import (
     Application,
@@ -11,11 +10,12 @@ from proof_generation.proof import (
     Implication,
     MetaVar,
     Mu,
+    BasicInterpreter,
     SerializingInterpreter,
     StatefulInterpreter,
     SVar,
 )
-from proof_generation.proofs.propositional import Propositional
+from proof_generation.proofs.propositional import Propositional, SmallTheory
 
 
 def test_instantiate() -> None:
@@ -120,3 +120,8 @@ def test_prove_imp_reflexivity() -> None:
         Instruction.Publish,
     ])
     # fmt: on
+
+def test_implication_transitivity() -> None:
+    th = SmallTheory(BasicInterpreter())
+    phi0_implies_phi2 = th.claims()[0]
+    assert th.phi0_implies_phi2().conclusion == phi0_implies_phi2
