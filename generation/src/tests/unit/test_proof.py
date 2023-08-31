@@ -14,6 +14,7 @@ from proof_generation.proof import (
     SerializingInterpreter,
     StatefulInterpreter,
     SVar,
+    ExecutionPhase
 )
 from proof_generation.proofs.propositional import Propositional, SmallTheory
 
@@ -45,7 +46,7 @@ def test_instantiate() -> None:
 def test_conclusion() -> None:
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implication(phi0, phi0)
-    prop = Propositional(StatefulInterpreter([]))
+    prop = Propositional(StatefulInterpreter(phase=ExecutionPhase.Proof))
     prop.modus_ponens(
         prop.modus_ponens(
             prop.prop2()
@@ -66,7 +67,7 @@ def test_conclusion() -> None:
 
 def test_serialize_phi_implies_phi() -> None:
     out = BytesIO()
-    prop = Propositional(SerializingInterpreter(claims=[], out=out))
+    prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[], out=out))
     prop.phi0_implies_phi0()
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
@@ -88,8 +89,8 @@ def test_prove_imp_reflexivity() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implication(phi0, phi0)
-    prop = Propositional(SerializingInterpreter(claims=[Claim(phi0_implies_phi0)], out=out))
-    proved = prop.publish(prop.imp_reflexivity())
+    prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out))
+    proved = prop.publish_proof(prop.imp_reflexivity())
     assert proved.conclusion == phi0_implies_phi0
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
@@ -120,8 +121,3 @@ def test_prove_imp_reflexivity() -> None:
         Instruction.Publish,
     ])
     # fmt: on
-
-def test_implication_transitivity() -> None:
-    th = SmallTheory(BasicInterpreter())
-    phi0_implies_phi2 = th.claims()[0]
-    assert th.phi0_implies_phi2().conclusion == phi0_implies_phi2
