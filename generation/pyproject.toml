@@ -29,6 +29,7 @@ pytest-cov = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
 pyupgrade = "*"
+lark = "^1.1.5"
 
 [tool.isort]
 profile = "black"
