@@ -12,6 +12,7 @@ authors = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
+lark = "^1.1.7"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
@@ -29,7 +30,6 @@ pytest-cov = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
 pyupgrade = "*"
-lark = "^1.1.5"
 
 [tool.isort]
 profile = "black"

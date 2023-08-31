@@ -23,6 +23,7 @@ from mm_transfer.metamath.parser import load_database
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
+
     from mm_transfer.metamath.ast import Statement, Terms
 
 
