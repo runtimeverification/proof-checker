@@ -29,7 +29,7 @@ class Propositional(ProofExp):
             top,  # Top
             Implication(bot, phi0),  # Bot_elim
             Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
-            Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Pierce_bot
+            Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Peirce_bot
         ]
 
     def claim_expressions(self) -> list[PatternExpression]:

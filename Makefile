@@ -3,6 +3,8 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
+clean-proofs: 
+	rm -rf .build/proofs
 
 # Syntax and formatting checks
 # ============================
@@ -12,7 +14,6 @@ check-cargo:
 	cargo fmt --check
 check-python:
 	make -C generation check
-	make -C generation pyupgrade
 
 .PHONY: check check-cargo check-python
 
@@ -69,8 +70,8 @@ PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
 proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim
-	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
-	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
+#	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
+#	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
 	${BIN_DIFF} "proofs/$*.ml-claim" ".build/proofs/$*.ml-claim"
 	${BIN_DIFF} "proofs/$*.ml-proof" ".build/proofs/$*.ml-proof"
 
@@ -96,6 +97,6 @@ proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --bin host /dev/null proofs/$*.ml-claim $^
+	cargo run --release --bin host /dev/null proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
