@@ -3,6 +3,8 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
+clean-proofs: 
+	rm -rf .build/proofs
 
 # Syntax and formatting checks
 # ============================
@@ -12,7 +14,6 @@ check-cargo:
 	cargo fmt --check
 check-python:
 	make -C generation check
-	make -C generation pyupgrade
 
 .PHONY: check check-cargo check-python
 
@@ -96,6 +97,6 @@ proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --bin host proofs/$*.ml-claim $^
+	cargo run --release --bin host proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
