@@ -4,25 +4,24 @@ from io import BytesIO, StringIO
 
 import pytest
 
-from proof_generation.deserialize import ExecutionPhase, deserialize_instructions
+from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
 from proof_generation.proof import (
     Application,
     Claim,
     EVar,
+    ExecutionPhase,
     Exists,
     Implication,
     MetaVar,
     Mu,
-    BasicInterpreter,
     NotationlessPrettyPrinter,
     PrettyPrintingInterpreter,
     SerializingInterpreter,
     StatefulInterpreter,
     SVar,
-    ExecutionPhase
 )
-from proof_generation.proofs.propositional import Propositional, SmallTheory
+from proof_generation.proofs.propositional import Propositional
 
 
 def test_instantiate() -> None:
@@ -141,12 +140,12 @@ def test_deserialize(test: tuple[str, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter([], out_ser)).__getattribute__(target)()
+    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).__getattribute__(target)()
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_deser), phase)
+    deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter(phase=phase, out=out_ser_deser))
 
     # Prettyprint the proof directly, but ommit notation
     out_pretty = StringIO()
-    _ = Propositional(NotationlessPrettyPrinter([], out_pretty)).__getattribute__(target)()
+    _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).__getattribute__(target)()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()

@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from functools import partial
 from pathlib import Path
 from typing import BinaryIO, TextIO
 
@@ -21,10 +22,12 @@ from proof_generation.pattern import (
     Symbol,
 )
 
+
 class ExecutionPhase(Enum):
     Gamma = 0
     Claim = 1
     Proof = 2
+
 
 @dataclass
 class Proved:
@@ -151,11 +154,15 @@ class StatefulInterpreter(BasicInterpreter):
     stack: list[Pattern | Proved]
     memory: list[Pattern | Proved]
 
-    def __init__(self, phase: ExecutionPhase, claims: list[Claim] = [], axioms: list[Proved] = []) -> None:
+    def __init__(self, phase: ExecutionPhase, claims: list[Claim] = None, axioms: list[Proved] = None) -> None:
         super().__init__(phase=phase)
         self.stack = []
-        self.memory = axioms
-        self.claims = claims
+        self.memory = []
+        self.claims = claims if claims else []
+
+        if phase == ExecutionPhase.Proof:
+            raw_terms = axioms if axioms else []
+            self.memory = list(map(partial(Proved, self), raw_terms))
 
     def print_state(self) -> None:
         for i, item in enumerate(self.stack):
@@ -288,8 +295,10 @@ class StatefulInterpreter(BasicInterpreter):
 
 
 class SerializingInterpreter(StatefulInterpreter):
-    def __init__(self, phase: ExecutionPhase, out: BinaryIO, claims: list[Claim] = [], axioms: list[Proved] = []) -> None:
-        super().__init__(phase = phase, claims = claims, axioms = axioms)
+    def __init__(
+        self, phase: ExecutionPhase, out: BinaryIO, claims: list[Claim] = None, axioms: list[Proved] = None
+    ) -> None:
+        super().__init__(phase=phase, claims=claims, axioms=axioms)
         self.out = out
 
     def evar(self, id: int) -> Pattern:
@@ -397,8 +406,10 @@ class SerializingInterpreter(StatefulInterpreter):
 
 
 class PrettyPrintingInterpreter(StatefulInterpreter):
-    def __init__(self, phase: ExecutionPhase, out: TextIO, claims: list[Claim] = [], axioms: list[Proved] = []) -> None:
-        super().__init__(phase, claims, axioms)
+    def __init__(
+        self, phase: ExecutionPhase, out: TextIO, claims: list[Claim] = None, axioms: list[Proved] = None
+    ) -> None:
+        super().__init__(phase=phase, claims=claims, axioms=axioms)
         self.out = out
         self._notation: dict[str, Pattern] = {}
 
@@ -567,10 +578,6 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
 
 class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
-    def __init__(self, claims: list[Claim], out: TextIO) -> None:
-        super().__init__(claims, out)
-        self.out = out
-
     def save(self, id: str, term: Pattern | Proved) -> None:
         id = str(len(self.memory))
         ret = super().save(id, term)
@@ -594,10 +601,10 @@ class ProofExp:
         self.notation: dict[str, Pattern] = {}
 
     @staticmethod
-
     def axioms() -> list[Proved]:
         raise NotImplementedError
 
+    @staticmethod
     def claims() -> list[Pattern]:
         raise NotImplementedError
 

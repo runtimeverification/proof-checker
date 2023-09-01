@@ -1,10 +1,9 @@
 from __future__ import annotations
-from functools import partial
 
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar, Proved, EVar
+from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, Proved, SVar, Symbol
 
 if TYPE_CHECKING:
     from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, ProvedExpression
@@ -274,11 +273,12 @@ class Propositional(ProofExp):
             ),
         )
 
+
 class SmallTheory(Propositional):
     @staticmethod
     def axioms():
-        phi0_implies_phi1 = Implication(EVar(0), EVar(1))
-        phi1_implies_phi2 = Implication(EVar(1), EVar(2))
+        phi0_implies_phi1 = Implication(Symbol(0), Symbol(1))
+        phi1_implies_phi2 = Implication(Symbol(1), Symbol(2))
         return [phi0_implies_phi1, phi1_implies_phi2]
 
     def hydrate(self, term: Pattern):
@@ -286,13 +286,46 @@ class SmallTheory(Propositional):
 
     @staticmethod
     def claims():
-        phi0_implies_phi2 = Implication(EVar(0), EVar(2))
+        phi0_implies_phi2 = Implication(Symbol(0), Symbol(2))
         return [phi0_implies_phi2]
 
-    def phi0_implies_phi2(self) -> Proved:
-        phi0_implies_phi1 = self.hydrate(SmallTheory.axioms()[0])
-        phi1_implies_phi2 = self.hydrate(SmallTheory.axioms()[1])
-        return super().imp_transitivity(phi0_implies_phi1, phi1_implies_phi2)
+    def sym0(self) -> Pattern:
+        if ret := self.load_notation('sym0'):
+            return ret
+        return self.save_notation('sym0', self.symbol(0))
+
+    def sym1(self) -> Pattern:
+        if ret := self.load_notation('sym1'):
+            return ret
+        return self.save_notation('sym1', self.symbol(1))
+
+    def sym2(self) -> Pattern:
+        if ret := self.load_notation('sym2'):
+            return ret
+        return self.save_notation('sym2', self.symbol(2))
+
+    def sym0_implies_sym1(self) -> Proved:
+        if ret := self.load_notation('sym0_implies_sym1'):
+            return ret
+        term = self.hydrate(self.axioms()[0])
+        self.interpreter.load('', term)
+        return term
+
+    def sym1_implies_sym2(self) -> Proved:
+        if ret := self.load_notation('sym1_implies_sym2'):
+            return ret
+        term = self.hydrate(self.axioms()[1])
+        self.interpreter.load('', term)
+        return term
+
+    def sym0_implies_sym2(self) -> Pattern:
+        if ret := self.load_notation('sym0_implies_sym2'):
+            return ret
+        return self.save_notation('sym0_implies_smy2', self.sym0_implies_sym2_proof())
+
+    def sym0_implies_sym2_proof(self) -> Proved:
+        return super().imp_transitivity(self.sym0_implies_sym1(), self.sym1_implies_sym2())
+
 
 if __name__ == '__main__':
     Propositional.main(sys.argv)
