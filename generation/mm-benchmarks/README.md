@@ -7,3 +7,5 @@ The following is a list of the Metamath benchmark files in the order of their co
 3. `svm5.mm`: a proof of the execution goal for a support vector machine over 5 fixed inputs implemented in IMP.
 4. `transfer.mm`: a proof of the execution goal for a ERC20 like transfer function implemented in IMP.
 5. `transfer5000.mm`: a proof of the execution goal for a batch of 50000 ERC20 like transfer functions implemented in IMP.
+6. `transfer-goal.mm`: uncompressed version of the main goal in the sliced version of the transfer proof.
+7. `transfer-largest-slice.mm`: uncompressed version of the largest goal in the sliced version of the transfer proof.
