@@ -12,8 +12,10 @@ bot = Mu(SVar(0), SVar(0))
 phi0 = MetaVar(0)
 phi0_implies_phi0 = Implication(phi0, phi0)
 
+
 def neg(p: Pattern) -> Pattern:
     return Implication(p, bot)
+
 
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
@@ -137,7 +139,7 @@ class Propositional(ProofExp):
                 self.modus_ponens(
                     # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
                     self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    phi1_imp_phi2
+                    phi1_imp_phi2,
                 ),
             ).instantiate({1: phi0}),
             phi0_imp_phi1,
