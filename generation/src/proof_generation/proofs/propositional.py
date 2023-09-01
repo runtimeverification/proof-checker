@@ -129,9 +129,16 @@ class Propositional(ProofExp):
                 raise AssertionError('Expected implication')
 
         return self.modus_ponens(
+            # (phi0 -> phi1) -> (phi0 -> phi2)
             self.modus_ponens(
-                self.prop2().instantiate({1: phi1, 2: phi2, 0: MetaVar(0)}),
-                self.modus_ponens(self.prop1().instantiate({0: phi1_imp_phi2_conc}), phi1_imp_phi2),
+                # (1 -> (phi1 -> phi2)) -> ((1 -> phi1) -> (1 -> phi2))
+                self.prop2().instantiate({0: MetaVar(1), 1: phi1, 2: phi2}),
+                #  1 -> (phi1 -> phi2)
+                self.modus_ponens(
+                    # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
+                    self.prop1().instantiate({0: phi1_imp_phi2_conc}),
+                    phi1_imp_phi2
+                ),
             ).instantiate({1: phi0}),
             phi0_imp_phi1,
         )
