@@ -1,16 +1,6 @@
 from __future__ import annotations
 
-from io import BytesIO, StringIO
-
-from proof_generation.proof import (
-    BasicInterpreter,
-    ExecutionPhase,
-    Implication,
-    PrettyPrintingInterpreter,
-    Proved,
-    SerializingInterpreter,
-    Symbol,
-)
+from proof_generation.proof import BasicInterpreter, ExecutionPhase, Implication, Proved, Symbol
 from proof_generation.proofs.propositional import Propositional, SmallTheory
 
 
@@ -25,6 +15,7 @@ def test_prove_transitivity_via_theory() -> None:
     th = SmallTheory(BasicInterpreter(phase=ExecutionPhase.Proof))
     phi0_implies_phi2 = th.claims()[0]
     assert th.sym0_implies_sym2_proof().conclusion == phi0_implies_phi2
+
 
 # def test_prove_transitivity_serialize() -> None:
 #     out = BytesIO()

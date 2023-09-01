@@ -14,7 +14,7 @@ class Propositional(ProofExp):
         super().__init__(interpreter)
 
     @staticmethod
-    def axioms() -> list[Proved]:
+    def axioms() -> list[Pattern]:
         return []
 
     @staticmethod
@@ -276,16 +276,17 @@ class Propositional(ProofExp):
 
 class SmallTheory(Propositional):
     @staticmethod
-    def axioms():
+    def axioms() -> list[Pattern]:
         phi0_implies_phi1 = Implication(Symbol(0), Symbol(1))
         phi1_implies_phi2 = Implication(Symbol(1), Symbol(2))
         return [phi0_implies_phi1, phi1_implies_phi2]
 
-    def hydrate(self, term: Pattern):
+    # Convert a term to an axiom, providing the interpreter
+    def hydrate(self, term: Pattern) -> Proved:
         return Proved(self.interpreter, term)
 
     @staticmethod
-    def claims():
+    def claims() -> list[Pattern]:
         phi0_implies_phi2 = Implication(Symbol(0), Symbol(2))
         return [phi0_implies_phi2]
 
@@ -305,15 +306,15 @@ class SmallTheory(Propositional):
         return self.save_notation('sym2', self.symbol(2))
 
     def sym0_implies_sym1(self) -> Proved:
-        if ret := self.load_notation('sym0_implies_sym1'):
-            return ret
+        # if ret := self.load_notation('sym0_implies_sym1'):
+        # return ret
         term = self.hydrate(self.axioms()[0])
         self.interpreter.load('', term)
         return term
 
     def sym1_implies_sym2(self) -> Proved:
-        if ret := self.load_notation('sym1_implies_sym2'):
-            return ret
+        # if ret := self.load_notation('sym1_implies_sym2'):
+        # return ret
         term = self.hydrate(self.axioms()[1])
         self.interpreter.load('', term)
         return term
@@ -321,7 +322,7 @@ class SmallTheory(Propositional):
     def sym0_implies_sym2(self) -> Pattern:
         if ret := self.load_notation('sym0_implies_sym2'):
             return ret
-        return self.save_notation('sym0_implies_smy2', self.sym0_implies_sym2_proof())
+        return self.save_notation('sym0_implies_smy2', self.implies(self.sym0(), self.sym2()))
 
     def sym0_implies_sym2_proof(self) -> Proved:
         return super().imp_transitivity(self.sym0_implies_sym1(), self.sym1_implies_sym2())

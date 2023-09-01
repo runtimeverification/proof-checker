@@ -129,7 +129,7 @@ def test_prove_imp_reflexivity() -> None:
 
 
 # Construct a mock ProofExp to extract the claim and proof names
-mock_prop = Propositional(SerializingInterpreter([], BytesIO()))
+mock_prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, out=BytesIO()))
 
 proofs = [(method.__name__, ExecutionPhase.Proof) for method in mock_prop.proof_expressions()]
 claims = [(method.__name__, ExecutionPhase.Claim) for method in mock_prop.claim_expressions()]

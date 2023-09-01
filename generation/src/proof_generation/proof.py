@@ -154,7 +154,9 @@ class StatefulInterpreter(BasicInterpreter):
     stack: list[Pattern | Proved]
     memory: list[Pattern | Proved]
 
-    def __init__(self, phase: ExecutionPhase, claims: list[Claim] = None, axioms: list[Proved] = None) -> None:
+    def __init__(
+        self, phase: ExecutionPhase, claims: list[Claim] | None = None, axioms: list[Proved] | None = None
+    ) -> None:
         super().__init__(phase=phase)
         self.stack = []
         self.memory = []
@@ -296,7 +298,11 @@ class StatefulInterpreter(BasicInterpreter):
 
 class SerializingInterpreter(StatefulInterpreter):
     def __init__(
-        self, phase: ExecutionPhase, out: BinaryIO, claims: list[Claim] = None, axioms: list[Proved] = None
+        self,
+        phase: ExecutionPhase,
+        out: BinaryIO,
+        claims: list[Claim] | None = None,
+        axioms: list[Proved] | None = None,
     ) -> None:
         super().__init__(phase=phase, claims=claims, axioms=axioms)
         self.out = out
@@ -407,7 +413,7 @@ class SerializingInterpreter(StatefulInterpreter):
 
 class PrettyPrintingInterpreter(StatefulInterpreter):
     def __init__(
-        self, phase: ExecutionPhase, out: TextIO, claims: list[Claim] = None, axioms: list[Proved] = None
+        self, phase: ExecutionPhase, out: TextIO, claims: list[Claim] | None = None, axioms: list[Proved] | None = None
     ) -> None:
         super().__init__(phase=phase, claims=claims, axioms=axioms)
         self.out = out
@@ -601,7 +607,7 @@ class ProofExp:
         self.notation: dict[str, Pattern] = {}
 
     @staticmethod
-    def axioms() -> list[Proved]:
+    def axioms() -> list[Pattern]:
         raise NotImplementedError
 
     @staticmethod
@@ -699,7 +705,7 @@ class ProofExp:
     def serialize_claims(cls, output: Path) -> None:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(claims=claims, out=out))
+            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out))
             for claim_expr in reversed(proof_exp.claim_expressions()):
                 proof_exp.publish_claim(claim_expr())
 
@@ -707,7 +713,7 @@ class ProofExp:
     def serialize_proofs(cls, output: Path) -> None:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(claims=claims, out=out))
+            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=claims, out=out))
             for proof_expr in proof_exp.proof_expressions():
                 proof_exp.publish_proof(proof_expr())
 
@@ -715,7 +721,7 @@ class ProofExp:
     def pretty_print_claims(cls, output: Path) -> None:
         with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            interpreter = PrettyPrintingInterpreter(claims=claims, out=out)
+            interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out)
             proof_exp = cls(interpreter)
             # TODO: A bit ugly
             interpreter.plug_in_notation(proof_exp.notation)
@@ -726,7 +732,7 @@ class ProofExp:
     def pretty_print_proofs(cls, output: Path) -> None:
         with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            interpreter = PrettyPrintingInterpreter(claims=claims, out=out)
+            interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, claims=claims, out=out)
             proof_exp = cls(interpreter)
             # TODO: A bit ugly
             interpreter.plug_in_notation(proof_exp.notation)
