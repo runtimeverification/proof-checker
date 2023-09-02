@@ -27,8 +27,8 @@ class Proved:
     conclusion: Pattern
 
     def instantiate(self: Proved, delta: dict[int, Pattern]) -> Proved:
-        for p in delta.values():
-            p = self.interpreter.pattern(p)
+        for idn, p in delta.items():
+            delta[idn] = self.interpreter.pattern(p)
 
         return self.interpreter.instantiate(self, delta)
 
@@ -96,10 +96,19 @@ class BasicInterpreter:
             case Mu(var, subpattern):
                 return self.mu(var.name, self.pattern(subpattern))
             case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
-                # TODO: Walking through through the variables (so that they are on stack)
-                return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+                return self.metavar(
+                    name,
+                    self.patterns(e_fresh),
+                    self.patterns(s_fresh),
+                    self.patterns(positive),
+                    self.patterns(negative),
+                    self.patterns(app_ctx_holes)
+                )
 
-        return p
+        raise NotImplementedError
+
+    def patterns(self, ps: tuple[Pattern, ...]) -> tuple[Pattern, ...]:
+        return tuple(self.pattern(p) for p in ps)
 
     def prop1(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
