@@ -96,13 +96,20 @@ class BasicInterpreter:
             case Mu(var, subpattern):
                 return self.mu(var.name, self.pattern(subpattern))
             case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
+                # TODO: The results should be passed to self.metavar
+                self.patterns(e_fresh)
+                self.patterns(s_fresh)
+                self.patterns(positive)
+                self.patterns(negative)
+                self.patterns(app_ctx_holes)
+
                 return self.metavar(
                     name,
-                    self.patterns(e_fresh),
-                    self.patterns(s_fresh),
-                    self.patterns(positive),
-                    self.patterns(negative),
-                    self.patterns(app_ctx_holes)
+                    e_fresh,
+                    s_fresh,
+                    positive,
+                    negative,
+                    app_ctx_holes
                 )
 
         raise NotImplementedError
