@@ -57,7 +57,7 @@ cov-integration: test-integration
 # Checks and formatting
 
 format: autoflake isort black
-check: check-flake8 check-mypy check-autoflake check-isort check-black
+check: check-flake8 check-mypy check-autoflake check-isort check-black pyupgrade
 
 check-flake8: poetry-install
 	$(POETRY_RUN) flake8 src
