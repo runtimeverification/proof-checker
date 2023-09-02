@@ -103,14 +103,7 @@ class BasicInterpreter:
                 self.patterns(negative)
                 self.patterns(app_ctx_holes)
 
-                return self.metavar(
-                    name,
-                    e_fresh,
-                    s_fresh,
-                    positive,
-                    negative,
-                    app_ctx_holes
-                )
+                return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
         raise NotImplementedError
 
