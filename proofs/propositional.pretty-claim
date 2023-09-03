@@ -4,8 +4,6 @@ List=pos len=0
 List=neg len=0 
 List=appctx len=0 
 MetaVar 0
-	Stack:
-	0: phi0
 Save
 SVar 0
 	Stack:
