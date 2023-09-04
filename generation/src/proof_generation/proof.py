@@ -262,6 +262,12 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
+    def pattern(self, pattern: Pattern):
+        if pattern in self.memory:
+            self.load('', pattern)
+            return pattern
+        return super().pattern(pattern)
+
     def prop1(self) -> Proved:
         ret = super().prop1()
         self.stack.append(ret)
@@ -316,7 +322,7 @@ class StatefulInterpreter(BasicInterpreter):
     def publish_proof(self, proved: Proved) -> None:
         super().publish_proof(proved)
         expected_claim, *self.claims = self.claims
-        assert proved.conclusion == expected_claim.pattern
+        assert proved.conclusion == expected_claim.pattern, f'{proved.conclusion, expected_claim.pattern}'
         assert self.stack[-1] == proved
 
     def publish_axiom(self, axiom: Proved) -> None:
@@ -437,7 +443,7 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.Publish]))
 
     def publish_axiom(self, axiom: Proved) -> None:
-        super().publish_proof(axiom)
+        super().publish_axiom(axiom)
         self.out.write(bytes([Instruction.Publish]))
 
     def publish_claim(self, pattern: Pattern) -> None:
@@ -727,6 +733,10 @@ class ProofExp:
         self.interpreter.save(id, pattern)
         return pattern
 
+    def publish_axiom(self, proved: Proved) -> Proved:
+        self.interpreter.publish_axiom(proved)
+        return proved
+
     def publish_proof(self, proved: Proved) -> Proved:
         self.interpreter.publish_proof(proved)
         return proved
@@ -740,16 +750,24 @@ class ProofExp:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
             proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out))
-            for claim_expr in reversed(proof_exp.claim_expressions()):
-                proof_exp.publish_claim(claim_expr())
+            for claim_expr in reversed(proof_exp.claims()):
+                proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
 
     @classmethod
     def serialize_proofs(cls, output: Path) -> None:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=claims, out=out))
+            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=claims, axioms = cls.axioms(), out=out))
             for proof_expr in proof_exp.proof_expressions():
                 proof_exp.publish_proof(proof_expr())
+
+    @classmethod
+    def serialize_gamma(cls, output: Path) -> None:
+        with open(output, 'wb') as out:
+            claims = list(map(Claim, cls.claims()))
+            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out))
+            for axiom in proof_exp.axioms():
+                proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
 
     @classmethod
     def pretty_print_claims(cls, output: Path) -> None:
@@ -759,14 +777,14 @@ class ProofExp:
             proof_exp = cls(interpreter)
             # TODO: A bit ugly
             interpreter.plug_in_notation(proof_exp.notation)
-            for claim_expr in reversed(proof_exp.claim_expressions()):
-                proof_exp.publish_claim(claim_expr())
+            for claim_expr in reversed(proof_exp.claims()):
+                proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
 
     @classmethod
     def pretty_print_proofs(cls, output: Path) -> None:
         with open(output, 'w') as out:
             claims = list(map(Claim, cls.claims()))
-            interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, claims=claims, out=out)
+            interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, claims=claims, axioms = cls.axioms(), out=out)
             proof_exp = cls(interpreter)
             # TODO: A bit ugly
             interpreter.plug_in_notation(proof_exp.notation)
@@ -799,5 +817,7 @@ class ProofExp:
                 cls.serialize_claims(Path(output_path))
             case ('binary', 'proof'):
                 cls.serialize_proofs(Path(output_path))
+            case ('binary', 'gamma'):
+                cls.serialize_gamma(Path(output_path))
             case _:
                 raise AssertionError(usage)
