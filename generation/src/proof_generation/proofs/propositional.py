@@ -134,12 +134,6 @@ class Propositional(ProofExp):
             case _:
                 raise AssertionError('Expected implication')
 
-        # return self.modus_ponens(
-        #             # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
-        #             self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-        #             self.interpreter.pattern(phi1_imp_phi2),
-        #         )
-
         return self.modus_ponens(
             # (phi0 -> phi1) -> (phi0 -> phi2)
             self.modus_ponens(
@@ -149,10 +143,10 @@ class Propositional(ProofExp):
                 self.modus_ponens(
                     # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
                     self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    self.interpreter.pattern(phi1_imp_phi2),
+                    self.interpreter.pattern(phi1_imp_phi2),  # type: ignore
                 ),
             ).instantiate({1: phi0}),
-            self.interpreter.pattern(phi0_imp_phi1),
+            self.interpreter.pattern(phi0_imp_phi1),  # type: ignore
         )
 
     def top_intro(self) -> Proved:
@@ -305,7 +299,7 @@ class SmallTheory(Propositional):
         return [phi0_implies_phi1, phi1_implies_phi2]
 
     # Convert a term to an axiom, providing the interpreter
-    def hydrate(self, term: Pattern) -> Proved:
+    def hydrate_axiom(self, term: Pattern) -> Proved:
         return Proved(self.interpreter, term)
 
     @staticmethod
@@ -329,19 +323,10 @@ class SmallTheory(Propositional):
         return self.save_notation('sym2', self.symbol(2))
 
     def sym0_implies_sym1(self) -> Proved:
-        # if ret := self.load_notation('sym0_implies_sym1'):
-        # return ret
-        term = self.hydrate(self.axioms()[0])
-        #self.interpreter.load('', term)
-        return term
+        return self.hydrate_axiom(self.axioms()[0])
 
     def sym1_implies_sym2(self) -> Proved:
-        # if ret := self.load_notation('sym1_implies_sym2'):
-        # return ret
-        term = self.hydrate(self.axioms()[1])
-        #self.interpreter.load('', term)
-        print(self.interpreter.stack)
-        return term
+        return self.hydrate_axiom(self.axioms()[1])
 
     def sym0_implies_sym2(self) -> Pattern:
         if ret := self.load_notation('sym0_implies_sym2'):

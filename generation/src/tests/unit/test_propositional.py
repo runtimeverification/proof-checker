@@ -1,9 +1,6 @@
 from __future__ import annotations
-from io import BytesIO, StringIO
-from proof_generation.deserialize import deserialize_instructions
 
-from proof_generation.instruction import Instruction
-from proof_generation.proof import BasicInterpreter, ExecutionPhase, Implication, PrettyPrintingInterpreter, Proved, SerializingInterpreter, StatefulInterpreter, Symbol
+from proof_generation.proof import ExecutionPhase, Implication, Proved, StatefulInterpreter, Symbol
 from proof_generation.proofs.propositional import Propositional, SmallTheory
 
 
