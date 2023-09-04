@@ -35,6 +35,9 @@ class Proved:
     conclusion: Pattern
 
     def instantiate(self: Proved, delta: dict[int, Pattern]) -> Proved:
+        for idn, p in delta.items():
+            delta[idn] = self.interpreter.pattern(p)
+
         return self.interpreter.instantiate(self, delta)
 
     def assertc(self, pattern: Pattern) -> Proved:
@@ -86,6 +89,37 @@ class BasicInterpreter:
 
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(SVar(var), subpattern)
+
+    def pattern(self, p: Pattern) -> Pattern:
+        match p:
+            case EVar(name):
+                return self.evar(name)
+            case SVar(name):
+                return self.svar(name)
+            case Symbol(name):
+                return self.symbol(name)
+            case Implication(left, right):
+                return self.implies(self.pattern(left), self.pattern(right))
+            case Application(left, right):
+                return self.app(self.pattern(left), self.pattern(right))
+            case Exists(var, subpattern):
+                return self.exists(var.name, self.pattern(subpattern))
+            case Mu(var, subpattern):
+                return self.mu(var.name, self.pattern(subpattern))
+            case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
+                # TODO: The results should be passed to self.metavar
+                self.patterns(e_fresh)
+                self.patterns(s_fresh)
+                self.patterns(positive)
+                self.patterns(negative)
+                self.patterns(app_ctx_holes)
+
+                return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+
+        raise NotImplementedError
+
+    def patterns(self, ps: tuple[Pattern, ...]) -> tuple[Pattern, ...]:
+        return tuple(self.pattern(p) for p in ps)
 
     def prop1(self) -> Proved:
         phi0: MetaVar = MetaVar(0)

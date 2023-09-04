@@ -38,7 +38,7 @@ class Symbol(Pattern):
         return self
 
     def __str__(self) -> str:
-        return str(self.name)
+        return f'\u03c3{str(self.name)}'
 
 
 @dataclass(frozen=True)

@@ -55,7 +55,7 @@ def test_conclusion() -> None:
     prop.modus_ponens(
         prop.modus_ponens(
             prop.prop2()
-            .instantiate({1: prop.phi0_implies_phi0(), 2: prop.phi0()})
+            .instantiate({1: phi0_implies_phi0, 2: phi0})
             .assertc(
                 Implication(
                     Implication(phi0, Implication(phi0_implies_phi0, phi0)),
@@ -63,10 +63,10 @@ def test_conclusion() -> None:
                 )
             ),
             prop.prop1()
-            .instantiate({1: prop.phi0_implies_phi0()})
+            .instantiate({1: phi0_implies_phi0})
             .assertc(Implication(phi0, Implication(phi0_implies_phi0, phi0))),
         ).assertc(Implication(Implication(phi0, phi0_implies_phi0), Implication(phi0, phi0))),
-        prop.prop1().instantiate({1: prop.phi0()}),
+        prop.prop1().instantiate({1: phi0}),
     ).assertc(Implication(phi0, phi0))
 
 
@@ -106,20 +106,50 @@ def test_prove_imp_reflexivity() -> None:
         Instruction.List, 0,
         Instruction.List, 0,
         Instruction.MetaVar, 0,         # Stack: prop2 ; $ph0
-        Instruction.Save,               # @0
-        Instruction.Load, 0,            # Stack: prop2 ; $ph0 ; $ph0
+
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.MetaVar, 0,         # Stack: prop2 ; $ph0 ; $ph0
+
         Instruction.Implication,        # Stack: prop2 ; $ph0 -> ph0
-        Instruction.Save,               # @1
-        Instruction.Load, 0,            # Stack: prop2[ph0 -> ph0/0] ; ph0
+
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.MetaVar, 0,           # Stack: prop2[ph0 -> ph0/0] ; ph0
         Instruction.Instantiate, 2, 2, 1, # Stack: prop2[ph0 -> ph0/0]
 
         Instruction.Prop1,              # Stack: p1 ; prop1
-        Instruction.Load, 1,            # Stack: p1 ; prop1 ; $ph0 -> ph0
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.MetaVar, 0,
+
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.MetaVar, 0,
+        Instruction.Implication,         # Stack: p1 ; prop1 ; $ph0 -> ph0
+
         Instruction.Instantiate, 1, 1,  # Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
         Instruction.ModusPonens,        # Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
 
         Instruction.Prop1,              # Stack: p3 ; prop1
-        Instruction.Load, 0,            # Stack: p3 ; prop1 ; ph0
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.List, 0,
+        Instruction.MetaVar, 0,            # Stack: p3 ; prop1 ; ph0
         Instruction.Instantiate, 1, 1,  # Stack: p3 ; ph0 -> ph0 -> ph0
 
         Instruction.ModusPonens,        # Stack: phi0 -> phi0
