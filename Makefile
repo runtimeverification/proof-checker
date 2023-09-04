@@ -77,7 +77,7 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/
 #	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
 #	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
 	${BIN_DIFF} "proofs/$*.ml-claim" ".build/proofs/$*.ml-claim"
-#	${BIN_DIFF} "proofs/$*.ml-proof" ".build/proofs/$*.ml-proof"
+	${BIN_DIFF} "proofs/$*.ml-proof" ".build/proofs/$*.ml-proof"
 
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
@@ -101,6 +101,6 @@ proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --release --bin host proofs/%.ml-gamma proofs/$*.ml-claim $^
+	cargo run --release --bin host proofs/$*.ml-gamma proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
