@@ -112,3 +112,14 @@ def test_parse_transfer_largest_slice() -> None:
     assert isinstance(input_database.statements[-1], Block)
     assert isinstance(input_database.statements[-1].statements[0], ProvableStatement)
     assert input_database.statements[-1].statements[0].label == 'aig'
+
+
+def test_parse_disjointness_alt_lemma_slice() -> None:
+    """Just checking that the parser works on the file"""
+    input_database = load_database(os.path.join(BENCHMARK_LOCATION, 'disjointness-alt-lemma.mm'), include_proof=True)
+    assert len(input_database.statements) == 69
+
+    assert isinstance(input_database.statements[0], ConstantStatement)
+    assert isinstance(input_database.statements[-1], Block)
+    assert isinstance(input_database.statements[-1].statements[-1], ProvableStatement)
+    assert input_database.statements[-1].statements[-1].label == 'disjointness-alt-lemma'
