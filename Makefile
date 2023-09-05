@@ -71,13 +71,19 @@ PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
 
+.build/proofs/%.pretty-gamma: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty gamma $@
+
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
-proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim
+proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim .build/proofs/%.pretty-gamma
 	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
 	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
+	${DIFF} --label expected "proofs/$*.pretty-gamma" --label actual ".build/proofs/$*.pretty-gamma"
 	${BIN_DIFF} "proofs/$*.ml-claim" ".build/proofs/$*.ml-claim"
 	${BIN_DIFF} "proofs/$*.ml-proof" ".build/proofs/$*.ml-proof"
+	${BIN_DIFF} "proofs/$*.ml-gamma" ".build/proofs/$*.ml-gamma"
 
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
