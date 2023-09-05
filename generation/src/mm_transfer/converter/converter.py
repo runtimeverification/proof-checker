@@ -53,7 +53,7 @@ class MetamathConverter:
             self._declared_variables[var.name] = var
 
     def _import_floating(self, statement: FloatingStatement) -> None:
-        def is_pattern(st: FloatingStatement) -> Metavariable | None:
+        def get_pattern(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Pattern'
@@ -64,7 +64,7 @@ class MetamathConverter:
             else:
                 return None
 
-        def is_symbol(st: FloatingStatement) -> Metavariable | None:
+        def get_symbol(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Symbol'
@@ -75,7 +75,7 @@ class MetamathConverter:
             else:
                 return None
 
-        def is_var(st: FloatingStatement) -> Metavariable | None:
+        def get_var(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Variable'
@@ -86,7 +86,7 @@ class MetamathConverter:
             else:
                 return None
 
-        def is_element_var(st: FloatingStatement) -> Metavariable | None:
+        def get_element_var(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#ElementVariable'
@@ -97,7 +97,7 @@ class MetamathConverter:
             else:
                 return None
 
-        def is_set_var(st: FloatingStatement) -> Metavariable | None:
+        def get_set_var(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#SetVariable'
@@ -108,15 +108,15 @@ class MetamathConverter:
             else:
                 return None
 
-        if var := is_pattern(statement):
+        if var := get_pattern(statement):
             self._patterns[var.name] = var
-        elif var := is_symbol(statement):
+        elif var := get_symbol(statement):
             self._symbols[var.name] = var
-        elif var := is_var(statement):
+        elif var := get_var(statement):
             self._variables[var.name] = var
-        elif var := is_element_var(statement):
+        elif var := get_element_var(statement):
             self._element_vars[var.name] = var
-        elif var := is_set_var(statement):
+        elif var := get_set_var(statement):
             self._set_vars[var.name] = var
         else:
             print(f'Unknown floating statement: {repr(statement)}')
