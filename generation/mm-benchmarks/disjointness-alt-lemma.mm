@@ -1,5 +1,6 @@
 $c \exists #Substitution #Notation \top \ceil \or #Variable #ApplicationContext \included \floor \inh #Fresh \imp \app |- \bot ) \and #SetVariable #ElementVariable #Symbol \sorted-exists #Pattern \inhabitant \definedness \not \in-sort ( $.
-$v sg0 ph6 ph3 ph1 ph2 ph0 xX x y ph4 ph5 $.
+$v sg0 ph6 ph3 ph1 ph2 ph0 xX x y ph4 ph5 set0 $.
+set0-is-setvar $f #SetVariable set0 $.
 ph0-is-pattern $f #Pattern ph0 $.
 ph1-is-pattern $f #Pattern ph1 $.
 ph2-is-pattern $f #Pattern ph2 $.
