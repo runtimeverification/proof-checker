@@ -17,10 +17,6 @@ class SmallTheory(Propositional):
         phi1_implies_phi2 = Implication(Symbol(1), Symbol(2))
         return [phi0_implies_phi1, phi1_implies_phi2]
 
-    # Convert a term to an axiom, providing the interpreter
-    def hydrate(self, term: Pattern) -> Proved:
-        return Proved(self.interpreter, term)
-
     @staticmethod
     def claims() -> list[Pattern]:
         phi0_implies_phi2 = Implication(Symbol(0), Symbol(2))
