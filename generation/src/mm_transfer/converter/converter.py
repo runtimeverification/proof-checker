@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class MetamathConverter:
     """
-    Get the parsed object and try to convert it making as less iterations as possible
+    Get the parsed object and try to convert it making as few iterations as possible
     """
 
     def __init__(self, parsed: Database) -> None:
@@ -20,7 +20,8 @@ class MetamathConverter:
         self._patterns: dict[str, Metavariable] = {}
         self._symbols: dict[str, Metavariable] = {}
         self._variables: dict[str, Metavariable] = {}
-        self._elemental: dict[str, Metavariable] = {}
+        self._element_vars: dict[str, Metavariable] = {}
+        self._set_vars: dict[str, Metavariable] = {}
         self._top_down()
 
     def put_vars_on_stack(self, interpreter: BasicInterpreter) -> None:
@@ -101,6 +102,18 @@ class MetamathConverter:
                 var = self._declared_variables[st.terms[1].name]
                 return True
             return False
+            
+            def is_set_var(st: FloatingStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#SetVariable'
+                and isinstance(st.terms[1], Metavariable)
+                and st.terms[1].name in self._declared_variables
+            ):
+                nonlocal var
+                var = self._declared_variables[st.terms[1].name]
+                return True
+            return False
 
         if is_pattern(statement) and var is not None:
             self._patterns[var.name] = var
@@ -109,6 +122,8 @@ class MetamathConverter:
         elif is_var(statement) and var is not None:
             self._variables[var.name] = var
         elif is_element_var(statement) and var is not None:
-            self._elemental[var.name] = var
+            self._element_vars[var.name] = var
+        elif is_set_var(statement) and var is not None:
+            self._set_vars[var.name] = var
         else:
             print(f'Unknown floating statement: {repr(statement)}')

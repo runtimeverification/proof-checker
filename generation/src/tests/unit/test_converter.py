@@ -27,5 +27,5 @@ def test_convert_vars_impreflex() -> None:
 
     evars = ('x', 'y')
     for evar in evars:
-        assert evar in converter._elemental and converter._elemental[evar].name == evar
-    assert len(converter._elemental) == len(evars)
+        assert evar in converter._element_vars and converter._element_vars[evar].name == evar
+    assert len(converter._element_vars) == len(evars)
