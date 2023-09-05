@@ -122,7 +122,6 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
             if interpreter.phase == ExecutionPhase.Claim:
                 pattern = interpreter.stack[-1]
                 assert isinstance(pattern, Pattern)
-                # interpreter.claims.append(Claim(pattern))
                 interpreter.publish_claim(pattern)
             elif interpreter.phase == ExecutionPhase.Proof:
                 claim = interpreter.claims.pop()
