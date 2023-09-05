@@ -723,6 +723,14 @@ class ProofExp:
         self.interpreter.load(id, ret)
         return ret
 
+    def load_axiom(self, axiom_term: Pattern) -> Proved:
+        assert axiom_term in self.axioms()
+        axiom = Proved(self.interpreter, axiom_term)
+        assert axiom in self.interpreter.memory  # type: ignore
+        axiom_index = self.interpreter.memory.index(axiom)  # type: ignore
+        self.interpreter.load(str(axiom_index), axiom)
+        return axiom
+
     def save_notation(self, id: str, pattern: Pattern) -> Pattern:
         assert id not in self.notation
         self.notation[id] = pattern

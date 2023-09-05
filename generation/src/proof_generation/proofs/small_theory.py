@@ -45,12 +45,10 @@ class SmallTheory(Propositional):
         return self.save_notation('sym2', self.symbol(2))
 
     def sym0_implies_sym1(self) -> Proved:
-        term = self.hydrate(self.axioms()[0])
-        return term
+        return self.load_axiom(self.axioms()[0])
 
     def sym1_implies_sym2(self) -> Proved:
-        term = self.hydrate(self.axioms()[1])
-        return term
+        return self.load_axiom(self.axioms()[1])
 
     def sym0_implies_sym2(self) -> Pattern:
         if ret := self.load_notation('sym0_implies_sym2'):

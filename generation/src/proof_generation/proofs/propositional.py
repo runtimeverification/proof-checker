@@ -3,10 +3,10 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, Proved, SVar, Symbol
+from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
 
 if TYPE_CHECKING:
-    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, ProvedExpression
+    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
 
 bot = Mu(SVar(0), SVar(0))
 phi0 = MetaVar(0)
@@ -135,6 +135,23 @@ class Propositional(ProofExp):
                 raise AssertionError('Expected implication')
 
         return self.modus_ponens(
+                    # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
+                    self.prop1().instantiate({0: phi1_imp_phi2_conc}),
+                    phi1_imp_phi2,  # type: ignore
+                )
+
+        return self.modus_ponens(
+                # (1 -> (phi1 -> phi2)) -> ((1 -> phi1) -> (1 -> phi2))
+                self.prop2().instantiate({0: MetaVar(1), 1: phi1, 2: phi2}),
+                #  1 -> (phi1 -> phi2)
+                self.modus_ponens(
+                    # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
+                    self.prop1().instantiate({0: phi1_imp_phi2_conc}),
+                    phi1_imp_phi2,  # type: ignore
+                ),
+            ).instantiate({1: phi0}),
+
+        return self.modus_ponens(
             # (phi0 -> phi1) -> (phi0 -> phi2)
             self.modus_ponens(
                 # (1 -> (phi1 -> phi2)) -> ((1 -> phi1) -> (1 -> phi2))
@@ -143,10 +160,10 @@ class Propositional(ProofExp):
                 self.modus_ponens(
                     # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
                     self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    self.interpreter.pattern(phi1_imp_phi2),  # type: ignore
+                    phi1_imp_phi2,  # type: ignore
                 ),
             ).instantiate({1: phi0}),
-            self.interpreter.pattern(phi0_imp_phi1),  # type: ignore
+            phi0_imp_phi1,  # type: ignore
         )
 
     def top_intro(self) -> Proved:
@@ -289,52 +306,6 @@ class Propositional(ProofExp):
                 self.imp_reflexivity().instantiate({0: phi0_bot_imp_ph0()}),
             ),
         )
-
-
-class SmallTheory(Propositional):
-    @staticmethod
-    def axioms() -> list[Pattern]:
-        phi0_implies_phi1 = Implication(Symbol(0), Symbol(1))
-        phi1_implies_phi2 = Implication(Symbol(1), Symbol(2))
-        return [phi0_implies_phi1, phi1_implies_phi2]
-
-    # Convert a term to an axiom, providing the interpreter
-    def hydrate_axiom(self, term: Pattern) -> Proved:
-        return Proved(self.interpreter, term)
-
-    @staticmethod
-    def claims() -> list[Pattern]:
-        phi0_implies_phi2 = Implication(Symbol(0), Symbol(2))
-        return [phi0_implies_phi2]
-
-    def sym0(self) -> Pattern:
-        if ret := self.load_notation('sym0'):
-            return ret
-        return self.save_notation('sym0', self.symbol(0))
-
-    def sym1(self) -> Pattern:
-        if ret := self.load_notation('sym1'):
-            return ret
-        return self.save_notation('sym1', self.symbol(1))
-
-    def sym2(self) -> Pattern:
-        if ret := self.load_notation('sym2'):
-            return ret
-        return self.save_notation('sym2', self.symbol(2))
-
-    def sym0_implies_sym1(self) -> Proved:
-        return self.hydrate_axiom(self.axioms()[0])
-
-    def sym1_implies_sym2(self) -> Proved:
-        return self.hydrate_axiom(self.axioms()[1])
-
-    def sym0_implies_sym2(self) -> Pattern:
-        if ret := self.load_notation('sym0_implies_sym2'):
-            return ret
-        return self.save_notation('sym0_implies_smy2', self.implies(self.sym0(), self.sym2()))
-
-    def sym0_implies_sym2_proof(self) -> Proved:
-        return super().imp_transitivity(self.sym0_implies_sym1(), self.sym1_implies_sym2())
 
 
 if __name__ == '__main__':
