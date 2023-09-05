@@ -262,12 +262,6 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def pattern(self, pattern: Pattern) -> Pattern:
-        if pattern in self.memory:
-            self.load('', pattern)
-            return pattern
-        return super().pattern(pattern)
-
     def prop1(self) -> Proved:
         ret = super().prop1()
         self.stack.append(ret)
@@ -726,9 +720,7 @@ class ProofExp:
     def load_axiom(self, axiom_term: Pattern) -> Proved:
         assert axiom_term in self.axioms()
         axiom = Proved(self.interpreter, axiom_term)
-        assert axiom in self.interpreter.memory  # type: ignore
-        axiom_index = self.interpreter.memory.index(axiom)  # type: ignore
-        self.interpreter.load(str(axiom_index), axiom)
+        self.interpreter.load(f'Axiom {str(axiom)}', axiom)
         return axiom
 
     def save_notation(self, id: str, pattern: Pattern) -> Pattern:

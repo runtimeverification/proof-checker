@@ -56,7 +56,7 @@ class SmallTheory(Propositional):
         return self.save_notation('sym0_implies_smy2', self.implies(self.sym0(), self.sym2()))
 
     def sym0_implies_sym2_proof(self) -> Proved:
-        return super().imp_transitivity(self.sym0_implies_sym1(), self.sym1_implies_sym2())
+        return super().imp_transitivity(self.sym0_implies_sym1, self.sym1_implies_sym2)
 
 
 if __name__ == '__main__':

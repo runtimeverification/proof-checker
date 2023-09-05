@@ -119,37 +119,21 @@ class Propositional(ProofExp):
         )
 
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
-    def imp_transitivity(self, phi0_imp_phi1: Proved, phi1_imp_phi2: Proved) -> Proved:
-        phi0_imp_phi1_conc = phi0_imp_phi1.conclusion
+    def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
+        # TODO: Consider if the extra loads caused by these calls are problematic
+        phi0_imp_phi1_conc = phi0_imp_phi1().conclusion
 
         match phi0_imp_phi1_conc:
             case Implication(phi0, phi1):
                 pass
             case _:
                 raise AssertionError('Expected implication')
-        phi1_imp_phi2_conc = phi1_imp_phi2.conclusion
+        phi1_imp_phi2_conc = phi1_imp_phi2().conclusion
         match phi1_imp_phi2_conc:
             case Implication(phi1_r, phi2):
                 assert phi1_r == phi1
             case _:
                 raise AssertionError('Expected implication')
-
-        return self.modus_ponens(
-                    # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
-                    self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    phi1_imp_phi2,  # type: ignore
-                )
-
-        return self.modus_ponens(
-                # (1 -> (phi1 -> phi2)) -> ((1 -> phi1) -> (1 -> phi2))
-                self.prop2().instantiate({0: MetaVar(1), 1: phi1, 2: phi2}),
-                #  1 -> (phi1 -> phi2)
-                self.modus_ponens(
-                    # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
-                    self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    phi1_imp_phi2,  # type: ignore
-                ),
-            ).instantiate({1: phi0}),
 
         return self.modus_ponens(
             # (phi0 -> phi1) -> (phi0 -> phi2)
@@ -160,10 +144,10 @@ class Propositional(ProofExp):
                 self.modus_ponens(
                     # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
                     self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    phi1_imp_phi2,  # type: ignore
+                    phi1_imp_phi2(),
                 ),
             ).instantiate({1: phi0}),
-            phi0_imp_phi1,  # type: ignore
+            phi0_imp_phi1(),
         )
 
     def top_intro(self) -> Proved:
