@@ -1,6 +1,7 @@
 import os
 
 from mm_transfer.converter.converter import MetamathConverter
+from mm_transfer.metamath.ast import ConstantStatement
 from mm_transfer.metamath.parser import load_database
 
 BENCHMARK_LOCATION = 'mm-benchmarks'
@@ -34,3 +35,30 @@ def test_convert_vars_impreflex() -> None:
     for setvar in setvars:
         assert setvar in converter._set_vars and converter._set_vars[setvar].name == setvar
     assert len(converter._set_vars) == len(setvars)
+
+
+def test_convert_symbols_transfer_goal() -> None:
+    input_database = load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True)
+    converter = MetamathConverter(input_database)
+
+    assert isinstance(input_database.statements[0], ConstantStatement)
+    constants_declaration: ConstantStatement = input_database.statements[0]
+    assert len(converter._declared_constants) == len(constants_declaration.constants)
+
+    domain_values = (
+        '"0"',
+        '"1"',
+        '"%24PGM"',
+        '"balanceSender"',
+        '"ret"',
+        '"12345"',
+        '"10"',
+        '"amount"',
+        '"200"',
+        '"100"',
+        '"balanceTo"',
+        '"addressTo"',
+        '"90"',
+        '"210"',
+    )
+    assert converter._domain_values == set(domain_values)

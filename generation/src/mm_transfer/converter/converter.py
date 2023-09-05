@@ -1,8 +1,16 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
-from mm_transfer.metamath.ast import Application, FloatingStatement, Metavariable, VariableStatement
+from mm_transfer.metamath.ast import (
+    Application,
+    AxiomaticStatement,
+    ConstantStatement,
+    FloatingStatement,
+    Metavariable,
+    VariableStatement,
+)
 
 if TYPE_CHECKING:
     from mm_transfer.metamath.ast import Database
@@ -16,12 +24,14 @@ class MetamathConverter:
 
     def __init__(self, parsed: Database) -> None:
         self.parsed = parsed
+        self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
         self._patterns: dict[str, Metavariable] = {}
         self._symbols: dict[str, Metavariable] = {}
         self._variables: dict[str, Metavariable] = {}
         self._element_vars: dict[str, Metavariable] = {}
         self._set_vars: dict[str, Metavariable] = {}
+        self._domain_values: set[str] = set()
         self._top_down()
 
     def put_vars_on_stack(self, interpreter: BasicInterpreter) -> None:
@@ -41,16 +51,45 @@ class MetamathConverter:
         Convert the database from top to bottom
         """
         for statement in self.parsed.statements:
+            if isinstance(statement, ConstantStatement):
+                self._import_constants(statement)
             if isinstance(statement, VariableStatement):
                 self._import_variables(statement)
             elif isinstance(statement, FloatingStatement):
                 self._import_floating(statement)
+            elif isinstance(statement, AxiomaticStatement):
+                self._import_axioms(statement)
             else:
                 continue
+
+    def _import_constants(self, statement: ConstantStatement) -> None:
+        self._declared_constants.update(set(statement.constants))
 
     def _import_variables(self, statement: VariableStatement) -> None:
         for var in statement.metavariables:
             self._declared_variables[var.name] = var
+
+    def _import_axioms(self, statement: AxiomaticStatement) -> None:
+        is_constant = re.compile(r'"\S+"')
+
+        def constant_is_pattern_axiom(st: AxiomaticStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Pattern'
+                and isinstance(st.terms[1], Application)
+                and st.terms[1].symbol in self._declared_constants
+                and is_constant.match(st.terms[1].symbol)
+            ):
+                # We can distinguish domain values from other constants, but we decided
+                # to keep quotes in favor of the direct correspondence between Metamath
+                # and the new format.
+                self._domain_values.add(st.terms[1].symbol)
+                return True
+            else:
+                return False
+
+        # TODO: Replace the single call according to further needs on the next step
+        constant_is_pattern_axiom(statement)
 
     def _import_floating(self, statement: FloatingStatement) -> None:
         def get_pattern(st: FloatingStatement) -> Metavariable | None:
