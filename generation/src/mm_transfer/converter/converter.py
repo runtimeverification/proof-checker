@@ -53,77 +53,70 @@ class MetamathConverter:
             self._declared_variables[var.name] = var
 
     def _import_floating(self, statement: FloatingStatement) -> None:
-        var: Metavariable | None = None
-
-        def is_pattern(st: FloatingStatement) -> bool:
+        def is_pattern(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Pattern'
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
-                nonlocal var
-                var = self._declared_variables[st.terms[1].name]
-                return True
-            return False
+                return self._declared_variables[st.terms[1].name]
+            else:
+                return None
 
-        def is_symbol(st: FloatingStatement) -> bool:
+        def is_symbol(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Symbol'
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
-                nonlocal var
-                var = self._declared_variables[st.terms[1].name]
-                return True
-            return False
+                return self._declared_variables[st.terms[1].name]
+            else:
+                return None
 
-        def is_var(st: FloatingStatement) -> bool:
+        def is_var(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Variable'
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
-                nonlocal var
-                var = self._declared_variables[st.terms[1].name]
-                return True
-            return False
+                return self._declared_variables[st.terms[1].name]
+            else:
+                return None
 
-        def is_element_var(st: FloatingStatement) -> bool:
+        def is_element_var(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#ElementVariable'
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
-                nonlocal var
-                var = self._declared_variables[st.terms[1].name]
-                return True
-            return False
-            
-            def is_set_var(st: FloatingStatement) -> bool:
+                return self._declared_variables[st.terms[1].name]
+            else:
+                return None
+
+        def is_set_var(st: FloatingStatement) -> Metavariable | None:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#SetVariable'
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
-                nonlocal var
-                var = self._declared_variables[st.terms[1].name]
-                return True
-            return False
+                return self._declared_variables[st.terms[1].name]
+            else:
+                return None
 
-        if is_pattern(statement) and var is not None:
+        if var := is_pattern(statement):
             self._patterns[var.name] = var
-        elif is_symbol(statement) and var is not None:
+        elif var := is_symbol(statement):
             self._symbols[var.name] = var
-        elif is_var(statement) and var is not None:
+        elif var := is_var(statement):
             self._variables[var.name] = var
-        elif is_element_var(statement) and var is not None:
+        elif var := is_element_var(statement):
             self._element_vars[var.name] = var
-        elif is_set_var(statement) and var is not None:
+        elif var := is_set_var(statement):
             self._set_vars[var.name] = var
         else:
             print(f'Unknown floating statement: {repr(statement)}')
