@@ -5,7 +5,7 @@ from pathlib import Path
 
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
-from proof_generation.proof import PrettyPrintingInterpreter
+from proof_generation.proof import ExecutionPhase, PrettyPrintingInterpreter
 
 
 def main() -> None:
@@ -37,7 +37,7 @@ def main() -> None:
 
     # Add them to the new format
     with open(output_dir / 'metavariables.ml-proof', 'w') as out:
-        printer = PrettyPrintingInterpreter([], out)
+        printer = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, out=out)
         converter.put_vars_on_stack(printer)
 
 

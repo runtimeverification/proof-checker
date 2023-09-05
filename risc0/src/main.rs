@@ -11,22 +11,27 @@ fn main() {
 
     println!("Setting up env...");
 
-    if std::env::args().len() != 3 {
-        panic!("Expected 2 arguments. Received {}.", std::env::args().len())
+    if std::env::args().len() != 4 {
+        panic!("Expected 4 arguments. Received {}.", std::env::args().len())
     }
 
-    let claims_filepath = std::env::args().nth(1).expect("No claim file path given");
+    let gamma_filepath = std::env::args().nth(1).expect("No claim file path given");
+    let gamma_file = File::open(gamma_filepath).expect("The gamma file was not found");
+    let gamma_reader = BufReader::new(gamma_file);
+
+    let claims_filepath = std::env::args().nth(2).expect("No claim file path given");
     let claims_file = File::open(claims_filepath).expect("The claims file was not found");
     let claims_reader = BufReader::new(claims_file);
 
-    let proof_filepath = std::env::args().nth(2).expect("No proof file path given");
+    let proof_filepath = std::env::args().nth(3).expect("No proof file path given");
     let proof_file = File::open(proof_filepath).expect("The proof file was not found");
     let proof_reader = BufReader::new(proof_file);
 
     // First, we construct an executor environment
     let env = ExecutorEnv::builder()
-        .stdin(proof_reader) // proof
-        .read_fd(10, claims_reader) // claims
+        .read_fd(10, gamma_reader)
+        .read_fd(11, claims_reader)
+        .stdin(proof_reader)
         .build()
         .unwrap();
 

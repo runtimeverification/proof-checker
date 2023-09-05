@@ -4,12 +4,13 @@ from io import BytesIO, StringIO
 
 import pytest
 
-from proof_generation.deserialize import ExecutionPhase, deserialize_instructions
+from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
 from proof_generation.proof import (
     Application,
     Claim,
     EVar,
+    ExecutionPhase,
     Exists,
     Implication,
     MetaVar,
@@ -50,7 +51,7 @@ def test_instantiate() -> None:
 def test_conclusion() -> None:
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implication(phi0, phi0)
-    prop = Propositional(StatefulInterpreter([]))
+    prop = Propositional(StatefulInterpreter(phase=ExecutionPhase.Proof))
     prop.modus_ponens(
         prop.modus_ponens(
             prop.prop2()
@@ -71,7 +72,7 @@ def test_conclusion() -> None:
 
 def test_serialize_phi_implies_phi() -> None:
     out = BytesIO()
-    prop = Propositional(SerializingInterpreter(claims=[], out=out))
+    prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[], out=out))
     prop.phi0_implies_phi0()
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
@@ -93,8 +94,8 @@ def test_prove_imp_reflexivity() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implication(phi0, phi0)
-    prop = Propositional(SerializingInterpreter(claims=[Claim(phi0_implies_phi0)], out=out))
-    proved = prop.publish(prop.imp_reflexivity())
+    prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out))
+    proved = prop.publish_proof(prop.imp_reflexivity())
     assert proved.conclusion == phi0_implies_phi0
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
@@ -158,7 +159,7 @@ def test_prove_imp_reflexivity() -> None:
 
 
 # Construct a mock ProofExp to extract the claim and proof names
-mock_prop = Propositional(SerializingInterpreter([], BytesIO()))
+mock_prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, out=BytesIO()))
 
 proofs = [(method.__name__, ExecutionPhase.Proof) for method in mock_prop.proof_expressions()]
 claims = [(method.__name__, ExecutionPhase.Claim) for method in mock_prop.claim_expressions()]
@@ -169,12 +170,12 @@ def test_deserialize(test: tuple[str, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter([], out_ser)).__getattribute__(target)()
+    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).__getattribute__(target)()
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter([], out_ser_deser), phase)
+    deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter(phase=phase, out=out_ser_deser))
 
     # Prettyprint the proof directly, but ommit notation
     out_pretty = StringIO()
-    _ = Propositional(NotationlessPrettyPrinter([], out_pretty)).__getattribute__(target)()
+    _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).__getattribute__(target)()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
