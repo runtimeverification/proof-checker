@@ -3,11 +3,11 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import Implication, Proved, Symbol
+from proof_generation.proof import Implication, Symbol
 from proof_generation.proofs.propositional import Propositional
 
 if TYPE_CHECKING:
-    from proof_generation.proof import Pattern, ProvedExpression
+    from proof_generation.proof import Pattern, Proved, ProvedExpression
 
 
 class SmallTheory(Propositional):
