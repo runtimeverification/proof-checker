@@ -25,7 +25,7 @@ def parsed_goal_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True)
 
 
-def test_convert_vars_lemma_slice(parsed_lemma_database: Database) -> None:
+def test_importing_variables(parsed_lemma_database: Database) -> None:
     converter = MetamathConverter(parsed_lemma_database)
 
     patterns = ('ph0', 'ph1', 'ph2', 'ph3', 'ph4', 'ph5', 'ph6')
@@ -54,7 +54,7 @@ def test_convert_vars_lemma_slice(parsed_lemma_database: Database) -> None:
     assert len(converter._set_vars) == len(setvars)
 
 
-def test_convert_symbols_transfer_goal(parsed_goal_database: Database) -> None:
+def test_importing_domain_values(parsed_goal_database: Database) -> None:
     converter = MetamathConverter(parsed_goal_database)
 
     assert isinstance(parsed_goal_database.statements[0], ConstantStatement)
@@ -78,3 +78,9 @@ def test_convert_symbols_transfer_goal(parsed_goal_database: Database) -> None:
         '"210"',
     )
     assert converter._domain_values == set(domain_values)
+
+
+def test_importing_notations(parsed_lemma_database):
+    converter = MetamathConverter(parsed_lemma_database)
+    assert len(converter._notations) == 10
+    raise NotImplementedError

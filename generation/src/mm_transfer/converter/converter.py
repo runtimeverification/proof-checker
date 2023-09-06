@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from mm_transfer.metamath.ast import (
     Application,
@@ -11,9 +11,10 @@ from mm_transfer.metamath.ast import (
     Metavariable,
     VariableStatement,
 )
+import proof_generation.pattern as nf
 
 if TYPE_CHECKING:
-    from mm_transfer.metamath.ast import Database
+    from mm_transfer.metamath.ast import Database, Term
     from proof_generation.proof import BasicInterpreter
 
 
@@ -32,6 +33,7 @@ class MetamathConverter:
         self._element_vars: dict[str, Metavariable] = {}
         self._set_vars: dict[str, Metavariable] = {}
         self._domain_values: set[str] = set()
+        self._notations: dict[str, Callable] = {}
         self._top_down()
 
     def put_vars_on_stack(self, interpreter: BasicInterpreter) -> None:
@@ -72,6 +74,7 @@ class MetamathConverter:
     def _import_axioms(self, statement: AxiomaticStatement) -> None:
         is_constant = re.compile(r'"\S+"')
 
+        # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
         def constant_is_pattern_axiom(st: AxiomaticStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
@@ -88,8 +91,28 @@ class MetamathConverter:
             else:
                 return False
 
-        # TODO: Replace the single call according to further needs on the next step
-        constant_is_pattern_axiom(statement)
+        def sugar_axiom(st: AxiomaticStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Notation'
+                and isinstance(st.terms[1], Application)
+                and len(st.terms) == 3
+            ):
+                symbol: str = st.terms[1].symbol
+                arguments: tuple[Term] = st.terms[1].subterms
+                notation_lambda = self._to_pattern(arguments, st.terms[2])
+                self._notations[symbol] = notation_lambda
+                return True
+            else:
+                return False
+
+        if constant_is_pattern_axiom(statement):
+            return
+        elif sugar_axiom(statement):
+            return
+        else:
+            print(f'Unknown axiom: {repr(statement)}')
+            return
 
     def _import_floating(self, statement: FloatingStatement) -> None:
         def get_pattern(st: FloatingStatement) -> Metavariable | None:
@@ -159,3 +182,6 @@ class MetamathConverter:
             self._set_vars[var.name] = var
         else:
             print(f'Unknown floating statement: {repr(statement)}')
+
+    def _to_pattern(self, args: tuple[Term], term: Term) -> Callable:
+        return lambda: nf.Pattern()
