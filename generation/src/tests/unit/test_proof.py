@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from io import BytesIO, StringIO
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -22,6 +23,9 @@ from proof_generation.proof import (
     SVar,
 )
 from proof_generation.proofs.propositional import Propositional
+
+if TYPE_CHECKING:
+    from proof_generation.proof import Pattern
 
 
 def test_instantiate() -> None:
@@ -184,11 +188,13 @@ claims = [(claim, ExecutionPhase.Claim) for claim in mock_prop.claims()]
 
 
 @pytest.mark.parametrize('test', claims)
-def test_deserialize_claim(test: tuple[str, ExecutionPhase]) -> None:
+def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).interpreter.pattern(target)
+    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).interpreter.pattern(
+        target
+    )
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter(phase=phase, out=out_ser_deser))
 
