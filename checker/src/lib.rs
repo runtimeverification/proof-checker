@@ -87,6 +87,7 @@ impl Instruction {
 type Id = u8;
 type IdList = Vec<Id>;
 
+#[non_exhaustive]
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Pattern {
     EVar(Id),
@@ -121,7 +122,6 @@ pub enum Pattern {
         evar_id: Id,
         plug: Rc<Pattern>,
     },
-    #[allow(dead_code)]
     SSubst {
         pattern: Rc<Pattern>,
         svar_id: Id,
@@ -158,12 +158,27 @@ impl Pattern {
                 // in pattern do not influence the result)
                 pattern.e_fresh(evar) && plug.e_fresh(evar)
             }
-            _ => {
-                unimplemented!("e_fresh unimplemented for this case");
-            }
+            Pattern::SSubst {
+                pattern,
+                plug,
+                ..
+            } => {
+                // Assume: substitution is well-formed => plug occurs in the result
+
+                // We can skip checking evar == svar_id, because different types
+
+                // Freshness depends on both input and plug,
+                // as svar_id != evar (note that instances of evar_id
+                // in pattern do not influence the result)
+                pattern.e_fresh(evar) && plug.e_fresh(evar)
+            },
+            // _ => {
+            //     unimplemented!("e_fresh unimplemented for this case");
+            // }
         }
     }
 
+    #[allow(dead_code)]
     fn s_fresh(&self, svar: Id) -> bool {
         match self {
             Pattern::EVar(_) => true,
@@ -183,9 +198,27 @@ impl Pattern {
                 // as evar_id != svar (note that instances of evar_id
                 // in pattern do not influence the result)
                 pattern.s_fresh(svar) && plug.s_fresh(svar),
-            _ => {
-                unimplemented!("e_fresh unimplemented for this case");
-            }
+            Pattern::SSubst {
+                    pattern,
+                    svar_id,
+                    plug,
+                } => {
+                    // Assume: substitution is well-formed => plug occurs in the result
+    
+                    if svar == *svar_id {
+                        // Freshness depends only on plug, as all the free instances
+                        // of the requested variable are being substituted
+                        return plug.s_fresh(svar);
+                    }
+    
+                    // Freshness depends on both input and plug,
+                    // as evar != evar_id (note that instances of evar_id
+                    // in pattern do not influence the result)
+                    pattern.s_fresh(svar) && plug.s_fresh(svar)
+                },
+            // _ => {
+            //     unimplemented!("e_fresh unimplemented for this case");
+            // }
         }
     }
 
@@ -204,10 +237,21 @@ impl Pattern {
             // best-effort for now, see spec
             {
                 pattern.positive(svar) && plug.s_fresh(svar)
+            },
+            Pattern::SSubst { pattern, svar_id, plug } => {
+                let plug_positive_svar = plug.s_fresh(svar) || 
+                (pattern.positive(*svar_id) && plug.positive(svar)) ||
+                (pattern.negative(*svar_id) && plug.negative(svar));
+
+                if svar == *svar_id {
+                    return plug_positive_svar;   
+                }
+
+                return pattern.positive(svar) && plug_positive_svar;
             }
-            _ => {
-                unimplemented!("positive unimplemented for this case");
-            }
+            // _ => {
+            //     unimplemented!("positive unimplemented for this case");
+            // }
         }
     }
 
@@ -226,10 +270,21 @@ impl Pattern {
             // best-effort for now, see spec
             {
                 pattern.negative(svar) && plug.s_fresh(svar)
-            }
-            _ => {
-                unimplemented!("negative unimplemented for this case");
-            }
+            },
+            Pattern::SSubst { pattern, svar_id, plug } => {
+                let plug_negative_svar = plug.s_fresh(svar) || 
+                (pattern.positive(*svar_id) && plug.negative(svar)) ||
+                (pattern.negative(*svar_id) && plug.positive(svar));
+
+                if svar == *svar_id {
+                    return plug_negative_svar;   
+                }
+
+                return pattern.negative(svar) && plug_negative_svar;
+            },
+            // _ => {
+            //     unimplemented!("negative unimplemented for this case");
+            // }
         }
     }
 
@@ -314,6 +369,14 @@ fn esubst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::ESubst {
         pattern,
         evar_id,
+        plug,
+    });
+}
+
+fn ssubst(pattern: Rc<Pattern>, svar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::SSubst {
+        pattern,
+        svar_id,
         plug,
     });
 }
@@ -571,6 +634,13 @@ fn execute_instructions<'a>(
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(esubst(pattern, evar_id, plug)));
+            }
+
+            Instruction::SSubst => {
+                let svar_id = next().expect("Insufficient parameters for SSubst instruction") as Id;
+                let pattern = pop_stack_pattern(stack);
+                let plug = pop_stack_pattern(stack);
+                stack.push(Term::Pattern(ssubst(pattern, svar_id, plug)));
             }
 
             Instruction::Prop1 => {
