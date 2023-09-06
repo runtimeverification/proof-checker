@@ -690,6 +690,13 @@ fn execute_instructions<'a>(
             },
             Instruction::Existence => {
                 stack.push(Term::Proved(Rc::clone(&existence)));
+            },
+            Instruction::Substitution => {
+                let svar_id = next().expect("Insufficient parameters for Substitution instruction.");
+                let plug = pop_stack_pattern(stack);
+                let pattern = pop_stack_proved(stack);
+                stack.push(Term::Proved(ssubst(pattern, svar_id, plug)));
+
             }
             Instruction::Instantiate => {
                 let n = next().expect("Insufficient parameters for Instantiate instruction");
