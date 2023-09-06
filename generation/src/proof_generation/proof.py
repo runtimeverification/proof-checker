@@ -648,9 +648,6 @@ class ProofExp:
     def claims() -> list[Pattern]:
         raise NotImplementedError
 
-    def claim_expressions(self) -> list[PatternExpression]:
-        raise NotImplementedError
-
     def proof_expressions(self) -> list[ProvedExpression]:
         raise NotImplementedError
 
