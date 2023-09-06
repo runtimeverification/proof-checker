@@ -39,9 +39,6 @@ class Propositional(ProofExp):
             Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Peirce_bot
         ]
 
-    def claim_expressions(self) -> list[PatternExpression]:
-        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0, self.contradiction_claim, self.peirce_bot_phi0]
-
     def proof_expressions(self) -> list[ProvedExpression]:
         return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.contradiction_proof, self.peirce_bot]
 
