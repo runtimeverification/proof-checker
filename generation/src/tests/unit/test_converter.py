@@ -1,15 +1,32 @@
+from __future__ import annotations
+
 import os
+from typing import TYPE_CHECKING
+
+import pytest
 
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.ast import ConstantStatement
 from mm_transfer.metamath.parser import load_database
 
+if TYPE_CHECKING:
+    from mm_transfer.metamath.ast import Database
+
 BENCHMARK_LOCATION = 'mm-benchmarks'
 
 
-def test_convert_vars_impreflex() -> None:
-    input_database = load_database(os.path.join(BENCHMARK_LOCATION, 'disjointness-alt-lemma.mm'), include_proof=True)
-    converter = MetamathConverter(input_database)
+@pytest.fixture
+def parsed_lemma_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'disjointness-alt-lemma.mm'), include_proof=True)
+
+
+@pytest.fixture
+def parsed_goal_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True)
+
+
+def test_convert_vars_lemma_slice(parsed_lemma_database: Database) -> None:
+    converter = MetamathConverter(parsed_lemma_database)
 
     patterns = ('ph0', 'ph1', 'ph2', 'ph3', 'ph4', 'ph5', 'ph6')
     for pattern in patterns:
@@ -37,12 +54,11 @@ def test_convert_vars_impreflex() -> None:
     assert len(converter._set_vars) == len(setvars)
 
 
-def test_convert_symbols_transfer_goal() -> None:
-    input_database = load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True)
-    converter = MetamathConverter(input_database)
+def test_convert_symbols_transfer_goal(parsed_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_goal_database)
 
-    assert isinstance(input_database.statements[0], ConstantStatement)
-    constants_declaration: ConstantStatement = input_database.statements[0]
+    assert isinstance(parsed_goal_database.statements[0], ConstantStatement)
+    constants_declaration: ConstantStatement = parsed_goal_database.statements[0]
     assert len(converter._declared_constants) == len(constants_declaration.constants)
 
     domain_values = (
