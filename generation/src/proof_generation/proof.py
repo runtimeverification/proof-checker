@@ -746,6 +746,14 @@ class ProofExp:
         return pattern
 
     @classmethod
+    def serialize_gamma(cls, output: Path) -> None:
+        with open(output, 'wb') as out:
+            claims = list(map(Claim, cls.claims()))
+            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out))
+            for axiom in proof_exp.axioms():
+                proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
+
+    @classmethod
     def serialize_claims(cls, output: Path) -> None:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
@@ -762,14 +770,6 @@ class ProofExp:
             )
             for proof_expr in proof_exp.proof_expressions():
                 proof_exp.publish_proof(proof_expr())
-
-    @classmethod
-    def serialize_gamma(cls, output: Path) -> None:
-        with open(output, 'wb') as out:
-            claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out))
-            for axiom in proof_exp.axioms():
-                proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
 
     @classmethod
     def pretty_print_gamma(cls, output: Path) -> None:
@@ -824,17 +824,17 @@ class ProofExp:
         format, mode, output_path = argv
 
         match (format, mode):
+            case ('pretty', 'gamma'):
+                cls.pretty_print_gamma(Path(output_path))
             case ('pretty', 'claim'):
                 cls.pretty_print_claims(Path(output_path))
             case ('pretty', 'proof'):
                 cls.pretty_print_proofs(Path(output_path))
+            case ('binary', 'gamma'):
+                cls.serialize_gamma(Path(output_path))
             case ('binary', 'claim'):
                 cls.serialize_claims(Path(output_path))
             case ('binary', 'proof'):
                 cls.serialize_proofs(Path(output_path))
-            case ('binary', 'gamma'):
-                cls.serialize_gamma(Path(output_path))
-            case ('pretty', 'gamma'):
-                cls.pretty_print_gamma(Path(output_path))
             case _:
                 raise AssertionError(usage)
