@@ -22,7 +22,7 @@ pub enum Instruction {
     MetaVar, ESubst, SSubst,
     // Axiom Schemas,
     Prop1, Prop2, Prop3, Quantifier, PropagationOr, PropagationExists,
-    PreFixpoint, Existance, Singleton,
+    PreFixpoint, Existence, Singleton,
     // Inference rules,
     ModusPonens, Generalization, Frame, Substitution, KnasterTarski,
     // Meta Incference rules,
@@ -58,7 +58,7 @@ impl Instruction {
             16 => Instruction::PropagationOr,
             17 => Instruction::PropagationExists,
             18 => Instruction::PreFixpoint,
-            19 => Instruction::Existance,
+            19 => Instruction::Existence,
             20 => Instruction::Singleton,
             21 => Instruction::ModusPonens,
             22 => Instruction::Generalization,
@@ -502,6 +502,8 @@ fn execute_instructions<'a>(
         exists(0, Rc::clone(&phi0)),
     );
 
+    let existence = exists(0, Rc::clone(&phi0));
+
     while let Some(instr_u32) = next() {
         match Instruction::from(instr_u32) {
             Instruction::List => {
@@ -616,6 +618,9 @@ fn execute_instructions<'a>(
                     panic!("Expected an implication as a first parameter.")
                 }
             },
+            Instruction::Existence => {
+                stack.push(Term::Proved(Rc::clone(&existence)));
+            }
             Instruction::Instantiate => {
                 let n = next().expect("Insufficient parameters for Instantiate instruction");
                 let mut ids: IdList = vec![];
