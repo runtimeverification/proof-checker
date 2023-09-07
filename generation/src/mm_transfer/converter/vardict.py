@@ -11,7 +11,7 @@ class Vardict(UserDict):
         super().__init__(__data)
         self._expected = expected
 
-    def __getitem__(self, __key: Metavariable | str, expected: type) -> Any:
+    def __getitem__(self, __key: Metavariable | str) -> Any:
         if isinstance(__key, Metavariable):
             __key = __key.name
         return super().__getitem__(__key)

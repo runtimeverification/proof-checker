@@ -13,9 +13,11 @@ from mm_transfer.metamath.ast import (
 from mm_transfer.converter.scope import Scope
 import proof_generation.pattern as nf
 
+
 if TYPE_CHECKING:
     from mm_transfer.metamath.ast import Database, Term
     from proof_generation.proof import BasicInterpreter
+
 
 class MetamathConverter:
     """
@@ -91,6 +93,17 @@ class MetamathConverter:
             else:
                 return False
 
+        def symbol_axiom(st: AxiomaticStatement) -> Metavariable | None:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Symbol'
+                and isinstance(st.terms[1], Application)
+                and len(st.terms[1].subterms) == 0
+            ):
+                self._scope.add_symbol(st.terms[1].symbol)
+            else:
+                return None
+
         def sugar_axiom(st: AxiomaticStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
@@ -99,14 +112,17 @@ class MetamathConverter:
                 and len(st.terms) == 3
             ):
                 symbol: str = st.terms[1].symbol
-                arguments: tuple[Term] = st.terms[1].subterms
-                notation_lambda = self._to_pattern(arguments, st.terms[2])
+                args = st.terms[1].subterms
+                scope = self._scope._reduce_to_args(args)
+                notation_lambda = self._to_pattern(scope, st.terms[2])
                 self._notations[symbol] = notation_lambda
                 return True
             else:
                 return False
 
         if constant_is_pattern_axiom(statement):
+            return
+        elif symbol_axiom(statement):
             return
         elif sugar_axiom(statement):
             return
@@ -184,23 +200,44 @@ class MetamathConverter:
             print(f'Unknown floating statement: {repr(statement)}')
 
     def _add_builin_notations(self) -> None:
-        self._notations['\\Bot'] = lambda: nf.Mu(nf.SVar(0), nf.SVar(0))
+        self._notations['\\bot'] = lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0))
 
-    def _to_pattern(self, args: tuple[Term], term: Term) -> Callable:
+    def _to_pattern(self, scope: Scope, term: Term) -> Callable:
         # TODO: Process aaplications
         # TODO: Fetch notations
         # TODO: Determine variable type
         # TODO: Use essential hypotheses to determine metaconditions
-        # match term:
-        #     case Application('\\imp', subterms):
-        #         assert len(subterms) == 2
-        #         left_term, right_term = subterms
-        #         left_pattern = self._to_pattern(args, left_term)
-        #         right_pattern = self._to_pattern(args, right_term)
-        #         return lambda: nf.Implication(left_pattern(), right_pattern())
-        #     case _:
-        #         raise NotImplementedError
-        return lambda: None
-
-    def _resolve_variable(self):
-        pass
+        match term:
+            case Application(symbol, subterms):
+                if (symbol == '\\imp'):
+                    assert len(subterms) == 2
+                    left_term, right_term = subterms
+                    left_pattern = self._to_pattern(scope, left_term)
+                    right_pattern = self._to_pattern(scope, right_term)
+                    return lambda *args: nf.Implication(left_pattern(*args), right_pattern(*args))
+                elif (symbol == '\\app'):
+                    assert len(subterms) == 2
+                    left_term, right_term = subterms
+                    left_pattern = self._to_pattern(scope, left_term)
+                    right_pattern = self._to_pattern(scope, right_term)
+                    return lambda *args: nf.Application(left_pattern(*args), right_pattern(*args))
+                elif (symbol == '\\exists'):
+                    assert len(subterms) == 2
+                    var_term, subpattern_term = subterms
+                    var_pattern = self._to_pattern(scope, var_term)
+                    subpattern_pattern = self._to_pattern(scope, subpattern_term)
+                    return lambda *args: nf.Exists(var_pattern(*args), subpattern_pattern(*args))
+                elif symbol in self._notations:
+                    notation = self._notations[symbol]
+                    converted_args = tuple(self._to_pattern(scope, arg) for arg in term.subterms)
+                    return lambda *args: notation(*[arg(*args) for arg in converted_args])
+                elif scope.is_symbol(symbol):
+                    resolved = scope.resolve(symbol)
+                    return lambda *args: resolved(*args)
+                else:
+                    raise NotImplementedError
+            case Metavariable(name):
+                resolved = scope.resolve(name)
+                return lambda *args: resolved(*args)
+            case _:
+                raise NotImplementedError
