@@ -28,30 +28,25 @@ def parsed_goal_database() -> Database:
 def test_importing_variables(parsed_lemma_database: Database) -> None:
     converter = MetamathConverter(parsed_lemma_database)
 
-    patterns = ('ph0', 'ph1', 'ph2', 'ph3', 'ph4', 'ph5', 'ph6')
+    patterns = ('ph0', 'ph1', 'ph2', 'ph3', 'ph4', 'ph5', 'ph6', 'xX')
     for pattern in patterns:
-        assert pattern in converter._patterns and converter._patterns[pattern].name == pattern
-    assert len(converter._patterns) == len(patterns)
+        assert pattern in converter._scope._metavars
+    assert len(converter._scope._metavars) == len(patterns)
 
     symbols = ('sg0',)
     for symbol in symbols:
-        assert symbol in converter._symbols and converter._symbols[symbol].name == symbol
-    assert len(converter._symbols) == len(symbols)
-
-    mvars = ('xX',)
-    for var in mvars:
-        assert var in converter._variables and converter._variables[var].name == var
-    assert len(converter._variables) == len(mvars)
+        assert symbol in converter._scope._symbols
+    assert len(converter._scope._symbols) == len(symbols)
 
     evars = ('x', 'y')
     for evar in evars:
-        assert evar in converter._element_vars and converter._element_vars[evar].name == evar
-    assert len(converter._element_vars) == len(evars)
+        assert evar in converter._scope._element_vars
+    assert len(converter._scope._element_vars) == len(evars)
 
     setvars = ('X',)
     for setvar in setvars:
-        assert setvar in converter._set_vars and converter._set_vars[setvar].name == setvar
-    assert len(converter._set_vars) == len(setvars)
+        assert setvar in converter._scope._set_vars
+    assert len(converter._scope._set_vars) == len(setvars)
 
 
 def test_importing_domain_values(parsed_goal_database: Database) -> None:
@@ -77,7 +72,7 @@ def test_importing_domain_values(parsed_goal_database: Database) -> None:
         '"90"',
         '"210"',
     )
-    assert converter._domain_values == set(domain_values)
+    assert converter._scope._domain_values == set(domain_values)
 
 
 def test_importing_notations(parsed_lemma_database):
