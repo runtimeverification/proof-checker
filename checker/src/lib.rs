@@ -816,8 +816,11 @@ fn test_efresh() {
     let metaapplication = Pattern::Application { left: Rc::clone(&left), right: mvar };
     assert!(!metaapplication.e_fresh(2));
 
-    let esubst_ = esubst(Rc::clone(&right), 1, left);
+    let esubst_ = esubst(Rc::clone(&right), 1, Rc::clone(&left));
     assert!(esubst_.e_fresh(1));
+
+    let ssubst_ = ssubst(Rc::clone(&right), 1, left);
+    assert!(!ssubst_.e_fresh(1));
 
 }
 
@@ -836,7 +839,7 @@ fn test_sfresh() {
     });
     assert!(!right.s_fresh(1));
 
-    let implication = implies(Rc::clone(&left), right);
+    let implication = implies(Rc::clone(&left), Rc::clone(&right));
     assert!(!implication.s_fresh(1));
 
     let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
@@ -846,8 +849,14 @@ fn test_sfresh() {
     };
     assert!(!metaapplication.s_fresh(1));
 
-    let metaapplication2 = Pattern::Application { left, right: mvar };
+    let metaapplication2 = Pattern::Application { left: Rc::clone(&left), right: mvar };
     assert!(metaapplication2.s_fresh(2));
+
+    let esubst_ = esubst(Rc::clone(&right), 1, Rc::clone(&left));
+    assert!(!esubst_.s_fresh(1));
+
+    let ssubst_ = ssubst(Rc::clone(&right), 1, left);
+    assert!(ssubst_.s_fresh(1));
 }
 
 #[test]
@@ -969,6 +978,15 @@ fn test_positivity() {
     assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X0)).negative(0));
     assert!(!esubst(metavar_unconstrained(0), 0, Rc::clone(&X1)).negative(0));
     assert!(!esubst(metavar_s_fresh(0, 1, vec![1], vec![]), 0, Rc::clone(&X1)).negative(0));
+
+    // SSubst
+    assert!(!ssubst(metavar_unconstrained(0), 0, Rc::clone(&X0)).positive(0));
+    assert!(ssubst(metavar_unconstrained(0), 0, Rc::clone(&X1)).positive(0));
+    assert!(ssubst(metavar_s_fresh(0, 1, vec![1], vec![]), 0, Rc::clone(&X1)).positive(0));
+
+    assert!(!ssubst(metavar_unconstrained(0), 0, Rc::clone(&X0)).negative(0));
+    assert!(ssubst(metavar_unconstrained(0), 0, Rc::clone(&X1)).negative(0));
+    assert!(ssubst(metavar_s_fresh(0, 1, vec![1], vec![]), 0, Rc::clone(&X1)).negative(0));
 
     // Combinations
     assert!(!neg_X1.positive(1));
