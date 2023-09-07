@@ -809,12 +809,16 @@ fn test_efresh() {
     });
     assert!(!right.e_fresh(1));
 
-    let implication = implies(Rc::clone(&left), right);
+    let implication = implies(Rc::clone(&left), Rc:: clone(&right));
     assert!(!implication.e_fresh(1));
 
     let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
-    let metaapplication = Pattern::Application { left, right: mvar };
+    let metaapplication = Pattern::Application { left: Rc::clone(&left), right: mvar };
     assert!(!metaapplication.e_fresh(2));
+
+    let esubst_ = esubst(Rc::clone(&right), 1, left);
+    assert!(esubst_.e_fresh(1));
+
 }
 
 #[test]
