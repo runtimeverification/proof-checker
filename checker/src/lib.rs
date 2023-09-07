@@ -158,11 +158,7 @@ impl Pattern {
                 // in pattern do not influence the result)
                 pattern.e_fresh(evar) && plug.e_fresh(evar)
             }
-            Pattern::SSubst {
-                pattern,
-                plug,
-                ..
-            } => {
+            Pattern::SSubst { pattern, plug, .. } => {
                 // Assume: substitution is well-formed => plug occurs in the result
 
                 // We can skip checking evar == svar_id, because different types
@@ -171,10 +167,9 @@ impl Pattern {
                 // as svar_id != evar (note that instances of evar_id
                 // in pattern do not influence the result)
                 pattern.e_fresh(evar) && plug.e_fresh(evar)
-            },
-            // _ => {
-            //     unimplemented!("e_fresh unimplemented for this case");
-            // }
+            } // _ => {
+              //     unimplemented!("e_fresh unimplemented for this case");
+              // }
         }
     }
 
@@ -189,7 +184,7 @@ impl Pattern {
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
             Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar),
-            Pattern::ESubst { pattern, plug, .. } =>
+            Pattern::ESubst { pattern, plug, .. } => {
                 // Assume: substitution is well-formed => plug occurs in the result
 
                 // We can skip checking svar == evar_id, because different types
@@ -197,28 +192,25 @@ impl Pattern {
                 // Freshness depends on both input and plug,
                 // as evar_id != svar (note that instances of evar_id
                 // in pattern do not influence the result)
-                pattern.s_fresh(svar) && plug.s_fresh(svar),
+                pattern.s_fresh(svar) && plug.s_fresh(svar)
+            }
             Pattern::SSubst {
-                    pattern,
-                    svar_id,
-                    plug,
-                } => {
-                    // Assume: substitution is well-formed => plug occurs in the result
-    
-                    if svar == *svar_id {
-                        // Freshness depends only on plug, as all the free instances
-                        // of the requested variable are being substituted
-                        return plug.s_fresh(svar);
-                    }
-    
-                    // Freshness depends on both input and plug,
-                    // as evar != evar_id (note that instances of evar_id
-                    // in pattern do not influence the result)
-                    pattern.s_fresh(svar) && plug.s_fresh(svar)
-                },
-            // _ => {
-            //     unimplemented!("e_fresh unimplemented for this case");
-            // }
+                pattern,
+                svar_id,
+                plug,
+            } => {
+                // Assume: substitution is well-formed => plug occurs in the result
+                if svar == *svar_id {
+                    // Freshness depends only on plug as all the free instances
+                    // of the requested variable are being substituted
+                    return plug.s_fresh(svar);
+                }
+
+                // Freshness depends on both input and plug,
+                // as evar != evar_id (note that instances of evar_id
+                // in pattern do not influence the result)
+                pattern.s_fresh(svar) && plug.s_fresh(svar)
+            }
         }
     }
 
@@ -237,21 +229,24 @@ impl Pattern {
             // best-effort for now, see spec
             {
                 pattern.positive(svar) && plug.s_fresh(svar)
-            },
-            Pattern::SSubst { pattern, svar_id, plug } => {
-                let plug_positive_svar = plug.s_fresh(svar) || 
-                (pattern.positive(*svar_id) && plug.positive(svar)) ||
-                (pattern.negative(*svar_id) && plug.negative(svar));
+            }
+            Pattern::SSubst {
+                pattern,
+                svar_id,
+                plug,
+            } => {
+                let plug_positive_svar = plug.s_fresh(svar)
+                    || (pattern.positive(*svar_id) && plug.positive(svar))
+                    || (pattern.negative(*svar_id) && plug.negative(svar));
 
                 if svar == *svar_id {
-                    return plug_positive_svar;   
+                    return plug_positive_svar;
                 }
 
                 return pattern.positive(svar) && plug_positive_svar;
-            }
-            // _ => {
-            //     unimplemented!("positive unimplemented for this case");
-            // }
+            } // _ => {
+              //     unimplemented!("positive unimplemented for this case");
+              // }
         }
     }
 
@@ -270,21 +265,24 @@ impl Pattern {
             // best-effort for now, see spec
             {
                 pattern.negative(svar) && plug.s_fresh(svar)
-            },
-            Pattern::SSubst { pattern, svar_id, plug } => {
-                let plug_negative_svar = plug.s_fresh(svar) || 
-                (pattern.positive(*svar_id) && plug.negative(svar)) ||
-                (pattern.negative(*svar_id) && plug.positive(svar));
+            }
+            Pattern::SSubst {
+                pattern,
+                svar_id,
+                plug,
+            } => {
+                let plug_negative_svar = plug.s_fresh(svar)
+                    || (pattern.positive(*svar_id) && plug.negative(svar))
+                    || (pattern.negative(*svar_id) && plug.positive(svar));
 
                 if svar == *svar_id {
-                    return plug_negative_svar;   
+                    return plug_negative_svar;
                 }
 
                 return pattern.negative(svar) && plug_negative_svar;
-            },
-            // _ => {
-            //     unimplemented!("negative unimplemented for this case");
-            // }
+            } // _ => {
+              //     unimplemented!("negative unimplemented for this case");
+              // }
         }
     }
 
@@ -690,13 +688,13 @@ fn execute_instructions<'a>(
             },
             Instruction::Existence => {
                 stack.push(Term::Proved(Rc::clone(&existence)));
-            },
+            }
             Instruction::Substitution => {
-                let svar_id = next().expect("Insufficient parameters for Substitution instruction.");
+                let svar_id =
+                    next().expect("Insufficient parameters for Substitution instruction.");
                 let plug = pop_stack_pattern(stack);
                 let pattern = pop_stack_proved(stack);
                 stack.push(Term::Proved(ssubst(pattern, svar_id, plug)));
-
             }
             Instruction::Instantiate => {
                 let n = next().expect("Insufficient parameters for Instantiate instruction");
@@ -809,11 +807,14 @@ fn test_efresh() {
     });
     assert!(!right.e_fresh(1));
 
-    let implication = implies(Rc::clone(&left), Rc:: clone(&right));
+    let implication = implies(Rc::clone(&left), Rc::clone(&right));
     assert!(!implication.e_fresh(1));
 
     let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
-    let metaapplication = Pattern::Application { left: Rc::clone(&left), right: mvar };
+    let metaapplication = Pattern::Application {
+        left: Rc::clone(&left),
+        right: mvar,
+    };
     assert!(!metaapplication.e_fresh(2));
 
     let esubst_ = esubst(Rc::clone(&right), 1, Rc::clone(&left));
@@ -821,7 +822,6 @@ fn test_efresh() {
 
     let ssubst_ = ssubst(Rc::clone(&right), 1, left);
     assert!(!ssubst_.e_fresh(1));
-
 }
 
 #[test]
@@ -849,7 +849,10 @@ fn test_sfresh() {
     };
     assert!(!metaapplication.s_fresh(1));
 
-    let metaapplication2 = Pattern::Application { left: Rc::clone(&left), right: mvar };
+    let metaapplication2 = Pattern::Application {
+        left: Rc::clone(&left),
+        right: mvar,
+    };
     assert!(metaapplication2.s_fresh(2));
 
     let esubst_ = esubst(Rc::clone(&right), 1, Rc::clone(&left));
