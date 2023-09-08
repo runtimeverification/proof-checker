@@ -846,7 +846,7 @@ Consider the tree representation of top:
                Instantiate(0)
 ```
 
-We can use Sharing in the DAG to reduce this redundancy.
+In a DAG we can re-use a sub-tree to reduce this redundancy.  
 
 ```
                  SVar(0)
