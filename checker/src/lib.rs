@@ -277,9 +277,10 @@ impl Pattern {
         }
     }
 
+    // Checks whether pattern is well-formed ASSUMING
+    // that the sub-patterns are well-formed
     fn well_formed(&self) -> bool {
         match self {
-            Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::MetaVar {
                 e_fresh,
                 app_ctx_holes,
@@ -293,27 +294,28 @@ impl Pattern {
 
                 return true;
             }
+            Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::ESubst {
                 pattern,
                 evar_id,
-                plug,
+                ..
             } => {
                 if pattern.e_fresh(*evar_id) {
                     return false;
                 }
 
-                pattern.well_formed() && plug.well_formed()
+                true
             }
             Pattern::SSubst {
                 pattern,
                 svar_id,
-                plug,
+                ..
             } => {
                 if pattern.s_fresh(*svar_id) {
                     return false;
                 }
 
-                pattern.well_formed() && plug.well_formed()
+                true
             }
             _ => {
                 // Should we return true or check recursively (ver slow)
@@ -624,7 +626,7 @@ fn execute_instructions<'a>(
                 let s_fresh = pop_stack_list(stack);
                 let e_fresh = pop_stack_list(stack);
 
-                let metavar = Rc::new(Pattern::MetaVar {
+                let metavar_pat = Rc::new(Pattern::MetaVar {
                     id,
                     e_fresh,
                     s_fresh,
@@ -632,24 +634,36 @@ fn execute_instructions<'a>(
                     negative,
                     app_ctx_holes,
                 });
-                if !metavar.well_formed() {
-                    panic!("Constructed meta-var {:?} is ill-formed.", &metavar);
+                if !metavar_pat.well_formed() {
+                    panic!("Constructed meta-var {:?} is ill-formed.", &metavar_pat);
                 }
 
-                stack.push(Term::Pattern(metavar));
+                stack.push(Term::Pattern(metavar_pat));
             }
             Instruction::ESubst => {
                 let evar_id = next().expect("Insufficient parameters for ESubst instruction") as Id;
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
-                stack.push(Term::Pattern(esubst(pattern, evar_id, plug)));
+
+                let esubst_pat = esubst(pattern, evar_id, plug);
+                if !esubst_pat.well_formed() {
+                    panic!("Constructed ESubst {:?} is ill-formed.", &esubst_pat);
+                }
+
+                stack.push(Term::Pattern(esubst_pat));
             }
 
             Instruction::SSubst => {
                 let svar_id = next().expect("Insufficient parameters for SSubst instruction") as Id;
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
-                stack.push(Term::Pattern(ssubst(pattern, svar_id, plug)));
+
+                let ssubst_pat = ssubst(pattern, svar_id, plug);
+                if !ssubst_pat.well_formed() {
+                    panic!("Constructed SSubst {:?} is ill-formed.", &ssubst_pat);
+                }
+
+                stack.push(Term::Pattern(ssubst_pat));
             }
 
             Instruction::Prop1 => {
