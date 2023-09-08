@@ -1078,7 +1078,7 @@ fn test_wellformedness_positive() {
 
 #[test]
 #[allow(non_snake_case)]
-fn test_wellformedness_instantiate() {
+fn test_instantiate() {
     let x0 = evar(0);
     let X0 = svar(0);
     let c0 = symbol(0);
