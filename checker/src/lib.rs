@@ -170,7 +170,6 @@ impl Pattern {
         }
     }
 
-    #[allow(dead_code)]
     fn s_fresh(&self, svar: Id) -> bool {
         match self {
             Pattern::EVar(_) => true,
@@ -296,9 +295,7 @@ impl Pattern {
             }
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::ESubst {
-                pattern,
-                evar_id,
-                ..
+                pattern, evar_id, ..
             } => {
                 if pattern.e_fresh(*evar_id) {
                     return false;
@@ -307,9 +304,7 @@ impl Pattern {
                 true
             }
             Pattern::SSubst {
-                pattern,
-                svar_id,
-                ..
+                pattern, svar_id, ..
             } => {
                 if pattern.s_fresh(*svar_id) {
                     return false;
