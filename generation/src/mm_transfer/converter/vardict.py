@@ -12,6 +12,7 @@ class Vardict(UserDict):
     You can type just: "metavar in varidct" in both cases where metavar is a Metavariable
     and where it is a string. Same is for saving new items.
     """
+
     def __init__(self, __data: dict[str, Any] | None = None, expected: type | None = None) -> None:
         super().__init__(__data)
         self._expected = expected

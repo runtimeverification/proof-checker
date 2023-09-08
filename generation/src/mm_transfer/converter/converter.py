@@ -1,7 +1,10 @@
 from __future__ import annotations
-import re
-from typing import TYPE_CHECKING, Callable
 
+import re
+from typing import TYPE_CHECKING
+
+import proof_generation.pattern as nf
+from mm_transfer.converter.scope import Scope
 from mm_transfer.metamath.ast import (
     Application,
     AxiomaticStatement,
@@ -10,11 +13,10 @@ from mm_transfer.metamath.ast import (
     Metavariable,
     VariableStatement,
 )
-from mm_transfer.converter.scope import Scope
-import proof_generation.pattern as nf
-
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from mm_transfer.metamath.ast import Database, Term
     from proof_generation.proof import BasicInterpreter
 
@@ -93,7 +95,7 @@ class MetamathConverter:
             else:
                 return False
 
-        def symbol_axiom(st: AxiomaticStatement) -> Metavariable | None:
+        def symbol_axiom(st: AxiomaticStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Symbol'
@@ -101,8 +103,9 @@ class MetamathConverter:
                 and len(st.terms[1].subterms) == 0
             ):
                 self._scope.add_symbol(st.terms[1].symbol)
+                return True
             else:
-                return None
+                return False
 
         def sugar_axiom(st: AxiomaticStatement) -> bool:
             if (
@@ -113,7 +116,11 @@ class MetamathConverter:
             ):
                 symbol: str = st.terms[1].symbol
                 args = st.terms[1].subterms
-                scope = self._scope._reduce_to_args(args)
+
+                # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
+                assert all(isinstance(arg, Metavariable) for arg in args)
+                metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
+                scope = self._scope._reduce_to_args(metavar_args)
                 notation_lambda = self._to_pattern(scope, st.terms[2])
                 self._notations[symbol] = notation_lambda
                 return True
@@ -203,25 +210,22 @@ class MetamathConverter:
         self._notations['\\bot'] = lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0))
 
     def _to_pattern(self, scope: Scope, term: Term) -> Callable:
-        # TODO: Process aaplications
-        # TODO: Fetch notations
-        # TODO: Determine variable type
         # TODO: Use essential hypotheses to determine metaconditions
         match term:
             case Application(symbol, subterms):
-                if (symbol == '\\imp'):
+                if symbol == '\\imp':
                     assert len(subterms) == 2
                     left_term, right_term = subterms
                     left_pattern = self._to_pattern(scope, left_term)
                     right_pattern = self._to_pattern(scope, right_term)
                     return lambda *args: nf.Implication(left_pattern(*args), right_pattern(*args))
-                elif (symbol == '\\app'):
+                elif symbol == '\\app':
                     assert len(subterms) == 2
                     left_term, right_term = subterms
                     left_pattern = self._to_pattern(scope, left_term)
                     right_pattern = self._to_pattern(scope, right_term)
                     return lambda *args: nf.Application(left_pattern(*args), right_pattern(*args))
-                elif (symbol == '\\exists'):
+                elif symbol == '\\exists':
                     assert len(subterms) == 2
                     var_term, subpattern_term = subterms
                     var_pattern = self._to_pattern(scope, var_term)
