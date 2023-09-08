@@ -313,8 +313,7 @@ impl Pattern {
                 true
             }
             _ => {
-                // Should we return true or check recursively (ver slow)
-                // If we make sure that we only use well-formed above constructs, then we should not need to check recursively
+                // TODO: If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
                     "Well-formedness checking is unimplemented yet for this kind of pattern."
                 );
