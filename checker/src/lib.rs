@@ -283,9 +283,14 @@ impl Pattern {
     fn well_formed(&self) -> bool {
         match self {
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
-            Pattern::MetaVar { .. } => {
-                // TODO: Should basically determin whether metavar is instantiable
-                unimplemented!("Well-formedness checking is unimplemented yet for metavars.");
+            Pattern::MetaVar { e_fresh, app_ctx_holes, .. } => {
+                for hole in app_ctx_holes {
+                    if e_fresh.contains(hole) {
+                        return false
+                    }
+                }
+
+                return true
             }
             Pattern::ESubst {
                 pattern,
