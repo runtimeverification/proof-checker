@@ -807,6 +807,69 @@ Otherwise, execution aborts, and verification fails.
 `EOF`
 :   End the current phase.
 
+
+Notation
+========
+
+Our format does not use an explicit concept for notation, but merely
+a convention that proof generation tools utilize to shorten proofs.
+
+Notation at the ADT level
+-------------------------
+
+At the ADT level, notation are just saved meta-patterns.
+We use instantiations to use concrete instances of notation.
+For example,
+
+```
+bot = Mu(0, SVar(0))
+negation = Implies(MetaVar(0), bot) = Implies(MetaVar(0), Mu(0, SVar(0)))
+top = Instantiate(negation, 0, bot) = Instantiate(Implies(MetaVar(0), Mu(0, SVar(0))), 0, Mu(0, SVar(0)))
+```
+
+Notation at the DAG level
+-------------------------
+
+Notice, in the above specification `bot` is used twice in the definition of `top`.
+Consider the tree representation of top:
+
+```
+              SVar(0)        SVar(0)
+                 |              |
+  MetaVar(0)    Mu(0)          Mu(0)
+       |         |              |
+       \        /              /
+        \      /              /
+         Implies             /
+             \              /
+              \            /
+               Instantiate(0)
+```
+
+In a DAG we can re-use a sub-tree to reduce this redundancy.  
+
+```
+                 SVar(0)
+                   |   
+                  Mu(0)
+                   |   \
+                   |    \
+                   |     \
+      MetaVar(0)   |     |
+            \      |     |
+             Implies     |
+                 \       |
+                  \      |
+               Instantiate(0)
+```
+
+
+Notation at the Binary representation level
+-------------------------------------------
+
+The `Save` and `Load` instructions allow us to share these reused subterms.
+
+
 Future considerations
 =====================
 
