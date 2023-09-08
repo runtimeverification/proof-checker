@@ -197,9 +197,7 @@ abstract class Term:
 
 abstract class Pattern(Term):
     def well_formed():
-        # Fails if any two MetaVars with the same id has
-        # different meta-requirements
-        # MetaVars are introduced later.
+        # returns true if a pattern of given type is well-formed
     ...
 
     def e_fresh(evar):
@@ -248,6 +246,9 @@ class Symbol(Pattern):
     def negative(svar):
         return True
 
+    def well_formed():
+        return True
+
 class SVar(Pattern):
     name: u32
 
@@ -263,6 +264,8 @@ class SVar(Pattern):
     def negative(svar):
         return svar != name
 
+    def well_formed():
+        return True
 
 class EVar(Pattern):
     name: u32
@@ -277,6 +280,9 @@ class EVar(Pattern):
         return True
 
     def negative(svar):
+        return True
+
+    def well_formed():
         return True
 
 class Implication(Pattern):
@@ -295,6 +301,10 @@ class Implication(Pattern):
     def negative(svar):
         return left.positive(svar) and right.negative(svar)
 
+    def well_formed():
+        return left.well_formed()
+           and right.well_formed()
+
 class Application(Pattern):
     left: Pattern
     right: Pattern
@@ -311,6 +321,10 @@ class Application(Pattern):
     def negative(svar):
         return left.negative(svar) and right.negative(svar)
 
+    def well_formed():
+        return left.well_formed()
+           and right.well_formed()
+
 class Exists(Pattern):
     var: u32
     subpattern: Pattern
@@ -326,6 +340,9 @@ class Exists(Pattern):
 
     def negative(svar):
         return subpattern.negative(svar)
+
+    def well_formed():
+        return subpattern.well_formed()
 
 class Mu(Pattern):
     var: u32
@@ -344,7 +361,7 @@ class Mu(Pattern):
         return svar == var or subpattern.negative(svar)
 
     def well_formed():
-        return super.well_formed()
+        return subpattern.well_formed()
            and subpattern.positive(var)
 ```
 
@@ -385,9 +402,7 @@ class MetaVar(Pattern):
     # Should check whether the metavar is instantiable, as uninstantiable metavars might lead to issues
     # (see https://github.com/runtimeverification/proof-checker/issues/8)
     def well_formed():
-        # TODO: Implement by the procedure suggested by `metavar_instantiation.md`
-
-        return super.well_formed()
+        return app_ctx_holes.disjoint(e_fresh)
 ```
 
 We also need to represent substitutions applied to `MetaVar`s.
@@ -404,7 +419,7 @@ class ESubst(Pattern):
         if pattern.e_fresh(var):  return False  # The variable does not occur, so this is redundant
         # Now we know at least one element variable will be substituted, so we need to check
         # well-formedness of both pattern and plug
-        return super.well_formed() and pattern.well_formed() and plug.well_formed()
+        return pattern.well_formed() and plug.well_formed()
 
     def e_fresh(evar):
         # We can skip the case pattern.e_fresh(var) == true, as
@@ -459,8 +474,6 @@ class ESubst(Pattern):
         # do not influence the result, as var: EVar
         return pattern.negative(svar) and plug.s_fresh(svar)
 
-    # TODO: Well-formedness checking
-
 class SSubst(Pattern):
     pattern: MetaVar | SSubst | ESubst
     var: u32
@@ -472,7 +485,7 @@ class SSubst(Pattern):
         if pattern.s_fresh(var):  return False  # The variable does not occur, so this is redundant
         # Now we know at least one set variable will be substituted, so we need to check
         # well-formedness of both pattern and plug
-        return super.well_formed() and pattern.well_formed() and plug.well_formed()
+        return pattern.well_formed() and plug.well_formed()
 
     def e_fresh(evar):
         # We can skip the case pattern.s_fresh(var) == true, as
@@ -615,14 +628,32 @@ class InstantiateSchema(Proof):
     instantiations: list(Pattern)
 
     def well_formed():
-        # Fails if the instantiation does not meet the
-        # disjoint/positive/freshness/application ctx
-        # criterea of the metavar.
+        for metavar in subproof.conclusion().metavars():
+            if metavar.id not in metavar_ids:
+                continue
 
-        # Fails if metavar_ids.length != instantiations.length
+            pattern = instantiations[metavar_ids.index(metavar.id)]
+
+            for evar in metavar.e_fresh:
+                if not pattern.e_fresh(evar):
+                    return False
+            for svar in metavar.s_fresh:
+                if not pattern.s_fresh(svar):
+                    return False
+            for svar in metavar.positive:
+                if not pattern.positive(svar):
+                    return False
+            for svar in metavar.negative:
+                if not pattern.negative(svar):
+                    return False
+            for evar in metavar.app_ctx_holes:
+                if not pattern.app_ctx_holes(evar):
+                    return False
+
+        return len(metavar_ids) == len(instantiations)
 
     def conclusion():
-        return subproof.meta_substitute(metavar_ids, instantiations)
+        return subproof.conclusion().meta_substitute(metavar_ids, instantiations)
 ```
 
 TODO: Could we just merge this with `InstantiateSchema`?
@@ -631,15 +662,31 @@ We may also use metavariables to represent notation.
 ```python
 class InstantiateNotation(Pattern):
     notation: Pattern
-    metavar_id: list(u32)
+    metavar_ids: list(u32)
     instantiations: list(Pattern)
 
     def well_formed():
-        # Fails if the instantiation does not meet the
-        # disjoint/positive/freshness/application ctx
-        # criterea of the metavar.
+        for metavar in notation.metavars():
+            if metavar.id not in metavar_ids:
+                continue
 
-        # Fails if metavar_ids.length != instantiations.length
+            for evar in metavar.e_fresh:
+                if not notation.e_fresh(evar):
+                    return False
+            for svar in metavar.s_fresh:
+                if not notation.s_fresh(svar):
+                    return False
+            for svar in metavar.positive:
+                if not notation.positive(svar):
+                    return False
+            for svar in metavar.negative:
+                if not notation.negative(svar):
+                    return False
+            for evar in metavar.app_ctx_holes:
+                if not notation.app_ctx_holes(evar):
+                    return False
+
+        return len(metavar_ids) == len(instantiations)
 
     def conclusion():
         return notation.meta_substitute(metavar, instantiation)
@@ -846,11 +893,11 @@ Consider the tree representation of top:
                Instantiate(0)
 ```
 
-In a DAG we can re-use a sub-tree to reduce this redundancy.  
+In a DAG we can re-use a sub-tree to reduce this redundancy.
 
 ```
                  SVar(0)
-                   |   
+                   |
                   Mu(0)
                    |   \
                    |    \
