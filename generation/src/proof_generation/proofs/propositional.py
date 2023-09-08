@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 
 bot = Mu(SVar(0), SVar(0))
 phi0 = MetaVar(0)
+phi1 = MetaVar(1)
+phi2 = MetaVar(2)
 phi0_implies_phi0 = Implication(phi0, phi0)
 
 
