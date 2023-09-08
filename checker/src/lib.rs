@@ -427,20 +427,6 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
         Pattern::EVar(_) => p,
         Pattern::SVar(_) => p,
         Pattern::Symbol(_) => p,
-        Pattern::Implication { left, right } => implies(
-            instantiate(Rc::clone(&left), vars, plugs),
-            instantiate(Rc::clone(&right), vars, plugs),
-        ),
-        Pattern::Application { left, right } => app(
-            instantiate(Rc::clone(&left), vars, plugs),
-            instantiate(Rc::clone(&right), vars, plugs),
-        ),
-        Pattern::Exists { var, subpattern } => {
-            exists(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
-        }
-        Pattern::Mu { var, subpattern } => {
-            mu(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
-        }
         Pattern::MetaVar {
             id,
             e_fresh,
@@ -493,6 +479,20 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
             }
 
             p
+        }
+        Pattern::Implication { left, right } => implies(
+            instantiate(Rc::clone(&left), vars, plugs),
+            instantiate(Rc::clone(&right), vars, plugs),
+        ),
+        Pattern::Application { left, right } => app(
+            instantiate(Rc::clone(&left), vars, plugs),
+            instantiate(Rc::clone(&right), vars, plugs),
+        ),
+        Pattern::Exists { var, subpattern } => {
+            exists(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
+        }
+        Pattern::Mu { var, subpattern } => {
+            mu(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
         }
         _ => unimplemented!("Instantiation failed"),
     }
