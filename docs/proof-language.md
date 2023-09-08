@@ -852,8 +852,8 @@ We can use Sharing in the DAG to reduce this redundancy.
                  SVar(0)
                    |   
                   Mu(0)
-                   |
-                   |----
+                   |   \
+                   |    \
                    |    \
                    |     \
       MetaVar(0)   |     |
