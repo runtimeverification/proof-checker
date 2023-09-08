@@ -279,7 +279,6 @@ impl Pattern {
         }
     }
 
-    #[allow(dead_code)]
     fn well_formed(&self) -> bool {
         match self {
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
@@ -319,8 +318,8 @@ impl Pattern {
                 pattern.well_formed() && plug.well_formed()
             }
             _ => {
-                // Should default to true except for the cases above
-                // TODO: Check
+                // Should we return true or check recursively (ver slow)
+                // If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
                     "Well-formedness checking is unimplemented yet for this kind of pattern."
                 );
@@ -611,7 +610,13 @@ fn execute_instructions<'a>(
             Instruction::Mu => {
                 let id = next().expect("Expected var_id for the exists binder") as Id;
                 let subpattern = pop_stack_pattern(stack);
-                stack.push(Term::Pattern(mu(id, subpattern)))
+
+                let mu_pat = mu(id, subpattern);
+                if !mu_pat.well_formed() {
+                    panic!("Constructed mu-pattern {:?} is ill-formed", &mu_pat);
+                }
+
+                stack.push(Term::Pattern(mu_pat))
             }
             Instruction::MetaVar => {
                 let id = next().expect("Insufficient parameters for MetaVar instruction") as Id;
@@ -620,14 +625,20 @@ fn execute_instructions<'a>(
                 let positive = pop_stack_list(stack);
                 let s_fresh = pop_stack_list(stack);
                 let e_fresh = pop_stack_list(stack);
-                stack.push(Term::Pattern(Rc::new(Pattern::MetaVar {
+
+                let metavar = Rc::new(Pattern::MetaVar {
                     id,
                     e_fresh,
                     s_fresh,
                     positive,
                     negative,
                     app_ctx_holes,
-                })));
+                });
+                if !metavar.well_formed() {
+                    panic!("Constructed meta-var {:?} is ill-formed.", &metavar);
+                }
+
+                stack.push(Term::Pattern(metavar));
             }
             Instruction::ESubst => {
                 let evar_id = next().expect("Insufficient parameters for ESubst instruction") as Id;
@@ -873,10 +884,23 @@ fn test_instantiate_fresh() {
 }
 
 #[test]
-#[ignore]
 fn test_wellformedness_fresh() {
     let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
     assert!(phi0_s_fresh_0.well_formed());
+
+    let phi1 = Rc::new(Pattern::MetaVar {
+       id: 1,
+       e_fresh: vec![1, 2, 0],
+       s_fresh: vec![],
+       positive: vec![],
+       negative: vec![],
+       app_ctx_holes: vec![2]
+    });
+    assert!(!phi1.well_formed());
+
+    // TODO: Reason why this is not needed
+    // let phi1_imp_phi1 = implies(Rc::clone(&phi1), Rc::clone(&phi1));
+    // assert!(!phi1_imp_phi1.well_formed());
 }
 
 #[test]
