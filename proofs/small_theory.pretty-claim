@@ -1,0 +1,13 @@
+Symbol 0
+	Stack:
+	0: σ0
+Symbol 2
+	Stack:
+	0: σ2
+	1: σ0
+Implication
+	Stack:
+	0: (σ0 -> σ2)
+Publish
+	Stack:
+	0: (σ0 -> σ2)

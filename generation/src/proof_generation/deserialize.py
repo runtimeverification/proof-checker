@@ -1,25 +1,19 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 from proof_generation.instruction import Instruction
-from proof_generation.proof import Claim, Pattern, Proved
+from proof_generation.proof import ExecutionPhase, Pattern, Proved
 
 if TYPE_CHECKING:
     from proof_generation.proof import PrettyPrintingInterpreter
-
-
-class ExecutionPhase(Enum):
-    Claim = 0
-    Proof = 1
 
 
 class DeserializingException(Exception):
     pass
 
 
-def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter, phase: ExecutionPhase) -> None:
+def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) -> None:
     index = 0
 
     def next_byte(err_msg: str | None = None) -> int | None:
@@ -125,12 +119,11 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter, 
             interpreter.load(str(id), interpreter.memory[id])
 
         elif instruction == Instruction.Publish:
-            if phase == ExecutionPhase.Claim:
+            if interpreter.phase == ExecutionPhase.Claim:
                 pattern = interpreter.stack[-1]
                 assert isinstance(pattern, Pattern)
-                interpreter.claims.append(Claim(pattern))
                 interpreter.publish_claim(pattern)
-            elif phase == ExecutionPhase.Proof:
+            elif interpreter.phase == ExecutionPhase.Proof:
                 claim = interpreter.claims.pop()
                 theorem = interpreter.stack[-1]
                 assert isinstance(theorem, Proved)

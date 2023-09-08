@@ -1,0 +1,30 @@
+Symbol 0
+	Stack:
+	0: σ0
+Symbol 1
+	Stack:
+	0: σ1
+	1: σ0
+Implication
+	Stack:
+	0: (σ0 -> σ1)
+Publish
+	Stack:
+	0: (σ0 -> σ1)
+Symbol 1
+	Stack:
+	0: σ1
+	1: (σ0 -> σ1)
+Symbol 2
+	Stack:
+	0: σ2
+	1: σ1
+	2: (σ0 -> σ1)
+Implication
+	Stack:
+	0: (σ1 -> σ2)
+	1: (σ0 -> σ1)
+Publish
+	Stack:
+	0: (σ1 -> σ2)
+	1: (σ0 -> σ1)

@@ -22,6 +22,10 @@ class Propositional(ProofExp):
         super().__init__(interpreter)
 
     @staticmethod
+    def axioms() -> list[Pattern]:
+        return []
+
+    @staticmethod
     def claims() -> list[Pattern]:
         phi0 = MetaVar(0)
         bot = Mu(SVar(0), SVar(0))
@@ -34,9 +38,6 @@ class Propositional(ProofExp):
             Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
             Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Peirce_bot
         ]
-
-    def claim_expressions(self) -> list[PatternExpression]:
-        return [self.phi0_implies_phi0, self.top, self.bot_implies_phi0, self.contradiction_claim, self.peirce_bot_phi0]
 
     def proof_expressions(self) -> list[ProvedExpression]:
         return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.contradiction_proof, self.peirce_bot]
@@ -115,15 +116,16 @@ class Propositional(ProofExp):
         )
 
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
-    def imp_transitivity(self, phi0_imp_phi1: Proved, phi1_imp_phi2: Proved) -> Proved:
-        phi0_imp_phi1_conc = phi0_imp_phi1.conclusion
+    def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
+        # TODO: Consider if the extra loads caused by these calls are problematic
+        phi0_imp_phi1_conc = phi0_imp_phi1().conclusion
 
         match phi0_imp_phi1_conc:
             case Implication(phi0, phi1):
                 pass
             case _:
                 raise AssertionError('Expected implication')
-        phi1_imp_phi2_conc = phi1_imp_phi2.conclusion
+        phi1_imp_phi2_conc = phi1_imp_phi2().conclusion
         match phi1_imp_phi2_conc:
             case Implication(phi1_r, phi2):
                 assert phi1_r == phi1
@@ -139,10 +141,10 @@ class Propositional(ProofExp):
                 self.modus_ponens(
                     # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
                     self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    phi1_imp_phi2,
+                    phi1_imp_phi2(),
                 ),
             ).instantiate({1: phi0}),
-            phi0_imp_phi1,
+            phi0_imp_phi1(),
         )
 
     def top_intro(self) -> Proved:

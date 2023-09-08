@@ -9,3 +9,4 @@ The following is a list of the Metamath benchmark files in the order of their co
 5. `transfer5000.mm`: a proof of the execution goal for a batch of 50000 ERC20 like transfer functions implemented in IMP.
 6. `transfer-goal.mm`: uncompressed version of the main goal in the sliced version of the transfer proof.
 7. `transfer-largest-slice.mm`: uncompressed version of the largest goal in the sliced version of the transfer proof.
+8. `disjointness-alt-lemma.mm`: just a slice of the transfer proof with #Symbol statements that are of interest at testing

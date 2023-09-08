@@ -4,20 +4,23 @@ use std::io::BufReader;
 use std::io::Read;
 
 pub fn main() {
-    let (mut proof_reader, mut claims_reader) = match std::env::args().len() {
-        2 => (
+    let (mut gamma_reader, mut claims_reader, mut proof_reader) = match std::env::args().len() {
+        3 => (
             BufReader::new(File::open(std::env::args().nth(1).unwrap()).unwrap()).bytes(),
             BufReader::new(File::open("/dev/null").unwrap()).bytes(),
-        ),
-        3 => (
             BufReader::new(File::open(std::env::args().nth(2).unwrap()).unwrap()).bytes(),
-            BufReader::new(File::open(std::env::args().nth(1).unwrap()).unwrap()).bytes(),
         ),
-        other => panic!("Expected 1 or 2 arguments. Received {}.", other),
+        4 => (
+            BufReader::new(File::open(std::env::args().nth(1).unwrap()).unwrap()).bytes(),
+            BufReader::new(File::open(std::env::args().nth(2).unwrap()).unwrap()).bytes(),
+            BufReader::new(File::open(std::env::args().nth(3).unwrap()).unwrap()).bytes(),
+        ),
+        _ => panic!("Usage: checker gamma-file [claims-file] proof-file"),
     };
 
-    let proof_next = &mut (|| proof_reader.next()?.ok());
+    let gamma_next = &mut (|| gamma_reader.next()?.ok());
     let claims_next = &mut (|| claims_reader.next()?.ok());
+    let proof_next = &mut (|| proof_reader.next()?.ok());
 
-    verify(proof_next, claims_next);
+    verify(gamma_next, claims_next, proof_next);
 }
