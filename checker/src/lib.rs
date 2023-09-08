@@ -445,6 +445,8 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
             id,
             e_fresh,
             s_fresh,
+            positive,
+            negative,
             ..
         } => {
             if let Some(pos) = vars.iter().position(|&x| x == *id) {
@@ -462,6 +464,22 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
                     if !plugs[pos].s_fresh(*svar) {
                         panic!(
                             "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
+                            id, svar
+                        );
+                    }
+                }
+                for svar in positive {
+                    if !plugs[pos].positive(*svar) {
+                        panic!(
+                            "Instantiation of MetaVar {} breaks a positivity constraint: SVar {}",
+                            id, svar
+                        );
+                    }
+                }
+                for svar in negative {
+                    if !plugs[pos].negative(*svar) {
+                        panic!(
+                            "Instantiation of MetaVar {} breaks a negativity constraint: SVar {}",
                             id, svar
                         );
                     }
