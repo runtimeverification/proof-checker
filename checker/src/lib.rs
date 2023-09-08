@@ -87,7 +87,6 @@ impl Instruction {
 type Id = u8;
 type IdList = Vec<Id>;
 
-#[non_exhaustive]
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Pattern {
     EVar(Id),
@@ -167,9 +166,7 @@ impl Pattern {
                 // as svar_id != evar (note that instances of evar_id
                 // in pattern do not influence the result)
                 pattern.e_fresh(evar) && plug.e_fresh(evar)
-            } // _ => {
-              //     unimplemented!("e_fresh unimplemented for this case");
-              // }
+            }
         }
     }
 
@@ -244,9 +241,7 @@ impl Pattern {
                 }
 
                 return pattern.positive(svar) && plug_positive_svar;
-            } // _ => {
-              //     unimplemented!("positive unimplemented for this case");
-              // }
+            }
         }
     }
 
@@ -280,9 +275,7 @@ impl Pattern {
                 }
 
                 return pattern.negative(svar) && plug_negative_svar;
-            } // _ => {
-              //     unimplemented!("negative unimplemented for this case");
-              // }
+            }
         }
     }
 
