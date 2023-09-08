@@ -134,11 +134,11 @@ impl Pattern {
             Pattern::EVar(name) => *name != evar,
             Pattern::SVar(_) => true,
             Pattern::Symbol(_) => true,
+            Pattern::MetaVar { e_fresh, .. } => e_fresh.contains(&evar),
             Pattern::Implication { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
             Pattern::Application { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
             Pattern::Exists { var, subpattern } => evar == *var || subpattern.e_fresh(evar),
             Pattern::Mu { subpattern, .. } => subpattern.e_fresh(evar),
-            Pattern::MetaVar { e_fresh, .. } => e_fresh.contains(&evar),
             Pattern::ESubst {
                 pattern,
                 evar_id,
@@ -175,11 +175,11 @@ impl Pattern {
             Pattern::EVar(_) => true,
             Pattern::SVar(name) => *name != svar,
             Pattern::Symbol(_) => true,
+            Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar),
             Pattern::Implication { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
             Pattern::Application { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
-            Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar),
             Pattern::ESubst { pattern, plug, .. } => {
                 // Assume: substitution is well-formed => plug occurs in the result
 
@@ -215,11 +215,11 @@ impl Pattern {
             Pattern::EVar(_) => true,
             Pattern::SVar(_) => true,
             Pattern::Symbol(_) => true,
+            Pattern::MetaVar { positive, .. } => positive.contains(&svar),
             Pattern::Implication { left, right } => left.negative(svar) && right.positive(svar),
             Pattern::Application { left, right } => left.positive(svar) && right.positive(svar),
             Pattern::Exists { subpattern, .. } => subpattern.positive(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.positive(svar),
-            Pattern::MetaVar { positive, .. } => positive.contains(&svar),
             Pattern::ESubst { pattern, plug, .. } =>
             // best-effort for now, see spec
             {
@@ -248,11 +248,11 @@ impl Pattern {
             Pattern::EVar(_) => true,
             Pattern::SVar(name) => *name != svar,
             Pattern::Symbol(_) => true,
+            Pattern::MetaVar { negative, .. } => negative.contains(&svar),
             Pattern::Implication { left, right } => left.positive(svar) && right.negative(svar),
             Pattern::Application { left, right } => left.negative(svar) && right.negative(svar),
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.negative(svar),
-            Pattern::MetaVar { negative, .. } => negative.contains(&svar),
             Pattern::ESubst { pattern, plug, .. } =>
             // best-effort for now, see spec
             {
@@ -349,6 +349,29 @@ fn symbol(id: Id) -> Rc<Pattern> {
     return Rc::new(Pattern::Symbol(id));
 }
 
+fn metavar_unconstrained(var_id: Id) -> Rc<Pattern> {
+    return Rc::new(Pattern::MetaVar {
+        id: var_id,
+        e_fresh: vec![],
+        s_fresh: vec![],
+        positive: vec![],
+        negative: vec![],
+        app_ctx_holes: vec![],
+    });
+}
+
+#[cfg(test)]
+fn metavar_s_fresh(var_id: Id, fresh: Id, positive: IdList, negative: IdList) -> Rc<Pattern> {
+    return Rc::new(Pattern::MetaVar {
+        id: var_id,
+        e_fresh: vec![],
+        s_fresh: vec![fresh],
+        positive,
+        negative,
+        app_ctx_holes: vec![],
+    });
+}
+
 fn exists(var: Id, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Exists { var, subpattern });
 }
@@ -374,35 +397,12 @@ fn ssubst(pattern: Rc<Pattern>, svar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     });
 }
 
-fn metavar_unconstrained(var_id: Id) -> Rc<Pattern> {
-    return Rc::new(Pattern::MetaVar {
-        id: var_id,
-        e_fresh: vec![],
-        s_fresh: vec![],
-        positive: vec![],
-        negative: vec![],
-        app_ctx_holes: vec![],
-    });
-}
-
 fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Implication { left, right });
 }
 
 fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Application { left, right });
-}
-
-#[cfg(test)]
-fn metavar_s_fresh(var_id: Id, fresh: Id, positive: IdList, negative: IdList) -> Rc<Pattern> {
-    return Rc::new(Pattern::MetaVar {
-        id: var_id,
-        e_fresh: vec![],
-        s_fresh: vec![fresh],
-        positive,
-        negative,
-        app_ctx_holes: vec![],
-    });
 }
 
 // Notation
@@ -604,6 +604,28 @@ fn execute_instructions<'a>(
 
                 stack.push(Term::Pattern(symbol(id)));
             }
+            Instruction::MetaVar => {
+                let id = next().expect("Insufficient parameters for MetaVar instruction") as Id;
+                let app_ctx_holes = pop_stack_list(stack);
+                let negative = pop_stack_list(stack);
+                let positive = pop_stack_list(stack);
+                let s_fresh = pop_stack_list(stack);
+                let e_fresh = pop_stack_list(stack);
+
+                let metavar_pat = Rc::new(Pattern::MetaVar {
+                    id,
+                    e_fresh,
+                    s_fresh,
+                    positive,
+                    negative,
+                    app_ctx_holes,
+                });
+                if !metavar_pat.well_formed() {
+                    panic!("Constructed meta-var {:?} is ill-formed.", &metavar_pat);
+                }
+
+                stack.push(Term::Pattern(metavar_pat));
+            }
             Instruction::Implication => {
                 let right = pop_stack_pattern(stack);
                 let left = pop_stack_pattern(stack);
@@ -629,28 +651,6 @@ fn execute_instructions<'a>(
                 }
 
                 stack.push(Term::Pattern(mu_pat))
-            }
-            Instruction::MetaVar => {
-                let id = next().expect("Insufficient parameters for MetaVar instruction") as Id;
-                let app_ctx_holes = pop_stack_list(stack);
-                let negative = pop_stack_list(stack);
-                let positive = pop_stack_list(stack);
-                let s_fresh = pop_stack_list(stack);
-                let e_fresh = pop_stack_list(stack);
-
-                let metavar_pat = Rc::new(Pattern::MetaVar {
-                    id,
-                    e_fresh,
-                    s_fresh,
-                    positive,
-                    negative,
-                    app_ctx_holes,
-                });
-                if !metavar_pat.well_formed() {
-                    panic!("Constructed meta-var {:?} is ill-formed.", &metavar_pat);
-                }
-
-                stack.push(Term::Pattern(metavar_pat));
             }
             Instruction::ESubst => {
                 let evar_id = next().expect("Insufficient parameters for ESubst instruction") as Id;
