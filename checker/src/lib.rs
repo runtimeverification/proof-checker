@@ -211,7 +211,6 @@ impl Pattern {
         }
     }
 
-    #[allow(dead_code)]
     fn positive(&self, svar: Id) -> bool {
         match self {
             Pattern::EVar(_) => true,
@@ -245,7 +244,6 @@ impl Pattern {
         }
     }
 
-    #[allow(dead_code)]
     fn negative(&self, svar: Id) -> bool {
         match self {
             Pattern::EVar(_) => true,
@@ -889,12 +887,12 @@ fn test_wellformedness_fresh() {
     assert!(phi0_s_fresh_0.well_formed());
 
     let phi1 = Rc::new(Pattern::MetaVar {
-       id: 1,
-       e_fresh: vec![1, 2, 0],
-       s_fresh: vec![],
-       positive: vec![],
-       negative: vec![],
-       app_ctx_holes: vec![2]
+        id: 1,
+        e_fresh: vec![1, 2, 0],
+        s_fresh: vec![],
+        positive: vec![],
+        negative: vec![],
+        app_ctx_holes: vec![2],
     });
     assert!(!phi1.well_formed());
 
