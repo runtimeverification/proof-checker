@@ -283,14 +283,18 @@ impl Pattern {
     fn well_formed(&self) -> bool {
         match self {
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
-            Pattern::MetaVar { e_fresh, app_ctx_holes, .. } => {
+            Pattern::MetaVar {
+                e_fresh,
+                app_ctx_holes,
+                ..
+            } => {
                 for hole in app_ctx_holes {
                     if e_fresh.contains(hole) {
-                        return false
+                        return false;
                     }
                 }
 
-                return true
+                return true;
             }
             Pattern::ESubst {
                 pattern,
