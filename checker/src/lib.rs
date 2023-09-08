@@ -563,7 +563,7 @@ fn execute_instructions<'a>(
         exists(0, Rc::clone(&phi0)),
     );
 
-    let existence = exists(0, Rc::clone(&phi0));
+    let existence = exists(0, evar(0));
 
     while let Some(instr_u32) = next() {
         match Instruction::from(instr_u32) {
