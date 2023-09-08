@@ -4,7 +4,7 @@ from copy import deepcopy
 from typing import TYPE_CHECKING
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.vardict import Vardict
+from mm_transfer.converter.vardict import VarDict
 from mm_transfer.metamath.ast import Metavariable
 
 if TYPE_CHECKING:
@@ -20,10 +20,10 @@ class Scope:
         previous_scope: Scope | None = None,
         args: tuple[str, ...] | None = None,
     ) -> None:
-        self._metavars: Vardict = Vardict(None, nf.MetaVar)
-        self._symbols: Vardict = Vardict(None, nf.Symbol)
-        self._element_vars: Vardict = Vardict(None, nf.EVar)
-        self._set_vars: Vardict = Vardict(None, nf.SVar)
+        self._metavars: VarDict = VarDict(None, nf.MetaVar)
+        self._symbols: VarDict = VarDict(None, nf.Symbol)
+        self._element_vars: VarDict = VarDict(None, nf.EVar)
+        self._set_vars: VarDict = VarDict(None, nf.SVar)
         self._domain_values: set[str] = set()
         self._args: tuple[str, ...] | None = args
 

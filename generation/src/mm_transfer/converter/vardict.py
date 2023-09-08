@@ -6,7 +6,7 @@ from typing import Any
 from mm_transfer.metamath.ast import Metavariable
 
 
-class Vardict(UserDict):
+class VarDict(UserDict):
     """
     This dictionary simplifies checking that a Metavariable is in the dictionary.
     You can type just: "metavar in varidct" in both cases where metavar is a Metavariable
