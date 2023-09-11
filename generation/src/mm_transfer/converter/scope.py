@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from copy import deepcopy
 from typing import TYPE_CHECKING
-from collections.abc import Callable
 
 from mypy_extensions import VarArg
 
@@ -11,6 +10,8 @@ from mm_transfer.converter.vardict import VarDict
 from mm_transfer.metamath.ast import Metavariable
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from mm_transfer.metamath.ast import Term
 
 
