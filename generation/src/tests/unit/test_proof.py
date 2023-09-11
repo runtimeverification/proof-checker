@@ -28,6 +28,13 @@ if TYPE_CHECKING:
     from proof_generation.proof import Pattern
 
 
+def test_pop() -> None:
+    interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, out=StringIO())
+    push_and_pop = bytes([Instruction.Prop1, Instruction.Pop])
+    deserialize_instructions(data=push_and_pop, interpreter=interpreter)
+    assert len(interpreter.stack) == 0
+
+
 def test_instantiate() -> None:
     phi0 = MetaVar(0)
     phi0_ef0 = MetaVar(0, e_fresh=(EVar(0),))

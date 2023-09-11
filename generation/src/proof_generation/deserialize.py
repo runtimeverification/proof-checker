@@ -105,7 +105,7 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
                 raise DeserializingException(f'Cannot instantiate term {target}.')
 
         elif instruction == Instruction.Pop:
-            interpreter.stack.pop()
+            interpreter.pop(interpreter.stack[-1])
 
         elif instruction == Instruction.Save:
             term = interpreter.stack[-1]

@@ -155,6 +155,9 @@ class BasicInterpreter:
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return pattern.instantiate(delta)
 
+    def pop(self, term: Pattern | Proved) -> None:
+        ...
+
     def save(self, id: str, term: Pattern | Proved) -> None:
         ...
 
@@ -303,6 +306,11 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
+    def pop(self, term: Pattern | Proved) -> None:
+        assert self.stack[-1] == term, f'expected: {self.stack[-1]}\ngot: {term}'
+        self.stack.pop()
+        super().pop(term)
+
     def save(self, id: str, term: Pattern | Proved) -> None:
         assert self.stack[-1] == term, f'expected: {self.stack[-1]}\ngot: {term}'
         self.memory.append(term)
@@ -421,6 +429,10 @@ class SerializingInterpreter(StatefulInterpreter):
         ret = super().instantiate_notation(pattern, delta)
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
+
+    def pop(self, term: Pattern | Proved) -> None:
+        super().pop(term)
+        self.out.write(bytes([Instruction.Pop]))
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
@@ -564,6 +576,10 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
+
+    @pretty()
+    def pop(self, term: Pattern | Proved) -> None:
+        self.out.write('Pop')
 
     @pretty(print_stack=False)
     def save(self, id: str, term: Pattern | Proved) -> None:
