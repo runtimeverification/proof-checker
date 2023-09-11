@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from copy import deepcopy
 from typing import TYPE_CHECKING
+from collections.abc import Callable
+
+from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
 from mm_transfer.converter.vardict import VarDict
 from mm_transfer.metamath.ast import Metavariable
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from mm_transfer.metamath.ast import Term
 
 
@@ -50,10 +51,10 @@ class Scope:
     def add_domain_value(self, cnst: str) -> None:
         self._domain_values.add(cnst)
 
-    def resolve(self, name: str) -> Callable:
+    def resolve(self, name: str) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
         if isinstance(self._args, tuple) and name in self._args:
 
-            def match_arg(*args: Term) -> Term:
+            def match_arg(*args: nf.Pattern) -> nf.Pattern:
                 # Can be rewritten as lambda but Typechecker requires a couple of assertions
                 assert isinstance(self._args, tuple) and name in self._args
                 position: int = self._args.index(name)

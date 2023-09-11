@@ -3,6 +3,8 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
+from mypy_extensions import VarArg
+
 import proof_generation.pattern as nf
 from mm_transfer.converter.scope import Scope
 from mm_transfer.metamath.ast import (
@@ -18,7 +20,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from mm_transfer.metamath.ast import Database, Term
-    from proof_generation.proof import BasicInterpreter
 
 
 class MetamathConverter:
@@ -31,26 +32,13 @@ class MetamathConverter:
         self._scope = Scope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
-        self._notations: dict[str, Callable] = {}
+        self._notations: dict[str, Callable[[VarArg(nf.Pattern)], nf.Pattern]] = {}
 
         # Add special cases that formalized in the new format differently
         self._add_builin_notations()
 
         # Go over all statements 1 by 1
         self._top_down()
-
-    def put_vars_on_stack(self, interpreter: BasicInterpreter) -> None:
-        """
-        Put all the variables on the stack
-        """
-        # TODO: Replace it with something meaningful
-        # for cnt, var in enumerate(self._symbols.values()):
-        #     print(f'var {var.name} as Symbol with id {cnt}')
-        #     interpreter.symbol(cnt)
-
-        # for cnt, var in enumerate(self._patterns.values()):
-        #     print(f'var {var.name} as Metavariable with id {cnt}')
-        #     interpreter.metavar(cnt)
 
     def _top_down(self) -> None:
         """
@@ -209,7 +197,7 @@ class MetamathConverter:
     def _add_builin_notations(self) -> None:
         self._notations['\\bot'] = lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0))
 
-    def _to_pattern(self, scope: Scope, term: Term) -> Callable:
+    def _to_pattern(self, scope: Scope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
         # TODO: Use essential hypotheses to determine metaconditions
         match term:
             case Application(symbol, subterms):
@@ -230,7 +218,13 @@ class MetamathConverter:
                     var_term, subpattern_term = subterms
                     var_pattern = self._to_pattern(scope, var_term)
                     subpattern_pattern = self._to_pattern(scope, subpattern_term)
-                    return lambda *args: nf.Exists(var_pattern(*args), subpattern_pattern(*args))
+
+                    def exists(*args: nf.Pattern) -> nf.Pattern:
+                        evar = var_pattern(*args)
+                        assert isinstance(evar, nf.EVar)
+                        return nf.Exists(evar, subpattern_pattern(*args))
+
+                    return exists
                 elif symbol in self._notations:
                     notation = self._notations[symbol]
                     converted_args = tuple(self._to_pattern(scope, arg) for arg in term.subterms)
