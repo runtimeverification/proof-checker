@@ -50,7 +50,7 @@ If we want to explicitly say that a pattern contains a metavariable, we use the 
   A pattern is called \emph{concrete} if it is not a meta-pattern.
 \end{definition}
 
-We do not make any assumptions about meta-variables with the same ids to have the same constraints, as we want to avoid checking such things.
+We do not make any assumptions about meta-variables with the same ids to have the same constraints.
 On the contrary, this is a special property of patterns that we will be considering:
 \begin{definition}[Metavariable-consistency]
   We call a pattern $\psi$ \emph{metavariable-consistent}, if for every $M, M'$ in $\psi$ we have that $M.id = M'.id$ implies $M = M'$.
