@@ -3,6 +3,10 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
+from mypy_extensions import VarArg
+
+import proof_generation.pattern as nf
+from mm_transfer.converter.scope import Scope
 from mm_transfer.metamath.ast import (
     Application,
     AxiomaticStatement,
@@ -13,8 +17,9 @@ from mm_transfer.metamath.ast import (
 )
 
 if TYPE_CHECKING:
-    from mm_transfer.metamath.ast import Database
-    from proof_generation.proof import BasicInterpreter
+    from collections.abc import Callable
+
+    from mm_transfer.metamath.ast import Database, Term
 
 
 class MetamathConverter:
@@ -24,27 +29,16 @@ class MetamathConverter:
 
     def __init__(self, parsed: Database) -> None:
         self.parsed = parsed
+        self._scope = Scope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
-        self._patterns: dict[str, Metavariable] = {}
-        self._symbols: dict[str, Metavariable] = {}
-        self._variables: dict[str, Metavariable] = {}
-        self._element_vars: dict[str, Metavariable] = {}
-        self._set_vars: dict[str, Metavariable] = {}
-        self._domain_values: set[str] = set()
+        self._notations: dict[str, Callable[[VarArg(nf.Pattern)], nf.Pattern]] = {}
+
+        # Add special cases that formalized in the new format differently
+        self._add_builin_notations()
+
+        # Go over all statements 1 by 1
         self._top_down()
-
-    def put_vars_on_stack(self, interpreter: BasicInterpreter) -> None:
-        """
-        Put all the variables on the stack
-        """
-        for cnt, var in enumerate(self._symbols.values()):
-            print(f'var {var.name} as Symbol with id {cnt}')
-            interpreter.symbol(cnt)
-
-        for cnt, var in enumerate(self._patterns.values()):
-            print(f'var {var.name} as Metavariable with id {cnt}')
-            interpreter.metavar(cnt)
 
     def _top_down(self) -> None:
         """
@@ -72,6 +66,7 @@ class MetamathConverter:
     def _import_axioms(self, statement: AxiomaticStatement) -> None:
         is_constant = re.compile(r'"\S+"')
 
+        # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
         def constant_is_pattern_axiom(st: AxiomaticStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
@@ -83,13 +78,52 @@ class MetamathConverter:
                 # We can distinguish domain values from other constants, but we decided
                 # to keep quotes in favor of the direct correspondence between Metamath
                 # and the new format.
-                self._domain_values.add(st.terms[1].symbol)
+                self._scope.add_domain_value(st.terms[1].symbol)
                 return True
             else:
                 return False
 
-        # TODO: Replace the single call according to further needs on the next step
-        constant_is_pattern_axiom(statement)
+        def symbol_axiom(st: AxiomaticStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Symbol'
+                and isinstance(st.terms[1], Application)
+                and len(st.terms[1].subterms) == 0
+            ):
+                self._scope.add_symbol(st.terms[1].symbol)
+                return True
+            else:
+                return False
+
+        def sugar_axiom(st: AxiomaticStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Notation'
+                and isinstance(st.terms[1], Application)
+                and len(st.terms) == 3
+            ):
+                symbol: str = st.terms[1].symbol
+                args = st.terms[1].subterms
+
+                # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
+                assert all(isinstance(arg, Metavariable) for arg in args)
+                metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
+                scope = self._scope._reduce_to_args(metavar_args)
+                notation_lambda = self._to_pattern(scope, st.terms[2])
+                self._notations[symbol] = notation_lambda
+                return True
+            else:
+                return False
+
+        if constant_is_pattern_axiom(statement):
+            return
+        elif symbol_axiom(statement):
+            return
+        elif sugar_axiom(statement):
+            return
+        else:
+            print(f'Unknown axiom: {repr(statement)}')
+            return
 
     def _import_floating(self, statement: FloatingStatement) -> None:
         def get_pattern(st: FloatingStatement) -> Metavariable | None:
@@ -148,14 +182,60 @@ class MetamathConverter:
                 return None
 
         if var := get_pattern(statement):
-            self._patterns[var.name] = var
+            self._scope.add_metavariable(var)
         elif var := get_symbol(statement):
-            self._symbols[var.name] = var
+            self._scope.add_symbol(var)
         elif var := get_var(statement):
-            self._variables[var.name] = var
+            self._scope.add_metavariable(var)
         elif var := get_element_var(statement):
-            self._element_vars[var.name] = var
+            self._scope.add_element_var(var)
         elif var := get_set_var(statement):
-            self._set_vars[var.name] = var
+            self._scope.add_set_var(var)
         else:
             print(f'Unknown floating statement: {repr(statement)}')
+
+    def _add_builin_notations(self) -> None:
+        self._notations['\\bot'] = lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0))
+
+    def _to_pattern(self, scope: Scope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+        # TODO: Use essential hypotheses to determine metaconditions
+        match term:
+            case Application(symbol, subterms):
+                if symbol == '\\imp':
+                    assert len(subterms) == 2
+                    left_term, right_term = subterms
+                    left_pattern = self._to_pattern(scope, left_term)
+                    right_pattern = self._to_pattern(scope, right_term)
+                    return lambda *args: nf.Implication(left_pattern(*args), right_pattern(*args))
+                elif symbol == '\\app':
+                    assert len(subterms) == 2
+                    left_term, right_term = subterms
+                    left_pattern = self._to_pattern(scope, left_term)
+                    right_pattern = self._to_pattern(scope, right_term)
+                    return lambda *args: nf.Application(left_pattern(*args), right_pattern(*args))
+                elif symbol == '\\exists':
+                    assert len(subterms) == 2
+                    var_term, subpattern_term = subterms
+                    var_pattern = self._to_pattern(scope, var_term)
+                    subpattern_pattern = self._to_pattern(scope, subpattern_term)
+
+                    def exists(*args: nf.Pattern) -> nf.Pattern:
+                        evar = var_pattern(*args)
+                        assert isinstance(evar, nf.EVar)
+                        return nf.Exists(evar, subpattern_pattern(*args))
+
+                    return exists
+                elif symbol in self._notations:
+                    notation = self._notations[symbol]
+                    converted_args = tuple(self._to_pattern(scope, arg) for arg in term.subterms)
+                    return lambda *args: notation(*[arg(*args) for arg in converted_args])
+                elif scope.is_symbol(symbol):
+                    resolved = scope.resolve(symbol)
+                    return lambda *args: resolved(*args)
+                else:
+                    raise NotImplementedError
+            case Metavariable(name):
+                resolved = scope.resolve(name)
+                return lambda *args: resolved(*args)
+            case _:
+                raise NotImplementedError
