@@ -14,7 +14,6 @@ class Pattern:
         raise NotImplementedError
 
 
-
 @dataclass(frozen=True)
 class EVar(Pattern):
     name: int
@@ -102,7 +101,6 @@ class Application(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return Application(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
-
     def __str__(self) -> str:
         return f'(app ({str(self.left)}) ({str(self.right)}))'
 
@@ -139,7 +137,7 @@ class Mu(Pattern):
         return Mu(self.var, self.subpattern.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return Exists(self.var, self.subpattern.apply_ssubst(svar_id, plug))
+        return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
         return f'(\u03BC {str(self.var)} . {str(self.subpattern)})'
@@ -160,16 +158,16 @@ class MetaVar(Pattern):
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        #TODO: correct?
+        # TODO: correct?
         if evar_id in self.e_fresh:
             return self
-        return ESubst(pattern=self, var=evar_id, plug=plug)
+        return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        #TODO: correct?
+        # TODO: correct?
         if svar_id in self.s_fresh:
             return self
-        return SSubst(pattern=self, var=svar_id, plug=plug)
+        return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def __str__(self) -> str:
         return f'phi{self.name}'
@@ -177,18 +175,18 @@ class MetaVar(Pattern):
 
 @dataclass(frozen=True)
 class ESubst(Pattern):
-    pattern: MetaVar
+    pattern: MetaVar | ESubst | SSubst
     var: EVar
     plug: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return self.pattern.instantiate(delta).apply_esubst(self.var, self.plug)
+        return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return ESubst(pattern=self, var=evar_id, plug=plug)
+        return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return SSubst(pattern=self, var=svar_id, plug=plug)
+        return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def __str__(self) -> str:
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
@@ -196,18 +194,18 @@ class ESubst(Pattern):
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
-    pattern: MetaVar
+    pattern: MetaVar | ESubst | SSubst
     var: SVar
     plug: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return self.pattern.instantiate(delta).apply_ssubst(self.var, self.plug)
+        return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return ESubst(pattern=self, var=evar_id, plug=plug)
+        return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return SSubst(pattern=self, var=svar_id, plug=plug)
+        return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def __str__(self) -> str:
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'

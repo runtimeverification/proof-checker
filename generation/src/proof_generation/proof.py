@@ -88,10 +88,10 @@ class BasicInterpreter:
         return Exists(EVar(var), subpattern)
 
     def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
-        return ESubst(EVar(evar_id), pattern, plug)
+        return pattern.apply_esubst(evar_id, plug)
 
     def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
-        return SSubst(SVar(svar_id), pattern, plug)
+        return pattern.apply_ssubst(svar_id, plug)
 
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(SVar(var), subpattern)
@@ -280,7 +280,12 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
-        return SSubst(SVar(svar_id), pattern, plug)
+        *self.stack, expected_plug, expected_pattern = self.stack
+        assert expected_pattern == pattern
+        assert expected_plug == plug
+        ret = super().ssubst(svar_id, pattern, plug)
+        self.stack.append(ret)
+        return ret
 
     def prop1(self) -> Proved:
         ret = super().prop1()
@@ -415,6 +420,16 @@ class SerializingInterpreter(StatefulInterpreter):
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         ret = super().mu(var, subpattern)
         self.out.write(bytes([Instruction.Mu, var]))
+        return ret
+
+    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+        ret = super().esubst(evar_id, pattern, plug)
+        self.out.write(bytes([Instruction.ESubst, evar_id]))
+        return ret
+
+    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+        ret = super().ssubst(svar_id, pattern, plug)
+        self.out.write(bytes([Instruction.SSubst, svar_id]))
         return ret
 
     def prop1(self) -> Proved:
@@ -569,6 +584,14 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(str(var))
 
     @pretty()
+    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> None:
+        self.out.write(f'ESubst id={evar_id}')
+
+    @pretty()
+    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> None:
+        self.out.write(f'SSubst id={svar_id}')
+
+    @pretty()
     def prop1(self) -> None:
         self.out.write('Prop1')
 
@@ -707,7 +730,6 @@ class ProofExp:
 
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return self.interpreter.mu(var, subpattern)
-        
 
     def metavar(
         self,
