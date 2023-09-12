@@ -144,6 +144,8 @@ ssubst_stack_seq_rev = lambda term: SSubst(SSubst(pattern=term, var=SVar(1), plu
         [ssubst_stack_seq_rev, MetaVar(0), {0: MetaVar(1)}, ssubst_stack_seq_rev(MetaVar(1))],
         [stack_mixed1, MetaVar(0), {0: SVar(1)}, EVar(2)],
         [stack_mixed1, MetaVar(0), {0: SVar(2)}, SVar(2)],
+        # This fails if metavar instantiations are not propagated into the plug
+        [lambda mvar: SSubst(mvar, SVar(0), mvar), MetaVar(0), {0: SVar(0)}, SVar(0)],
     ],
 )
 def test_instantiate_ssubst(

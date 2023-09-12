@@ -87,11 +87,11 @@ class BasicInterpreter:
     def exists(self, var: int, subpattern: Pattern) -> Pattern:
         return Exists(EVar(var), subpattern)
 
-    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
-        return pattern.apply_esubst(evar_id, plug)
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        return ESubst(pattern, EVar(evar_id), plug)
 
-    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
-        return pattern.apply_ssubst(svar_id, plug)
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        return SSubst(pattern, SVar(svar_id), plug)
 
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(SVar(var), subpattern)
@@ -271,7 +271,7 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         *self.stack, expected_plug, expected_pattern = self.stack
         assert expected_pattern == pattern
         assert expected_plug == plug
@@ -279,7 +279,7 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         *self.stack, expected_plug, expected_pattern = self.stack
         assert expected_pattern == pattern
         assert expected_plug == plug
@@ -422,12 +422,12 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.Mu, var]))
         return ret
 
-    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         ret = super().esubst(evar_id, pattern, plug)
         self.out.write(bytes([Instruction.ESubst, evar_id]))
         return ret
 
-    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         ret = super().ssubst(svar_id, pattern, plug)
         self.out.write(bytes([Instruction.SSubst, svar_id]))
         return ret
@@ -584,11 +584,11 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(str(var))
 
     @pretty()
-    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> None:
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> None:
         self.out.write(f'ESubst id={evar_id}')
 
     @pretty()
-    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> None:
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> None:
         self.out.write(f'SSubst id={svar_id}')
 
     @pretty()

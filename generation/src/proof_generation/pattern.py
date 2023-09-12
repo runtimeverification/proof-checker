@@ -160,13 +160,11 @@ class MetaVar(Pattern):
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        # TODO: correct?
         if EVar(evar_id) in self.e_fresh:
             return self
         return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        # TODO: correct?
         if SVar(svar_id) in self.s_fresh:
             return self
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
@@ -182,7 +180,7 @@ class ESubst(Pattern):
     plug: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug)
+        return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
@@ -201,7 +199,7 @@ class SSubst(Pattern):
     plug: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug)
+        return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
