@@ -5,6 +5,7 @@ extern crate alloc;
 use alloc::rc::Rc;
 use alloc::vec;
 use alloc::vec::Vec;
+use alloc::format;
 
 /// Instructions
 /// ============
@@ -582,10 +583,12 @@ fn execute_instructions<'a>(
         match Instruction::from(instr_u32) {
             Instruction::List => {
                 let len = next().expect("Insufficient parameters for List instruction");
-                if len != 0 {
-                    panic!("Len was supposed to be zero.")
+                let mut list = vec![len;0];
+                let mut i: usize = 0;
+                while i < (len as usize) {
+                    list[i] = next().expect(&format!("Expected {}-th element of List of length {}", i, len));
+                    i += 1;
                 }
-                let list = vec![];
                 stack.push(Term::List(list));
             }
             // TODO: Add an abstraction for pushing these one-argument terms on stack?
