@@ -87,6 +87,12 @@ class BasicInterpreter:
     def exists(self, var: int, subpattern: Pattern) -> Pattern:
         return Exists(EVar(var), subpattern)
 
+    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+        return ESubst(EVar(evar_id), pattern, plug)
+
+    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+        return SSubst(SVar(svar_id), pattern, plug)
+
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(SVar(var), subpattern)
 
@@ -264,6 +270,17 @@ class StatefulInterpreter(BasicInterpreter):
         ret = super().mu(var, subpattern)
         self.stack.append(ret)
         return ret
+
+    def esubst(self, evar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+        *self.stack, expected_plug, expected_pattern = self.stack
+        assert expected_pattern == pattern
+        assert expected_plug == plug
+        ret = super().esubst(evar_id, pattern, plug)
+        self.stack.append(ret)
+        return ret
+
+    def ssubst(self, svar_id: int, pattern: MetaVar, plug: Pattern) -> Pattern:
+        return SSubst(SVar(svar_id), pattern, plug)
 
     def prop1(self) -> Proved:
         ret = super().prop1()
@@ -690,6 +707,7 @@ class ProofExp:
 
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return self.interpreter.mu(var, subpattern)
+        
 
     def metavar(
         self,
