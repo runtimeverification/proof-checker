@@ -161,13 +161,13 @@ class MetaVar(Pattern):
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         # TODO: correct?
-        if evar_id in self.e_fresh:
+        if EVar(evar_id) in self.e_fresh:
             return self
         return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         # TODO: correct?
-        if svar_id in self.s_fresh:
+        if SVar(svar_id) in self.s_fresh:
             return self
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
