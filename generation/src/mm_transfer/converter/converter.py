@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.scope import Scope
+from mm_transfer.converter.representation import Notation
+from mm_transfer.converter.scope import GlobalScope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
     AxiomaticStatement,
@@ -19,6 +20,7 @@ from mm_transfer.metamath.ast import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from mm_transfer.converter.scope import NotationScope
     from mm_transfer.metamath.ast import Database, Term
 
 
@@ -29,10 +31,9 @@ class MetamathConverter:
 
     def __init__(self, parsed: Database) -> None:
         self.parsed = parsed
-        self._scope = Scope()
+        self._scope: GlobalScope = GlobalScope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
-        self._notations: dict[str, Callable[[VarArg(nf.Pattern)], nf.Pattern]] = {}
 
         # Add special cases that formalized in the new format differently
         self._add_builin_notations()
@@ -62,68 +63,6 @@ class MetamathConverter:
     def _import_variables(self, statement: VariableStatement) -> None:
         for var in statement.metavariables:
             self._declared_variables[var.name] = var
-
-    def _import_axioms(self, statement: AxiomaticStatement) -> None:
-        is_constant = re.compile(r'"\S+"')
-
-        # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
-        def constant_is_pattern_axiom(st: AxiomaticStatement) -> bool:
-            if (
-                isinstance(st.terms[0], Application)
-                and st.terms[0].symbol == '#Pattern'
-                and isinstance(st.terms[1], Application)
-                and st.terms[1].symbol in self._declared_constants
-                and is_constant.match(st.terms[1].symbol)
-            ):
-                # We can distinguish domain values from other constants, but we decided
-                # to keep quotes in favor of the direct correspondence between Metamath
-                # and the new format.
-                self._scope.add_domain_value(st.terms[1].symbol)
-                return True
-            else:
-                return False
-
-        def symbol_axiom(st: AxiomaticStatement) -> bool:
-            if (
-                isinstance(st.terms[0], Application)
-                and st.terms[0].symbol == '#Symbol'
-                and isinstance(st.terms[1], Application)
-                and len(st.terms[1].subterms) == 0
-            ):
-                self._scope.add_symbol(st.terms[1].symbol)
-                return True
-            else:
-                return False
-
-        def sugar_axiom(st: AxiomaticStatement) -> bool:
-            if (
-                isinstance(st.terms[0], Application)
-                and st.terms[0].symbol == '#Notation'
-                and isinstance(st.terms[1], Application)
-                and len(st.terms) == 3
-            ):
-                symbol: str = st.terms[1].symbol
-                args = st.terms[1].subterms
-
-                # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
-                assert all(isinstance(arg, Metavariable) for arg in args)
-                metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
-                scope = self._scope._reduce_to_args(metavar_args)
-                notation_lambda = self._to_pattern(scope, st.terms[2])
-                self._notations[symbol] = notation_lambda
-                return True
-            else:
-                return False
-
-        if constant_is_pattern_axiom(statement):
-            return
-        elif symbol_axiom(statement):
-            return
-        elif sugar_axiom(statement):
-            return
-        else:
-            print(f'Unknown axiom: {repr(statement)}')
-            return
 
     def _import_floating(self, statement: FloatingStatement) -> None:
         def get_pattern(st: FloatingStatement) -> Metavariable | None:
@@ -186,7 +125,8 @@ class MetamathConverter:
         elif var := get_symbol(statement):
             self._scope.add_symbol(var)
         elif var := get_var(statement):
-            self._scope.add_metavariable(var)
+            self._scope.add_element_var(var)
+            self._scope.add_set_var(var)
         elif var := get_element_var(statement):
             self._scope.add_element_var(var)
         elif var := get_set_var(statement):
@@ -194,11 +134,85 @@ class MetamathConverter:
         else:
             print(f'Unknown floating statement: {repr(statement)}')
 
-    def _add_builin_notations(self) -> None:
-        self._notations['\\bot'] = lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0))
+    def _import_axioms(self, statement: AxiomaticStatement) -> None:
+        is_constant = re.compile(r'"\S+"')
 
-    def _to_pattern(self, scope: Scope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+        # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
+        def constant_is_pattern_axiom(st: AxiomaticStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Pattern'
+                and isinstance(st.terms[1], Application)
+                and st.terms[1].symbol in self._declared_constants
+                and is_constant.match(st.terms[1].symbol)
+            ):
+                # We can distinguish domain values from other constants, but we decided
+                # to keep quotes in favor of the direct correspondence between Metamath
+                # and the new format.
+                self._scope.add_domain_value(st.terms[1].symbol)
+                return True
+            else:
+                return False
+
+        def symbol_axiom(st: AxiomaticStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Symbol'
+                and isinstance(st.terms[1], Application)
+                and len(st.terms[1].subterms) == 0
+            ):
+                self._scope.add_symbol(st.terms[1].symbol)
+                return True
+            else:
+                return False
+
+        def sugar_axiom(st: AxiomaticStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Notation'
+                and isinstance(st.terms[1], Application)
+                and len(st.terms) == 3
+            ):
+                symbol: str = st.terms[1].symbol
+                args = st.terms[1].subterms
+
+                # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
+                assert all(isinstance(arg, Metavariable) for arg in args)
+                metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
+
+                if any(self._scope.is_ambiguous(arg.name) for arg in metavar_args):
+                    scopes = self._scope.unambiguize()
+                    for scope in scopes:
+                        notation_scope = to_notation_scope(scope, metavar_args)
+                        notation_lambda = self._to_pattern(notation_scope, st.terms[2])
+                        notation = Notation(symbol, notation_scope.arguments_type_check, notation_lambda)
+                        self._scope.add_notation(notation)
+                else:
+                    notation_scope = to_notation_scope(self._scope, metavar_args)
+                    notation_lambda = self._to_pattern(notation_scope, st.terms[2])
+                    notation = Notation(symbol, notation_scope.arguments_type_check, notation_lambda)
+                    self._scope.add_notation(notation)
+                return True
+            else:
+                return False
+
+        if constant_is_pattern_axiom(statement):
+            return
+        elif symbol_axiom(statement):
+            return
+        elif sugar_axiom(statement):
+            return
+        else:
+            print(f'Unknown axiom: {repr(statement)}')
+            return
+
+    def _add_builin_notations(self) -> None:
+        bot = Notation('\\bot', lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
+        self._scope.add_notation(bot)
+
+    def _to_pattern(self, scope: NotationScope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
         # TODO: Use essential hypotheses to determine metaconditions
+        # TODO: We should return expected type of the pattern to implement scope type checks
         match term:
             case Application(symbol, subterms):
                 if symbol == '\\imp':
@@ -225,17 +239,22 @@ class MetamathConverter:
                         return nf.Exists(evar, subpattern_pattern(*args))
 
                     return exists
-                elif symbol in self._notations:
-                    notation = self._notations[symbol]
+                elif scope.is_notation(symbol):
                     converted_args = tuple(self._to_pattern(scope, arg) for arg in term.subterms)
-                    return lambda *args: notation(*[arg(*args) for arg in converted_args])
+
+                    def resolve_notation(*args: nf.Pattern) -> nf.Pattern:
+                        real_args = [arg(*args) for arg in converted_args]
+                        notation = scope.resolve_notation(symbol, *real_args)
+                        return notation(*real_args)
+
+                    return resolve_notation
                 elif scope.is_symbol(symbol):
-                    resolved = scope.resolve(symbol)
+                    resolved = scope.resolve_as_callable(symbol)
                     return lambda *args: resolved(*args)
                 else:
                     raise NotImplementedError
             case Metavariable(name):
-                resolved = scope.resolve(name)
+                resolved = scope.resolve_as_callable(name)
                 return lambda *args: resolved(*args)
             case _:
                 raise NotImplementedError
