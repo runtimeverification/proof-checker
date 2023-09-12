@@ -137,6 +137,8 @@ class Mu(Pattern):
         return Mu(self.var, self.subpattern.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        if svar_id == self.var:
+            return self
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
