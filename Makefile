@@ -55,27 +55,27 @@ PROOFS=$(wildcard proofs/*.ml-proof)
 # Proof generation
 # ----------------
 
-.build/proofs/%.ml-proof:
+.build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
 
-.build/proofs/%.ml-claim:
+.build/proofs/%.ml-claim: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary claim $@
 
-.build/proofs/%.ml-gamma:
+.build/proofs/%.ml-gamma: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary gamma $@
 
-.build/proofs/%.pretty-proof:
+.build/proofs/%.pretty-proof: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty proof $@
 
-.build/proofs/%.pretty-claim:
+.build/proofs/%.pretty-claim: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
 
-.build/proofs/%.pretty-gamma:
+.build/proofs/%.pretty-gamma: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty gamma $@
 
