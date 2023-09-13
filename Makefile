@@ -3,7 +3,7 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
-clean-proofs: 
+clean-proofs:
 	rm -rf .build/proofs
 
 # Syntax and formatting checks
@@ -85,22 +85,22 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/
 	${BIN_DIFF} "proofs/$*.ml-proof" ".build/proofs/$*.ml-proof"
 	${BIN_DIFF} "proofs/$*.ml-gamma" ".build/proofs/$*.ml-gamma"
 
-
 test-proof-gen: ${PROOF_GEN_TARGETS}
 
 # Proof checking
 # ----------------
 
-PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
+PROOF_VERIFY_SNAPSHOTS=$(addsuffix .verify,${PROOFS})
 proofs/%.ml-proof.verify: proofs/%.ml-proof
 	cargo run --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
-test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
-PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
-.build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma
-	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim $<
+test-proof-verify: ${PROOF_VERIFY_SNAPSHOTS}
 
-proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
+PROOF_VERIFY_BUILDS=$(addsuffix .verify.build,${PROOFS})
+proofs/%.ml-proof.verify.build: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
+
+proof-verify: ${PROOF_VERIFY_BUILDS}
 
 # Risc0
 # -----
