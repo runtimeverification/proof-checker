@@ -67,6 +67,9 @@ class BasicInterpreter:
     def symbol(self, id: int) -> Pattern:
         return Symbol(id)
 
+    def list(self, list: tuple[int]) -> tuple[int]:
+        return list
+
     def metavar(
         self,
         id: int,
@@ -161,13 +164,13 @@ class BasicInterpreter:
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return pattern.instantiate(delta)
 
-    def pop(self, term: Pattern | Proved) -> None:
+    def pop(self, term: Pattern | Proved | tuple[int]) -> None:
         ...
 
-    def save(self, id: str, term: Pattern | Proved) -> None:
+    def save(self, id: str, term: Pattern | Proved | tuple[int]) -> None:
         ...
 
-    def load(self, id: str, term: Pattern | Proved) -> None:
+    def load(self, id: str, term: Pattern | Proved | tuple[int]) -> None:
         ...
 
     def publish_proof(self, term: Proved) -> None:
@@ -194,8 +197,8 @@ class StatefulInterpreter(BasicInterpreter):
     """
 
     claims: list[Claim]
-    stack: list[Pattern | Proved]
-    memory: list[Pattern | Proved]
+    stack: list[Pattern | Proved | tuple[int]]
+    memory: list[Pattern | Proved | tuple[int]]
 
     def __init__(
         self, phase: ExecutionPhase, claims: list[Claim] | None = None, axioms: list[Pattern] | None = None
@@ -225,6 +228,11 @@ class StatefulInterpreter(BasicInterpreter):
 
     def symbol(self, id: int) -> Pattern:
         ret = super().symbol(id)
+        self.stack.append(ret)
+        return ret
+
+    def list(self, list: tuple[int]) -> tuple[int]:
+        ret = super().list(list)
         self.stack.append(ret)
         return ret
 
@@ -386,6 +394,11 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.Symbol, id]))
         return ret
 
+    def list(self, list: tuple[int]) -> tuple[int]:
+        ret = super().list(list)
+        self.out.write(bytes([Instruction.List, len(list)]))
+        return ret
+
     def metavar(
         self,
         id: int,
@@ -495,13 +508,13 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     ) -> None:
         super().__init__(phase=phase, claims=claims, axioms=axioms)
         self.out = out
-        self._notation: dict[str, Pattern] = {}
+        self._notation: dict[str, Pattern | tuple[int]] = {}
 
-    def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
+    def plug_in_notation(self, notation: dict[str, Pattern | tuple[int]]) -> None:
         self._notation = notation
 
     @property
-    def notation(self) -> dict[Pattern, str]:
+    def notation(self) -> dict[Pattern | tuple[int] , str]:
         return {v: k for k, v in self._notation.items()}
 
     @staticmethod
@@ -538,6 +551,11 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def symbol(self, id: int) -> None:
         self.out.write('Symbol ')
         self.out.write(str(id))
+
+    @pretty()
+    def list(self, list: tuple[int]) -> None:
+        self.out.write('List ')
+        self.out.write(f'{len(list)}')
 
     @pretty(print_stack=False)
     def metavar(
@@ -644,7 +662,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def publish_claim(self, pattern: Pattern) -> None:
         self.out.write('Publish')
 
-    def pretty_print_pattern(self, p: Pattern) -> str:
+    def pretty_print_pattern(self, p: Pattern | tuple[int]) -> str:
         if p in self.notation:
             return self.notation[p]
 
@@ -694,7 +712,7 @@ class ProofExp:
 
     def __init__(self, interpreter: BasicInterpreter) -> None:
         self.interpreter = interpreter
-        self.notation: dict[str, Pattern] = {}
+        self.notation: dict[str, Pattern | tuple[int]] = {}
 
     @staticmethod
     def axioms() -> list[Pattern]:
@@ -763,7 +781,7 @@ class ProofExp:
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return self.interpreter.instantiate_notation(pattern, delta)
 
-    def load_notation(self, id: str) -> Pattern | None:
+    def load_notation(self, id: str) -> Pattern | tuple[int] | None:
         if id not in self.notation:
             return None
         ret = self.notation[id]
