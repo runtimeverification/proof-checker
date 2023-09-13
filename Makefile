@@ -6,6 +6,8 @@ FORCE:
 clean-proofs:
 	rm -rf .build/proofs
 
+.PHONY: clean-proofs
+
 # Syntax and formatting checks
 # ============================
 
@@ -42,7 +44,7 @@ test-unit-python:
 # ==============
 
 test-system: test-proof-gen test-proof-verify
-.PHONY: test-proof-gen test-proof-verify test-risc0
+.PHONY: test-system test-proof-gen test-proof-verify test-zk
 
 PROOFS=$(wildcard proofs/*.ml-proof)
 
@@ -50,31 +52,31 @@ PROOFS=$(wildcard proofs/*.ml-proof)
 # Proof generation
 # ----------------
 
-PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
-.build/proofs/%.ml-proof: FORCE
+.build/proofs/%.ml-proof:
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
 
-.build/proofs/%.ml-claim: FORCE
+.build/proofs/%.ml-claim:
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary claim $@
 
-.build/proofs/%.ml-gamma: FORCE
+.build/proofs/%.ml-gamma:
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary gamma $@
 
-.build/proofs/%.pretty-proof: FORCE
+.build/proofs/%.pretty-proof:
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty proof $@
 
-.build/proofs/%.pretty-claim: FORCE
+.build/proofs/%.pretty-claim:
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
 
-.build/proofs/%.pretty-gamma: FORCE
+.build/proofs/%.pretty-gamma:
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty gamma $@
 
+PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
 proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim .build/proofs/%.pretty-gamma
@@ -100,7 +102,8 @@ PROOF_VERIFY_BUILDS=$(addsuffix .verify.build,${PROOFS})
 proofs/%.ml-proof.verify.build: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
 	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
-proof-verify: ${PROOF_VERIFY_BUILDS}
+proof-verify: clean-proofs ${PROOF_VERIFY_BUILDS}
+.PHONY: proof-verify
 
 # Risc0
 # -----
