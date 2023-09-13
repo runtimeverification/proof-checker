@@ -27,20 +27,20 @@ class Scope:
         self._domain_values: set[str] = set()
         self._notations: dict[str, tuple[Notation, ...]] = {}
 
-    def add_metavariable(self, var: Metavariable) -> None:
-        self._metavars[var.name] = nf.MetaVar(len(self._metavars))
+    def add_metavariable(self, var: Metavariable | str) -> None:
+        self._metavars[var] = nf.MetaVar(len(self._metavars))
 
     def add_symbol(self, var: Metavariable | str) -> None:
         if isinstance(var, Metavariable):
-            self._symbols[var.name] = nf.Symbol(len(self._symbols))
+            self._symbols[var] = nf.Symbol(len(self._symbols))
         else:
             self._symbols[var] = nf.Symbol(len(self._symbols))
 
-    def add_element_var(self, var: Metavariable) -> None:
-        self._element_vars[var.name] = nf.EVar(len(self._element_vars))
+    def add_element_var(self, var: Metavariable | str) -> None:
+        self._element_vars[var] = nf.EVar(len(self._element_vars))
 
-    def add_set_var(self, var: Metavariable) -> None:
-        self._set_vars[var.name] = nf.SVar(len(self._set_vars))
+    def add_set_var(self, var: Metavariable | str) -> None:
+        self._set_vars[var] = nf.SVar(len(self._set_vars))
 
     def add_domain_value(self, cnst: str) -> None:
         self._domain_values.add(cnst)
@@ -110,8 +110,8 @@ class GlobalScope(Scope):
         return name in self._ambiguous_vars
 
     def unambiguize(self) -> tuple[Scope, ...]:
-        todo: list[Scope] = []
-        scopes: list[Scope | GlobalScope] = [self]
+        todo: list[Scope] = [self]
+        scopes: list[Scope | GlobalScope] = []
         variables = sorted(self._ambiguous_vars)
 
         if not variables:
@@ -121,16 +121,16 @@ class GlobalScope(Scope):
 
         while variables:
             scopes = []
-            var = variables.pop()
+            var: str = variables.pop()
 
             for scope in todo:
                 new_scope1 = Scope()
                 new_scope1.import_from_scope(scope, except_names=tuple(variables + [var]))
-                new_scope1.add_element_var(self._element_vars[var])
+                new_scope1.add_element_var(var)
 
                 new_scope2 = Scope()
-                new_scope1.import_from_scope(scope, except_names=tuple(variables + [var]))
-                new_scope2.add_set_var(self._set_vars[var])
+                new_scope2.import_from_scope(scope, except_names=tuple(variables + [var]))
+                new_scope2.add_set_var(var)
 
                 scopes.append(new_scope1)
                 scopes.append(new_scope2)

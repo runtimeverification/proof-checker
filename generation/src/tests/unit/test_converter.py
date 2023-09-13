@@ -38,7 +38,7 @@ def test_importing_variables(parsed_lemma_database: Database) -> None:
         assert pattern in converter._scope._metavars
     assert len(converter._scope._metavars) == len(patterns)
 
-    symbols = ('sg0', '\\definedness', '\\inhabitant')
+    symbols = ('sg0', '\\definedness', '\\inhabitant', '\\tsymbol')
     for symbol in symbols:
         assert symbol in converter._scope._symbols
     assert len(converter._scope._symbols) == len(symbols)
@@ -85,7 +85,8 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     scope = converter._scope
     definedness = scope._symbols['\\definedness']
     inhabitant = scope._symbols['\\inhabitant']
-    assert len(scope._notations) == 11
+    tst = scope._symbols['\\tsymbol']
+    assert len(scope._notations) == 12
 
     def bot() -> nf.Pattern:
         return nf.Mu(nf.SVar(0), nf.SVar(0))
@@ -172,4 +173,18 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     converted = scope.resolve_notation('\\sorted-exists')(nf.EVar(10), nf.MetaVar(10), nf.MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
-    # TODO: Need a test for ambiguous notation
+    # ( \tst xX )  = ( \tsymbol xX )
+    def tste(x: nf.Pattern) -> nf.Pattern:
+        assert isinstance(x, nf.EVar)
+        return nf.Application(tst, x)
+
+    def tsts(xs: nf.Pattern) -> nf.Pattern:
+        assert isinstance(xs, nf.SVar)
+        return nf.Application(tst, xs)
+
+    expected = tste(nf.EVar(10))
+    converted = scope.resolve_notation('\\tst', nf.EVar(10))(nf.EVar(10))
+    assert expected == converted, pattern_mismatch(expected, converted)
+    expected = tsts(nf.SVar(10))
+    converted = scope.resolve_notation('\\tst', nf.SVar(10))(nf.SVar(10))
+    assert expected == converted, pattern_mismatch(expected, converted)
