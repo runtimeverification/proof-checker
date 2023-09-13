@@ -82,8 +82,8 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
         elif instruction == Instruction.MetaVar:
             id = next_byte('Expected MetaVar id.')
             app_ctxt_holes, negative, positive, s_fresh, e_fresh = reversed(interpreter.stack[-5:])
+            interpreter.stack = interpreter.stack[0:-5]
             _ = interpreter.metavar(id, e_fresh, s_fresh, positive, negative, app_ctxt_holes)
-            interpreter.stack = interpreter.stack[0:-6] + [interpreter.stack[-1]]
 
         elif instruction == Instruction.Prop1:
             _ = interpreter.prop1()
