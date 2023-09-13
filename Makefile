@@ -6,7 +6,10 @@ FORCE:
 clean-proofs:
 	rm -rf .build/proofs
 
-.PHONY: clean-proofs
+update-snapshots:
+	cp -rT .build/proofs proofs
+
+.PHONY: clean-proofs update-snapshots
 
 # Syntax and formatting checks
 # ============================
