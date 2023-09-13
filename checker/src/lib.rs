@@ -16,9 +16,8 @@ use alloc::format;
 #[rustfmt::skip]
 #[derive(Debug, Eq, PartialEq)]
 pub enum Instruction {
-    List = 1,
     // Patterns
-    EVar, SVar, Symbol, Implication, Application, Exists, Mu,
+    EVar = 2, SVar, Symbol, Implication, Application, Exists, Mu,
     // Meta Patterns,
     MetaVar, ESubst, SSubst,
     // Axiom Schemas,
@@ -41,7 +40,6 @@ type InstByte = u8;
 impl Instruction {
     fn from(value: InstByte) -> Instruction {
         match value {
-            1 => Instruction::List,
             2 => Instruction::EVar,
             3 => Instruction::SVar,
             4 => Instruction::Symbol,
@@ -327,7 +325,6 @@ impl Pattern {
 pub enum Term {
     Pattern(Rc<Pattern>),
     Proved(Rc<Pattern>),
-    List(IdList),
 }
 #[derive(Debug, Eq, PartialEq)]
 pub enum Entry {
@@ -513,13 +510,6 @@ fn pop_stack(stack: &mut Stack) -> Term {
     return stack.pop().expect("Insufficient stack items.");
 }
 
-fn pop_stack_list(stack: &mut Stack) -> IdList {
-    match pop_stack(stack) {
-        Term::List(l) => return l,
-        _ => panic!("Expected list on stack."),
-    }
-}
-
 fn pop_stack_pattern(stack: &mut Stack) -> Rc<Pattern> {
     match pop_stack(stack) {
         Term::Pattern(p) => return p,
@@ -541,6 +531,21 @@ pub enum ExecutionPhase {
     Gamma,
     Claim,
     Proof,
+}
+
+fn read_u8_vec<'a> (
+    next: &mut impl FnMut() -> Option<InstByte>,
+    _arr_name: &str,
+) -> Vec<u8> {
+    let len = (next().expect("Expected length for array")) as usize;
+
+    let mut arr: Vec<u8> = vec![0;len];
+    let mut i: usize = 0;
+    while i < len {
+        arr[i] = next().expect(&format!("Expected {}-th element of List of length {}", i, len));
+        i += 1;
+    }
+    return arr;
 }
 
 fn execute_instructions<'a>(
@@ -580,17 +585,8 @@ fn execute_instructions<'a>(
     let existence = exists(0, evar(0));
 
     while let Some(instr_u32) = next() {
+        //println!({}, stack);
         match Instruction::from(instr_u32) {
-            Instruction::List => {
-                let len = next().expect("Insufficient parameters for List instruction");
-                let mut list = vec![len;0];
-                let mut i: usize = 0;
-                while i < (len as usize) {
-                    list[i] = next().expect(&format!("Expected {}-th element of List of length {}", i, len));
-                    i += 1;
-                }
-                stack.push(Term::List(list));
-            }
             // TODO: Add an abstraction for pushing these one-argument terms on stack?
             Instruction::EVar => {
                 let id = next().expect("Expected id for the EVar to be put on stack") as Id;
@@ -608,12 +604,12 @@ fn execute_instructions<'a>(
                 stack.push(Term::Pattern(symbol(id)));
             }
             Instruction::MetaVar => {
-                let id = next().expect("Insufficient parameters for MetaVar instruction") as Id;
-                let app_ctx_holes = pop_stack_list(stack);
-                let negative = pop_stack_list(stack);
-                let positive = pop_stack_list(stack);
-                let s_fresh = pop_stack_list(stack);
-                let e_fresh = pop_stack_list(stack);
+                let id = next().expect("Expected id for MetaVar instruction") as Id;
+                let e_fresh = read_u8_vec(next, "e_fresh");
+                let s_fresh = read_u8_vec(next, "s_fresh");
+                let positive = read_u8_vec(next, "positive");
+                let negative = read_u8_vec(next, "negative");
+                let app_ctx_holes = read_u8_vec(next, "app_ctx_holes");
 
                 let metavar_pat = Rc::new(Pattern::MetaVar {
                     id,
@@ -621,8 +617,9 @@ fn execute_instructions<'a>(
                     s_fresh,
                     positive,
                     negative,
-                    app_ctx_holes,
+                    app_ctx_holes
                 });
+
                 if !metavar_pat.well_formed() {
                     panic!("Constructed meta-var {:?} is ill-formed.", &metavar_pat);
                 }
@@ -754,7 +751,6 @@ fn execute_instructions<'a>(
                 match metaterm {
                     Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, &ids, &plugs))),
                     Term::Proved(p) => stack.push(Term::Proved(instantiate(p, &ids, &plugs))),
-                    Term::List(_) => panic!("Cannot Instantiate list."),
                 }
             }
             Instruction::Pop => {
@@ -763,7 +759,6 @@ fn execute_instructions<'a>(
             Instruction::Save => match stack.last().expect("Save needs an entry on the stack") {
                 Term::Pattern(p) => memory.push(Entry::Pattern(p.clone())),
                 Term::Proved(p) => memory.push(Entry::Proved(p.clone())),
-                Term::List(_) => panic!("Cannot Save lists."),
             },
             Instruction::Load => {
                 let index = next().expect("Insufficient parameters for Load instruction");
@@ -1395,16 +1390,12 @@ fn test_publish() {
 fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
     let proof : Vec<InstByte> = vec![
-        Instruction::List as InstByte, 0,     // E Fresh
-        Instruction::List as InstByte, 0,     // S Fresh
-        Instruction::List as InstByte, 0,     // Positive
-        Instruction::List as InstByte, 0,     // Negative
-        Instruction::List as InstByte, 0,     // Context
-        Instruction::MetaVar as InstByte, 0,  // Stack: Phi
+        Instruction::MetaVar as InstByte, 0, 0, 0, 0, 0, 0, // Stack: Phi
         Instruction::Save as InstByte,        // @ 0
         Instruction::Load as InstByte, 0,     // Phi ; Phi
         Instruction::Implication as InstByte, // Phi -> Phi
     ];
+
     let mut stack = vec![];
     execute_vector(
         &proof,
@@ -1428,14 +1419,8 @@ fn test_construct_phi_implies_phi() {
 fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
     let proof : Vec<InstByte> = vec![
-        Instruction::Prop2 as InstByte,                   // Stack: prop2
-
-        Instruction::List as InstByte, 0,
-        Instruction::List as InstByte, 0,
-        Instruction::List as InstByte, 0,
-        Instruction::List as InstByte, 0,
-        Instruction::List as InstByte, 0,
-        Instruction::MetaVar as InstByte, 0,              // Stack: prop2 ; $ph0
+        Instruction::Prop2 as InstByte,                     // Stack: prop2
+        Instruction::MetaVar as InstByte, 0, 0, 0, 0, 0, 0, // Stack: prop2 ; $ph0
         Instruction::Save as InstByte,                    // @0
         Instruction::Load as InstByte, 0,                 // Stack: prop2 ; $ph0 ; $ph0
         Instruction::Implication as InstByte,             // Stack: prop2 ; $ph0 -> ph0
