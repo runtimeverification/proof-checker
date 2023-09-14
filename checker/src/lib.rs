@@ -1728,3 +1728,73 @@ fn test_apply_ssubst() {
         assert_eq!(apply_ssubst(&pattern, svar_id, &plug), expected);
     }
 }
+
+// Subst 0 for 1 and then 1 for 2
+fn esubst_stack_seq(term: Rc<Pattern>) -> Rc<Pattern> {
+    esubst(
+        esubst(term, 0, evar(1)),
+        1,
+        evar(2),
+    )
+}
+
+// Subst 1 for 2 and then 0 for 1
+fn esubst_stack_seq_rev(term: Rc<Pattern>) -> Rc<Pattern> {
+    esubst(
+        esubst(term, 1, evar(2)),
+        0,
+        evar(1),
+    )
+}
+
+// Subst SVar1 for Evar1 and then EVar1 for EVar2
+fn stack_mixed1(term: Rc<Pattern>) -> Rc<Pattern> {
+    esubst(
+        ssubst(term, 1, evar(1)),
+        1,
+        evar(2),
+    )
+}
+
+#[test]
+fn test_instantiate_esubst() {
+
+    let test_cases: Vec<(fn(Pattern) -> Pattern, Pattern, Vec<u8>, Vec<Pattern>, Pattern)> = vec![
+        (esubst_stack_seq, metavar_unconstrained(0), plugs.clone(), evar(2)),
+        (esubst_stack_seq, metavar_unconstrained(0), {
+            let mut new_plugs = plugs.clone();
+            new_plugs.insert(0, evar(1));
+            new_plugs
+        }, evar(2)),
+        (esubst_stack_seq, metavar_unconstrained(1), {
+            let mut new_plugs = plugs.clone();
+            new_plugs.insert(0, evar(1));
+            new_plugs
+        }, esubst_stack_seq(metavar_unconstrained(1))),
+        (esubst_stack_seq, metavar_unconstrained(0), {
+            let mut new_plugs = HashMap::new();
+            new_plugs.insert(0, metavar_unconstrained(1));
+            new_plugs
+        }, esubst_stack_seq(metavar_unconstrained(1))),
+        (esubst_stack_seq_rev, metavar_unconstrained(0), plugs.clone(), evar(1)),
+        (esubst_stack_seq_rev, metavar_unconstrained(0), {
+            let mut new_plugs = HashMap::new();
+            new_plugs.insert(0, metavar_unconstrained(1));
+            new_plugs
+        }, esubst_stack_seq_rev(metavar_unconstrained(1))),
+        (stack_mixed1, metavar_unconstrained(0), {
+            let mut new_plugs = HashMap::new();
+            new_plugs.insert(0, svar(1));
+            new_plugs
+        }, evar(2)),
+        (stack_mixed1, metavar_unconstrained(0), {
+            let mut new_plugs = HashMap::new();
+            new_plugs.insert(0, svar(2));
+            new_plugs
+        }, svar(2)),
+    ];
+
+    for (stack, mvar, plugs, expected) in test_cases {
+        assert_eq!(stack(mvar).instantiate(&plugs), expected);
+    }
+}
