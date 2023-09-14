@@ -586,7 +586,6 @@ fn execute_instructions<'a>(
     let existence = exists(0, evar(0));
 
     while let Some(instr_u32) = next() {
-        //println!({}, stack);
         match Instruction::from(instr_u32) {
             // TODO: Add an abstraction for pushing these one-argument terms on stack?
             Instruction::EVar => {
