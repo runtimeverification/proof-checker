@@ -864,7 +864,7 @@ For example,
 ```
 bot = Mu(0, SVar(0))
 negation = Implies(MetaVar(0), bot) = Implies(MetaVar(0), Mu(0, SVar(0)))
-top = Instantiate(negation, 0, bot) = Instantiate(Implies(MetaVar(0), Mu(0, SVar(0))), 0, Mu(0, SVar(0)))
+top = Instantiate(negationstack, 0, bot) = Instantiate(Implies(MetaVar(0), Mu(0, SVar(0))), 0, Mu(0, SVar(0)))
 ```
 
 Notation at the DAG level
