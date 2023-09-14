@@ -105,8 +105,8 @@ PROOF_VERIFY_BUILDS=$(addsuffix .verify.build,${PROOFS})
 proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
 	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
-proof-verify: clean-proofs ${PROOF_VERIFY_BUILDS}
-.PHONY: proof-verify
+verify-generated: clean-proofs ${PROOF_VERIFY_BUILDS}
+.PHONY: verify-generated
 
 # Risc0
 # -----
