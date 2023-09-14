@@ -145,7 +145,7 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 
-    # Prettyprint the proof directly, but ommit notation
+    # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
     _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).__getattribute__(target)()
 
@@ -166,7 +166,7 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 
-    # Prettyprint the claim directly, but ommit notation
+    # Prettyprint the claim directly, but omit notation
     out_pretty = StringIO()
     _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).interpreter.pattern(target)
 
