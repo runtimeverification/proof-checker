@@ -764,13 +764,6 @@ Instructions and semantics
 Each of these instructions checks that the constructed `Term` is well-formed before pushing onto the stack.
 Otherwise, execution aborts, and verification fails.
 
-### Supporting
-
-`Set n:u32 [u32]*n`
-:   Consume a length $n$, and $n$ items from the input.
-    Push a set containing those `u32`s to the stack.
-
-
 ### Variables and Symbols:
 
 `EVar <u32>`
@@ -797,7 +790,7 @@ Otherwise, execution aborts, and verification fails.
 
 ### Meta inference
 
-`MetaVar <u32>`
+`MetaVar <id:u32, 5 * (len: u32, constraint: [u32] * len)`
 :   Consume the first five entries from the stack (corresponding to the
     meta-requirements), and push an `MetaVar` onto the stack.
 
