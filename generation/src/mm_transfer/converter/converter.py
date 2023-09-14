@@ -7,7 +7,7 @@ from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
 from mm_transfer.converter.representation import Axiom, Notation
-from mm_transfer.converter.scope import GlobalScope, to_notation_scope
+from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
     AxiomaticStatement,
@@ -15,6 +15,8 @@ from mm_transfer.metamath.ast import (
     FloatingStatement,
     Metavariable,
     VariableStatement,
+    ProvableStatement,
+    Block
 )
 
 if TYPE_CHECKING:
@@ -52,14 +54,25 @@ class MetamathConverter:
         for statement in self.parsed.statements:
             if isinstance(statement, ConstantStatement):
                 self._import_constants(statement)
-            if isinstance(statement, VariableStatement):
+            elif isinstance(statement, VariableStatement):
                 self._import_variables(statement)
             elif isinstance(statement, FloatingStatement):
                 self._import_floating(statement)
             elif isinstance(statement, AxiomaticStatement):
-                self._import_axioms(statement)
+                self._import_axiom(statement)
+            elif isinstance(statement, Block):
+                last_statment = statement.statements[-1]
+                if isinstance(last_statment, AxiomaticStatement):
+                    # TODO: Remove me later
+                    if self._convert_axioms:
+                        self._convert_axiom(statement)
+                elif isinstance(last_statment, ProvableStatement):
+                    # TODO: Implement parsing lemmas and proofs
+                    pass
+                else:
+                    raise NotImplementedError(f'Unknown statement: {repr(statement)}')
             else:
-                continue
+                raise NotImplementedError(f'Unknown statement: {repr(statement)}')
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
@@ -137,7 +150,7 @@ class MetamathConverter:
         else:
             print(f'Unknown floating statement: {repr(statement)}')
 
-    def _import_axioms(self, statement: AxiomaticStatement) -> None:
+    def _import_axiom(self, statement: AxiomaticStatement) -> None:
         is_constant = re.compile(r'"\S+"')
 
         # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
@@ -173,7 +186,7 @@ class MetamathConverter:
             if isinstance(st.terms[0], Application) and st.terms[0].symbol == '|-':
                 # TODO: Remove me later
                 if self._convert_axioms:
-                    self._convert_axiom(st.label, st.terms[1])
+                    self._convert_axiom(st)
                 return True
             else:
                 return False
@@ -226,6 +239,7 @@ class MetamathConverter:
         # $a #Notation ...
         elif sugar_axiom(statement):
             return
+        # $a |- ...
         elif proved_axiom(statement):
             return
         # like $a #something ...
@@ -307,22 +321,37 @@ class MetamathConverter:
         else:
             self._axioms[name] = [axiom]
 
-    def _convert_axiom(self, name: str, term: Term) -> None:
-        variables = self._collect_variables(term)
-        var_names = tuple(var.name for var in variables)
+    def _get_axiom_name(self, statement: AxiomaticStatement | Block) -> str:
+        if isinstance(statement, Block):
+            statement = statement.statements[-1]
+        assert isinstance(statement, AxiomaticStatement)
+        return statement.label
 
-        def add_axiom_for_scope(sc: NotationScope) -> None:
-            notation_lambda = self._to_pattern(sc, term)
-            notation = Notation(name, var_names, sc.arguments_type_check, notation_lambda)
-            axiom_pattern = sc.notation_as_axiom(notation)
-            axiom = Axiom(name, var_names, sc.arguments_type_check, axiom_pattern)
-            self._add_axiom(name, axiom)
+    def _get_axiom_term(self, statement: AxiomaticStatement | Block) -> Term:
+        if isinstance(statement, Block):
+            statement = statement.statements[-1]
+        assert isinstance(statement, AxiomaticStatement)
+        return statement.terms[1]
+
+    def _convert_axiom(self, statement: AxiomaticStatement | Block) -> None:
+        axiom_term = self._get_axiom_term(statement)
+        variables: tuple[Metavariable, ...] = self._collect_variables(axiom_term)
+        var_names = tuple(var.name for var in variables)
 
         if any(self._scope.is_ambiguous(var) for var in variables):
             scopes = self._scope.unambiguize(var_names)
             for scope in scopes:
-                notation_scope = to_notation_scope(scope, variables)
-                add_axiom_for_scope(notation_scope)
+                self._convert_axiom_for_scope(variables, scope, statement)
         else:
-            notation_scope = to_notation_scope(self._scope, variables)
-            add_axiom_for_scope(notation_scope)
+            self._convert_axiom_for_scope(variables, self._scope, statement)
+
+    def _convert_axiom_for_scope(self, variables: tuple[Metavariable, ...], scope: Scope, statement: AxiomaticStatement | Block) -> None:
+        name = self._get_axiom_name(statement)
+        axiom_term = self._get_axiom_term(statement)
+        var_names = tuple(var.name for var in variables)
+        notation_scope = to_notation_scope(scope, variables)
+        notation_lambda = self._to_pattern(notation_scope, axiom_term)
+        notation = Notation(name, var_names, notation_scope.arguments_type_check, notation_lambda)
+        axiom_pattern = scope.notation_as_axiom(notation)
+        axiom = Axiom(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
+        self._add_axiom(name, axiom)
