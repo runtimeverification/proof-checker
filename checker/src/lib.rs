@@ -2,7 +2,6 @@
 #![no_std]
 
 extern crate alloc;
-use alloc::format;
 use alloc::rc::Rc;
 use alloc::vec;
 use alloc::vec::Vec;
@@ -533,17 +532,13 @@ pub enum ExecutionPhase {
     Proof,
 }
 
-fn read_u8_vec<'a>(next: &mut impl FnMut() -> Option<InstByte>, _vec_name: &str) -> Vec<u8> {
-    //TODO: Use list's name in error mesages?
+fn read_u8_vec<'a>(next: &mut impl FnMut() -> Option<InstByte>) -> Vec<u8> {
     let len = (next().expect("Expected length for array")) as usize;
 
     let mut arr: Vec<u8> = vec![0; len];
     let mut i: usize = 0;
     while i < len {
-        arr[i] = next().expect(&format!(
-            "Expected {}-th element of List of length {}",
-            i, len
-        ));
+        arr[i] = next().expect("Expected another constraint of given type");
         i += 1;
     }
     return arr;
@@ -605,11 +600,11 @@ fn execute_instructions<'a>(
             }
             Instruction::MetaVar => {
                 let id = next().expect("Expected id for MetaVar instruction") as Id;
-                let e_fresh = read_u8_vec(next, "e_fresh");
-                let s_fresh = read_u8_vec(next, "s_fresh");
-                let positive = read_u8_vec(next, "positive");
-                let negative = read_u8_vec(next, "negative");
-                let app_ctx_holes = read_u8_vec(next, "app_ctx_holes");
+                let e_fresh = read_u8_vec(next);
+                let s_fresh = read_u8_vec(next);
+                let positive = read_u8_vec(next);
+                let negative = read_u8_vec(next);
+                let app_ctx_holes = read_u8_vec(next);
 
                 let metavar_pat = Rc::new(Pattern::MetaVar {
                     id,
