@@ -1,27 +1,12 @@
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
 	0: (phi0 -> phi0)
 	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1, 2
 	Stack:
@@ -30,17 +15,7 @@ Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
 	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -58,11 +33,6 @@ Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
 	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1
 	Stack:
@@ -78,28 +48,13 @@ Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	1: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
 	0: (phi0 -> phi0)
 	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	2: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1, 2
 	Stack:
@@ -110,17 +65,7 @@ Prop1
 	0: (phi0 -> (phi1 -> phi0))
 	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 	2: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -142,11 +87,6 @@ Prop1
 	0: (phi0 -> (phi1 -> phi0))
 	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
 	2: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1
 	Stack:
@@ -192,11 +132,6 @@ Mu 0
 	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	2: ((μ X0 . X0) -> (μ X0 . X0))
 	3: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -244,11 +179,6 @@ Implication
 	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 0, 1, 2
 	Stack:
@@ -261,11 +191,6 @@ Prop1
 	1: (((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0)))
 	2: ((μ X0 . X0) -> (μ X0 . X0))
 	3: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -313,11 +238,6 @@ Implication
 	2: (((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0)))
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -355,11 +275,6 @@ Prop3
 	2: (((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0)))
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 0
 	Stack:
@@ -399,11 +314,6 @@ Mu 0
 	2: (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0))
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -453,11 +363,6 @@ Prop3
 	1: ((μ X0 . X0) -> phi0)
 	2: ((μ X0 . X0) -> (μ X0 . X0))
 	3: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 0
 	Stack:
@@ -478,11 +383,6 @@ Prop2
 	2: ((μ X0 . X0) -> phi0)
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -510,11 +410,6 @@ Implication
 	3: ((μ X0 . X0) -> phi0)
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -524,11 +419,6 @@ Implication
 	3: ((μ X0 . X0) -> phi0)
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -588,11 +478,6 @@ Implication
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 0, 1, 2
 	Stack:
@@ -609,11 +494,6 @@ Prop1
 	3: ((μ X0 . X0) -> phi0)
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -673,11 +553,6 @@ Implication
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -688,11 +563,6 @@ Implication
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -726,11 +596,6 @@ Implication
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -759,11 +624,6 @@ Prop3
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 0
 	Stack:
@@ -797,11 +657,6 @@ Prop2
 	3: ((μ X0 . X0) -> phi0)
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -832,11 +687,6 @@ Implication
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -847,11 +697,6 @@ Implication
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -885,11 +730,6 @@ Implication
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -901,11 +741,6 @@ Implication
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -994,11 +829,6 @@ Prop2
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1032,11 +862,6 @@ Implication
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -1048,11 +873,6 @@ Implication
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1089,11 +909,6 @@ Implication
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1144,11 +959,6 @@ Implication
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1188,11 +998,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -1206,11 +1011,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1325,11 +1125,6 @@ Prop1
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1366,11 +1161,6 @@ Implication
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1421,11 +1211,6 @@ Implication
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1465,11 +1250,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -1483,11 +1263,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1594,11 +1369,6 @@ Implication
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1638,11 +1408,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -1677,11 +1442,6 @@ Prop2
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1721,11 +1481,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1795,11 +1550,6 @@ Prop1
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1836,11 +1586,6 @@ Implication
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1891,11 +1636,6 @@ Implication
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -1935,11 +1675,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -1974,17 +1709,7 @@ Prop2
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -1998,11 +1723,6 @@ Implication
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1, 2
 	Stack:
@@ -2027,17 +1747,7 @@ Prop1
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -2087,11 +1797,6 @@ Prop1
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1
 	Stack:
@@ -2116,11 +1821,6 @@ ModusPonens
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -2207,17 +1907,7 @@ Prop2
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -2229,11 +1919,6 @@ Implication
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1, 2
 	Stack:
@@ -2254,17 +1939,7 @@ Prop1
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:
@@ -2306,11 +1981,6 @@ Prop1
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Instantiate 1
 	Stack:
@@ -2331,11 +2001,6 @@ ModusPonens
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 SVar 0
 	Stack:
@@ -2369,11 +2034,6 @@ Implication
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
-List=eFresh len=0 
-List=sFresh len=0 
-List=pos len=0 
-List=neg len=0 
-List=appctx len=0 
 MetaVar 0
 Implication
 	Stack:

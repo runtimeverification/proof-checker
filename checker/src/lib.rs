@@ -2,10 +2,10 @@
 #![no_std]
 
 extern crate alloc;
+use alloc::format;
 use alloc::rc::Rc;
 use alloc::vec;
 use alloc::vec::Vec;
-use alloc::format;
 
 /// Instructions
 /// ============
@@ -533,16 +533,17 @@ pub enum ExecutionPhase {
     Proof,
 }
 
-fn read_u8_vec<'a> (
-    next: &mut impl FnMut() -> Option<InstByte>,
-    _arr_name: &str,
-) -> Vec<u8> {
+fn read_u8_vec<'a>(next: &mut impl FnMut() -> Option<InstByte>, _vec_name: &str) -> Vec<u8> {
+    //TODO: Use list's name in error mesages?
     let len = (next().expect("Expected length for array")) as usize;
 
-    let mut arr: Vec<u8> = vec![0;len];
+    let mut arr: Vec<u8> = vec![0; len];
     let mut i: usize = 0;
     while i < len {
-        arr[i] = next().expect(&format!("Expected {}-th element of List of length {}", i, len));
+        arr[i] = next().expect(&format!(
+            "Expected {}-th element of List of length {}",
+            i, len
+        ));
         i += 1;
     }
     return arr;
@@ -617,7 +618,7 @@ fn execute_instructions<'a>(
                     s_fresh,
                     positive,
                     negative,
-                    app_ctx_holes
+                    app_ctx_holes,
                 });
 
                 if !metavar_pat.well_formed() {

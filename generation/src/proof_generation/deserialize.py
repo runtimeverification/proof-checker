@@ -26,16 +26,22 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
         index += 1
         return ret
 
+    def read_list() -> tuple[int, ...]:
+        length = next_byte('Expected list length')
+        assert length is not None
+
+        res = []
+        for i in range(length):
+            elem = next_byte(f'Expected {i}-th element of list')
+            assert elem is not None
+            res.append(elem)
+
+        return tuple(res)
+
     while byte := next_byte():
         instruction = Instruction(byte)
 
-        if instruction == Instruction.List:
-            length = next_byte('Expected list length.')
-            if length != 0:
-                raise DeserializingException('Length was supposed to be zero.')
-            interpreter.stack.append(())  # type: ignore
-
-        elif instruction == Instruction.EVar:
+        if instruction == Instruction.EVar:
             id = next_byte('Expected EVar id.')
             _ = interpreter.evar(id)
 
@@ -81,9 +87,8 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
 
         elif instruction == Instruction.MetaVar:
             id = next_byte('Expected MetaVar id.')
-            app_ctxt_holes, negative, positive, s_fresh, e_fresh = reversed(interpreter.stack[-5:])
+            e_fresh, s_fresh, positive, negative, app_ctxt_holes = (read_list() for _ in range(5))
             _ = interpreter.metavar(id, e_fresh, s_fresh, positive, negative, app_ctxt_holes)
-            interpreter.stack = interpreter.stack[0:-6] + [interpreter.stack[-1]]
 
         elif instruction == Instruction.Prop1:
             _ = interpreter.prop1()
