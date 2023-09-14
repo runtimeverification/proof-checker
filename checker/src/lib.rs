@@ -402,6 +402,10 @@ fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Implication { left, right });
 }
 
+fn application(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
+    return Rc::new(Pattern::Application { left, right });
+}
+
 fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Application { left, right });
 }
@@ -423,14 +427,27 @@ fn forall(evar: Id, pat: Rc<Pattern>) -> Rc<Pattern> {
 /// Substitution utilities
 /// ----------------------
 
-fn apply_e_subst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
+fn apply_e_subst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pattern> {
+
+    // Wraps pattern in appropriate ESubst
+    let wrap_subst = || esubst(Rc::clone(pattern), evar_id, Rc::clone(plug));
+
     match pattern.as_ref() {
         Pattern::EVar(e) => 
-            if *e == evar_id {Rc::clone(&plug)} else {pattern},
-        Pattern::SVar(_) => pattern,
-        Pattern::Symbol(_) => pattern,
-        mv @ Pattern:: MetaVar{..} => esubst(Rc::new(mv.clone()), evar_id, plug),
-        Pattern::Implication {left, right}=> implies(apply_e_subst(left.clone(), evar_id, plug), apply_e_subst(right.clone(), evar_id, plug))
+            if *e == evar_id {Rc::clone(plug)} else {Rc::clone(pattern)},
+        Pattern::Implication {left, right} => 
+            implies(apply_e_subst(left, evar_id, plug), apply_e_subst(right, evar_id, plug)),
+        Pattern::Application {left, right} => 
+            application(apply_e_subst(left, evar_id, plug), apply_e_subst(right, evar_id, plug)),
+        Pattern::Exists { var, ..} if *var == evar_id => Rc::clone(pattern),
+        Pattern::Exists { var, subpattern } =>
+            exists(*var, apply_e_subst(subpattern, evar_id, plug)),
+        Pattern::Mu { var, subpattern } =>
+            mu(*var, apply_e_subst(subpattern, evar_id, plug)),
+        Pattern::ESubst {..} => wrap_subst(),
+        Pattern::SSubst {..} => wrap_subst(),
+        Pattern::MetaVar{..} => wrap_subst(),
+        _ => Rc::clone(pattern),
     }
 }
 
