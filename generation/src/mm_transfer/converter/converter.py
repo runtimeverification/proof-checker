@@ -265,19 +265,6 @@ class MetamathConverter:
                         return nf.Exists(evar, subpattern_pattern(*args))
 
                     return exists
-                elif symbol == '\\Substitution':
-                    assert len(subterms) == 4
-                    # #Substitution ph1 ph2 ph3 xX` we must replace `ph1` with `XSubst(ph2, ph3, xX)`
-                    # where `XSubst` is either `SSubst` or `ESubst` depending on the type of `xX`.
-                    assert isinstance(subterms[-1], Metavariable)
-                    # plug = scope.resolve(subterms[-1].name)
-                    # if isinstance(plug, nf.EVar):
-                    #     subst = nf.ESubst
-                    # elif isinstance(plug, nf.SVar):
-                    #     subst = nf.SSubst
-                    # else:
-                    #     raise TypeError(f'Unknown variable type: {type(plug).__name__}')
-                    raise NotImplementedError
                 elif scope.is_notation(symbol):
                     converted_args = tuple(self._to_pattern(scope, arg) for arg in term.subterms)
 
