@@ -9,8 +9,6 @@ Implication
 	Stack:
 	0: (σ0 -> σ1)
 Publish
-	Stack:
-	0: (σ0 -> σ1)
 Symbol 1
 	Stack:
 	0: σ1
@@ -25,6 +23,3 @@ Implication
 	0: (σ1 -> σ2)
 	1: (σ0 -> σ1)
 Publish
-	Stack:
-	0: (σ1 -> σ2)
-	1: (σ0 -> σ1)
