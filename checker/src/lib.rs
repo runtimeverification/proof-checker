@@ -427,7 +427,7 @@ fn forall(evar: Id, pat: Rc<Pattern>) -> Rc<Pattern> {
 /// Substitution utilities
 /// ----------------------
 
-fn apply_e_subst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pattern> {
+fn apply_esubst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pattern> {
 
     // Wraps pattern in appropriate ESubst
     let wrap_subst = || esubst(Rc::clone(pattern), evar_id, Rc::clone(plug));
@@ -436,14 +436,14 @@ fn apply_e_subst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<P
         Pattern::EVar(e) => 
             if *e == evar_id {Rc::clone(plug)} else {Rc::clone(pattern)},
         Pattern::Implication {left, right} => 
-            implies(apply_e_subst(left, evar_id, plug), apply_e_subst(right, evar_id, plug)),
+            implies(apply_esubst(left, evar_id, plug), apply_esubst(right, evar_id, plug)),
         Pattern::Application {left, right} => 
-            application(apply_e_subst(left, evar_id, plug), apply_e_subst(right, evar_id, plug)),
+            application(apply_esubst(left, evar_id, plug), apply_esubst(right, evar_id, plug)),
         Pattern::Exists { var, ..} if *var == evar_id => Rc::clone(pattern),
         Pattern::Exists { var, subpattern } =>
-            exists(*var, apply_e_subst(subpattern, evar_id, plug)),
+            exists(*var, apply_esubst(subpattern, evar_id, plug)),
         Pattern::Mu { var, subpattern } =>
-            mu(*var, apply_e_subst(subpattern, evar_id, plug)),
+            mu(*var, apply_esubst(subpattern, evar_id, plug)),
         Pattern::ESubst {..} => wrap_subst(),
         Pattern::SSubst {..} => wrap_subst(),
         Pattern::MetaVar{..} => wrap_subst(),
@@ -686,7 +686,7 @@ fn execute_instructions<'a>(
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
 
-                let esubst_pat = esubst(pattern, evar_id, plug);
+                let esubst_pat = apply_esubst(&pattern, evar_id, &plug);
                 if !esubst_pat.well_formed() {
                     panic!("Constructed ESubst {:?} is ill-formed.", &esubst_pat);
                 }
@@ -1527,4 +1527,55 @@ fn test_universal_quantification() {
     assert_eq!(claims, vec![]);
 
     // TODO: Test case for when 0 is not fresh in rhs
+}
+
+
+#[test]
+fn test_apply_esubst() {
+    // Define test cases as tuples of input pattern, evar_id, plug, and expected pattern
+        let test_cases: Vec<(Rc<Pattern>, u8, Rc<Pattern>, Rc<Pattern>)> = vec![
+            // Atomic cases
+            (evar(0), 0, symbol(1), symbol(1)),
+            (evar(0), 0, evar(2), evar(2)),
+            (evar(0), 1, evar(2), evar(0)),
+            (svar(0), 0, symbol(0), svar(0)),
+            (svar(1), 0, evar(0), svar(1)),
+            (symbol(0), 0, symbol(1), symbol(0)),
+            // Distribute over subpatterns
+            (implies(evar(7), symbol(1)), 7, symbol(0), implies(symbol(0), symbol(1))),
+            (implies(evar(7), symbol(1)), 6, symbol(0), implies(evar(7), symbol(1))),
+            (application(evar(7), symbol(1)), 7, symbol(0), application(symbol(0), symbol(1))),
+            (application(evar(7), symbol(1)), 6, symbol(0), application(evar(7), symbol(1))),
+            // Distribute over subpatterns unless evar_id = binder
+            (exists(1, evar(1)), 0, symbol(2), exists(1, evar(1))),
+            (exists(0, evar(1)), 1, symbol(2), exists(0, symbol(2))),
+            (mu(1, evar(1)), 0, symbol(2), mu(1, evar(1))),
+            (mu(1, evar(1)), 1, symbol(2), mu(1, symbol(2))),
+            // Subst on metavar should wrap in constructor
+            (metavar_unconstrained(0), 0, symbol(1), esubst(metavar_unconstrained(0), 0, symbol(1))),
+            // Subst when evar_id is fresh should do nothing
+            //(metavar_(0).with_e_fresh((evar(0), evar(1))), 0, symbol(1), metavar_unconstrained(0).with_e_fresh((evar(0), evar(1)))),
+            // Subst on substs should stack
+            (
+                esubst(metavar_unconstrained(0), 0, symbol(1)),
+                0,
+                symbol(1),
+                esubst(esubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
+            ),
+            (
+                ssubst(metavar_unconstrained(0), 0, symbol(1)),
+                0,
+                symbol(1),
+                esubst(ssubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
+            ),
+    ];
+
+    // Iterate over the test cases
+    for (pattern, evar_id, plug, expected) in test_cases.iter() {
+        // Call the apply_esubst function (replace with your Rust code)
+        let result = apply_esubst(pattern, *evar_id, plug); // Replace with the actual function or code you want to test
+
+        // Assert that the result matches the expected value
+        assert_eq!(result, *expected);
+    }
 }
