@@ -1416,6 +1416,35 @@ fn test_construct_phi_implies_phi() {
 }
 
 #[test]
+fn test_construct_phi_implies_phi_twist() {
+    #[rustfmt::skip]
+    let proof : Vec<InstByte> = vec![
+        Instruction::MetaVar as InstByte, 1, 0, 1, 7, 0, 0, 0, // Stack: Phi1(s_fresh=[7])
+        Instruction::Save as InstByte,        // @ 0
+        Instruction::Load as InstByte, 0,     // Phi1 ; Phi1
+        Instruction::Implication as InstByte, // Phi1 -> Phi1
+    ];
+
+    let mut stack = vec![];
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut vec![],
+        &mut vec![],
+        &mut vec![],
+        ExecutionPhase::Proof,
+    );
+    let phi1_twist = metavar_s_fresh(1, 7, vec![], vec![]);
+    assert_eq!(
+        stack,
+        vec![Term::Pattern(Rc::new(Pattern::Implication {
+            left: phi1_twist.clone(),
+            right: phi1_twist.clone()
+        }))]
+    );
+}
+
+#[test]
 fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
     let proof : Vec<InstByte> = vec![
