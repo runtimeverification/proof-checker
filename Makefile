@@ -102,7 +102,7 @@ proofs/%.ml-proof.verify: proofs/%.ml-proof
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOTS}
 
 PROOF_VERIFY_BUILDS=$(addsuffix .verify.build,${PROOFS})
-proofs/%.ml-proof.verify.build: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
 	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
 proof-verify: clean-proofs ${PROOF_VERIFY_BUILDS}
