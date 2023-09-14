@@ -55,7 +55,7 @@ def test_importing_variables(parsed_lemma_database: Database) -> None:
 
 
 def test_importing_domain_values(parsed_goal_database: Database) -> None:
-    converter = MetamathConverter(parsed_goal_database)
+    converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
 
     assert isinstance(parsed_goal_database.statements[0], ConstantStatement)
     constants_declaration: ConstantStatement = parsed_goal_database.statements[0]
@@ -188,3 +188,41 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     expected = tsts(nf.SVar(10))
     converted = scope.resolve_notation('\\tst', nf.SVar(10))(nf.SVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
+
+
+def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
+    converter = MetamathConverter(parsed_lemma_database)
+    scope = converter._scope
+    phi0 = converter._scope._metavars['ph0']
+    phi1 = converter._scope._metavars['ph1']
+    exx = converter._scope._element_vars['xX']
+    sxx = converter._scope._set_vars['xX']
+    tst = scope._symbols['\\tsymbol']
+    and_ = scope.resolve_notation('\\and')
+
+    # imp-reflexivity $a |- ( \imp ph0 ph0 ) $.
+    expected = nf.Implication(phi0, phi0)
+    assert 'imp-reflexivity' in converter._axioms and len(converter._axioms['imp-reflexivity']) == 1
+    converted = converter._axioms['imp-reflexivity'][0].pattern
+    assert expected == converted, pattern_mismatch(expected, converted)
+
+    # and-elim-left-sugar $a |- ( \imp ( \and ph0 ph1 ) ph0 ) $.
+    expected = nf.Implication(and_(phi0, phi1), phi0)
+    assert 'and-elim-left-sugar' in converter._axioms and len(converter._axioms['and-elim-left-sugar']) == 1
+    converted = converter._axioms['and-elim-left-sugar'][0].pattern
+    assert expected == converted, pattern_mismatch(expected, converted)
+
+    # and-elim-right-sugar $a |- ( \imp ( \and ph0 ph1 ) ph1 ) $.
+    expected = nf.Implication(and_(phi0, phi1), phi1)
+    assert 'and-elim-right-sugar' in converter._axioms and len(converter._axioms['and-elim-right-sugar']) == 1
+    converted = converter._axioms['and-elim-right-sugar'][0].pattern
+    assert expected == converted, pattern_mismatch(expected, converted)
+
+    # tst-trivial-axiom $a |- ( \imp ( \tst xX ) ( \tst xX ) ) $.
+    expected1 = nf.Implication(nf.Application(tst, exx), nf.Application(tst, exx))
+    expected2 = nf.Implication(nf.Application(tst, sxx), nf.Application(tst, sxx))
+    assert 'tst-trivial-axiom' in converter._axioms and len(converter._axioms['tst-trivial-axiom']) == 2
+    converted1 = converter._axioms['tst-trivial-axiom'][0].pattern
+    assert expected1 == converted1, pattern_mismatch(expected, converted)
+    converted2 = converter._axioms['tst-trivial-axiom'][1].pattern
+    assert expected2 == converted2, pattern_mismatch(expected, converted)

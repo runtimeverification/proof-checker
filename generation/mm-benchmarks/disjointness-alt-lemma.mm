@@ -75,6 +75,7 @@ $c \tst \tsymbol $.
 tsymbol-is-symbol $a #Symbol \tsymbol $.
 tst-is-pattern $a #Pattern ( \tst xX ) $.
 tst-is-sugar $a #Notation ( \tst xX ) ( \app \tsymbol xX ) $.
+tst-trivial-axiom $a |- ( \imp ( \tst xX ) ( \tst xX ) ) $.
 
 $( End section added for testng purposes $)
 

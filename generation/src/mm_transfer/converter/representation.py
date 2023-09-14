@@ -14,9 +14,18 @@ if TYPE_CHECKING:
 @dataclass(frozen=True)
 class Notation:
     name: str
+    args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
     callable: Callable[[VarArg(nf.Pattern)], nf.Pattern]
 
     def __call__(self, *args: nf.Pattern) -> nf.Pattern:
         assert self.type_check(*args), f'Invalid arguments for {self.name}'
         return self.callable(*args)
+
+
+@dataclass(frozen=True)
+class Axiom:
+    name: str
+    args: tuple[str, ...]
+    type_check: Callable[[VarArg(nf.Pattern)], bool]
+    pattern: nf.Pattern

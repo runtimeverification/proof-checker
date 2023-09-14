@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.representation import Notation
+from mm_transfer.converter.representation import Axiom, Notation
 from mm_transfer.converter.scope import GlobalScope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
@@ -29,14 +29,18 @@ class MetamathConverter:
     Get the parsed object and try to convert it making as few iterations as possible
     """
 
-    def __init__(self, parsed: Database) -> None:
+    def __init__(self, parsed: Database, parse_axioms: bool = True) -> None:
         self.parsed = parsed
         self._scope: GlobalScope = GlobalScope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
+        self._ignored_axioms: list[AxiomaticStatement] = []
+        self._axioms: dict[str, list[Axiom]] = {}
+        # TODO: Remove it after we start supporting all possible axioms in all our slices
+        self._convert_axioms = parse_axioms
 
         # Add special cases that formalized in the new format differently
-        self._add_builin_notations()
+        self._add_builtin_notations()
 
         # Go over all statements 1 by 1
         self._top_down()
@@ -165,6 +169,15 @@ class MetamathConverter:
             else:
                 return False
 
+        def proved_axiom(st: AxiomaticStatement) -> bool:
+            if isinstance(st.terms[0], Application) and st.terms[0].symbol == '|-':
+                # TODO: Remove me later
+                if self._convert_axioms:
+                    self._convert_axiom(st.label, st.terms[1])
+                return True
+            else:
+                return False
+
         def sugar_axiom(st: AxiomaticStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
@@ -178,40 +191,54 @@ class MetamathConverter:
                 # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
                 assert all(isinstance(arg, Metavariable) for arg in args)
                 metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
+                arg_names = tuple(arg.name for arg in metavar_args)
+                ambiguous_args = tuple(arg.name for arg in metavar_args if self._scope.is_ambiguous(arg))
 
-                if any(self._scope.is_ambiguous(arg.name) for arg in metavar_args):
-                    scopes = self._scope.unambiguize()
+                if len(ambiguous_args) > 0:
+                    scopes = self._scope.unambiguize(ambiguous_args)
                     for scope in scopes:
                         notation_scope = to_notation_scope(scope, metavar_args)
                         notation_lambda = self._to_pattern(notation_scope, st.terms[2])
-                        notation = Notation(symbol, notation_scope.arguments_type_check, notation_lambda)
+                        notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
                         self._scope.add_notation(notation)
                 else:
                     notation_scope = to_notation_scope(self._scope, metavar_args)
                     notation_lambda = self._to_pattern(notation_scope, st.terms[2])
-                    notation = Notation(symbol, notation_scope.arguments_type_check, notation_lambda)
+                    notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
                     self._scope.add_notation(notation)
                 return True
             else:
                 return False
 
+        def the_rest_axioms(st: AxiomaticStatement) -> bool:
+            if isinstance(st.terms[0], Application) and st.terms[0].symbol.startswith('#'):
+                self._ignored_axioms.append(st)
+                return True
+            else:
+                return False
+
+        # $a #Pattern ...
         if constant_is_pattern_axiom(statement):
             return
+        # $a #Symbol ...
         elif symbol_axiom(statement):
             return
+        # $a #Notation ...
         elif sugar_axiom(statement):
             return
-        else:
-            print(f'Unknown axiom: {repr(statement)}')
+        elif proved_axiom(statement):
             return
+        # like $a #something ...
+        elif the_rest_axioms(statement):
+            return
+        else:
+            raise NotImplementedError(f'Unknown axiom: {repr(statement)}')
 
-    def _add_builin_notations(self) -> None:
-        bot = Notation('\\bot', lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
+    def _add_builtin_notations(self) -> None:
+        bot = Notation('\\bot', (), lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
         self._scope.add_notation(bot)
 
     def _to_pattern(self, scope: NotationScope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
-        # TODO: Use essential hypotheses to determine metaconditions
-        # TODO: We should return expected type of the pattern to implement scope type checks
         match term:
             case Application(symbol, subterms):
                 if symbol == '\\imp':
@@ -238,19 +265,6 @@ class MetamathConverter:
                         return nf.Exists(evar, subpattern_pattern(*args))
 
                     return exists
-                elif symbol == '\\Substitution':
-                    assert len(subterms) == 4
-                    # #Substitution ph1 ph2 ph3 xX` we must replace `ph1` with `XSubst(ph2, ph3, xX)`
-                    # where `XSubst` is either `SSubst` or `ESubst` depending on the type of `xX`.
-                    assert isinstance(subterms[-1], Metavariable)
-                    # plug = scope.resolve(subterms[-1].name)
-                    # if isinstance(plug, nf.EVar):
-                    #     subst = nf.ESubst
-                    # elif isinstance(plug, nf.SVar):
-                    #     subst = nf.SSubst
-                    # else:
-                    #     raise TypeError(f'Unknown variable type: {type(plug).__name__}')
-                    raise NotImplementedError
                 elif scope.is_notation(symbol):
                     converted_args = tuple(self._to_pattern(scope, arg) for arg in term.subterms)
 
@@ -270,3 +284,45 @@ class MetamathConverter:
                 return lambda *args: resolved(*args)
             case _:
                 raise NotImplementedError
+
+    def _collect_variables(self, term: Term) -> tuple[Metavariable, ...]:
+        collected_variables: list[Metavariable] = []
+
+        todo = [term]
+        while todo:
+            current = todo.pop()
+            if isinstance(current, Application):
+                todo.extend(current.subterms)
+            elif isinstance(current, Metavariable):
+                if current not in collected_variables:
+                    collected_variables.append(current)
+            else:
+                raise NotImplementedError
+
+        return tuple(collected_variables)
+
+    def _add_axiom(self, name: str, axiom: Axiom) -> None:
+        if name in self._axioms:
+            self._axioms[name].append(axiom)
+        else:
+            self._axioms[name] = [axiom]
+
+    def _convert_axiom(self, name: str, term: Term) -> None:
+        variables = self._collect_variables(term)
+        var_names = tuple(var.name for var in variables)
+
+        def add_axiom_for_scope(sc: NotationScope) -> None:
+            notation_lambda = self._to_pattern(sc, term)
+            notation = Notation(name, var_names, sc.arguments_type_check, notation_lambda)
+            axiom_pattern = sc.notation_as_axiom(notation)
+            axiom = Axiom(name, var_names, sc.arguments_type_check, axiom_pattern)
+            self._add_axiom(name, axiom)
+
+        if any(self._scope.is_ambiguous(var) for var in variables):
+            scopes = self._scope.unambiguize(var_names)
+            for scope in scopes:
+                notation_scope = to_notation_scope(scope, variables)
+                add_axiom_for_scope(notation_scope)
+        else:
+            notation_scope = to_notation_scope(self._scope, variables)
+            add_axiom_for_scope(notation_scope)

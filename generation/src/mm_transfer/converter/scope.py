@@ -93,6 +93,11 @@ class Scope:
         )
         self._notations = dict(other._notations)
 
+    def notation_as_axiom(self, notation: Notation) -> nf.Pattern:
+        arg_names = notation.args
+        args = [self.resolve(arg) for arg in arg_names]
+        return notation(*args)
+
 
 class GlobalScope(Scope):
     """This is a global scope where actually everything is defined. But some variables can be umbigous."""
@@ -106,13 +111,15 @@ class GlobalScope(Scope):
         self.add_element_var(var)
         self.add_set_var(var)
 
-    def is_ambiguous(self, name: str) -> bool:
-        return name in self._ambiguous_vars
+    def is_ambiguous(self, name: str | Metavariable) -> bool:
+        return name in self._ambiguous_vars if isinstance(name, str) else name.name in self._ambiguous_vars
 
-    def unambiguize(self) -> tuple[Scope, ...]:
+    def unambiguize(self, selelcted_vars: tuple[str, ...]) -> tuple[Scope, ...]:
+        assert all(var in self._ambiguous_vars for var in selelcted_vars)
+
         todo: list[Scope] = [self]
         scopes: list[Scope | GlobalScope] = []
-        variables = sorted(self._ambiguous_vars)
+        variables = sorted(selelcted_vars)
 
         if not variables:
             scope = Scope()
@@ -141,8 +148,7 @@ class GlobalScope(Scope):
 
 class NotationScope(Scope):
     """
-    This is a scope used for translating notations. The difference is that some variables are allowed to be just numbers
-    that reflect positional arguments
+    This is a scope used for translating notations. The difference is that some variables arn't resolved but used as arguments
     """
 
     def __init__(self, arguments: tuple[str, ...]) -> None:
