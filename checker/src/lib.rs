@@ -129,7 +129,6 @@ pub enum Pattern {
 }
 
 impl Pattern {
-
     fn e_fresh(&self, evar: Id) -> bool {
         match self {
             Pattern::EVar(name) => *name != evar,
@@ -428,25 +427,65 @@ fn forall(evar: Id, pat: Rc<Pattern>) -> Rc<Pattern> {
 /// ----------------------
 
 fn apply_esubst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pattern> {
-
     // Wraps pattern in appropriate ESubst
     let wrap_subst = || esubst(Rc::clone(pattern), evar_id, Rc::clone(plug));
 
     match pattern.as_ref() {
-        Pattern::EVar(e) => 
-            if *e == evar_id {Rc::clone(plug)} else {Rc::clone(pattern)},
-        Pattern::Implication {left, right} => 
-            implies(apply_esubst(left, evar_id, plug), apply_esubst(right, evar_id, plug)),
-        Pattern::Application {left, right} => 
-            application(apply_esubst(left, evar_id, plug), apply_esubst(right, evar_id, plug)),
-        Pattern::Exists { var, ..} if *var == evar_id => Rc::clone(pattern),
-        Pattern::Exists { var, subpattern } =>
-            exists(*var, apply_esubst(subpattern, evar_id, plug)),
-        Pattern::Mu { var, subpattern } =>
-            mu(*var, apply_esubst(subpattern, evar_id, plug)),
-        Pattern::ESubst {..} => wrap_subst(),
-        Pattern::SSubst {..} => wrap_subst(),
-        Pattern::MetaVar{..} => wrap_subst(),
+        Pattern::EVar(e) => {
+            if *e == evar_id {
+                Rc::clone(plug)
+            } else {
+                Rc::clone(pattern)
+            }
+        }
+        Pattern::Implication { left, right } => implies(
+            apply_esubst(left, evar_id, plug),
+            apply_esubst(right, evar_id, plug),
+        ),
+        Pattern::Application { left, right } => application(
+            apply_esubst(left, evar_id, plug),
+            apply_esubst(right, evar_id, plug),
+        ),
+        Pattern::Exists { var, .. } if *var == evar_id => Rc::clone(pattern),
+        Pattern::Exists { var, subpattern } => {
+            exists(*var, apply_esubst(subpattern, evar_id, plug))
+        }
+        Pattern::Mu { var, subpattern } => mu(*var, apply_esubst(subpattern, evar_id, plug)),
+        Pattern::ESubst { .. } => wrap_subst(),
+        Pattern::SSubst { .. } => wrap_subst(),
+        Pattern::MetaVar { .. } => wrap_subst(),
+        _ => Rc::clone(pattern),
+    }
+}
+
+fn apply_ssubst(pattern: &Rc<Pattern>, svar_id: Id, plug: &Rc<Pattern>) -> Rc<Pattern> {
+    // Wraps pattern in appropriate ESubst
+    let wrap_subst = || ssubst(Rc::clone(pattern), svar_id, Rc::clone(plug));
+
+    match pattern.as_ref() {
+        Pattern::SVar(s) => {
+            if *s == svar_id {
+                Rc::clone(plug)
+            } else {
+                Rc::clone(pattern)
+            }
+        }
+        Pattern::Implication { left, right } => implies(
+            apply_ssubst(left, svar_id, plug),
+            apply_ssubst(right, svar_id, plug),
+        ),
+        Pattern::Application { left, right } => application(
+            apply_ssubst(left, svar_id, plug),
+            apply_ssubst(right, svar_id, plug),
+        ),
+        Pattern::Exists { var, subpattern } => {
+            exists(*var, apply_ssubst(subpattern, svar_id, plug))
+        }
+        Pattern::Mu { var, ..} if *var == svar_id => Rc::clone(pattern),
+        Pattern::Mu { var, subpattern } => mu(*var, apply_ssubst(subpattern, svar_id, plug)),
+        Pattern::ESubst { .. } => wrap_subst(),
+        Pattern::SSubst { .. } => wrap_subst(),
+        Pattern::MetaVar { .. } => wrap_subst(),
         _ => Rc::clone(pattern),
     }
 }
@@ -519,11 +558,20 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
         ),
         Pattern::Exists { var, subpattern } => {
             exists(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
-        }
+        },
         Pattern::Mu { var, subpattern } => {
             mu(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
-        }
-        _ => unimplemented!("Instantiation failed"),
+        },
+        Pattern::ESubst { pattern, evar_id, plug } => {
+            let inst_pat = instantiate(Rc::clone(pattern), vars, plugs);
+            let inst_plug = instantiate(Rc::clone(plug), vars, plugs);
+            return apply_esubst(&inst_pat, *evar_id, &inst_plug)
+        },
+        Pattern::SSubst { pattern, svar_id, plug } => {
+            let inst_pat = instantiate(Rc::clone(pattern), vars, plugs);
+            let inst_plug = instantiate(Rc::clone(plug), vars, plugs);
+            return apply_ssubst(&inst_pat, *svar_id, &inst_plug)
+        },
     }
 }
 
@@ -1529,45 +1577,69 @@ fn test_universal_quantification() {
     // TODO: Test case for when 0 is not fresh in rhs
 }
 
-
 #[test]
 fn test_apply_esubst() {
     // Define test cases as tuples of input pattern, evar_id, plug, and expected pattern
-        let test_cases: Vec<(Rc<Pattern>, u8, Rc<Pattern>, Rc<Pattern>)> = vec![
-            // Atomic cases
-            (evar(0), 0, symbol(1), symbol(1)),
-            (evar(0), 0, evar(2), evar(2)),
-            (evar(0), 1, evar(2), evar(0)),
-            (svar(0), 0, symbol(0), svar(0)),
-            (svar(1), 0, evar(0), svar(1)),
-            (symbol(0), 0, symbol(1), symbol(0)),
-            // Distribute over subpatterns
-            (implies(evar(7), symbol(1)), 7, symbol(0), implies(symbol(0), symbol(1))),
-            (implies(evar(7), symbol(1)), 6, symbol(0), implies(evar(7), symbol(1))),
-            (application(evar(7), symbol(1)), 7, symbol(0), application(symbol(0), symbol(1))),
-            (application(evar(7), symbol(1)), 6, symbol(0), application(evar(7), symbol(1))),
-            // Distribute over subpatterns unless evar_id = binder
-            (exists(1, evar(1)), 0, symbol(2), exists(1, evar(1))),
-            (exists(0, evar(1)), 1, symbol(2), exists(0, symbol(2))),
-            (mu(1, evar(1)), 0, symbol(2), mu(1, evar(1))),
-            (mu(1, evar(1)), 1, symbol(2), mu(1, symbol(2))),
-            // Subst on metavar should wrap in constructor
-            (metavar_unconstrained(0), 0, symbol(1), esubst(metavar_unconstrained(0), 0, symbol(1))),
-            // Subst when evar_id is fresh should do nothing
-            //(metavar_(0).with_e_fresh((evar(0), evar(1))), 0, symbol(1), metavar_unconstrained(0).with_e_fresh((evar(0), evar(1)))),
-            // Subst on substs should stack
-            (
-                esubst(metavar_unconstrained(0), 0, symbol(1)),
-                0,
-                symbol(1),
-                esubst(esubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
-            ),
-            (
-                ssubst(metavar_unconstrained(0), 0, symbol(1)),
-                0,
-                symbol(1),
-                esubst(ssubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
-            ),
+    let test_cases: Vec<(Rc<Pattern>, u8, Rc<Pattern>, Rc<Pattern>)> = vec![
+        // Atomic cases
+        (evar(0), 0, symbol(1), symbol(1)),
+        (evar(0), 0, evar(2), evar(2)),
+        (evar(0), 1, evar(2), evar(0)),
+        (svar(0), 0, symbol(0), svar(0)),
+        (svar(1), 0, evar(0), svar(1)),
+        (symbol(0), 0, symbol(1), symbol(0)),
+        // Distribute over subpatterns
+        (
+            implies(evar(7), symbol(1)),
+            7,
+            symbol(0),
+            implies(symbol(0), symbol(1)),
+        ),
+        (
+            implies(evar(7), symbol(1)),
+            6,
+            symbol(0),
+            implies(evar(7), symbol(1)),
+        ),
+        (
+            application(evar(7), symbol(1)),
+            7,
+            symbol(0),
+            application(symbol(0), symbol(1)),
+        ),
+        (
+            application(evar(7), symbol(1)),
+            6,
+            symbol(0),
+            application(evar(7), symbol(1)),
+        ),
+        // Distribute over subpatterns unless evar_id = binder
+        (exists(1, evar(1)), 0, symbol(2), exists(1, evar(1))),
+        (exists(0, evar(1)), 1, symbol(2), exists(0, symbol(2))),
+        (mu(1, evar(1)), 0, symbol(2), mu(1, evar(1))),
+        (mu(1, evar(1)), 1, symbol(2), mu(1, symbol(2))),
+        // Subst on metavar should wrap in constructor
+        (
+            metavar_unconstrained(0),
+            0,
+            symbol(1),
+            esubst(metavar_unconstrained(0), 0, symbol(1)),
+        ),
+        // Subst when evar_id is fresh should do nothing
+        //(metavar_(0).with_e_fresh((evar(0), evar(1))), 0, symbol(1), metavar_unconstrained(0).with_e_fresh((evar(0), evar(1)))),
+        // Subst on substs should stack
+        (
+            esubst(metavar_unconstrained(0), 0, symbol(1)),
+            0,
+            symbol(1),
+            esubst(esubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
+        ),
+        (
+            ssubst(metavar_unconstrained(0), 0, symbol(1)),
+            0,
+            symbol(1),
+            esubst(ssubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
+        ),
     ];
 
     // Iterate over the test cases
@@ -1577,5 +1649,57 @@ fn test_apply_esubst() {
 
         // Assert that the result matches the expected value
         assert_eq!(result, *expected);
+    }
+}
+
+#[test]
+fn test_apply_ssubst() {
+    let test_cases: Vec<(Rc<Pattern>, u8, Rc<Pattern>, Rc<Pattern>)> = vec![
+        // Atomic cases
+        (evar(0), 0, symbol(1), evar(0)),
+        (evar(0), 1, evar(2), evar(0)),
+        (svar(0), 0, symbol(0), symbol(0)),
+        (svar(1), 0, evar(0), svar(1)),
+        (symbol(0), 0, symbol(1), symbol(0)),
+        // Distribute over subpatterns
+        (implies(svar(7), symbol(1)), 7, symbol(0), implies(symbol(0), symbol(1))),
+        (implies(svar(7), symbol(1)), 6, symbol(0), implies(svar(7), symbol(1))),
+        (application(svar(7), symbol(1)), 7, symbol(0), application(symbol(0), symbol(1))),
+        (application(svar(7), symbol(1)), 6, symbol(0), application(svar(7), symbol(1))),
+        // Distribute over subpatterns unless svar_id = binder
+        (exists(1, svar(0)), 0, symbol(2), exists(1, symbol(2))),
+        (exists(1, symbol(1)), 1, symbol(2), exists(1, symbol(1))),
+        (mu(1, svar(1)), 0, symbol(2), mu(1, svar(1))),
+        (mu(1, svar(1)), 1, symbol(2), mu(1, svar(1))),
+        (mu(1, svar(2)), 2, symbol(2), mu(1, symbol(2))),
+        // Subst on metavar should wrap in constructor
+        (metavar_unconstrained(0), 0, symbol(1), ssubst(metavar_unconstrained(0), 0, symbol(1))),
+        // Subst when evar_id is fresh should do nothing
+        //(metavar_unconstrained(0).with_s_fresh((svar(0), svar(1))), 0, symbol(1), metavar_unconstrained(0).with_s_fresh((svar(0), svar(1)))),
+        // Subst on substs should stack
+        (
+            esubst(metavar_unconstrained(0), 0, symbol(1)),
+            0,
+            symbol(1),
+            ssubst(
+                esubst(metavar_unconstrained(0), 0, symbol(1)),
+                0,
+                symbol(1),
+            ),
+        ),
+        (
+            ssubst(metavar_unconstrained(0), 0, symbol(1)),
+            0,
+            symbol(1),
+            ssubst(
+                ssubst(metavar_unconstrained(0), 0, symbol(1)),
+                0,
+                symbol(1),
+            ),
+        ),
+    ];
+    
+    for (pattern, svar_id, plug, expected) in test_cases {
+        assert_eq!(apply_ssubst(&pattern, svar_id, &plug), expected);
     }
 }

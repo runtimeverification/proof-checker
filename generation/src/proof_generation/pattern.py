@@ -114,7 +114,7 @@ class Exists(Pattern):
         return Exists(self.var, self.subpattern.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        if evar_id == self.var:
+        if EVar(evar_id) == self.var:
             return self
         return Exists(self.var, self.subpattern.apply_esubst(evar_id, plug))
 
@@ -137,7 +137,7 @@ class Mu(Pattern):
         return Mu(self.var, self.subpattern.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        if svar_id == self.var:
+        if SVar(svar_id) == self.var:
             return self
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
