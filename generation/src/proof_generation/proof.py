@@ -539,7 +539,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Symbol ')
         self.out.write(str(id))
 
-    @pretty(print_stack=False)
+    @pretty()
     def metavar(
         self,
         id: int,
@@ -634,15 +634,15 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
 
-    @pretty()
+    @pretty(print_stack=False)
     def publish_proof(self, proved: Proved) -> None:
         self.out.write('Publish')
 
-    @pretty()
+    @pretty(print_stack=False)
     def publish_axiom(self, axiom: Pattern) -> None:
         self.out.write('Publish')
 
-    @pretty()
+    @pretty(print_stack=False)
     def publish_claim(self, pattern: Pattern) -> None:
         self.out.write('Publish')
 

@@ -1,13 +1,38 @@
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 Implication
 	Stack:
 	0: (phi0 -> phi0)
 	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 Instantiate 1, 2
 	Stack:
 	0: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
@@ -15,8 +40,31 @@ Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
 	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 Implication
 	Stack:
 	0: (phi0 -> phi0)
@@ -34,6 +82,10 @@ Prop1
 	0: (phi0 -> (phi1 -> phi0))
 	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
 Instantiate 1
 	Stack:
 	0: (phi0 -> (phi0 -> phi0))
@@ -42,20 +94,46 @@ ModusPonens
 	Stack:
 	0: (phi0 -> phi0)
 Publish
-	Stack:
-	0: (phi0 -> phi0)
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	1: (phi0 -> phi0)
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: (phi0 -> phi0)
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
 	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	2: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: (phi0 -> phi0)
 Instantiate 1, 2
 	Stack:
 	0: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
@@ -65,8 +143,33 @@ Prop1
 	0: (phi0 -> (phi1 -> phi0))
 	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 	2: (phi0 -> phi0)
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	3: (phi0 -> phi0)
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	4: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
@@ -88,6 +191,11 @@ Prop1
 	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
 	2: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: (phi0 -> phi0)
 Instantiate 1
 	Stack:
 	0: (phi0 -> (phi0 -> phi0))
@@ -112,9 +220,6 @@ Instantiate 0
 	0: ((μ X0 . X0) -> (μ X0 . X0))
 	1: (phi0 -> phi0)
 Publish
-	Stack:
-	0: ((μ X0 . X0) -> (μ X0 . X0))
-	1: (phi0 -> phi0)
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
@@ -133,6 +238,12 @@ Mu 0
 	2: ((μ X0 . X0) -> (μ X0 . X0))
 	3: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (μ X0 . X0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((μ X0 . X0) -> (μ X0 . X0))
+	4: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -180,6 +291,13 @@ Implication
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: (μ X0 . X0)
+	3: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	4: ((μ X0 . X0) -> (μ X0 . X0))
+	5: (phi0 -> phi0)
 Instantiate 0, 1, 2
 	Stack:
 	0: (((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0)))
@@ -192,6 +310,12 @@ Prop1
 	2: ((μ X0 . X0) -> (μ X0 . X0))
 	3: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: (((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0)))
+	3: ((μ X0 . X0) -> (μ X0 . X0))
+	4: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -239,6 +363,13 @@ Implication
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: (phi0 -> (phi1 -> phi0))
+	3: (((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0)))
+	4: ((μ X0 . X0) -> (μ X0 . X0))
+	5: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
@@ -276,6 +407,13 @@ Prop3
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	2: ((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0) -> ((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)))
+	3: (((μ X0 . X0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0)))
+	4: ((μ X0 . X0) -> (μ X0 . X0))
+	5: (phi0 -> phi0)
 Instantiate 0
 	Stack:
 	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
@@ -315,6 +453,13 @@ Mu 0
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (μ X0 . X0)
+	2: (phi0 -> (phi1 -> phi0))
+	3: (((μ X0 . X0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> ((μ X0 . X0) -> phi0))
+	4: ((μ X0 . X0) -> (μ X0 . X0))
+	5: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -353,10 +498,6 @@ ModusPonens
 	1: ((μ X0 . X0) -> (μ X0 . X0))
 	2: (phi0 -> phi0)
 Publish
-	Stack:
-	0: ((μ X0 . X0) -> phi0)
-	1: ((μ X0 . X0) -> (μ X0 . X0))
-	2: (phi0 -> phi0)
 Prop3
 	Stack:
 	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
@@ -364,6 +505,12 @@ Prop3
 	2: ((μ X0 . X0) -> (μ X0 . X0))
 	3: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	2: ((μ X0 . X0) -> phi0)
+	3: ((μ X0 . X0) -> (μ X0 . X0))
+	4: (phi0 -> phi0)
 Instantiate 0
 	Stack:
 	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
@@ -371,11 +518,6 @@ Instantiate 0
 	2: ((μ X0 . X0) -> (μ X0 . X0))
 	3: (phi0 -> phi0)
 Publish
-	Stack:
-	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
-	1: ((μ X0 . X0) -> phi0)
-	2: ((μ X0 . X0) -> (μ X0 . X0))
-	3: (phi0 -> phi0)
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
@@ -384,6 +526,13 @@ Prop2
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	3: ((μ X0 . X0) -> phi0)
+	4: ((μ X0 . X0) -> (μ X0 . X0))
+	5: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -411,6 +560,14 @@ Implication
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	4: ((μ X0 . X0) -> phi0)
+	5: ((μ X0 . X0) -> (μ X0 . X0))
+	6: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -420,6 +577,14 @@ Implication
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> phi0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	4: ((μ X0 . X0) -> phi0)
+	5: ((μ X0 . X0) -> (μ X0 . X0))
+	6: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -479,6 +644,15 @@ Implication
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: ((phi0 -> (μ X0 . X0)) -> phi0)
+	3: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 Instantiate 0, 1, 2
 	Stack:
 	0: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0)))
@@ -495,6 +669,14 @@ Prop1
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0)))
+	3: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	4: ((μ X0 . X0) -> phi0)
+	5: ((μ X0 . X0) -> (μ X0 . X0))
+	6: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -554,6 +736,15 @@ Implication
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0)))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
@@ -564,6 +755,15 @@ Implication
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0)))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -597,6 +797,16 @@ Implication
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> (phi1 -> phi0))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0)))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -625,6 +835,15 @@ Prop3
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	2: ((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0)))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 Instantiate 0
 	Stack:
 	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
@@ -658,6 +877,14 @@ Prop2
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 	5: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	3: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	4: ((μ X0 . X0) -> phi0)
+	5: ((μ X0 . X0) -> (μ X0 . X0))
+	6: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -688,6 +915,15 @@ Implication
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -698,6 +934,15 @@ Implication
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> phi0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -731,6 +976,16 @@ Implication
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (μ X0 . X0)) -> phi0)
+	3: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -742,6 +997,16 @@ Implication
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> phi0)
+	2: ((phi0 -> (μ X0 . X0)) -> phi0)
+	3: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -830,6 +1095,15 @@ Prop2
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -863,6 +1137,16 @@ Implication
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -874,6 +1158,16 @@ Implication
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> phi0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -910,6 +1204,17 @@ Implication
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (μ X0 . X0)) -> phi0)
+	3: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -960,6 +1265,17 @@ Implication
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	2: ((phi0 -> (μ X0 . X0)) -> phi0)
+	3: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -999,6 +1315,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	3: ((phi0 -> (μ X0 . X0)) -> phi0)
+	4: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -1012,6 +1340,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> phi0)
+	2: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	3: ((phi0 -> (μ X0 . X0)) -> phi0)
+	4: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1126,6 +1466,16 @@ Prop1
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1162,6 +1512,17 @@ Implication
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1212,6 +1573,17 @@ Implication
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1251,6 +1623,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	3: (phi0 -> (phi1 -> phi0))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -1264,6 +1648,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> phi0)
+	2: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	3: (phi0 -> (phi1 -> phi0))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1370,6 +1766,17 @@ Implication
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1409,6 +1816,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	3: (phi0 -> (phi1 -> phi0))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -1443,6 +1862,17 @@ Prop2
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: ((((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1482,6 +1912,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1551,6 +1993,16 @@ Prop1
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1587,6 +2039,17 @@ Implication
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1637,6 +2100,17 @@ Implication
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1676,6 +2150,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))
+	3: (phi0 -> (phi1 -> phi0))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -1709,8 +2195,45 @@ Prop2
 	6: ((μ X0 . X0) -> phi0)
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
@@ -1724,6 +2247,18 @@ Implication
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 Instantiate 1, 2
 	Stack:
 	0: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
@@ -1747,8 +2282,47 @@ Prop1
 	7: ((μ X0 . X0) -> phi0)
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	3: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	4: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	7: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	8: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	9: ((μ X0 . X0) -> phi0)
+	10: ((μ X0 . X0) -> (μ X0 . X0))
+	11: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
@@ -1798,6 +2372,18 @@ Prop1
 	8: ((μ X0 . X0) -> (μ X0 . X0))
 	9: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	6: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	7: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	8: ((μ X0 . X0) -> phi0)
+	9: ((μ X0 . X0) -> (μ X0 . X0))
+	10: (phi0 -> phi0)
 Instantiate 1
 	Stack:
 	0: (phi0 -> (phi0 -> phi0))
@@ -1822,6 +2408,17 @@ ModusPonens
 	7: ((μ X0 . X0) -> (μ X0 . X0))
 	8: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: (((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (phi0 -> (μ X0 . X0)))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))) -> ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -1907,8 +2504,41 @@ Prop2
 	4: ((μ X0 . X0) -> phi0)
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
@@ -1920,6 +2550,16 @@ Implication
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 Instantiate 1, 2
 	Stack:
 	0: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
@@ -1939,8 +2579,43 @@ Prop1
 	5: ((μ X0 . X0) -> phi0)
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
+<<<<<<< HEAD
 MetaVar 0
+=======
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+>>>>>>> main
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> (phi1 -> phi0))
+	3: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	5: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	6: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	7: ((μ X0 . X0) -> phi0)
+	8: ((μ X0 . X0) -> (μ X0 . X0))
+	9: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
@@ -1982,6 +2657,16 @@ Prop1
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi1 -> phi0))
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 Instantiate 1
 	Stack:
 	0: (phi0 -> (phi0 -> phi0))
@@ -2002,6 +2687,15 @@ ModusPonens
 	5: ((μ X0 . X0) -> (μ X0 . X0))
 	6: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	5: ((μ X0 . X0) -> phi0)
+	6: ((μ X0 . X0) -> (μ X0 . X0))
+	7: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
@@ -2035,6 +2729,16 @@ Implication
 	6: ((μ X0 . X0) -> (μ X0 . X0))
 	7: (phi0 -> phi0)
 MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (μ X0 . X0))
+	2: (phi0 -> phi0)
+	3: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> phi0)) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))))
+	4: ((((phi0 -> (μ X0 . X0)) -> phi0) -> ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))) -> (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0))
+	5: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	6: ((μ X0 . X0) -> phi0)
+	7: ((μ X0 . X0) -> (μ X0 . X0))
+	8: (phi0 -> phi0)
 Implication
 	Stack:
 	0: ((phi0 -> (μ X0 . X0)) -> phi0)
@@ -2070,9 +2774,3 @@ ModusPonens
 	3: ((μ X0 . X0) -> (μ X0 . X0))
 	4: (phi0 -> phi0)
 Publish
-	Stack:
-	0: (((phi0 -> (μ X0 . X0)) -> phi0) -> phi0)
-	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
-	2: ((μ X0 . X0) -> phi0)
-	3: ((μ X0 . X0) -> (μ X0 . X0))
-	4: (phi0 -> phi0)
