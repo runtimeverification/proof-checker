@@ -226,3 +226,8 @@ def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
     assert expected1 == converted1, pattern_mismatch(expected, converted)
     converted2 = converter._axioms['tst-trivial-axiom'][1].pattern
     assert expected2 == converted2, pattern_mismatch(expected, converted)
+
+
+def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
+    converter = MetamathConverter(parsed_lemma_database)
+    converter._scope

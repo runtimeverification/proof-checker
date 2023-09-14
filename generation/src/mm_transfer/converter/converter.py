@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from mypy_extensions import VarArg
@@ -11,12 +12,12 @@ from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
     AxiomaticStatement,
+    Block,
     ConstantStatement,
     FloatingStatement,
     Metavariable,
-    VariableStatement,
     ProvableStatement,
-    Block
+    VariableStatement,
 )
 
 if TYPE_CHECKING:
@@ -24,6 +25,12 @@ if TYPE_CHECKING:
 
     from mm_transfer.converter.scope import NotationScope
     from mm_transfer.metamath.ast import Database, Term
+
+
+class AxiomType(Enum):
+    Trivial = 1
+    Notation = 2
+    Provable = 3
 
 
 class MetamathConverter:
@@ -65,7 +72,7 @@ class MetamathConverter:
                 if isinstance(last_statment, AxiomaticStatement):
                     # TODO: Remove me later
                     if self._convert_axioms:
-                        self._convert_axiom(statement)
+                        self._import_axiom(statement)
                 elif isinstance(last_statment, ProvableStatement):
                     # TODO: Implement parsing lemmas and proofs
                     pass
@@ -150,7 +157,53 @@ class MetamathConverter:
         else:
             print(f'Unknown floating statement: {repr(statement)}')
 
-    def _import_axiom(self, statement: AxiomaticStatement) -> None:
+    def _import_axiom(self, statement: AxiomaticStatement | Block) -> None:
+        actual_statement = statement if isinstance(statement, AxiomaticStatement) else statement.statements[-1]
+        assert isinstance(actual_statement, AxiomaticStatement)
+
+        if isinstance(statement, Block):
+            # TODO: Ignore for now
+            return
+
+        axiom_type = self._check_axiom(self._scope, actual_statement)
+        if axiom_type == AxiomType.Trivial:
+            # We are done
+            return
+
+        if not self._convert_axioms and axiom_type == AxiomType.Provable:
+            # TODO: Ignore for now
+            return
+
+        # Prepare scopes if we need more than one
+        args: tuple[Metavariable, ...] = ()
+        if axiom_type == AxiomType.Provable:
+            args = self._collect_variables(actual_statement.terms[1])
+        else:
+            assert len(actual_statement.terms) == 3 and isinstance(actual_statement.terms[1], Application)
+            metavar_args = actual_statement.terms[1].subterms
+            # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
+            assert all(isinstance(arg, Metavariable) for arg in metavar_args)
+            args = tuple(metavar_args)  # type: ignore
+
+        ambiguous_args = tuple(arg.name for arg in args if self._scope.is_ambiguous(arg))
+        if len(ambiguous_args) > 0:
+            scopes = self._scope.unambiguize(ambiguous_args)
+        else:
+            scope = Scope()
+            scope.import_from_scope(self._scope)
+            scopes = (self._scope,)
+
+        # Then add actual axioms or notations
+        for scope in scopes:
+            # Update the scope depending on the Block statements
+            self._prepare_scope_for_block(statement, scope)
+
+            if axiom_type == AxiomType.Provable:
+                self._convert_axiom_for_scope(scope, actual_statement)
+            else:
+                self._add_notation(scope, self._scope, actual_statement)
+
+    def _check_axiom(self, scope: Scope, statement: AxiomaticStatement) -> AxiomType:
         is_constant = re.compile(r'"\S+"')
 
         # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
@@ -165,7 +218,7 @@ class MetamathConverter:
                 # We can distinguish domain values from other constants, but we decided
                 # to keep quotes in favor of the direct correspondence between Metamath
                 # and the new format.
-                self._scope.add_domain_value(st.terms[1].symbol)
+                scope.add_domain_value(st.terms[1].symbol)
                 return True
             else:
                 return False
@@ -177,16 +230,13 @@ class MetamathConverter:
                 and isinstance(st.terms[1], Application)
                 and len(st.terms[1].subterms) == 0
             ):
-                self._scope.add_symbol(st.terms[1].symbol)
+                scope.add_symbol(st.terms[1].symbol)
                 return True
             else:
                 return False
 
         def proved_axiom(st: AxiomaticStatement) -> bool:
             if isinstance(st.terms[0], Application) and st.terms[0].symbol == '|-':
-                # TODO: Remove me later
-                if self._convert_axioms:
-                    self._convert_axiom(st)
                 return True
             else:
                 return False
@@ -198,27 +248,6 @@ class MetamathConverter:
                 and isinstance(st.terms[1], Application)
                 and len(st.terms) == 3
             ):
-                symbol: str = st.terms[1].symbol
-                args = st.terms[1].subterms
-
-                # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
-                assert all(isinstance(arg, Metavariable) for arg in args)
-                metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
-                arg_names = tuple(arg.name for arg in metavar_args)
-                ambiguous_args = tuple(arg.name for arg in metavar_args if self._scope.is_ambiguous(arg))
-
-                if len(ambiguous_args) > 0:
-                    scopes = self._scope.unambiguize(ambiguous_args)
-                    for scope in scopes:
-                        notation_scope = to_notation_scope(scope, metavar_args)
-                        notation_lambda = self._to_pattern(notation_scope, st.terms[2])
-                        notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
-                        self._scope.add_notation(notation)
-                else:
-                    notation_scope = to_notation_scope(self._scope, metavar_args)
-                    notation_lambda = self._to_pattern(notation_scope, st.terms[2])
-                    notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
-                    self._scope.add_notation(notation)
                 return True
             else:
                 return False
@@ -232,21 +261,36 @@ class MetamathConverter:
 
         # $a #Pattern ...
         if constant_is_pattern_axiom(statement):
-            return
+            return AxiomType.Trivial
         # $a #Symbol ...
         elif symbol_axiom(statement):
-            return
+            return AxiomType.Trivial
         # $a #Notation ...
         elif sugar_axiom(statement):
-            return
+            return AxiomType.Notation
         # $a |- ...
         elif proved_axiom(statement):
-            return
+            return AxiomType.Provable
         # like $a #something ...
         elif the_rest_axioms(statement):
-            return
+            return AxiomType.Trivial
         else:
             raise NotImplementedError(f'Unknown axiom: {repr(statement)}')
+
+    def _add_notation(self, scope: Scope, add_to: Scope, statement: AxiomaticStatement) -> None:
+        assert isinstance(statement.terms[1], Application)
+        symbol: str = statement.terms[1].symbol
+        args = statement.terms[1].subterms
+        term = statement.terms[2]
+
+        # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
+        assert all(isinstance(arg, Metavariable) for arg in args)
+        metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
+        arg_names = tuple(arg.name for arg in metavar_args)
+        notation_scope = to_notation_scope(scope, metavar_args)
+        notation_lambda = self._to_pattern(notation_scope, term)
+        notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
+        add_to.add_notation(notation)
 
     def _add_builtin_notations(self) -> None:
         bot = Notation('\\bot', (), lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
@@ -323,35 +367,34 @@ class MetamathConverter:
 
     def _get_axiom_name(self, statement: AxiomaticStatement | Block) -> str:
         if isinstance(statement, Block):
-            statement = statement.statements[-1]
-        assert isinstance(statement, AxiomaticStatement)
-        return statement.label
+            st = statement.statements[-1]
+        else:
+            st = statement
+        assert isinstance(st, AxiomaticStatement)
+        return st.label
 
     def _get_axiom_term(self, statement: AxiomaticStatement | Block) -> Term:
         if isinstance(statement, Block):
-            statement = statement.statements[-1]
-        assert isinstance(statement, AxiomaticStatement)
-        return statement.terms[1]
-
-    def _convert_axiom(self, statement: AxiomaticStatement | Block) -> None:
-        axiom_term = self._get_axiom_term(statement)
-        variables: tuple[Metavariable, ...] = self._collect_variables(axiom_term)
-        var_names = tuple(var.name for var in variables)
-
-        if any(self._scope.is_ambiguous(var) for var in variables):
-            scopes = self._scope.unambiguize(var_names)
-            for scope in scopes:
-                self._convert_axiom_for_scope(variables, scope, statement)
+            st = statement.statements[-1]
         else:
-            self._convert_axiom_for_scope(variables, self._scope, statement)
+            st = statement
+        assert isinstance(st, AxiomaticStatement)
+        return st.terms[1]
 
-    def _convert_axiom_for_scope(self, variables: tuple[Metavariable, ...], scope: Scope, statement: AxiomaticStatement | Block) -> None:
+    def _prepare_scope_for_block(self, statement: Block | AxiomaticStatement, scope: Scope) -> None:
+        # Make a new scope for the block because parent can be a global scope that we don't wanna touch
+        pass
+
+    def _convert_axiom_for_scope(self, scope: Scope, statement: AxiomaticStatement) -> None:
         name = self._get_axiom_name(statement)
-        axiom_term = self._get_axiom_term(statement)
+        variables: tuple[Metavariable, ...] = self._collect_variables(statement.terms[1])
+        term = self._get_axiom_term(statement)
+
         var_names = tuple(var.name for var in variables)
         notation_scope = to_notation_scope(scope, variables)
-        notation_lambda = self._to_pattern(notation_scope, axiom_term)
+        notation_lambda = self._to_pattern(notation_scope, term)
         notation = Notation(name, var_names, notation_scope.arguments_type_check, notation_lambda)
+
         axiom_pattern = scope.notation_as_axiom(notation)
         axiom = Axiom(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
         self._add_axiom(name, axiom)
