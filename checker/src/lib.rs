@@ -129,6 +129,7 @@ pub enum Pattern {
 }
 
 impl Pattern {
+
     fn e_fresh(&self, evar: Id) -> bool {
         match self {
             Pattern::EVar(name) => *name != evar,
@@ -421,6 +422,17 @@ fn forall(evar: Id, pat: Rc<Pattern>) -> Rc<Pattern> {
 
 /// Substitution utilities
 /// ----------------------
+
+fn apply_e_subst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
+    match pattern.as_ref() {
+        Pattern::EVar(e) => 
+            if *e == evar_id {Rc::clone(&plug)} else {pattern},
+        Pattern::SVar(_) => pattern,
+        Pattern::Symbol(_) => pattern,
+        mv @ Pattern:: MetaVar{..} => esubst(Rc::new(mv.clone()), evar_id, plug),
+        Pattern::Implication {left, right}=> implies(apply_e_subst(left.clone(), evar_id, plug), apply_e_subst(right.clone(), evar_id, plug))
+    }
+}
 
 fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern> {
     match p.as_ref() {
