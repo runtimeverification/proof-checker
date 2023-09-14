@@ -481,7 +481,7 @@ fn apply_ssubst(pattern: &Rc<Pattern>, svar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
         Pattern::Exists { var, subpattern } => {
             exists(*var, apply_ssubst(subpattern, svar_id, plug))
         }
-        Pattern::Mu { var, ..} if *var == svar_id => Rc::clone(pattern),
+        Pattern::Mu { var, .. } if *var == svar_id => Rc::clone(pattern),
         Pattern::Mu { var, subpattern } => mu(*var, apply_ssubst(subpattern, svar_id, plug)),
         Pattern::ESubst { .. } => wrap_subst(),
         Pattern::SSubst { .. } => wrap_subst(),
@@ -558,20 +558,28 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
         ),
         Pattern::Exists { var, subpattern } => {
             exists(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
-        },
+        }
         Pattern::Mu { var, subpattern } => {
             mu(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
-        },
-        Pattern::ESubst { pattern, evar_id, plug } => {
+        }
+        Pattern::ESubst {
+            pattern,
+            evar_id,
+            plug,
+        } => {
             let inst_pat = instantiate(Rc::clone(pattern), vars, plugs);
             let inst_plug = instantiate(Rc::clone(plug), vars, plugs);
-            return apply_esubst(&inst_pat, *evar_id, &inst_plug)
-        },
-        Pattern::SSubst { pattern, svar_id, plug } => {
+            return apply_esubst(&inst_pat, *evar_id, &inst_plug);
+        }
+        Pattern::SSubst {
+            pattern,
+            svar_id,
+            plug,
+        } => {
             let inst_pat = instantiate(Rc::clone(pattern), vars, plugs);
             let inst_plug = instantiate(Rc::clone(plug), vars, plugs);
-            return apply_ssubst(&inst_pat, *svar_id, &inst_plug)
-        },
+            return apply_ssubst(&inst_pat, *svar_id, &inst_plug);
+        }
     }
 }
 
@@ -1662,10 +1670,30 @@ fn test_apply_ssubst() {
         (svar(1), 0, evar(0), svar(1)),
         (symbol(0), 0, symbol(1), symbol(0)),
         // Distribute over subpatterns
-        (implies(svar(7), symbol(1)), 7, symbol(0), implies(symbol(0), symbol(1))),
-        (implies(svar(7), symbol(1)), 6, symbol(0), implies(svar(7), symbol(1))),
-        (application(svar(7), symbol(1)), 7, symbol(0), application(symbol(0), symbol(1))),
-        (application(svar(7), symbol(1)), 6, symbol(0), application(svar(7), symbol(1))),
+        (
+            implies(svar(7), symbol(1)),
+            7,
+            symbol(0),
+            implies(symbol(0), symbol(1)),
+        ),
+        (
+            implies(svar(7), symbol(1)),
+            6,
+            symbol(0),
+            implies(svar(7), symbol(1)),
+        ),
+        (
+            application(svar(7), symbol(1)),
+            7,
+            symbol(0),
+            application(symbol(0), symbol(1)),
+        ),
+        (
+            application(svar(7), symbol(1)),
+            6,
+            symbol(0),
+            application(svar(7), symbol(1)),
+        ),
         // Distribute over subpatterns unless svar_id = binder
         (exists(1, svar(0)), 0, symbol(2), exists(1, symbol(2))),
         (exists(1, symbol(1)), 1, symbol(2), exists(1, symbol(1))),
@@ -1673,7 +1701,12 @@ fn test_apply_ssubst() {
         (mu(1, svar(1)), 1, symbol(2), mu(1, svar(1))),
         (mu(1, svar(2)), 2, symbol(2), mu(1, symbol(2))),
         // Subst on metavar should wrap in constructor
-        (metavar_unconstrained(0), 0, symbol(1), ssubst(metavar_unconstrained(0), 0, symbol(1))),
+        (
+            metavar_unconstrained(0),
+            0,
+            symbol(1),
+            ssubst(metavar_unconstrained(0), 0, symbol(1)),
+        ),
         // Subst when evar_id is fresh should do nothing
         //(metavar_unconstrained(0).with_s_fresh((svar(0), svar(1))), 0, symbol(1), metavar_unconstrained(0).with_s_fresh((svar(0), svar(1)))),
         // Subst on substs should stack
@@ -1681,24 +1714,16 @@ fn test_apply_ssubst() {
             esubst(metavar_unconstrained(0), 0, symbol(1)),
             0,
             symbol(1),
-            ssubst(
-                esubst(metavar_unconstrained(0), 0, symbol(1)),
-                0,
-                symbol(1),
-            ),
+            ssubst(esubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
         ),
         (
             ssubst(metavar_unconstrained(0), 0, symbol(1)),
             0,
             symbol(1),
-            ssubst(
-                ssubst(metavar_unconstrained(0), 0, symbol(1)),
-                0,
-                symbol(1),
-            ),
+            ssubst(ssubst(metavar_unconstrained(0), 0, symbol(1)), 0, symbol(1)),
         ),
     ];
-    
+
     for (pattern, svar_id, plug, expected) in test_cases {
         assert_eq!(apply_ssubst(&pattern, svar_id, &plug), expected);
     }
