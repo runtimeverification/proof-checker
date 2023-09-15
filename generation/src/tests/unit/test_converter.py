@@ -86,7 +86,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     definedness = scope._symbols['\\definedness']
     inhabitant = scope._symbols['\\inhabitant']
     tst = scope._symbols['\\tsymbol']
-    assert len(scope._notations) == 12
+    assert len(scope._notations) == 11 + 4  # from the file and builtin
 
     def bot() -> nf.Pattern:
         return nf.Mu(nf.SVar(0), nf.SVar(0))
@@ -108,6 +108,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
 
     expected = or_(nf.MetaVar(10), nf.MetaVar(11))
     converted = scope.resolve_notation('\\or')(nf.MetaVar(10), nf.MetaVar(11))
+    assert expected == converted, pattern_mismatch(expected, converted)
 
     #  \not ( \or ( \not ph0 ) ( \not ph1 ) )
     def and_(p: nf.Pattern, q: nf.Pattern) -> nf.Pattern:
@@ -115,6 +116,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
 
     expected = and_(nf.MetaVar(10), nf.MetaVar(11))
     converted = scope.resolve_notation('\\and')(nf.MetaVar(10), nf.MetaVar(11))
+    assert expected == converted, pattern_mismatch(expected, converted)
 
     # \not \bot
     def top() -> nf.Pattern:
