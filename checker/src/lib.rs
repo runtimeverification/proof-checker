@@ -536,13 +536,11 @@ pub enum ExecutionPhase {
 fn read_u8_vec<'a>(next: &mut impl FnMut() -> Option<InstByte>) -> Vec<u8> {
     let len = (next().expect("Expected length for array")) as usize;
 
-    let mut arr: Vec<u8> = vec![0; len];
-    let mut i: usize = 0;
-    while i < len {
-        arr[i] = next().expect("Expected another constraint of given type");
-        i += 1;
+    let mut vec: Vec<u8> = vec![0; len];
+    for i in 0..len {
+        vec[i] = next().expect("Expected another constraint of given type");
     }
-    return arr;
+    return vec;
 }
 
 fn execute_instructions<'a>(
@@ -1411,7 +1409,6 @@ fn test_construct_phi_implies_phi() {
     );
 }
 
-
 #[cfg(test)]
 fn serialize_metavar(id: u8, all_cons: &Vec<Vec<u8>>) -> Vec<u8> {
     let mut res = vec![Instruction::MetaVar as InstByte, id];
@@ -1426,19 +1423,14 @@ fn serialize_metavar(id: u8, all_cons: &Vec<Vec<u8>>) -> Vec<u8> {
 
 #[test]
 fn test_construct_phi_implies_phi_with_constraints() {
-    let mut cons = vec![
-        vec![1u8],
-        vec![],
-        vec![],
-        vec![],
-        vec![],
-    ];
+    let mut cons = vec![vec![1u8], vec![], vec![], vec![], vec![]];
 
     for _ in 0..5 {
-        let mut proof : Vec<InstByte> = serialize_metavar(1, &cons);
+        let mut proof: Vec<InstByte> = serialize_metavar(1, &cons);
         proof.append(&mut vec![
-            Instruction::Save as InstByte,        // @ 0
-            Instruction::Load as InstByte, 0,     // Phi1 ; Phi1
+            Instruction::Save as InstByte, // @ 0
+            Instruction::Load as InstByte,
+            0, // Phi1 ; Phi1
             Instruction::Implication as InstByte,
         ]); // Phi1 -> Phi1
 
@@ -1452,7 +1444,7 @@ fn test_construct_phi_implies_phi_with_constraints() {
             ExecutionPhase::Proof,
         );
 
-        let phi1 = Rc::new(Pattern :: MetaVar {
+        let phi1 = Rc::new(Pattern::MetaVar {
             id: 1,
             e_fresh: cons[0].clone(),
             s_fresh: cons[1].clone(),
