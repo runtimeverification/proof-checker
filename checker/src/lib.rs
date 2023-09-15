@@ -2,6 +2,7 @@
 #![no_std]
 
 extern crate alloc;
+
 use alloc::rc::Rc;
 use alloc::vec;
 use alloc::vec::Vec;
@@ -1410,33 +1411,67 @@ fn test_construct_phi_implies_phi() {
     );
 }
 
+
+#[cfg(test)]
+fn serialize_metavar(id: u8, all_cons: &Vec<Vec<u8>>) -> Vec<u8> {
+    let mut res = vec![Instruction::MetaVar as InstByte, id];
+
+    for cons in all_cons {
+        res.push(cons.len() as u8);
+        res.append(&mut (*cons).clone());
+    }
+
+    return res;
+}
+
 #[test]
-fn test_construct_phi_implies_phi_twist() {
-    #[rustfmt::skip]
-    let proof : Vec<InstByte> = vec![
-        Instruction::MetaVar as InstByte, 1, 0, 1, 7, 0, 0, 0, // Stack: Phi1(s_fresh=[7])
-        Instruction::Save as InstByte,        // @ 0
-        Instruction::Load as InstByte, 0,     // Phi1 ; Phi1
-        Instruction::Implication as InstByte, // Phi1 -> Phi1
+fn test_construct_phi_implies_phi_with_constraints() {
+    let mut cons = vec![
+        vec![1u8],
+        vec![],
+        vec![],
+        vec![],
+        vec![],
     ];
 
-    let mut stack = vec![];
-    execute_vector(
-        &proof,
-        &mut stack,
-        &mut vec![],
-        &mut vec![],
-        &mut vec![],
-        ExecutionPhase::Proof,
-    );
-    let phi1_twist = metavar_s_fresh(1, 7, vec![], vec![]);
-    assert_eq!(
-        stack,
-        vec![Term::Pattern(Rc::new(Pattern::Implication {
-            left: phi1_twist.clone(),
-            right: phi1_twist.clone()
-        }))]
-    );
+    for _ in 0..5 {
+        let mut proof : Vec<InstByte> = serialize_metavar(1, &cons);
+        proof.append(&mut vec![
+            Instruction::Save as InstByte,        // @ 0
+            Instruction::Load as InstByte, 0,     // Phi1 ; Phi1
+            Instruction::Implication as InstByte,
+        ]); // Phi1 -> Phi1
+
+        let mut stack = vec![];
+        execute_vector(
+            &proof,
+            &mut stack,
+            &mut vec![],
+            &mut vec![],
+            &mut vec![],
+            ExecutionPhase::Proof,
+        );
+
+        let phi1 = Rc::new(Pattern :: MetaVar {
+            id: 1,
+            e_fresh: cons[0].clone(),
+            s_fresh: cons[1].clone(),
+            positive: cons[2].clone(),
+            negative: cons[3].clone(),
+            app_ctx_holes: cons[4].clone(),
+        });
+
+        assert_eq!(
+            stack,
+            vec![Term::Pattern(Rc::new(Pattern::Implication {
+                left: phi1.clone(),
+                right: phi1.clone()
+            }))]
+        );
+
+        // Make the next field the non-empty one
+        cons.rotate_right(1);
+    }
 }
 
 #[test]
