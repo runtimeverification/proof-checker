@@ -30,6 +30,11 @@ class Scope:
     def add_metavariable(self, var: Metavariable | str) -> None:
         self._metavars[var] = nf.MetaVar(len(self._metavars))
 
+    def supercede_metavariable(self, name: str, var: nf.MetaVar) -> None:
+        assert name in self._metavars
+        assert self._metavars[name].name == var.name
+        self._metavars[name] = var
+
     def add_symbol(self, var: Metavariable | str) -> None:
         if isinstance(var, Metavariable):
             self._symbols[var] = nf.Symbol(len(self._symbols))
