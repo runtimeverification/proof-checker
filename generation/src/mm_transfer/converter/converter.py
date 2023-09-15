@@ -16,6 +16,7 @@ from mm_transfer.metamath.ast import (
     Metavariable,
     VariableStatement,
 )
+from proof_generation.proof import BasicInterpreter, StatefulInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -326,3 +327,15 @@ class MetamathConverter:
         else:
             notation_scope = to_notation_scope(self._scope, variables)
             add_axiom_for_scope(notation_scope)
+
+    def get_all_axioms(self) -> List[Axiom]:
+        axioms = []
+        for axiom_list in self._axioms.values():
+            axioms.extend(axiom_list)
+        return axioms
+
+    def interpret_axioms(self, interpreter: BasicInterpreter) -> None:
+        axioms = self.get_all_axioms()
+        for axiom in axioms:
+            interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
+        return

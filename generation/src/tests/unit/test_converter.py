@@ -9,6 +9,7 @@ import proof_generation.pattern as nf
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.ast import ConstantStatement
 from mm_transfer.metamath.parser import load_database
+from proof_generation.proof import BasicInterpreter, ExecutionPhase, StatefulInterpreter
 
 if TYPE_CHECKING:
     from mm_transfer.metamath.ast import Database
@@ -226,3 +227,18 @@ def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
     assert expected1 == converted1, pattern_mismatch(expected, converted)
     converted2 = converter._axioms['tst-trivial-axiom'][1].pattern
     assert expected2 == converted2, pattern_mismatch(expected, converted)
+
+
+def test_interpreting_axioms(parsed_lemma_database: Database) -> None:
+    converter = MetamathConverter(parsed_lemma_database)
+
+    # test using a basic interpreter
+    basic_interpreter = BasicInterpreter(phase=ExecutionPhase.Gamma)
+    converter.interpret_axioms(basic_interpreter)
+    # basic_interpreter object remains unchanged
+
+    # test using a stateful interpreter
+    state_interpreter = StatefulInterpreter(phase=ExecutionPhase.Gamma)
+    converter.interpret_axioms(state_interpreter)
+    expected = [a.pattern for a in converter.get_all_axioms()]
+    assert state_interpreter.stack == expected
