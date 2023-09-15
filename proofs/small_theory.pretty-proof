@@ -16,6 +16,11 @@ List=pos len=0
 List=neg len=0 
 List=appctx len=0 
 MetaVar 1
+	Stack:
+	0: phi1
+	1: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	2: (σ1 -> σ2)
+	3: (σ0 -> σ1)
 Symbol 1
 	Stack:
 	0: σ1
@@ -111,7 +116,3 @@ ModusPonens
 	1: (σ1 -> σ2)
 	2: (σ0 -> σ1)
 Publish
-	Stack:
-	0: (σ0 -> σ2)
-	1: (σ1 -> σ2)
-	2: (σ0 -> σ1)
