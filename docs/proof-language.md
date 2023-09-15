@@ -232,7 +232,7 @@ and a representation for various "meta" patterns.
 
 ```python
 class Symbol(Pattern):
-    name: u32
+    name: u8
 
     def e_fresh(evar):
         return True
@@ -250,7 +250,7 @@ class Symbol(Pattern):
         return True
 
 class SVar(Pattern):
-    name: u32
+    name: u8
 
     def e_fresh(evar):
         return True
@@ -268,7 +268,7 @@ class SVar(Pattern):
         return True
 
 class EVar(Pattern):
-    name: u32
+    name: u8
 
     def e_fresh(evar):
         return evar != name
@@ -326,7 +326,7 @@ class Application(Pattern):
            and right.well_formed()
 
 class Exists(Pattern):
-    var: u32
+    var: u8
     subpattern: Pattern
 
     def e_fresh(evar):
@@ -345,7 +345,7 @@ class Exists(Pattern):
         return subpattern.well_formed()
 
 class Mu(Pattern):
-    var: u32
+    var: u8
     subpattern: Pattern
 
     def e_fresh(evar):
@@ -378,14 +378,14 @@ For well-formedness, we use the same meta-reasoning as the one used by the MM fo
 
 ```python
 class MetaVar(Pattern):
-    name: u32
+    name: u8
 
     # Meta-requirements that must be satisfied by any instantiation.
-    e_fresh: set[u32]             # Element variables that must not occur free in an instatiation
-    s_fresh: set[u32]             # Set variables that must not occur free in an instatiation
-    positive: set[u32]            # Set variables that must only occur positively in an instatiation
-    negative: set[u32]            # Set variables that must only occur negatively in an instatiation
-    app_ctx_holes: set[u32] # Element variables that must occur as a hole variable in an application context.
+    e_fresh: set[u8]             # Element variables that must not occur free in an instatiation
+    s_fresh: set[u8]             # Set variables that must not occur free in an instatiation
+    positive: set[u8]            # Set variables that must only occur positively in an instatiation
+    negative: set[u8]            # Set variables that must only occur negatively in an instatiation
+    app_ctx_holes: set[u8] # Element variables that must occur as a hole variable in an application context.
 
     def e_fresh(evar):
         return evar in e_fresh
@@ -410,7 +410,7 @@ We also need to represent substitutions applied to `MetaVar`s.
 ```python
 class ESubst(Pattern):
     pattern: MetaVar | SSubst | ESubst
-    var: u32
+    var: u8
     plug: Pattern
 
     def well_formed():
@@ -476,7 +476,7 @@ class ESubst(Pattern):
 
 class SSubst(Pattern):
     pattern: MetaVar | SSubst | ESubst
-    var: u32
+    var: u8
     plug: Pattern
 
     def well_formed():
@@ -624,7 +624,7 @@ Here's the blueprint:
 ```python
 class InstantiateSchema(Proof):
     subproof : Proof
-    metavar_ids: list(u32)
+    metavar_ids: list(u8)
     instantiations: list(Pattern)
 
     def well_formed():
@@ -662,7 +662,7 @@ We may also use metavariables to represent notation.
 ```python
 class InstantiateNotation(Pattern):
     notation: Pattern
-    metavar_ids: list(u32)
+    metavar_ids: list(u8)
     instantiations: list(Pattern)
 
     def well_formed():
@@ -766,13 +766,13 @@ Otherwise, execution aborts, and verification fails.
 
 ### Variables and Symbols:
 
-`EVar <u32>`
+`EVar <u8>`
 :   Push an `EVar` onto the stack.
 
-`SVar <u32>`
+`SVar <u8>`
 :   Push a `SVar` onto the stack.
 
-`Symbol <u32>`
+`Symbol <u8>`
 :   Push a `Symbol` onto the stack.
 
 `Implication`/`Application`
@@ -780,7 +780,7 @@ Otherwise, execution aborts, and verification fails.
     and push an implication/application to the stack
     with appropriate arguments.
 
-`Exists <var_id:u32>`/`Mu <var_id:u32>`
+`Exists <var_id:u8>`/`Mu <var_id:u8>`
 :   Consume a pattern from the stack, and push the corresponding pattern to the stack, if well-formed.
 
 ### Axiom Schemas
@@ -790,15 +790,15 @@ Otherwise, execution aborts, and verification fails.
 
 ### Meta inference
 
-`MetaVar <id:u32, 5 * (len: u32, constraint: [u32] * len)`
+`MetaVar <id:u8, 5 * (len: u8, constraint: [u8] * len)`
 :   Consume the first five entries from the stack (corresponding to the
     meta-requirements), and push an `MetaVar` onto the stack.
 
-`ESubst <metavar_id:u32>`/`SSubst <metavar_id:u32>`
+`ESubst <metavar_id:u8>`/`SSubst <metavar_id:u8>`
 :   Consume a meta-pattern `phi` and a pattern `psi` from the stack, and push a
     corresponding substitution `phi[psi/metavar_id]`.
 
-`Instantiate n:u32 [metavar_id:u32]*n`
+`Instantiate n:u8 [metavar_id:u8]*n`
 :   Consume a `Proof` and n `Pattern`'s' off the stack, and push the instantiated proof term to the stack,
     checking wellformedness as needed.
 
@@ -809,19 +809,11 @@ Otherwise, execution aborts, and verification fails.
 
 ### Memory manipulation:
 
-`Save <i:u32>`
-:   Store the top of the stack to the specified index $i$ in memory.
-    This overwrites existing data stored there.
-    It is recommended to indices as compactly as possible.
-    Otherwise, the performance of the checker may be affected.
+`Save`
+:   Store the top element of the stack by appending it to the memory array.
 
-`Load <i:u32>`
-:   Push the `Term` at index $i$ to the top of the stack.
-
-`Delete <i:u32>`
-:   Remove the `Term` at index $i$ from memory. This is not strictly needed, but
-    will allow the verifier to use less memory. The memory slot is not
-    considered for reuse by the `Save` instruction.
+`Load <i:u8>`
+:   Push the `Term` at index $i$ in memory to the top of the stack.
 
 
 ### Journal manipulation.
@@ -843,10 +835,6 @@ Otherwise, execution aborts, and verification fails.
 :   Consume the top of the stack.
 
 ### Technical
-
-`EOF`
-:   End the current phase.
-
 
 Notation
 ========
