@@ -53,6 +53,7 @@ class MetamathConverter:
         self._axioms: dict[str, list[Axiom]] = {}
         # TODO: Remove it after we start supporting all possible axioms in all our slices
         self._convert_axioms = parse_axioms
+        self._declared_proof: list[int] = []
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -80,12 +81,59 @@ class MetamathConverter:
                     if self._convert_axioms:
                         self._import_axiom(statement)
                 elif isinstance(last_statment, ProvableStatement):
-                    # TODO: Implement parsing lemmas and proofs
-                    pass
+                    self._import_provable(last_statment)
                 else:
                     raise NotImplementedError(f'Unknown statement: {repr(statement)}')
             else:
                 raise NotImplementedError(f'Unknown statement: {repr(statement)}')
+
+    def _import_provable(self, statement: ProvableStatement) -> None:
+        def split_proof(proof: str) -> tuple[str, str]:
+            instructions: str = ""
+
+            for (i, letter) in enumerate(proof):
+                if letter == ")":
+                    break
+
+            for letter in proof[i+1:]:
+                if letter == " ":
+                    continue
+                instructions += letter
+
+            return ("", instructions)
+
+        declared_lemmas, instructions = split_proof(statement.proof)
+
+        letter_to_number = {
+            'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9,
+            'J': 10, 'K': 11, 'L': 12, 'M': 13, 'N': 14, 'O': 15, 'P': 16, 'Q': 17,
+            'R': 18, 'S': 19, 'T': 20
+        }
+
+        def convert_to_number(word: str) -> int:
+            encoding = reversed(word)
+            first_letter, *encoding = encoding
+
+            n: int = letter_to_number[first_letter]
+
+            letter_to_number2 = {
+                'U': 1, 'V': 2, 'W': 3, 'X': 4, 'Y': 5
+            }
+
+            base = 0
+            for letter in encoding:
+                n += letter_to_number2[letter] * pow(5, base) * 20
+                base += 1
+
+            return n
+
+        buffer: str = ""
+        for letter in instructions:
+            buffer += letter
+            if letter in letter_to_number:
+                self._declared_proof.append(convert_to_number(buffer))
+                buffer = ""
+                continue
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))

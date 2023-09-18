@@ -316,3 +316,9 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     converted = converter._axioms[name][0]
     assert isinstance(converted, Axiom) and not isinstance(converted, ComplexAxiom)
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
+
+
+def test_provable(parsed_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
+
+    assert converter._declared_proof == [1]
