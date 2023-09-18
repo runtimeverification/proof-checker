@@ -33,29 +33,29 @@ def pattern_mismatch(p1: nf.Pattern, p2: nf.Pattern) -> str:
 def test_importing_variables(parsed_lemma_database: Database) -> None:
     converter = MetamathConverter(parsed_lemma_database)
 
-    patterns = ('ph0', 'ph1', 'ph2', 'ph3', 'ph4', 'ph5', 'ph6', 'xX')
+    patterns = ('ph0', 'ph1', 'ph2', 'ph3', 'ph4', 'ph5', 'ph6')
     for pattern in patterns:
         assert pattern in converter._scope._metavars
     assert len(converter._scope._metavars) == len(patterns)
 
-    symbols = ('sg0', '\\definedness', '\\inhabitant')
+    symbols = ('sg0', '\\definedness', '\\inhabitant', '\\tsymbol')
     for symbol in symbols:
         assert symbol in converter._scope._symbols
     assert len(converter._scope._symbols) == len(symbols)
 
-    evars = ('x', 'y')
+    evars = ('x', 'y', 'xX')
     for evar in evars:
         assert evar in converter._scope._element_vars
     assert len(converter._scope._element_vars) == len(evars)
 
-    setvars = ('X',)
+    setvars = ('X', 'xX')
     for setvar in setvars:
         assert setvar in converter._scope._set_vars
     assert len(converter._scope._set_vars) == len(setvars)
 
 
 def test_importing_domain_values(parsed_goal_database: Database) -> None:
-    converter = MetamathConverter(parsed_goal_database)
+    converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
 
     assert isinstance(parsed_goal_database.statements[0], ConstantStatement)
     constants_declaration: ConstantStatement = parsed_goal_database.statements[0]
@@ -85,20 +85,21 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     scope = converter._scope
     definedness = scope._symbols['\\definedness']
     inhabitant = scope._symbols['\\inhabitant']
-    assert len(converter._notations) == 11
+    tst = scope._symbols['\\tsymbol']
+    assert len(scope._notations) == 12
 
     def bot() -> nf.Pattern:
         return nf.Mu(nf.SVar(0), nf.SVar(0))
 
     expected = bot()
-    converted = converter._notations['\\bot']()
+    converted = scope.resolve_notation('\\bot')()
     assert expected == converted, pattern_mismatch(expected, converted)
 
     def neg(p: nf.Pattern) -> nf.Pattern:
         return nf.Implication(p, bot())
 
     expected = neg(nf.MetaVar(10))
-    converted = converter._notations['\\not'](nf.MetaVar(10))
+    converted = scope.resolve_notation('\\not')(nf.MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \imp ( \not ph0 ) ph1
@@ -106,21 +107,21 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         return nf.Implication(neg(p), q)
 
     expected = or_(nf.MetaVar(10), nf.MetaVar(11))
-    converted = converter._notations['\\or'](nf.MetaVar(10), nf.MetaVar(11))
+    converted = scope.resolve_notation('\\or')(nf.MetaVar(10), nf.MetaVar(11))
 
     #  \not ( \or ( \not ph0 ) ( \not ph1 ) )
     def and_(p: nf.Pattern, q: nf.Pattern) -> nf.Pattern:
         return neg(or_(neg(p), neg(q)))
 
     expected = and_(nf.MetaVar(10), nf.MetaVar(11))
-    converted = converter._notations['\\and'](nf.MetaVar(10), nf.MetaVar(11))
+    converted = scope.resolve_notation('\\and')(nf.MetaVar(10), nf.MetaVar(11))
 
     # \not \bot
     def top() -> nf.Pattern:
         return neg(bot())
 
     expected = top()
-    converted = converter._notations['\\top']()
+    converted = scope.resolve_notation('\\top')()
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \app \definedness ph0
@@ -128,7 +129,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         return nf.Application(definedness, p)
 
     expected = ceil(nf.MetaVar(10))
-    converted = converter._notations['\\ceil'](nf.MetaVar(10))
+    converted = scope.resolve_notation('\\ceil')(nf.MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \not ( \ceil ( \not ph0 ) )
@@ -136,7 +137,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         return neg(ceil(neg(p)))
 
     expected = floor(nf.MetaVar(10))
-    converted = converter._notations['\\floor'](nf.MetaVar(10))
+    converted = scope.resolve_notation('\\floor')(nf.MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \floor ( \imp ph0 ph1 )
@@ -144,7 +145,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         return floor(nf.Implication(p, q))
 
     expected = included(nf.MetaVar(10), nf.MetaVar(11))
-    converted = converter._notations['\\included'](nf.MetaVar(10), nf.MetaVar(11))
+    converted = scope.resolve_notation('\\included')(nf.MetaVar(10), nf.MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \app \inhabitant ph0
@@ -152,7 +153,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         return nf.Application(inhabitant, p)
 
     expected = inh(nf.MetaVar(10))
-    converted = converter._notations['\\inh'](nf.MetaVar(10))
+    converted = scope.resolve_notation('\\inh')(nf.MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \included ph0 ( \inh ph1 )
@@ -160,7 +161,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         return included(p, inh(q))
 
     expected = in_sort(nf.MetaVar(10), nf.MetaVar(11))
-    converted = converter._notations['\\in-sort'](nf.MetaVar(10), nf.MetaVar(11))
+    converted = scope.resolve_notation('\\in-sort')(nf.MetaVar(10), nf.MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \exists x ( \and ( \in-sort x ph0 ) ph1 )
@@ -169,5 +170,59 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         return nf.Exists(x, and_(in_sort(x, p), q))
 
     expected = sorted_exists(nf.EVar(10), nf.MetaVar(10), nf.MetaVar(11))
-    converted = converter._notations['\\sorted-exists'](nf.EVar(10), nf.MetaVar(10), nf.MetaVar(11))
+    converted = scope.resolve_notation('\\sorted-exists')(nf.EVar(10), nf.MetaVar(10), nf.MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
+
+    # ( \tst xX )  = ( \tsymbol xX )
+    def tste(x: nf.Pattern) -> nf.Pattern:
+        assert isinstance(x, nf.EVar)
+        return nf.Application(tst, x)
+
+    def tsts(xs: nf.Pattern) -> nf.Pattern:
+        assert isinstance(xs, nf.SVar)
+        return nf.Application(tst, xs)
+
+    expected = tste(nf.EVar(10))
+    converted = scope.resolve_notation('\\tst', nf.EVar(10))(nf.EVar(10))
+    assert expected == converted, pattern_mismatch(expected, converted)
+    expected = tsts(nf.SVar(10))
+    converted = scope.resolve_notation('\\tst', nf.SVar(10))(nf.SVar(10))
+    assert expected == converted, pattern_mismatch(expected, converted)
+
+
+def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
+    converter = MetamathConverter(parsed_lemma_database)
+    scope = converter._scope
+    phi0 = converter._scope._metavars['ph0']
+    phi1 = converter._scope._metavars['ph1']
+    exx = converter._scope._element_vars['xX']
+    sxx = converter._scope._set_vars['xX']
+    tst = scope._symbols['\\tsymbol']
+    and_ = scope.resolve_notation('\\and')
+
+    # imp-reflexivity $a |- ( \imp ph0 ph0 ) $.
+    expected = nf.Implication(phi0, phi0)
+    assert 'imp-reflexivity' in converter._axioms and len(converter._axioms['imp-reflexivity']) == 1
+    converted = converter._axioms['imp-reflexivity'][0].pattern
+    assert expected == converted, pattern_mismatch(expected, converted)
+
+    # and-elim-left-sugar $a |- ( \imp ( \and ph0 ph1 ) ph0 ) $.
+    expected = nf.Implication(and_(phi0, phi1), phi0)
+    assert 'and-elim-left-sugar' in converter._axioms and len(converter._axioms['and-elim-left-sugar']) == 1
+    converted = converter._axioms['and-elim-left-sugar'][0].pattern
+    assert expected == converted, pattern_mismatch(expected, converted)
+
+    # and-elim-right-sugar $a |- ( \imp ( \and ph0 ph1 ) ph1 ) $.
+    expected = nf.Implication(and_(phi0, phi1), phi1)
+    assert 'and-elim-right-sugar' in converter._axioms and len(converter._axioms['and-elim-right-sugar']) == 1
+    converted = converter._axioms['and-elim-right-sugar'][0].pattern
+    assert expected == converted, pattern_mismatch(expected, converted)
+
+    # tst-trivial-axiom $a |- ( \imp ( \tst xX ) ( \tst xX ) ) $.
+    expected1 = nf.Implication(nf.Application(tst, exx), nf.Application(tst, exx))
+    expected2 = nf.Implication(nf.Application(tst, sxx), nf.Application(tst, sxx))
+    assert 'tst-trivial-axiom' in converter._axioms and len(converter._axioms['tst-trivial-axiom']) == 2
+    converted1 = converter._axioms['tst-trivial-axiom'][0].pattern
+    assert expected1 == converted1, pattern_mismatch(expected, converted)
+    converted2 = converter._axioms['tst-trivial-axiom'][1].pattern
+    assert expected2 == converted2, pattern_mismatch(expected, converted)
