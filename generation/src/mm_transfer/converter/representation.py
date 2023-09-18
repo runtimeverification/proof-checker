@@ -42,5 +42,7 @@ class ComplexAxiom(Axiom):
 
 @dataclass(frozen=True)
 class Proof():
+    #name: str
+    #conclusion: nf.Pattern
     labels: dict[int, str]
     instructions: list[int]

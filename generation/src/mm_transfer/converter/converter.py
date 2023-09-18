@@ -125,8 +125,6 @@ class MetamathConverter:
 
         declared_lemmas, instructions = split_proof(statement.proof)
 
-        #print(declared_lemmas)
-
         letter_to_number = {
             'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9,
             'J': 10, 'K': 11, 'L': 12, 'M': 13, 'N': 14, 'O': 15, 'P': 16, 'Q': 17,
@@ -154,19 +152,22 @@ class MetamathConverter:
             if number in declared_lemmas:
                 return declared_lemmas[number]
 
-            return "Metavar|Load"
+            return f"Load {number}"
 
         self._declared_proof = Proof(declared_lemmas, [])
 
         buffer: str = ""
         for letter in instructions:
+            if letter == "Z":
+                assert buffer == ""
+                # The choice of 0 is arbitrary
+                self._declared_proof.instructions.append(0)
+
             buffer += letter
             if letter in letter_to_number:
                 self._declared_proof.instructions.append(convert_to_number(buffer))
                 buffer = ""
                 continue
-
-
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
