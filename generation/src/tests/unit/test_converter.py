@@ -243,7 +243,9 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     ph5 = converter._scope._metavars['ph5']
     ph6 = converter._scope._metavars['ph6']
     x = converter._scope._element_vars['x']
+    assert isinstance(x, nf.EVar)
     y = converter._scope._element_vars['y']
+    assert isinstance(y, nf.EVar)
     and_ = scope.resolve_notation('\\and')
     sorted_exists_ = scope.resolve_notation('\\sorted-exists')
     in_sort_ = scope.resolve_notation('\\in-sort')
@@ -255,8 +257,9 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     pattern = ph0
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
+    assert isinstance(converted, ComplexAxiom)
     assert len(converted.antecedents) == len(antecedents)
-    assert antecedents[0] == converted.antecedents[0], pattern_mismatch(antecedents[0], converted[0])
+    assert antecedents[0] == converted.antecedents[0], pattern_mismatch(antecedents[0], converted.antecedents[0])
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
 
     # proof-rule-gen
@@ -269,28 +272,30 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
         negative=ph1.negative,
         app_ctx_holes=ph1.app_ctx_holes,
     )
-    antecedents: list[nf.Pattern] = [nf.Implication(ph0, ph1)]
+    antecedents = [nf.Implication(ph0, ph1_mc)]
     pattern = nf.Implication(nf.Exists(x, ph0), ph1_mc)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
+    assert isinstance(converted, ComplexAxiom)
     assert len(converted.antecedents) == len(antecedents)
-    assert antecedents[0] == converted.antecedents[0], pattern_mismatch(antecedents[0], converted[0])
+    assert antecedents[0] == converted.antecedents[0], pattern_mismatch(antecedents[0], converted.antecedents[0])
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
 
     # rule-and-intro-alt2
     name = 'rule-and-intro-alt2-sugar'
-    antecedents: list[nf.Pattern] = [nf.Implication(ph0, ph1), nf.Implication(ph0, ph2)]
+    antecedents = [nf.Implication(ph0, ph1), nf.Implication(ph0, ph2)]
     pattern = nf.Implication(ph0, and_(ph1, ph2))
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
+    assert isinstance(converted, ComplexAxiom)
     assert len(converted.antecedents) == len(antecedents)
     for i in range(len(antecedents)):
-        assert antecedents[i] == converted.antecedents[i], pattern_mismatch(antecedents[i], converted[i])
+        assert antecedents[i] == converted.antecedents[i], pattern_mismatch(antecedents[i], converted.antecedents[0])
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
 
     # sorted-exists-propagation-converse
     name = 'sorted-exists-propagation-converse'
-    antecedents: list[nf.Pattern] = []
+    antecedents = []
     ph0_mc = nf.MetaVar(
         ph0.name,
         e_fresh=ph1.e_fresh + (y,),
@@ -299,10 +304,13 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
         negative=ph1.negative,
         app_ctx_holes=ph1.app_ctx_holes + (x,),
     )
-    ph1_substututed = nf.ESubst(ph0_mc, ph5, x)
-    ph2_substututed = nf.ESubst(ph0_mc, sorted_exists_(y, ph6, ph5), x)
-    nf.ESubst(ph0_mc, and_(in_sort_(y, ph6), ph5), x)
-    nf.ESubst(ph0_mc, and_(top_(), ph5), x)
+    ph1_substututed = nf.ESubst(ph0_mc, x, ph5)
+    evar = sorted_exists_(y, ph6, ph5)
+    ph2_substututed = nf.ESubst(ph0_mc, x, evar)
+    and_subpattern = and_(in_sort_(y, ph6), ph5)
+    nf.ESubst(ph0_mc, x, and_subpattern)
+    and_subpattern = and_(top_(), ph5)
+    nf.ESubst(ph0_mc, x, and_subpattern)
     pattern = nf.Implication(sorted_exists_(y, ph6, ph1_substututed), ph2_substututed)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]

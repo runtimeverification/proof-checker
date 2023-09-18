@@ -19,6 +19,7 @@ from mm_transfer.metamath.ast import (
     FloatingStatement,
     Metavariable,
     ProvableStatement,
+    Term,
     VariableStatement,
 )
 
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from mm_transfer.converter.scope import NotationScope
-    from mm_transfer.metamath.ast import Database, Term
+    from mm_transfer.metamath.ast import Database
 
 
 class AxiomType(Enum):
@@ -253,7 +254,11 @@ class MetamathConverter:
                 and statement.terms[0].symbol == '#Notation'
                 and isinstance(statement.terms[1], Application)
                 and len(statement.terms) == 3
-                and statement.terms[1].symbol != statement.terms[2].symbol
+                and (
+                    statement.terms[1].symbol != statement.terms[2].symbol
+                    if isinstance(statement.terms[2], Application)
+                    else True
+                )
             ):
                 return True
             else:
@@ -330,7 +335,7 @@ class MetamathConverter:
             raise NotImplementedError(f'Unknown axiom: {repr(statement)}')
 
     def _to_pattern(self, scope: NotationScope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
-        def resolve_as_notation(name, subterms: tuple[Term, ...]) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+        def resolve_as_notation(name: str, subterms: tuple[Term, ...]) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
             converted_args = tuple(self._to_pattern(scope, arg) for arg in subterms)
 
             def resolve_notation(*args: nf.Pattern) -> nf.Pattern:
@@ -427,7 +432,7 @@ class MetamathConverter:
         else:
             self._axioms[name] = [axiom]
 
-    def _get_axiom_name(self, statement: AxiomaticStatement | Block) -> str:
+    def _get_axiom_name(self, statement: AxiomaticStatement | EssentialStatement | Block) -> str:
         if isinstance(statement, Block):
             st = statement.statements[-1]
         else:
@@ -435,7 +440,7 @@ class MetamathConverter:
         assert isinstance(st, AxiomaticStatement | EssentialStatement)
         return st.label
 
-    def _get_axiom_term(self, statement: AxiomaticStatement | Block) -> Term:
+    def _get_axiom_term(self, statement: AxiomaticStatement | EssentialStatement | Block) -> Term:
         if isinstance(statement, Block):
             st = statement.statements[-1]
         else:
@@ -473,74 +478,101 @@ class MetamathConverter:
             scope.supercede_metavariable(metavar_name, new_var)
 
         antecedents: list[nf.Pattern] = []
-        for statement in block.statements[:-1]:
-            if isinstance(statement, EssentialStatement):
-                kind = self._check_axiom(scope, statement)
+        for phase in ('metaconditions', 'antecedents'):
+            for statement in block.statements[:-1]:
+                if phase == 'metaconditions':
+                    if isinstance(statement, EssentialStatement):
+                        kind = self._check_axiom(scope, statement)
+                        match kind:
+                            case AxiomType.Metacondition:
+                                assert isinstance(statement.terms[0], Application)
+                                if statement.terms[0].symbol == '#Fresh':
+                                    assert isinstance(statement.terms[1], Metavariable)
+                                    assert isinstance(statement.terms[2], Metavariable)
 
-                match kind:
-                    case AxiomType.Trivial:
-                        continue
-                    case AxiomType.LocalNotation:
-                        # This notation actually replaces an existing variable
-                        self._add_notation(scope, scope, statement)
-                    case AxiomType.Provable:
-                        axiom = self._convert_axiom_for_scope(scope, statement)
-                        antecedents.append(axiom.pattern)
-                    case AxiomType.Metacondition:
-                        if statement.terms[0].symbol == '#Fresh':
-                            var_name = statement.terms[1].name
-                            metavar_name = statement.terms[2].name
-                            add_fresh_mc(metavar_name, var_name)
-                        elif statement.terms[0].symbol == '#ApplicationContext':
-                            var_name = statement.terms[1].name
-                            metavar_name = statement.terms[2].name
-                            var = scope.resolve(var_name)
-                            metavar = scope.resolve(metavar_name)
-                            assert isinstance(metavar, nf.MetaVar)
-                            assert isinstance(var, nf.EVar)
-                            new_var = new_metavariable(metavar, app_ctx_holes=(var,))
-                            scope.supercede_metavariable(metavar_name, new_var)
-                        else:
-                            raise NotImplementedError
-                    case AxiomType.Substitution:
-                        # $e #Substitution ph1 ph2 ph3 xX`,
-                        # we must replace `ph1` with `XSubst(ph2, ph3, xX)`
-                        symbol = statement.terms[1].name
-                        args: tuple[Metavariable, ...] = statement.terms[2:]
-                        assert len(args) == 3
-                        notation_scope = to_notation_scope(scope, ())
-                        last_arg = args[-1]
-                        assert isinstance(last_arg, Metavariable)
+                                    var_name = statement.terms[1].name
+                                    metavar_name = statement.terms[2].name
+                                    add_fresh_mc(metavar_name, var_name)
+                                elif statement.terms[0].symbol == '#ApplicationContext':
+                                    assert isinstance(statement.terms[1], Metavariable)
+                                    assert isinstance(statement.terms[2], Metavariable)
 
-                        def get_subst_lambda(
-                            notation_scope: NotationScope, meta_args: tuple[Metavariable, ...]
-                        ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
-                            converted_args = tuple(self._to_pattern(notation_scope, arg) for arg in meta_args)
-
-                            def notation_lambda(*fargs: nf.Pattern) -> nf.Pattern:
-                                actual_args = tuple(arg(*fargs) for arg in converted_args)
-                                if isinstance(actual_args[-1], nf.EVar):
-                                    return nf.ESubst(*actual_args)
-                                elif isinstance(actual_args[-1], nf.SVar):
-                                    return nf.SSubst(*actual_args)
+                                    var_name = statement.terms[1].name
+                                    metavar_name = statement.terms[2].name
+                                    var = scope.resolve(var_name)
+                                    metavar = scope.resolve(metavar_name)
+                                    assert isinstance(metavar, nf.MetaVar)
+                                    assert isinstance(var, nf.EVar)
+                                    new_var = new_metavariable(metavar, app_ctx_holes=(var,))
+                                    scope.supercede_metavariable(metavar_name, new_var)
                                 else:
                                     raise NotImplementedError
-
-                            return notation_lambda
-
-                        notation = Notation(
-                            symbol, (), notation_scope.arguments_type_check, get_subst_lambda(notation_scope, args)
-                        )
-                        scope.add_notation(notation)
-                    case _:
+                            case _:
+                                continue
+                    elif isinstance(statement, DisjointStatement):
+                        var_name = statement.metavariables[0].name
+                        metavar_name = statement.metavariables[1].name
+                        assert len(statement.metavariables) == 2
+                        add_fresh_mc(metavar_name, var_name)
+                    else:
                         raise NotImplementedError
-            elif isinstance(statement, DisjointStatement):
-                var_name = statement.metavariables[0].name
-                metavar_name = statement.metavariables[1].name
-                assert len(statement.metavariables) == 2
-                add_fresh_mc(metavar_name, var_name)
-            else:
-                raise NotImplementedError
+                elif phase == 'antecedents':
+                    if isinstance(statement, EssentialStatement):
+                        kind = self._check_axiom(scope, statement)
+                        match kind:
+                            case AxiomType.LocalNotation:
+                                # This notation actually replaces an existing variable
+                                self._add_notation(scope, scope, statement)
+                            case AxiomType.Provable:
+                                axiom = self._convert_axiom_for_scope(scope, statement)
+                                antecedents.append(axiom.pattern)
+                            case AxiomType.Substitution:
+                                # $e #Substitution ph1 ph2 ph3 xX`,
+                                # we must replace `ph1` with `XSubst(ph2, ph3, xX)`
+                                assert isinstance(statement.terms[1], Metavariable)
+                                assert all(isinstance(arg, Term) for arg in statement.terms[2:])
+
+                                symbol = statement.terms[1].name
+                                # Typecheck is added with the 'all' statement
+                                args: tuple[Metavariable, ...] = statement.terms[2:]  # type: ignore
+                                assert len(args) == 3
+                                notation_scope = to_notation_scope(scope, ())
+                                last_arg = args[-1]
+                                assert isinstance(last_arg, Metavariable)
+
+                                def get_subst_lambda(
+                                    notation_scope: NotationScope, meta_args: tuple[Metavariable, ...]
+                                ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+                                    converted_args = tuple(self._to_pattern(notation_scope, arg) for arg in meta_args)
+
+                                    def notation_lambda(*fargs: nf.Pattern) -> nf.Pattern:
+                                        assert len(converted_args) == 3
+                                        pattern, plug, var = tuple(arg(*fargs) for arg in converted_args)
+                                        assert isinstance(pattern, nf.MetaVar | nf.ESubst | nf.SSubst)
+                                        assert isinstance(plug, nf.Pattern)
+                                        assert isinstance(var, nf.EVar | nf.SVar)
+                                        if isinstance(var, nf.EVar):
+                                            return nf.ESubst(pattern, var, plug)
+                                        elif isinstance(var, nf.SVar):
+                                            return nf.SSubst(pattern, var, plug)
+                                        else:
+                                            raise NotImplementedError
+
+                                    return notation_lambda
+
+                                notation = Notation(
+                                    symbol,
+                                    (),
+                                    notation_scope.arguments_type_check,
+                                    get_subst_lambda(notation_scope, args),
+                                )
+                                scope.add_notation(notation)
+                            case _:
+                                continue
+                    else:
+                        continue
+                else:
+                    raise NotImplementedError
         return tuple(antecedents)
 
     def _convert_axiom_for_scope(self, scope: Scope, statement: AxiomaticStatement | EssentialStatement) -> Axiom:
