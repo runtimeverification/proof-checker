@@ -498,7 +498,8 @@ class MetamathConverter:
                             metavar = scope.resolve(metavar_name)
                             assert isinstance(metavar, nf.MetaVar)
                             assert isinstance(var, nf.EVar)
-                            new_metavariable(metavar, app_ctx_holes=(var,))
+                            new_var = new_metavariable(metavar, app_ctx_holes=(var,))
+                            scope.supercede_metavariable(metavar_name, new_var)
                         else:
                             raise NotImplementedError
                     case AxiomType.Substitution:
@@ -511,9 +512,11 @@ class MetamathConverter:
                         last_arg = args[-1]
                         assert isinstance(last_arg, Metavariable)
 
-                        def get_subst_lambda(notation_scope: NotationScope, meta_args: tuple[Metavariable, ...]) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+                        def get_subst_lambda(
+                            notation_scope: NotationScope, meta_args: tuple[Metavariable, ...]
+                        ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
                             converted_args = tuple(self._to_pattern(notation_scope, arg) for arg in meta_args)
-                        
+
                             def notation_lambda(*fargs: nf.Pattern) -> nf.Pattern:
                                 actual_args = tuple(arg(*fargs) for arg in converted_args)
                                 if isinstance(actual_args[-1], nf.EVar):
@@ -522,9 +525,12 @@ class MetamathConverter:
                                     return nf.SSubst(*actual_args)
                                 else:
                                     raise NotImplementedError
+
                             return notation_lambda
 
-                        notation = Notation(symbol, (), notation_scope.arguments_type_check, get_subst_lambda(notation_scope, args))
+                        notation = Notation(
+                            symbol, (), notation_scope.arguments_type_check, get_subst_lambda(notation_scope, args)
+                        )
                         scope.add_notation(notation)
                     case _:
                         raise NotImplementedError
