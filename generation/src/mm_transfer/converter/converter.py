@@ -88,21 +88,44 @@ class MetamathConverter:
                 raise NotImplementedError(f'Unknown statement: {repr(statement)}')
 
     def _import_provable(self, statement: ProvableStatement) -> None:
-        def split_proof(proof: str) -> tuple[str, str]:
+        def split_proof(proof: str) -> tuple[dict[str, int], str]:
+            offset = len(statement.get_metavariables())
+            lemma_n = offset + 1
+            declared_lemmas: dict[str, int] = {}
             instructions: str = ""
 
+            # TODO: Make some better whitespace handling
             for (i, letter) in enumerate(proof):
+                if letter == "(":
+                    break
+
+            for (j, letter) in enumerate(proof[i+1:]):
+                if letter != " ":
+                    break
+
+            buffer = ""
+            for (l, letter) in enumerate(proof[i+j+1:]):
+                if letter == " ":
+                    declared_lemmas[buffer] = lemma_n
+                    lemma_n += 1
+                    buffer = ""
+                    continue
+
                 if letter == ")":
                     break
 
-            for letter in proof[i+1:]:
+                buffer += letter
+
+            for letter in proof[i+j+l+2:]:
                 if letter == " ":
                     continue
                 instructions += letter
 
-            return ("", instructions)
+            return (declared_lemmas, instructions)
 
         declared_lemmas, instructions = split_proof(statement.proof)
+
+        #print(declared_lemmas)
 
         letter_to_number = {
             'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9,
