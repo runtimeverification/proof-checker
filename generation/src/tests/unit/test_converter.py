@@ -321,4 +321,6 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
 def test_provable(parsed_goal_database: Database) -> None:
     converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
 
+    print(converter._declared_proof)
+
     assert converter._declared_proof == [1]

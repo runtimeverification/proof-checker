@@ -106,7 +106,7 @@ class MetamathConverter:
             buffer = ""
             for (l, letter) in enumerate(proof[i+j+1:]):
                 if letter == " ":
-                    declared_lemmas[buffer] = lemma_n
+                    declared_lemmas[lemma_n] = buffer
                     lemma_n += 1
                     buffer = ""
                     continue
@@ -150,13 +150,22 @@ class MetamathConverter:
 
             return n
 
+        def convert_number_to_instr(number: int) -> str:
+            if number in declared_lemmas:
+                return declared_lemmas[number]
+
+            return "Metavar|Load"
+
+
         buffer: str = ""
         for letter in instructions:
             buffer += letter
             if letter in letter_to_number:
-                self._declared_proof.append(convert_to_number(buffer))
+                self._declared_proof.append(convert_number_to_instr(convert_to_number(buffer)))
                 buffer = ""
                 continue
+
+
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
