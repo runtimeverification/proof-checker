@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.representation import Axiom, ComplexAxiom, Notation
+from mm_transfer.converter.representation import Axiom, ComplexAxiom, Notation, Proof
 from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
@@ -53,7 +53,7 @@ class MetamathConverter:
         self._axioms: dict[str, list[Axiom]] = {}
         # TODO: Remove it after we start supporting all possible axioms in all our slices
         self._convert_axioms = parse_axioms
-        self._declared_proof: list[int] = []
+        self._declared_proof: Proof | None = None
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -156,12 +156,13 @@ class MetamathConverter:
 
             return "Metavar|Load"
 
+        self._declared_proof = Proof(declared_lemmas, [])
 
         buffer: str = ""
         for letter in instructions:
             buffer += letter
             if letter in letter_to_number:
-                self._declared_proof.append(convert_number_to_instr(convert_to_number(buffer)))
+                self._declared_proof.instructions.append(convert_to_number(buffer))
                 buffer = ""
                 continue
 

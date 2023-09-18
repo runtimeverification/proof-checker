@@ -38,3 +38,9 @@ class ComplexAxiom(Axiom):
     type_check: Callable[[VarArg(nf.Pattern)], bool]
     pattern: nf.Pattern
     antecedents: tuple[nf.Pattern, ...]
+
+
+@dataclass(frozen=True)
+class Proof():
+    labels: dict[int, str]
+    instructions: list[int]
