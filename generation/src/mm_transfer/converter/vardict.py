@@ -13,9 +13,13 @@ class VarDict(UserDict):
     and where it is a string. Same is for saving new items.
     """
 
-    def __init__(self, __data: dict[str, Any] | None = None, expected: type | None = None) -> None:
-        super().__init__(__data)
+    def __init__(self, __data: dict[str, Any] | VarDict | None = None, expected: type | None = None) -> None:
+        if isinstance(__data, VarDict):
+            if expected is None:
+                expected = __data.expected
+            __data = __data.data
         self._expected = expected
+        super().__init__(__data)
 
     def __getitem__(self, __key: Metavariable | str) -> Any:
         if isinstance(__key, Metavariable):
@@ -28,3 +32,7 @@ class VarDict(UserDict):
         if isinstance(self._expected, type) and not isinstance(__value, self._expected):
             raise TypeError(f'Expected {self._expected}, got {type(__value).__name__}')
         return super().__setitem__(__key, __value)
+
+    @property
+    def expected(self) -> type | None:
+        return self._expected
