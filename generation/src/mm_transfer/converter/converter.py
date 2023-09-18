@@ -16,13 +16,13 @@ from mm_transfer.metamath.ast import (
     Metavariable,
     VariableStatement,
 )
-from proof_generation.proof import BasicInterpreter, StatefulInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from mm_transfer.converter.scope import NotationScope
     from mm_transfer.metamath.ast import Database, Term
+    from proof_generation.proof import BasicInterpreter
 
 
 class MetamathConverter:
@@ -328,7 +328,7 @@ class MetamathConverter:
             notation_scope = to_notation_scope(self._scope, variables)
             add_axiom_for_scope(notation_scope)
 
-    def get_all_axioms(self) -> List[Axiom]:
+    def get_all_axioms(self) -> list[Axiom]:
         axioms = []
         for axiom_list in self._axioms.values():
             axioms.extend(axiom_list)
