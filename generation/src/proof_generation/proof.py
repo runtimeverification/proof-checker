@@ -87,6 +87,12 @@ class BasicInterpreter:
     def exists(self, var: int, subpattern: Pattern) -> Pattern:
         return Exists(EVar(var), subpattern)
 
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        return ESubst(pattern, EVar(evar_id), plug)
+
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        return SSubst(pattern, SVar(svar_id), plug)
+
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(SVar(var), subpattern)
 
@@ -154,6 +160,9 @@ class BasicInterpreter:
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return pattern.instantiate(delta)
+
+    def pop(self, term: Pattern | Proved) -> None:
+        ...
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ...
@@ -262,6 +271,22 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        *self.stack, expected_plug, expected_pattern = self.stack
+        assert expected_pattern == pattern
+        assert expected_plug == plug
+        ret = super().esubst(evar_id, pattern, plug)
+        self.stack.append(ret)
+        return ret
+
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        *self.stack, expected_plug, expected_pattern = self.stack
+        assert expected_pattern == pattern
+        assert expected_plug == plug
+        ret = super().ssubst(svar_id, pattern, plug)
+        self.stack.append(ret)
+        return ret
+
     def prop1(self) -> Proved:
         ret = super().prop1()
         self.stack.append(ret)
@@ -302,6 +327,11 @@ class StatefulInterpreter(BasicInterpreter):
         ret = super().instantiate_notation(pattern, delta)
         self.stack.append(ret)
         return ret
+
+    def pop(self, term: Pattern | Proved) -> None:
+        assert self.stack[-1] == term, f'expected: {self.stack[-1]}\ngot: {term}'
+        self.stack.pop()
+        super().pop(term)
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         assert self.stack[-1] == term, f'expected: {self.stack[-1]}\ngot: {term}'
@@ -367,9 +397,9 @@ class SerializingInterpreter(StatefulInterpreter):
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
         lists: list[tuple[EVar, ...] | tuple[SVar, ...]] = [e_fresh, s_fresh, positive, negative, application_context]
-        for list in lists:
-            self.out.write(bytes([Instruction.List, len(list), *[var.name for var in list]]))
         self.out.write(bytes([Instruction.MetaVar, id]))
+        for list in lists:
+            self.out.write(bytes([len(list), *[var.name for var in list]]))
         return ret
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
@@ -390,6 +420,16 @@ class SerializingInterpreter(StatefulInterpreter):
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         ret = super().mu(var, subpattern)
         self.out.write(bytes([Instruction.Mu, var]))
+        return ret
+
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        ret = super().esubst(evar_id, pattern, plug)
+        self.out.write(bytes([Instruction.ESubst, evar_id]))
+        return ret
+
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
+        ret = super().ssubst(svar_id, pattern, plug)
+        self.out.write(bytes([Instruction.SSubst, svar_id]))
         return ret
 
     def prop1(self) -> Proved:
@@ -421,6 +461,10 @@ class SerializingInterpreter(StatefulInterpreter):
         ret = super().instantiate_notation(pattern, delta)
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
+
+    def pop(self, term: Pattern | Proved) -> None:
+        super().pop(term)
+        self.out.write(bytes([Instruction.Pop]))
 
     def save(self, id: str, term: Pattern | Proved) -> None:
         ret = super().save(id, term)
@@ -495,7 +539,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Symbol ')
         self.out.write(str(id))
 
-    @pretty(print_stack=False)
+    @pretty()
     def metavar(
         self,
         id: int,
@@ -506,20 +550,22 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         application_context: tuple[EVar, ...] = (),
     ) -> None:
         def write_list(name: str, lst: tuple[EVar, ...] | tuple[SVar, ...]) -> None:
-            self.out.write(f'List={name} ')
-            self.out.write(f'len={len(lst)} ')
+            # Don't print empty arguments
+            if len(lst) == 0:
+                return
+            self.out.write(f'{name}, len={len(lst)} ')
             for item in lst:
                 self.out.write(str(item))
                 self.out.write(' ')
             self.out.write('\n')
 
+        self.out.write('MetaVar ')
+        self.out.write(str(id))
         write_list('eFresh', e_fresh)
         write_list('sFresh', s_fresh)
         write_list('pos', positive)
         write_list('neg', negative)
         write_list('appctx', application_context)
-        self.out.write('MetaVar ')
-        self.out.write(str(id))
 
     @pretty()
     def implies(self, left: Pattern, right: Pattern) -> None:
@@ -538,6 +584,14 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
     def mu(self, var: int, subpattern: Pattern) -> None:
         self.out.write('Mu ')
         self.out.write(str(var))
+
+    @pretty()
+    def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> None:
+        self.out.write(f'ESubst id={evar_id}')
+
+    @pretty()
+    def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> None:
+        self.out.write(f'SSubst id={svar_id}')
 
     @pretty()
     def prop1(self) -> None:
@@ -565,6 +619,10 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
+    @pretty()
+    def pop(self, term: Pattern | Proved) -> None:
+        self.out.write('Pop')
+
     @pretty(print_stack=False)
     def save(self, id: str, term: Pattern | Proved) -> None:
         self.out.write('Save')
@@ -576,15 +634,15 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('=')
         self.out.write(str(self.memory.index(term)))
 
-    @pretty()
+    @pretty(print_stack=False)
     def publish_proof(self, proved: Proved) -> None:
         self.out.write('Publish')
 
-    @pretty()
+    @pretty(print_stack=False)
     def publish_axiom(self, axiom: Pattern) -> None:
         self.out.write('Publish')
 
-    @pretty()
+    @pretty(print_stack=False)
     def publish_claim(self, pattern: Pattern) -> None:
         self.out.write('Publish')
 

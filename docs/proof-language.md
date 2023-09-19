@@ -197,9 +197,7 @@ abstract class Term:
 
 abstract class Pattern(Term):
     def well_formed():
-        # Fails if any two MetaVars with the same id has
-        # different meta-requirements
-        # MetaVars are introduced later.
+        # returns true if a pattern of given type is well-formed
     ...
 
     def e_fresh(evar):
@@ -234,7 +232,7 @@ and a representation for various "meta" patterns.
 
 ```python
 class Symbol(Pattern):
-    name: u32
+    name: u8
 
     def e_fresh(evar):
         return True
@@ -246,10 +244,13 @@ class Symbol(Pattern):
         return True
 
     def negative(svar):
+        return True
+
+    def well_formed():
         return True
 
 class SVar(Pattern):
-    name: u32
+    name: u8
 
     def e_fresh(evar):
         return True
@@ -263,9 +264,11 @@ class SVar(Pattern):
     def negative(svar):
         return svar != name
 
+    def well_formed():
+        return True
 
 class EVar(Pattern):
-    name: u32
+    name: u8
 
     def e_fresh(evar):
         return evar != name
@@ -277,6 +280,9 @@ class EVar(Pattern):
         return True
 
     def negative(svar):
+        return True
+
+    def well_formed():
         return True
 
 class Implication(Pattern):
@@ -295,6 +301,10 @@ class Implication(Pattern):
     def negative(svar):
         return left.positive(svar) and right.negative(svar)
 
+    def well_formed():
+        return left.well_formed()
+           and right.well_formed()
+
 class Application(Pattern):
     left: Pattern
     right: Pattern
@@ -311,8 +321,12 @@ class Application(Pattern):
     def negative(svar):
         return left.negative(svar) and right.negative(svar)
 
+    def well_formed():
+        return left.well_formed()
+           and right.well_formed()
+
 class Exists(Pattern):
-    var: u32
+    var: u8
     subpattern: Pattern
 
     def e_fresh(evar):
@@ -327,8 +341,11 @@ class Exists(Pattern):
     def negative(svar):
         return subpattern.negative(svar)
 
+    def well_formed():
+        return subpattern.well_formed()
+
 class Mu(Pattern):
-    var: u32
+    var: u8
     subpattern: Pattern
 
     def e_fresh(evar):
@@ -344,7 +361,7 @@ class Mu(Pattern):
         return svar == var or subpattern.negative(svar)
 
     def well_formed():
-        return super.well_formed()
+        return subpattern.well_formed()
            and subpattern.positive(var)
 ```
 
@@ -361,14 +378,14 @@ For well-formedness, we use the same meta-reasoning as the one used by the MM fo
 
 ```python
 class MetaVar(Pattern):
-    name: u32
+    name: u8
 
     # Meta-requirements that must be satisfied by any instantiation.
-    e_fresh: set[u32]             # Element variables that must not occur free in an instatiation
-    s_fresh: set[u32]             # Set variables that must not occur free in an instatiation
-    positive: set[u32]            # Set variables that must only occur positively in an instatiation
-    negative: set[u32]            # Set variables that must only occur negatively in an instatiation
-    app_ctx_holes: set[u32] # Element variables that must occur as a hole variable in an application context.
+    e_fresh: set[u8]             # Element variables that must not occur free in an instatiation
+    s_fresh: set[u8]             # Set variables that must not occur free in an instatiation
+    positive: set[u8]            # Set variables that must only occur positively in an instatiation
+    negative: set[u8]            # Set variables that must only occur negatively in an instatiation
+    app_ctx_holes: set[u8] # Element variables that must occur as a hole variable in an application context.
 
     def e_fresh(evar):
         return evar in e_fresh
@@ -385,9 +402,7 @@ class MetaVar(Pattern):
     # Should check whether the metavar is instantiable, as uninstantiable metavars might lead to issues
     # (see https://github.com/runtimeverification/proof-checker/issues/8)
     def well_formed():
-        # TODO: Implement by the procedure suggested by `metavar_instantiation.md`
-
-        return super.well_formed()
+        return app_ctx_holes.disjoint(e_fresh)
 ```
 
 We also need to represent substitutions applied to `MetaVar`s.
@@ -395,7 +410,7 @@ We also need to represent substitutions applied to `MetaVar`s.
 ```python
 class ESubst(Pattern):
     pattern: MetaVar | SSubst | ESubst
-    var: u32
+    var: u8
     plug: Pattern
 
     def well_formed():
@@ -404,7 +419,7 @@ class ESubst(Pattern):
         if pattern.e_fresh(var):  return False  # The variable does not occur, so this is redundant
         # Now we know at least one element variable will be substituted, so we need to check
         # well-formedness of both pattern and plug
-        return super.well_formed() and pattern.well_formed() and plug.well_formed()
+        return pattern.well_formed() and plug.well_formed()
 
     def e_fresh(evar):
         # We can skip the case pattern.e_fresh(var) == true, as
@@ -459,11 +474,9 @@ class ESubst(Pattern):
         # do not influence the result, as var: EVar
         return pattern.negative(svar) and plug.s_fresh(svar)
 
-    # TODO: Well-formedness checking
-
 class SSubst(Pattern):
     pattern: MetaVar | SSubst | ESubst
-    var: u32
+    var: u8
     plug: Pattern
 
     def well_formed():
@@ -472,7 +485,7 @@ class SSubst(Pattern):
         if pattern.s_fresh(var):  return False  # The variable does not occur, so this is redundant
         # Now we know at least one set variable will be substituted, so we need to check
         # well-formedness of both pattern and plug
-        return super.well_formed() and pattern.well_formed() and plug.well_formed()
+        return pattern.well_formed() and plug.well_formed()
 
     def e_fresh(evar):
         # We can skip the case pattern.s_fresh(var) == true, as
@@ -611,18 +624,36 @@ Here's the blueprint:
 ```python
 class InstantiateSchema(Proof):
     subproof : Proof
-    metavar_ids: list(u32)
+    metavar_ids: list(u8)
     instantiations: list(Pattern)
 
     def well_formed():
-        # Fails if the instantiation does not meet the
-        # disjoint/positive/freshness/application ctx
-        # criterea of the metavar.
+        for metavar in subproof.conclusion().metavars():
+            if metavar.id not in metavar_ids:
+                continue
 
-        # Fails if metavar_ids.length != instantiations.length
+            pattern = instantiations[metavar_ids.index(metavar.id)]
+
+            for evar in metavar.e_fresh:
+                if not pattern.e_fresh(evar):
+                    return False
+            for svar in metavar.s_fresh:
+                if not pattern.s_fresh(svar):
+                    return False
+            for svar in metavar.positive:
+                if not pattern.positive(svar):
+                    return False
+            for svar in metavar.negative:
+                if not pattern.negative(svar):
+                    return False
+            for evar in metavar.app_ctx_holes:
+                if not pattern.app_ctx_holes(evar):
+                    return False
+
+        return len(metavar_ids) == len(instantiations)
 
     def conclusion():
-        return subproof.meta_substitute(metavar_ids, instantiations)
+        return subproof.conclusion().meta_substitute(metavar_ids, instantiations)
 ```
 
 TODO: Could we just merge this with `InstantiateSchema`?
@@ -631,15 +662,31 @@ We may also use metavariables to represent notation.
 ```python
 class InstantiateNotation(Pattern):
     notation: Pattern
-    metavar_id: list(u32)
+    metavar_ids: list(u8)
     instantiations: list(Pattern)
 
     def well_formed():
-        # Fails if the instantiation does not meet the
-        # disjoint/positive/freshness/application ctx
-        # criterea of the metavar.
+        for metavar in notation.metavars():
+            if metavar.id not in metavar_ids:
+                continue
 
-        # Fails if metavar_ids.length != instantiations.length
+            for evar in metavar.e_fresh:
+                if not notation.e_fresh(evar):
+                    return False
+            for svar in metavar.s_fresh:
+                if not notation.s_fresh(svar):
+                    return False
+            for svar in metavar.positive:
+                if not notation.positive(svar):
+                    return False
+            for svar in metavar.negative:
+                if not notation.negative(svar):
+                    return False
+            for evar in metavar.app_ctx_holes:
+                if not notation.app_ctx_holes(evar):
+                    return False
+
+        return len(metavar_ids) == len(instantiations)
 
     def conclusion():
         return notation.meta_substitute(metavar, instantiation)
@@ -717,22 +764,15 @@ Instructions and semantics
 Each of these instructions checks that the constructed `Term` is well-formed before pushing onto the stack.
 Otherwise, execution aborts, and verification fails.
 
-### Supporting
-
-`Set n:u32 [u32]*n`
-:   Consume a length $n$, and $n$ items from the input.
-    Push a set containing those `u32`s to the stack.
-
-
 ### Variables and Symbols:
 
-`EVar <u32>`
+`EVar <u8>`
 :   Push an `EVar` onto the stack.
 
-`SVar <u32>`
+`SVar <u8>`
 :   Push a `SVar` onto the stack.
 
-`Symbol <u32>`
+`Symbol <u8>`
 :   Push a `Symbol` onto the stack.
 
 `Implication`/`Application`
@@ -740,7 +780,7 @@ Otherwise, execution aborts, and verification fails.
     and push an implication/application to the stack
     with appropriate arguments.
 
-`Exists <var_id:u32>`/`Mu <var_id:u32>`
+`Exists <var_id:u8>`/`Mu <var_id:u8>`
 :   Consume a pattern from the stack, and push the corresponding pattern to the stack, if well-formed.
 
 ### Axiom Schemas
@@ -750,15 +790,15 @@ Otherwise, execution aborts, and verification fails.
 
 ### Meta inference
 
-`MetaVar <u32>`
+`MetaVar <id:u8, 5 * (len: u8, constraint: [u8] * len)`
 :   Consume the first five entries from the stack (corresponding to the
     meta-requirements), and push an `MetaVar` onto the stack.
 
-`ESubst <metavar_id:u32>`/`SSubst <metavar_id:u32>`
+`ESubst <metavar_id:u8>`/`SSubst <metavar_id:u8>`
 :   Consume a meta-pattern `phi` and a pattern `psi` from the stack, and push a
     corresponding substitution `phi[psi/metavar_id]`.
 
-`Instantiate n:u32 [metavar_id:u32]*n`
+`Instantiate n:u8 [metavar_id:u8]*n`
 :   Consume a `Proof` and n `Pattern`'s' off the stack, and push the instantiated proof term to the stack,
     checking wellformedness as needed.
 
@@ -769,19 +809,11 @@ Otherwise, execution aborts, and verification fails.
 
 ### Memory manipulation:
 
-`Save <i:u32>`
-:   Store the top of the stack to the specified index $i$ in memory.
-    This overwrites existing data stored there.
-    It is recommended to indices as compactly as possible.
-    Otherwise, the performance of the checker may be affected.
+`Save`
+:   Store the top element of the stack by appending it to the memory array.
 
-`Load <i:u32>`
-:   Push the `Term` at index $i$ to the top of the stack.
-
-`Delete <i:u32>`
-:   Remove the `Term` at index $i$ from memory. This is not strictly needed, but
-    will allow the verifier to use less memory. The memory slot is not
-    considered for reuse by the `Save` instruction.
+`Load <i:u8>`
+:   Push the `Term` at index $i$ in memory to the top of the stack.
 
 
 ### Journal manipulation.
@@ -804,8 +836,67 @@ Otherwise, execution aborts, and verification fails.
 
 ### Technical
 
-`EOF`
-:   End the current phase.
+Notation
+========
+
+Our format does not use an explicit concept for notation, but merely
+a convention that proof generation tools utilize to shorten proofs.
+
+Notation at the ADT level
+-------------------------
+
+At the ADT level, notation are just saved meta-patterns.
+We use instantiations to use concrete instances of notation.
+For example,
+
+```
+bot = Mu(0, SVar(0))
+negation = Implies(MetaVar(0), bot) = Implies(MetaVar(0), Mu(0, SVar(0)))
+top = Instantiate(negation, 0, bot) = Instantiate(Implies(MetaVar(0), Mu(0, SVar(0))), 0, Mu(0, SVar(0)))
+```
+
+Notation at the DAG level
+-------------------------
+
+Notice, in the above specification `bot` is used twice in the definition of `top`.
+Consider the tree representation of top:
+
+```
+              SVar(0)        SVar(0)
+                 |              |
+  MetaVar(0)    Mu(0)          Mu(0)
+       |         |              |
+       \        /              /
+        \      /              /
+         Implies             /
+             \              /
+              \            /
+               Instantiate(0)
+```
+
+In a DAG we can re-use a sub-tree to reduce this redundancy.
+
+```
+                 SVar(0)
+                   |
+                  Mu(0)
+                   |   \
+                   |    \
+                   |     \
+      MetaVar(0)   |     |
+            \      |     |
+             Implies     |
+                 \       |
+                  \      |
+               Instantiate(0)
+```
+
+
+Notation at the Binary representation level
+-------------------------------------------
+
+The `Save` and `Load` instructions allow us to share these reused subterms.
+
 
 Future considerations
 =====================

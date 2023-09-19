@@ -28,6 +28,13 @@ if TYPE_CHECKING:
     from proof_generation.proof import Pattern
 
 
+def test_pop() -> None:
+    interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, out=StringIO())
+    push_and_pop = bytes([Instruction.Prop1, Instruction.Pop])
+    deserialize_instructions(data=push_and_pop, interpreter=interpreter)
+    assert len(interpreter.stack) == 0
+
+
 def test_instantiate() -> None:
     phi0 = MetaVar(0)
     phi0_ef0 = MetaVar(0, e_fresh=(EVar(0),))
@@ -74,18 +81,17 @@ def test_conclusion() -> None:
     ).assertc(Implication(phi0, phi0))
 
 
+def uncons_metavar_instrs(id: int) -> list[int]:
+    return [Instruction.MetaVar, id, 0, 0, 0, 0, 0]
+
+
 def test_serialize_phi_implies_phi() -> None:
     out = BytesIO()
     prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[], out=out))
     prop.phi0_implies_phi0()
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.MetaVar, 0,
+        *uncons_metavar_instrs(0),
         Instruction.Save,
         Instruction.Load, 0,
         Instruction.Implication,        # Stack: phi0 -> phi0
@@ -104,58 +110,20 @@ def test_prove_imp_reflexivity() -> None:
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         Instruction.Prop2,              # Stack: prop2
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.MetaVar, 0,         # Stack: prop2 ; $ph0
-
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.MetaVar, 0,         # Stack: prop2 ; $ph0 ; $ph0
-
+        *uncons_metavar_instrs(0),
+        *uncons_metavar_instrs(0),
         Instruction.Implication,        # Stack: prop2 ; $ph0 -> ph0
-
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.MetaVar, 0,           # Stack: prop2[ph0 -> ph0/0] ; ph0
+        *uncons_metavar_instrs(0),             # Stack: prop2[ph0 -> ph0/0] ; ph0
         Instruction.Instantiate, 2, 2, 1, # Stack: prop2[ph0 -> ph0/0]
-
         Instruction.Prop1,              # Stack: p1 ; prop1
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.MetaVar, 0,
-
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.MetaVar, 0,
+        *uncons_metavar_instrs(0),
+        *uncons_metavar_instrs(0),
         Instruction.Implication,         # Stack: p1 ; prop1 ; $ph0 -> ph0
-
         Instruction.Instantiate, 1, 1,  # Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
         Instruction.ModusPonens,        # Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-
         Instruction.Prop1,              # Stack: p3 ; prop1
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.List, 0,
-        Instruction.MetaVar, 0,            # Stack: p3 ; prop1 ; ph0
+        *uncons_metavar_instrs(0),             # Stack: p3 ; prop1 ; ph0
         Instruction.Instantiate, 1, 1,  # Stack: p3 ; ph0 -> ph0 -> ph0
-
         Instruction.ModusPonens,        # Stack: phi0 -> phi0
         Instruction.Publish,
     ])
@@ -175,9 +143,9 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     out_ser = BytesIO()
     _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).__getattribute__(target)()
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter(phase=phase, out=out_ser_deser))
+    deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 
-    # Prettyprint the proof directly, but ommit notation
+    # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
     _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).__getattribute__(target)()
 
@@ -196,9 +164,9 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
         target
     )
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), PrettyPrintingInterpreter(phase=phase, out=out_ser_deser))
+    deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 
-    # Prettyprint the claim directly, but ommit notation
+    # Prettyprint the claim directly, but omit notation
     out_pretty = StringIO()
     _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).interpreter.pattern(target)
 
