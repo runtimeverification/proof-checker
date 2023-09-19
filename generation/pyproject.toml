@@ -2,6 +2,10 @@
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry.scripts]
+metamath-extract-slice = "mm_transfer.metamath_extract_slice:main"
+
+
 [tool.poetry]
 name = "proof_generation"
 version = "0.1.0"
