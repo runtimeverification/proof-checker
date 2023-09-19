@@ -38,6 +38,7 @@ class Propositional(ProofExp):
             top,  # Top
             Implication(bot, phi0),  # Bot_elim
             Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
+            Implication(neg(phi0), Implication(phi0, phi1)),  # Absurd
             Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Peirce_bot
         ]
 
@@ -175,6 +176,14 @@ class Propositional(ProofExp):
     # (neg phi0 -> bot) -> phi0
     def contradiction_proof(self) -> Proved:
         return self.prop3().instantiate({0: phi0})
+    
+    # (neg phi0) -> phi0 -> phi1
+    def absurd(self) -> Proved:
+        bot_to_1 = Implication(bot, phi1)
+        return self.modus_ponens(
+            self.prop2().instantiate({0: phi0, 1: bot, 2: phi1}),
+            self.modus_ponens(self.prop1().instantiate({0: bot_to_1, 1: phi0}),
+                              self.bot_elim().instantiate({0: phi1})))
 
     # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
