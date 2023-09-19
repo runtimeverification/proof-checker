@@ -399,10 +399,6 @@ fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Implication { left, right });
 }
 
-fn application(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
-    return Rc::new(Pattern::Application { left, right });
-}
-
 fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Application { left, right });
 }
@@ -440,7 +436,7 @@ fn apply_esubst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
             apply_esubst(left, evar_id, plug),
             apply_esubst(right, evar_id, plug),
         ),
-        Pattern::Application { left, right } => application(
+        Pattern::Application { left, right } => app(
             apply_esubst(left, evar_id, plug),
             apply_esubst(right, evar_id, plug),
         ),
@@ -472,7 +468,7 @@ fn apply_ssubst(pattern: &Rc<Pattern>, svar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
             apply_ssubst(left, svar_id, plug),
             apply_ssubst(right, svar_id, plug),
         ),
-        Pattern::Application { left, right } => application(
+        Pattern::Application { left, right } => app(
             apply_ssubst(left, svar_id, plug),
             apply_ssubst(right, svar_id, plug),
         ),
@@ -950,11 +946,11 @@ fn test_efresh() {
     assert!(!implication.e_fresh(1));
 
     let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
-    let metaapplication = Pattern::Application {
+    let metaapp = Pattern::Application {
         left: Rc::clone(&left),
         right: mvar,
     };
-    assert!(!metaapplication.e_fresh(2));
+    assert!(!metaapp.e_fresh(2));
 
     let esubst_ = esubst(Rc::clone(&right), 1, Rc::clone(&left));
     assert!(esubst_.e_fresh(1));
@@ -982,17 +978,17 @@ fn test_sfresh() {
     assert!(!implication.s_fresh(1));
 
     let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
-    let metaapplication = Pattern::Application {
+    let metaapp = Pattern::Application {
         left: Rc::clone(&left),
         right: Rc::clone(&mvar),
     };
-    assert!(!metaapplication.s_fresh(1));
+    assert!(!metaapp.s_fresh(1));
 
-    let metaapplication2 = Pattern::Application {
+    let metaapp2 = Pattern::Application {
         left: Rc::clone(&left),
         right: mvar,
     };
-    assert!(metaapplication2.s_fresh(2));
+    assert!(metaapp2.s_fresh(2));
 
     let esubst_ = esubst(Rc::clone(&right), 1, Rc::clone(&left));
     assert!(!esubst_.s_fresh(1));
@@ -1740,16 +1736,16 @@ fn test_apply_esubst() {
             implies(evar(7), symbol(1)),
         ),
         (
-            application(evar(7), symbol(1)),
+            app(evar(7), symbol(1)),
             7,
             symbol(0),
-            application(symbol(0), symbol(1)),
+            app(symbol(0), symbol(1)),
         ),
         (
-            application(evar(7), symbol(1)),
+            app(evar(7), symbol(1)),
             6,
             symbol(0),
-            application(evar(7), symbol(1)),
+            app(evar(7), symbol(1)),
         ),
         // Distribute over subpatterns unless evar_id = binder
         (exists(1, evar(1)), 0, symbol(2), exists(1, evar(1))),
@@ -1813,16 +1809,16 @@ fn test_apply_ssubst() {
             implies(svar(7), symbol(1)),
         ),
         (
-            application(svar(7), symbol(1)),
+            app(svar(7), symbol(1)),
             7,
             symbol(0),
-            application(symbol(0), symbol(1)),
+            app(symbol(0), symbol(1)),
         ),
         (
-            application(svar(7), symbol(1)),
+            app(svar(7), symbol(1)),
             6,
             symbol(0),
-            application(svar(7), symbol(1)),
+            app(svar(7), symbol(1)),
         ),
         // Distribute over subpatterns unless svar_id = binder
         (exists(1, svar(0)), 0, symbol(2), exists(1, symbol(2))),
