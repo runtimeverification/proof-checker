@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from mm_transfer.converter.scope import NotationScope
-    from mm_transfer.metamath.ast import Database, Term
+    from mm_transfer.metamath.ast import Database
     from proof_generation.proof import BasicInterpreter
 
 

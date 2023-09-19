@@ -10,7 +10,8 @@ from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
 from mm_transfer.metamath.ast import ConstantStatement
 from mm_transfer.metamath.parser import load_database
-from proof_generation.proof import BasicInterpreter, ExecutionPhase, StatefulInterpreter
+
+# from proof_generation.proof import BasicInterpreter, ExecutionPhase, StatefulInterpreter
 
 if TYPE_CHECKING:
     from mm_transfer.metamath.ast import Database
@@ -351,9 +352,10 @@ def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
 
 
 def test_interpreting_axioms(parsed_lemma_database: Database) -> None:
-    converter = MetamathConverter(parsed_lemma_database)
-
     # TODO: Enable the following tests
+    pass
+    # converter = MetamathConverter(parsed_lemma_database)
+
     # test using a basic interpreter
     # basic_interpreter = BasicInterpreter(phase=ExecutionPhase.Gamma)
     # converter.interpret_axioms(basic_interpreter)
