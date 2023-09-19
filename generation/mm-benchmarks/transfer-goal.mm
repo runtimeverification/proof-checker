@@ -1,13 +1,16 @@
-$c "1" \kore-symbol-Lbl'-LT-'T'-GT-' "12345" \top \kore-sort-SortAExp "210" \kore-symbol-Lbl'Unds-GT-UndsUnds'IMP-SYNTAX'Unds'BExp'Unds'AExp'Unds'AExp \kore-symbol-kseq \kore-implies "90" \imp \kore-sort-SortPgm "0" ) \kore-and \kore-symbol-LblinitGeneratedTopCell #SetVariable \kore-top #Symbol \kore-symbol-Lbl'-LT-'generatedTop'-GT-' #Pattern \kore-symbol-Lbl'UndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids \kore-symbol-Lbl'-LT-'generatedCounter'-GT-' "ret" "100" \kore-inj \kore-sort-SortInt \kore-sort-SortGeneratedCounterCell "addressTo" \kore-sort-SortTCell \in-sort "balanceTo" ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' "amount" "balanceSender" \kore-sort-SortKConfigVar \kore-symbol-Lbl'-LT-'state'-GT-' \kore-sort-SortStmt #Variable "10" \kore-symbol-Lblint'UndsSClnUndsUnds'IMP-SYNTAX'Unds'Pgm'Unds'Ids'Unds'Stmt \kore-symbol-Lbl'UndsUndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'Stmt'Unds'Stmt "200" \kore-dv |- \kore-sort-SortId \kore-valid \kore-symbol-Lbl'UndsPlusUndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp \kore-symbol-Lbl'-LT-'k'-GT-' \and \kore-sort-SortKCell \kore-symbol-Lbl'Stop'List'LBraQuotUndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids'QuotRBraUnds'Ids \kore-symbol-Lbl'Stop'Map \kore-sort-SortGeneratedTopCell #ElementVariable \kore-symbol-Lbl'Unds'Map'Unds' "%24PGM" \kore-symbol-Lblif'LParUndsRParUnds'else'UndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'BExp'Unds'Block'Unds'Block \kore-rewrites-star \kore-sort-SortKItem \kore-symbol-Lbl'LBraUndsRBraUnds'IMP-SYNTAX'Unds'Block'Unds'Stmt \kore-symbol-Lbl'UndsEqlsUndsSClnUnds'IMP-SYNTAX'Unds'Stmt'Unds'Id'Unds'AExp \kore-symbol-Lbl'Unds'-'UndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp \kore-symbol-dotk \kore-sort-SortStateCell $.
-$v ph0 ph2 th0 ptn1 ptn2 ph3 ptn0 ph1 $.
+$c "%24PGM" "%24PGM"-symbol "0" "0"-symbol "1" "1"-symbol "10" "10"-symbol "100" "100"-symbol "12345" "12345"-symbol "200" "200"-symbol "210" "210"-symbol "90" "90"-symbol "addressTo" "addressTo"-symbol "amount" "amount"-symbol "balanceSender" "balanceSender"-symbol "balanceTo" "balanceTo"-symbol "ret" "ret"-symbol #ElementVariable #Notation #Pattern #SetVariable #Symbol #Variable ( ) \and \app \bot \imp \in-sort \included \inh \kore-and \kore-dv \kore-dv-symbol \kore-implies \kore-inj \kore-inj-symbol \kore-rewrites-star \kore-sort-SortAExp \kore-sort-SortAExp-symbol \kore-sort-SortGeneratedCounterCell \kore-sort-SortGeneratedCounterCell-symbol \kore-sort-SortGeneratedTopCell \kore-sort-SortGeneratedTopCell-symbol \kore-sort-SortId \kore-sort-SortId-symbol \kore-sort-SortInt \kore-sort-SortInt-symbol \kore-sort-SortKCell \kore-sort-SortKCell-symbol \kore-sort-SortKConfigVar \kore-sort-SortKConfigVar-symbol \kore-sort-SortKItem \kore-sort-SortKItem-symbol \kore-sort-SortPgm \kore-sort-SortPgm-symbol \kore-sort-SortStateCell \kore-sort-SortStateCell-symbol \kore-sort-SortStmt \kore-sort-SortStmt-symbol \kore-sort-SortTCell \kore-sort-SortTCell-symbol \kore-symbol-Lbl'-LT-'T'-GT-' \kore-symbol-Lbl'-LT-'T'-GT-'-symbol \kore-symbol-Lbl'-LT-'generatedCounter'-GT-' \kore-symbol-Lbl'-LT-'generatedCounter'-GT-'-symbol \kore-symbol-Lbl'-LT-'generatedTop'-GT-' \kore-symbol-Lbl'-LT-'generatedTop'-GT-'-symbol \kore-symbol-Lbl'-LT-'k'-GT-' \kore-symbol-Lbl'-LT-'k'-GT-'-symbol \kore-symbol-Lbl'-LT-'state'-GT-' \kore-symbol-Lbl'-LT-'state'-GT-'-symbol \kore-symbol-Lbl'LBraUndsRBraUnds'IMP-SYNTAX'Unds'Block'Unds'Stmt \kore-symbol-Lbl'LBraUndsRBraUnds'IMP-SYNTAX'Unds'Block'Unds'Stmt-symbol \kore-symbol-Lbl'Stop'List'LBraQuotUndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids'QuotRBraUnds'Ids \kore-symbol-Lbl'Stop'List'LBraQuotUndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids'QuotRBraUnds'Ids-symbol \kore-symbol-Lbl'Stop'Map \kore-symbol-Lbl'Stop'Map-symbol \kore-symbol-Lbl'Unds'-'UndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp \kore-symbol-Lbl'Unds'-'UndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp-symbol \kore-symbol-Lbl'Unds'Map'Unds' \kore-symbol-Lbl'Unds'Map'Unds'-symbol \kore-symbol-Lbl'Unds-GT-UndsUnds'IMP-SYNTAX'Unds'BExp'Unds'AExp'Unds'AExp \kore-symbol-Lbl'Unds-GT-UndsUnds'IMP-SYNTAX'Unds'BExp'Unds'AExp'Unds'AExp-symbol \kore-symbol-Lbl'UndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids \kore-symbol-Lbl'UndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids-symbol \kore-symbol-Lbl'UndsEqlsUndsSClnUnds'IMP-SYNTAX'Unds'Stmt'Unds'Id'Unds'AExp \kore-symbol-Lbl'UndsEqlsUndsSClnUnds'IMP-SYNTAX'Unds'Stmt'Unds'Id'Unds'AExp-symbol \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' \kore-symbol-Lbl'UndsPipe'-'-GT-Unds'-symbol \kore-symbol-Lbl'UndsPlusUndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp \kore-symbol-Lbl'UndsPlusUndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp-symbol \kore-symbol-Lbl'UndsUndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'Stmt'Unds'Stmt \kore-symbol-Lbl'UndsUndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'Stmt'Unds'Stmt-symbol \kore-symbol-Lblif'LParUndsRParUnds'else'UndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'BExp'Unds'Block'Unds'Block \kore-symbol-Lblif'LParUndsRParUnds'else'UndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'BExp'Unds'Block'Unds'Block-symbol \kore-symbol-LblinitGeneratedTopCell \kore-symbol-LblinitGeneratedTopCell-symbol \kore-symbol-Lblint'UndsSClnUndsUnds'IMP-SYNTAX'Unds'Pgm'Unds'Ids'Unds'Stmt \kore-symbol-Lblint'UndsSClnUndsUnds'IMP-SYNTAX'Unds'Pgm'Unds'Ids'Unds'Stmt-symbol \kore-symbol-dotk \kore-symbol-dotk-symbol \kore-symbol-kseq \kore-symbol-kseq-symbol \kore-top \kore-valid \not \or \top |- $.
+$v ptn1 ph1 ptn0 ph3 ptn2 th0 ph0 ph2 $.
 ph0-is-pattern $f #Pattern ph0 $.
 ph1-is-pattern $f #Pattern ph1 $.
 ph2-is-pattern $f #Pattern ph2 $.
 ph3-is-pattern $f #Pattern ph3 $.
 th0-is-pattern $f #Pattern th0 $.
 and-is-pattern $a #Pattern ( \and ph0 ph1 ) $.
+and-is-sugar $a #Notation ( \and ph0 ph1 ) ( \not ( \or ( \not ph0 ) ( \not ph1 ) ) ) $.
 top-is-pattern $a #Pattern \top $.
+top-is-sugar $a #Notation \top ( \not \bot ) $.
 in-sort-is-pattern $a #Pattern ( \in-sort ph0 ph1 ) $.
+in-sort-is-sugar $a #Notation ( \in-sort ph0 ph1 ) ( \included ph0 ( \inh ph1 ) ) $.
 ${ rule-imp-transitivity.0 $e |- ( \imp ph0 ph1 ) $.
    rule-imp-transitivity.1 $e |- ( \imp ph1 ph2 ) $.
    rule-imp-transitivity $a |- ( \imp ph0 ph2 ) $. $}
@@ -15,9 +18,13 @@ ${ rule-and-intro-alt2-sugar.0 $e |- ( \imp ph0 ph1 ) $.
    rule-and-intro-alt2-sugar.1 $e |- ( \imp ph0 ph2 ) $.
    rule-and-intro-alt2-sugar $a |- ( \imp ph0 ( \and ph1 ph2 ) ) $. $}
 kore-top-is-pattern $a #Pattern ( \kore-top ph0 ) $.
+kore-top-is-sugar $a #Notation ( \kore-top ph0 ) ( \inh ph0 ) $.
 kore-and-is-pattern $a #Pattern ( \kore-and ph0 ph1 ph2 ) $.
+kore-and-is-sugar $a #Notation ( \kore-and ph0 ph1 ph2 ) ( \and ph1 ph2 ) $.
 kore-dv-is-pattern $a #Pattern ( \kore-dv ph0 ph1 ) $.
+kore-dv-is-sugar $a #Notation ( \kore-dv ph0 ph1 ) ( \app ( \app \kore-dv-symbol ph0 ) ph1 ) $.
 kore-inj-is-pattern $a #Pattern ( \kore-inj ph0 ph1 ph2 ) $.
+kore-inj-is-sugar $a #Notation ( \kore-inj ph0 ph1 ph2 ) ( \app ( \app ( \app \kore-inj-symbol ph0 ) ph1 ) ph2 ) $.
 kore-and-sorting $a |- ( \imp ( \and ( \in-sort ph1 ph0 ) ( \in-sort ph2 ph0 ) ) ( \in-sort ( \kore-and ph0 ph1 ph2 ) ph0 ) ) $.
 ${ kore-rewrites-star-subsumption-lhs.0 $e |- ( \imp th0 ( \kore-valid ph0 ( \kore-implies ph0 ph1 ph2 ) ) ) $.
    kore-rewrites-star-subsumption-lhs.1 $e |- ( \imp th0 ( \kore-valid ph0 ( \kore-rewrites-star ph0 ph2 ph3 ) ) ) $.
@@ -30,58 +37,105 @@ ${ kore-rewrites-star-transitivity.0 $e |- ( \imp th0 ( \in-sort ph1 ph0 ) ) $.
    kore-rewrites-star-transitivity $a |- ( \imp th0 ( \kore-valid ph0 ( \kore-rewrites-star ph0 ph1 ph3 ) ) ) $. $}
 ptn0-pattern $f #Pattern ptn0 $.
 BASIC-K-sort-1-is-pattern $a #Pattern \kore-sort-SortKItem $.
+BASIC-K-sort-1-is-sugar $a #Notation \kore-sort-SortKItem \kore-sort-SortKItem-symbol $.
 ptn1-pattern $f #Pattern ptn1 $.
 KSEQ-symbol-0-is-pattern $a #Pattern ( \kore-symbol-kseq ptn0 ptn1 ) $.
+KSEQ-symbol-0-is-sugar $a #Notation ( \kore-symbol-kseq ptn0 ptn1 ) ( \app ( \app \kore-symbol-kseq-symbol ptn0 ) ptn1 ) $.
 ptn2-pattern $f #Pattern ptn2 $.
 KSEQ-symbol-1-is-pattern $a #Pattern \kore-symbol-dotk $.
+KSEQ-symbol-1-is-sugar $a #Notation \kore-symbol-dotk \kore-symbol-dotk-symbol $.
 IMP-sort-7-is-pattern $a #Pattern \kore-sort-SortKCell $.
+IMP-sort-7-is-sugar $a #Notation \kore-sort-SortKCell \kore-sort-SortKCell-symbol $.
 IMP-sort-8-is-pattern $a #Pattern \kore-sort-SortGeneratedTopCell $.
+IMP-sort-8-is-sugar $a #Notation \kore-sort-SortGeneratedTopCell \kore-sort-SortGeneratedTopCell-symbol $.
 IMP-sort-9-is-pattern $a #Pattern \kore-sort-SortStateCell $.
+IMP-sort-9-is-sugar $a #Notation \kore-sort-SortStateCell \kore-sort-SortStateCell-symbol $.
 IMP-sort-10-is-pattern $a #Pattern \kore-sort-SortGeneratedCounterCell $.
+IMP-sort-10-is-sugar $a #Notation \kore-sort-SortGeneratedCounterCell \kore-sort-SortGeneratedCounterCell-symbol $.
 IMP-sort-13-is-pattern $a #Pattern \kore-sort-SortAExp $.
+IMP-sort-13-is-sugar $a #Notation \kore-sort-SortAExp \kore-sort-SortAExp-symbol $.
 IMP-sort-17-is-pattern $a #Pattern \kore-sort-SortId $.
+IMP-sort-17-is-sugar $a #Notation \kore-sort-SortId \kore-sort-SortId-symbol $.
 IMP-sort-20-is-pattern $a #Pattern \kore-sort-SortKConfigVar $.
+IMP-sort-20-is-sugar $a #Notation \kore-sort-SortKConfigVar \kore-sort-SortKConfigVar-symbol $.
 IMP-sort-23-is-pattern $a #Pattern \kore-sort-SortInt $.
+IMP-sort-23-is-sugar $a #Notation \kore-sort-SortInt \kore-sort-SortInt-symbol $.
 IMP-sort-27-is-pattern $a #Pattern \kore-sort-SortPgm $.
+IMP-sort-27-is-sugar $a #Notation \kore-sort-SortPgm \kore-sort-SortPgm-symbol $.
 IMP-sort-30-is-pattern $a #Pattern \kore-sort-SortTCell $.
+IMP-sort-30-is-sugar $a #Notation \kore-sort-SortTCell \kore-sort-SortTCell-symbol $.
 IMP-sort-31-is-pattern $a #Pattern \kore-sort-SortStmt $.
+IMP-sort-31-is-sugar $a #Notation \kore-sort-SortStmt \kore-sort-SortStmt-symbol $.
 IMP-symbol-123-is-pattern $a #Pattern \kore-symbol-Lbl'Stop'List'LBraQuotUndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids'QuotRBraUnds'Ids $.
+IMP-symbol-123-is-sugar $a #Notation \kore-symbol-Lbl'Stop'List'LBraQuotUndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids'QuotRBraUnds'Ids \kore-symbol-Lbl'Stop'List'LBraQuotUndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids'QuotRBraUnds'Ids-symbol $.
 IMP-symbol-124-is-pattern $a #Pattern \kore-symbol-Lbl'Stop'Map $.
+IMP-symbol-124-is-sugar $a #Notation \kore-symbol-Lbl'Stop'Map \kore-symbol-Lbl'Stop'Map-symbol $.
 IMP-symbol-126-is-pattern $a #Pattern ( \kore-symbol-Lbl'-LT-'T'-GT-' ptn0 ptn1 ) $.
+IMP-symbol-126-is-sugar $a #Notation ( \kore-symbol-Lbl'-LT-'T'-GT-' ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'-LT-'T'-GT-'-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-126-sorting $a |- ( \imp ( \and ( \in-sort ptn0 \kore-sort-SortKCell ) ( \in-sort ptn1 \kore-sort-SortStateCell ) ) ( \in-sort ( \kore-symbol-Lbl'-LT-'T'-GT-' ptn0 ptn1 ) \kore-sort-SortTCell ) ) $.
 IMP-symbol-128-is-pattern $a #Pattern ( \kore-symbol-Lbl'-LT-'generatedCounter'-GT-' ptn0 ) $.
+IMP-symbol-128-is-sugar $a #Notation ( \kore-symbol-Lbl'-LT-'generatedCounter'-GT-' ptn0 ) ( \app \kore-symbol-Lbl'-LT-'generatedCounter'-GT-'-symbol ptn0 ) $.
 IMP-symbol-129-is-pattern $a #Pattern ( \kore-symbol-Lbl'-LT-'generatedTop'-GT-' ptn0 ptn1 ) $.
+IMP-symbol-129-is-sugar $a #Notation ( \kore-symbol-Lbl'-LT-'generatedTop'-GT-' ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'-LT-'generatedTop'-GT-'-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-129-sorting $a |- ( \imp ( \and ( \in-sort ptn0 \kore-sort-SortTCell ) ( \in-sort ptn1 \kore-sort-SortGeneratedCounterCell ) ) ( \in-sort ( \kore-symbol-Lbl'-LT-'generatedTop'-GT-' ptn0 ptn1 ) \kore-sort-SortGeneratedTopCell ) ) $.
 IMP-symbol-131-is-pattern $a #Pattern ( \kore-symbol-Lbl'-LT-'k'-GT-' ptn0 ) $.
+IMP-symbol-131-is-sugar $a #Notation ( \kore-symbol-Lbl'-LT-'k'-GT-' ptn0 ) ( \app \kore-symbol-Lbl'-LT-'k'-GT-'-symbol ptn0 ) $.
 IMP-symbol-132-is-pattern $a #Pattern ( \kore-symbol-Lbl'-LT-'state'-GT-' ptn0 ) $.
+IMP-symbol-132-is-sugar $a #Notation ( \kore-symbol-Lbl'-LT-'state'-GT-' ptn0 ) ( \app \kore-symbol-Lbl'-LT-'state'-GT-'-symbol ptn0 ) $.
 IMP-symbol-160-is-pattern $a #Pattern ( \kore-symbol-Lbl'UndsPlusUndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp ptn0 ptn1 ) $.
+IMP-symbol-160-is-sugar $a #Notation ( \kore-symbol-Lbl'UndsPlusUndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'UndsPlusUndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-161-is-pattern $a #Pattern ( \kore-symbol-Lbl'UndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids ptn0 ptn1 ) $.
+IMP-symbol-161-is-sugar $a #Notation ( \kore-symbol-Lbl'UndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'UndsCommUndsUnds'IMP-SYNTAX'Unds'Ids'Unds'Id'Unds'Ids-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-164-is-pattern $a #Pattern ( \kore-symbol-Lbl'Unds'-'UndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp ptn0 ptn1 ) $.
+IMP-symbol-164-is-sugar $a #Notation ( \kore-symbol-Lbl'Unds'-'UndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'Unds'-'UndsUnds'IMP-SYNTAX'Unds'AExp'Unds'AExp'Unds'AExp-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-185-is-pattern $a #Pattern ( \kore-symbol-Lbl'UndsEqlsUndsSClnUnds'IMP-SYNTAX'Unds'Stmt'Unds'Id'Unds'AExp ptn0 ptn1 ) $.
+IMP-symbol-185-is-sugar $a #Notation ( \kore-symbol-Lbl'UndsEqlsUndsSClnUnds'IMP-SYNTAX'Unds'Stmt'Unds'Id'Unds'AExp ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'UndsEqlsUndsSClnUnds'IMP-SYNTAX'Unds'Stmt'Unds'Id'Unds'AExp-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-192-is-pattern $a #Pattern ( \kore-symbol-Lbl'Unds-GT-UndsUnds'IMP-SYNTAX'Unds'BExp'Unds'AExp'Unds'AExp ptn0 ptn1 ) $.
+IMP-symbol-192-is-sugar $a #Notation ( \kore-symbol-Lbl'Unds-GT-UndsUnds'IMP-SYNTAX'Unds'BExp'Unds'AExp'Unds'AExp ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'Unds-GT-UndsUnds'IMP-SYNTAX'Unds'BExp'Unds'AExp'Unds'AExp-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-194-is-pattern $a #Pattern ( \kore-symbol-Lbl'Unds'Map'Unds' ptn0 ptn1 ) $.
+IMP-symbol-194-is-sugar $a #Notation ( \kore-symbol-Lbl'Unds'Map'Unds' ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'Unds'Map'Unds'-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-204-is-pattern $a #Pattern ( \kore-symbol-Lbl'UndsUndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'Stmt'Unds'Stmt ptn0 ptn1 ) $.
+IMP-symbol-204-is-sugar $a #Notation ( \kore-symbol-Lbl'UndsUndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'Stmt'Unds'Stmt ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'UndsUndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'Stmt'Unds'Stmt-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-218-is-pattern $a #Pattern ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' ptn0 ptn1 ) $.
+IMP-symbol-218-is-sugar $a #Notation ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lbl'UndsPipe'-'-GT-Unds'-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-241-is-pattern $a #Pattern ( \kore-symbol-Lblif'LParUndsRParUnds'else'UndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'BExp'Unds'Block'Unds'Block ptn0 ptn1 ptn2 ) $.
+IMP-symbol-241-is-sugar $a #Notation ( \kore-symbol-Lblif'LParUndsRParUnds'else'UndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'BExp'Unds'Block'Unds'Block ptn0 ptn1 ptn2 ) ( \app ( \app ( \app \kore-symbol-Lblif'LParUndsRParUnds'else'UndsUnds'IMP-SYNTAX'Unds'Stmt'Unds'BExp'Unds'Block'Unds'Block-symbol ptn0 ) ptn1 ) ptn2 ) $.
 IMP-symbol-243-is-pattern $a #Pattern ( \kore-symbol-LblinitGeneratedTopCell ptn0 ) $.
+IMP-symbol-243-is-sugar $a #Notation ( \kore-symbol-LblinitGeneratedTopCell ptn0 ) ( \app \kore-symbol-LblinitGeneratedTopCell-symbol ptn0 ) $.
 IMP-symbol-247-is-pattern $a #Pattern ( \kore-symbol-Lblint'UndsSClnUndsUnds'IMP-SYNTAX'Unds'Pgm'Unds'Ids'Unds'Stmt ptn0 ptn1 ) $.
+IMP-symbol-247-is-sugar $a #Notation ( \kore-symbol-Lblint'UndsSClnUndsUnds'IMP-SYNTAX'Unds'Pgm'Unds'Ids'Unds'Stmt ptn0 ptn1 ) ( \app ( \app \kore-symbol-Lblint'UndsSClnUndsUnds'IMP-SYNTAX'Unds'Pgm'Unds'Ids'Unds'Stmt-symbol ptn0 ) ptn1 ) $.
 IMP-symbol-354-is-pattern $a #Pattern ( \kore-symbol-Lbl'LBraUndsRBraUnds'IMP-SYNTAX'Unds'Block'Unds'Stmt ptn0 ) $.
+IMP-symbol-354-is-sugar $a #Notation ( \kore-symbol-Lbl'LBraUndsRBraUnds'IMP-SYNTAX'Unds'Block'Unds'Stmt ptn0 ) ( \app \kore-symbol-Lbl'LBraUndsRBraUnds'IMP-SYNTAX'Unds'Block'Unds'Stmt-symbol ptn0 ) $.
 string-literal-1-is-pattern $a #Pattern "0" $.
+string-literal-1-is-sugar $a #Notation "0" "0"-symbol $.
 string-literal-4-is-pattern $a #Pattern "1" $.
+string-literal-4-is-sugar $a #Notation "1" "1"-symbol $.
 string-literal-9-is-pattern $a #Pattern "%24PGM" $.
+string-literal-9-is-sugar $a #Notation "%24PGM" "%24PGM"-symbol $.
 string-literal-10-is-pattern $a #Pattern "balanceSender" $.
+string-literal-10-is-sugar $a #Notation "balanceSender" "balanceSender"-symbol $.
 string-literal-11-is-pattern $a #Pattern "ret" $.
+string-literal-11-is-sugar $a #Notation "ret" "ret"-symbol $.
 string-literal-12-is-pattern $a #Pattern "12345" $.
+string-literal-12-is-sugar $a #Notation "12345" "12345"-symbol $.
 string-literal-13-is-pattern $a #Pattern "10" $.
+string-literal-13-is-sugar $a #Notation "10" "10"-symbol $.
 string-literal-14-is-pattern $a #Pattern "amount" $.
+string-literal-14-is-sugar $a #Notation "amount" "amount"-symbol $.
 string-literal-15-is-pattern $a #Pattern "200" $.
+string-literal-15-is-sugar $a #Notation "200" "200"-symbol $.
 string-literal-16-is-pattern $a #Pattern "100" $.
+string-literal-16-is-sugar $a #Notation "100" "100"-symbol $.
 string-literal-17-is-pattern $a #Pattern "balanceTo" $.
+string-literal-17-is-sugar $a #Notation "balanceTo" "balanceTo"-symbol $.
 string-literal-18-is-pattern $a #Pattern "addressTo" $.
+string-literal-18-is-sugar $a #Notation "addressTo" "addressTo"-symbol $.
 sorting-cache-0 $a |- ( \imp \top ( \in-sort ( \kore-top \kore-sort-SortGeneratedTopCell ) \kore-sort-SortGeneratedTopCell ) ) $.
 sorting-cache-50 $a |- ( \imp \top ( \in-sort ( \kore-symbol-Lbl'-LT-'generatedCounter'-GT-' ( \kore-dv \kore-sort-SortInt "0" ) ) \kore-sort-SortGeneratedCounterCell ) ) $.
 string-literal-19-is-pattern $a #Pattern "90" $.
+string-literal-19-is-sugar $a #Notation "90" "90"-symbol $.
 string-literal-20-is-pattern $a #Pattern "210" $.
+string-literal-20-is-sugar $a #Notation "210" "210"-symbol $.
 sorting-cache-246 $a |- ( \imp \top ( \in-sort ( \kore-symbol-Lbl'-LT-'k'-GT-' ( \kore-symbol-kseq ( \kore-inj \kore-sort-SortStmt \kore-sort-SortKItem ( \kore-symbol-Lbl'UndsEqlsUndsSClnUnds'IMP-SYNTAX'Unds'Stmt'Unds'Id'Unds'AExp ( \kore-dv \kore-sort-SortId "ret" ) ( \kore-inj \kore-sort-SortInt \kore-sort-SortAExp ( \kore-dv \kore-sort-SortInt "1" ) ) ) ) \kore-symbol-dotk ) ) \kore-sort-SortKCell ) ) $.
 sorting-cache-249 $a |- ( \imp \top ( \in-sort ( \kore-symbol-Lbl'-LT-'state'-GT-' ( \kore-symbol-Lbl'Unds'Map'Unds' ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' ( \kore-inj \kore-sort-SortId \kore-sort-SortKItem ( \kore-dv \kore-sort-SortId "balanceTo" ) ) ( \kore-inj \kore-sort-SortInt \kore-sort-SortKItem ( \kore-dv \kore-sort-SortInt "210" ) ) ) ( \kore-symbol-Lbl'Unds'Map'Unds' ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' ( \kore-inj \kore-sort-SortId \kore-sort-SortKItem ( \kore-dv \kore-sort-SortId "ret" ) ) ( \kore-inj \kore-sort-SortInt \kore-sort-SortKItem ( \kore-dv \kore-sort-SortInt "0" ) ) ) ( \kore-symbol-Lbl'Unds'Map'Unds' ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' ( \kore-inj \kore-sort-SortId \kore-sort-SortKItem ( \kore-dv \kore-sort-SortId "balanceSender" ) ) ( \kore-inj \kore-sort-SortInt \kore-sort-SortKItem ( \kore-dv \kore-sort-SortInt "90" ) ) ) ( \kore-symbol-Lbl'Unds'Map'Unds' ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' ( \kore-inj \kore-sort-SortId \kore-sort-SortKItem ( \kore-dv \kore-sort-SortId "addressTo" ) ) ( \kore-inj \kore-sort-SortInt \kore-sort-SortKItem ( \kore-dv \kore-sort-SortInt "12345" ) ) ) ( \kore-symbol-Lbl'UndsPipe'-'-GT-Unds' ( \kore-inj \kore-sort-SortId \kore-sort-SortKItem ( \kore-dv \kore-sort-SortId "amount" ) ) ( \kore-inj \kore-sort-SortInt \kore-sort-SortKItem ( \kore-dv \kore-sort-SortInt "10" ) ) ) ) ) ) ) ) \kore-sort-SortStateCell ) ) $.
 sorting-cache-250 $a |- ( \imp \top ( \in-sort ( \kore-symbol-Lbl'-LT-'k'-GT-' \kore-symbol-dotk ) \kore-sort-SortKCell ) ) $.
