@@ -742,12 +742,18 @@ fn execute_instructions<'a>(
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
 
-                let esubst_pat = apply_esubst(&pattern, evar_id, &plug);
-                if !esubst_pat.well_formed() {
-                    panic!("Constructed ESubst {:?} is ill-formed.", &esubst_pat);
+                match pattern.as_ref() {
+                    Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. } => (),
+                    _ => panic!("Cannot apply ESubst on concrete term!"),
                 }
 
-                stack.push(Term::Pattern(esubst_pat));
+                let esubst_pat = esubst(Rc::clone(&pattern), evar_id, Rc::clone(&plug));
+                if !esubst_pat.well_formed() {
+                    // The substitution is redundant, we don't apply it.
+                    stack.push(Term::Pattern(pattern))
+                } else {
+                    stack.push(Term::Pattern(esubst_pat));
+                }
             }
 
             Instruction::SSubst => {
@@ -755,12 +761,18 @@ fn execute_instructions<'a>(
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
 
-                let ssubst_pat = ssubst(pattern, svar_id, plug);
-                if !ssubst_pat.well_formed() {
-                    panic!("Constructed SSubst {:?} is ill-formed.", &ssubst_pat);
+                match pattern.as_ref() {
+                    Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. } => (),
+                    _ => panic!("Cannot apply ESubst on concrete term!"),
                 }
 
-                stack.push(Term::Pattern(ssubst_pat));
+                let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, Rc::clone(&plug));
+                if !ssubst_pat.well_formed() {
+                    // The substitution is redundant, we don't apply it.
+                    stack.push(Term::Pattern(pattern))
+                } else {
+                    stack.push(Term::Pattern(ssubst_pat));
+                }
             }
 
             Instruction::Prop1 => {
