@@ -322,58 +322,6 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
 
 
-def test_provable(parsed_goal_database: Database) -> None:
-    converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
-
-    print(converter._declared_proof)
-
-    class NewProof(p.ProofExp):
-        def axioms() -> list[p.Pattern]:
-            return map(lambda x: x.pattern, converter._axioms.values())
-
-        def claims() -> list[p.Pattern]:
-            return []
-
-    newproof = NewProof(p.BasicInterpreter(p.ExecutionPhase(0)))
-
-    NewProof.main(["", "pretty", "gamma", "test.txt"]),
-
-    assert converter._declared_proof == [1]
-
-    converter.exec_instruction(converter._declared_proof.instructions, newproof)
-
-
-def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
-    converter = MetamathConverter(parsed_lemma_database)
-    scope = converter._scope
-
-    ph0 = converter._scope._metavars['ph0']
-    ph1 = converter._scope._metavars['ph1']
-    ph2 = converter._scope._metavars['ph2']
-    x = converter._scope._element_vars['x']
-    and_ = scope.resolve_notation('\\and')
-    sorted_exists_ = scope.resolve_notation('\\sorted-exists')
-    ceil_ = scope.resolve_notation('\\ceil')
-
-    name = 'disjointness-alt-lemma'
-    ph0_mc = nf.MetaVar(
-        ph0.name,
-        e_fresh=ph1.e_fresh + (x,),
-        s_fresh=ph1.s_fresh,
-        positive=ph1.positive,
-        negative=ph1.negative,
-        app_ctx_holes=ph1.app_ctx_holes,
-    )
-    # ( \imp ( \sorted-exists x ph2 ( \ceil ( \and ph0 ph1 ) ) ) ( \ceil ( \and ph0 ( \sorted-exists x ph2 ph1 ) ) ) )
-    pattern = nf.Implication(
-        sorted_exists_(x, ph2, ceil_(and_(ph0_mc, ph1))), ceil_(and_(ph0_mc, sorted_exists_(x, ph2, ph1)))
-    )
-    assert name in converter._lemmas and len(converter._lemmas[name]) == 1
-    converted = converter._lemmas[name][0]
-    assert isinstance(converted, Lemma) and not isinstance(converted, LemmaWithAntecedents)
-    assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
-
-
 def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
     converter = MetamathConverter(parsed_lemma_database)
     scope = converter._scope
@@ -497,3 +445,24 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
     for name in list(patterns) + list(axioms) + list(proof_rules):
         converter.is_axiom(name)
+
+
+def test_provable(parsed_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
+
+    print(converter._declared_proof)
+
+    class NewProof(p.ProofExp):
+        def axioms() -> list[p.Pattern]:
+            return map(lambda x: x.pattern, converter._axioms.values())
+
+        def claims() -> list[p.Pattern]:
+            return []
+
+    newproof = NewProof(p.BasicInterpreter(p.ExecutionPhase(0)))
+
+    NewProof.main(["", "pretty", "gamma", "test.txt"]),
+
+    assert converter._declared_proof == [1]
+
+    converter.exec_instruction(converter._declared_proof.instructions, newproof)
