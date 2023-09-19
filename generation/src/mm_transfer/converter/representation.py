@@ -32,7 +32,7 @@ class Axiom:
 
 
 @dataclass(frozen=True)
-class ComplexAxiom(Axiom):
+class AxiomWithAntecedents(Axiom):
     name: str
     args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
@@ -46,3 +46,13 @@ class Proof():
     #conclusion: nf.Pattern
     labels: dict[int, str]
     instructions: list[int]
+
+
+class Lemma(Axiom):
+    # TODO: Add proof or proof-related methods later
+    pass
+
+
+class LemmaWithAntecedents(AxiomWithAntecedents, Lemma):
+    # TODO: Add proof or proof-related methods later
+    pass
