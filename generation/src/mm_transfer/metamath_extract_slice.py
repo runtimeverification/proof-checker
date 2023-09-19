@@ -225,13 +225,19 @@ def main() -> None:
 
     exclude: set[str] = set()
 
+    print('Calculating dependency graph...', end='', flush=True)
     deps = dependency_graph(input_database)
-    include: set[str] = transitive_closure(deps, ['goal'])
+    print(' Done.')
 
+    print('Collecting required lemmas...', end='', flush=True)
+    include: set[str] = transitive_closure(deps, ['goal'])
+    print(' Done.')
+
+    print('Writing slices...',  end='', flush=True)
     for label, slice in slice_database(input_database, include=include, exclude=exclude):
         with open(output_dir / (label + '.mm'), 'w') as output_file:
             Encoder.encode(output_file, slice)
-        print(f'Extracted {label}.', end='\x1b[2K\r', flush=True)
+    print(' Done.')
 
 
 if __name__ == '__main__':
