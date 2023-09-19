@@ -449,20 +449,24 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
 def test_provable(parsed_goal_database: Database) -> None:
     converter = MetamathConverter(parsed_goal_database)
-
-    print(converter._declared_proof)
+    extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
+    extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
     class NewProof(p.ProofExp):
+        @staticmethod
         def axioms() -> list[p.Pattern]:
-            return [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
+            return extracted_axioms
 
+        @staticmethod
         def claims() -> list[p.Pattern]:
-            return []
+            return extracted_claims
 
-    newproof = NewProof(p.BasicInterpreter(p.ExecutionPhase(0)))
+    NewProof.main(["", "pretty", "gamma", "test.txt"])
+    NewProof.main(["", "pretty", "claim", "test_claim2.txt"])
 
-    NewProof.main(["", "pretty", "gamma", "test.txt"]),
-
-    assert converter._declared_proof == [1]
-
+    newproof = NewProof(p.BasicInterpreter(p.ExecutionPhase.Proof))
     converter.exec_instruction(converter._declared_proof.instructions, newproof)
+
+
+if __name__ == '__main__':
+    test_provable(load_database(os.path.join("generation", BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True))

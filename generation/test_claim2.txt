@@ -1,0 +1,25 @@
+SVar 0
+	Stack:
+	0: X0
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+SVar 0
+	Stack:
+	0: X0
+	1: (μ X0 . X0)
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: (μ X0 . X0)
+Implication
+	Stack:
+	0: ((μ X0 . X0) -> (μ X0 . X0))
+Symbol 0
+	Stack:
+	0: σ0
+	1: ((μ X0 . X0) -> (μ X0 . X0))
+Implication
+	Stack:
+	0: (((μ X0 . X0) -> (μ X0 . X0)) -> σ0)
+Publish
