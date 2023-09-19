@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 import proof_generation.pattern as nf
+import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
 from mm_transfer.metamath.ast import ConstantStatement
@@ -323,7 +324,20 @@ def test_provable(parsed_goal_database: Database) -> None:
 
     print(converter._declared_proof)
 
+    class NewProof(p.ProofExp):
+        def axioms() -> list[p.Pattern]:
+            return map(lambda x: x.pattern, converter._axioms.values())
+
+        def claims() -> list[p.Pattern]:
+            return []
+
+    newproof = NewProof(p.BasicInterpreter(p.ExecutionPhase(0)))
+
+    NewProof.main(["", "pretty", "gamma", "test.txt"]),
+
     assert converter._declared_proof == [1]
+
+    converter.exec_instruction(converter._declared_proof.instructions, newproof)
 
 
 def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
