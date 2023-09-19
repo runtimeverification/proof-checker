@@ -536,9 +536,9 @@ pub enum ExecutionPhase {
 fn read_u8_vec<'a>(next: &mut impl FnMut() -> Option<InstByte>) -> Vec<u8> {
     let len = (next().expect("Expected length for array")) as usize;
 
-    let mut vec: Vec<u8> = vec![0; len];
-    for i in 0..len {
-        vec[i] = next().expect("Expected another constraint of given type");
+    let mut vec: Vec<u8> = Vec::with_capacity(len);
+    for _ in 0..len {
+        vec.push(next().expect("Expected another constraint of given type"));
     }
     return vec;
 }
@@ -728,20 +728,17 @@ fn execute_instructions<'a>(
                 stack.push(Term::Proved(ssubst(pattern, svar_id, plug)));
             }
             Instruction::Instantiate => {
-                let n = next().expect("Insufficient parameters for Instantiate instruction");
-                let mut ids: IdList = vec![];
-                let mut plugs: Vec<Rc<Pattern>> = vec![];
+                let n = next().expect("Insufficient parameters for Instantiate instruction") as usize;
+                let mut ids: IdList = Vec::with_capacity(n);
+                let mut plugs: Vec<Rc<Pattern>> = Vec::with_capacity(n);
+                
+                let metaterm = pop_stack(stack);
 
-                let mut i = 0;
-                while i < n {
-                    ids.push(
-                        next().expect("Insufficient parameters for Instantiate instruction") as Id,
-                    );
+                for _ in 0..n {
+                    ids.push(next().expect("Insufficient parameters for Instantiate instruction") as Id);
                     plugs.push(pop_stack_pattern(stack));
-                    i += 1;
                 }
 
-                let metaterm = pop_stack(stack);
                 match metaterm {
                     Term::Pattern(p) => stack.push(Term::Pattern(instantiate(p, &ids, &plugs))),
                     Term::Proved(p) => stack.push(Term::Proved(instantiate(p, &ids, &plugs))),
@@ -1470,27 +1467,27 @@ fn test_construct_phi_implies_phi_with_constraints() {
 fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
     let proof : Vec<InstByte> = vec![
-        Instruction::Prop2 as InstByte,                     // Stack: prop2
-        Instruction::MetaVar as InstByte, 0, 0, 0, 0, 0, 0, // Stack: prop2 ; $ph0
+        Instruction::MetaVar as InstByte, 0, 0, 0, 0, 0, 0, // Stack: $ph0
         Instruction::Save as InstByte,                    // @0
-        Instruction::Load as InstByte, 0,                 // Stack: prop2 ; $ph0 ; $ph0
-        Instruction::Implication as InstByte,             // Stack: prop2 ; $ph0 -> ph0
+        Instruction::Load as InstByte, 0,                 // Stack: $ph0; ph0
+        Instruction::Load as InstByte, 0,                 // Stack: $ph0; $ph0; ph0
+        Instruction::Implication as InstByte,             // Stack: $ph0; ph0 -> ph0
         Instruction::Save as InstByte,                    // @1
-        Instruction::Instantiate as InstByte, 1, 1,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-        Instruction::Load as InstByte, 0,                 // Stack: prop2 ; ph0 -> ph0 ; ph0
-        Instruction::Instantiate as InstByte, 1, 2,       // Stack: [p1: (ph0 -> (ph0 -> ph0) -> ph0) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+        Instruction::Prop2 as InstByte,                   // Stack: $ph0; $ph0 -> ph0; [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
+        Instruction::Instantiate as InstByte, 1, 1,       // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2)) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
+        Instruction::Instantiate as InstByte, 1, 2,       // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0)) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+        Instruction::Load as InstByte, 1,                 // Stack: p1 ; $ph0 -> ph0
+        Instruction::Prop1 as InstByte,                   // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)
 
-        Instruction::Prop1 as InstByte,                   // Stack: p1 ; prop1
-        Instruction::Load as InstByte, 1,                 // Stack: p1 ; prop1 ; $ph0 -> ph0
         Instruction::Instantiate as InstByte, 1, 1,       // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
 
         Instruction::ModusPonens as InstByte,             // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+        Instruction::Load as InstByte, 0,                 // Stack: p3 ; ph0;
+        Instruction::Prop1 as InstByte,                   // Stack: p3 ; ph0; prop1
 
-        Instruction::Prop1 as InstByte,                   // Stack: p3 ; prop1
-        Instruction::Load as InstByte, 0,                 // Stack: p3 ; prop1 ; ph0
-        Instruction::Instantiate as InstByte, 1, 1,       // Stack: p3 ; ph0 -> ph0 -> ph0
+        Instruction::Instantiate as InstByte, 1, 1,       // Stack: p3 ; ph0 -> (ph0 -> ph0)
 
-        Instruction::ModusPonens as InstByte,             // Stack: phi0 -> phi0
+        Instruction::ModusPonens as InstByte,             // Stack: ph0 -> ph0
     ];
     let mut stack = vec![];
     execute_vector(
