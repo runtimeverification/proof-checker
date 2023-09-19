@@ -177,7 +177,7 @@ class MetamathConverter:
             return
 
         # Prepare scopes if we need more than one
-        args: tuple[Metavariable, ...] = ()
+        args: tuple[Metavariable, ...]
         if axiom_type == AxiomType.Provable:
             args = self._collect_variables(actual_statement.terms[1])
         else:
