@@ -3,7 +3,6 @@ from __future__ import annotations
 from proof_generation.proof import BasicInterpreter, ExecutionPhase, Implication, Proved, StatefulInterpreter, Symbol
 from proof_generation.proofs.propositional import Propositional
 from proof_generation.proofs.small_theory import SmallTheory
-from proof_generation.proofs.imp_trans import ImpTrans
 
 
 def test_prove_transitivity() -> None:
@@ -18,7 +17,6 @@ def test_prove_transitivity_via_theory() -> None:
     phi0_implies_phi2 = th.claims()[0]
     assert th.sym0_implies_sym2_proof().conclusion == phi0_implies_phi2
 
-def test_prove_contrapositive_via_imp_trans() -> None:
-    th = ImpTrans(StatefulInterpreter(phase=ExecutionPhase.Proof, axioms=ImpTrans.axioms()))
-    contrapositive_claim = th.claims()[0]
-    assert th.contrapositive().conclusion == contrapositive_claim
+def test_prove_absurd() -> None:
+    prop = Propositional(BasicInterpreter(phase=ExecutionPhase.Proof))
+    assert prop.absurd().conclusion == Implication(prop.neg(prop.phi0), Implication(prop.phi0, prop.phi1))
