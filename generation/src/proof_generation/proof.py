@@ -311,8 +311,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        *self.stack, expected_proved = self.stack
         expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_proved = self.stack[0 : -len(delta)]
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
@@ -320,8 +320,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        *self.stack, expected_pattern = self.stack
         expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)

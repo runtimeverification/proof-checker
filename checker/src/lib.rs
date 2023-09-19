@@ -728,14 +728,17 @@ fn execute_instructions<'a>(
                 stack.push(Term::Proved(ssubst(pattern, svar_id, plug)));
             }
             Instruction::Instantiate => {
-                let n = next().expect("Insufficient parameters for Instantiate instruction") as usize;
+                let n =
+                    next().expect("Insufficient parameters for Instantiate instruction") as usize;
                 let mut ids: IdList = Vec::with_capacity(n);
                 let mut plugs: Vec<Rc<Pattern>> = Vec::with_capacity(n);
-                
+
                 let metaterm = pop_stack(stack);
 
                 for _ in 0..n {
-                    ids.push(next().expect("Insufficient parameters for Instantiate instruction") as Id);
+                    ids.push(
+                        next().expect("Insufficient parameters for Instantiate instruction") as Id,
+                    );
                     plugs.push(pop_stack_pattern(stack));
                 }
 

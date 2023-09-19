@@ -109,10 +109,10 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
             assert n is not None
 
             keys = [next_byte() for _ in range(n)]
-            values = reversed(interpreter.stack[-n:])
+            target = interpreter.stack[-1]
+            values = reversed(interpreter.stack[-(n + 1) : -1])
 
             delta = dict(reversed(list(zip(keys, values, strict=True))))
-            target = interpreter.stack[-(n + 1)]
 
             if isinstance(target, Proved):
                 interpreter.instantiate(target, delta)
