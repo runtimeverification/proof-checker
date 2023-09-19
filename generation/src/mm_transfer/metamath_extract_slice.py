@@ -97,9 +97,10 @@ def supporting_database_for_provable(
     return Database(tuple(statements))
 
 
-def is_axiom(statement: Statement) -> bool:
+def match_axiom(statement: Statement) -> AxiomaticStatement | None:
+    """Returns the main statement of an axiom statement or block ending with an axiom."""
     if isinstance(statement, AxiomaticStatement):
-        return True
+        return statement
     if isinstance(statement, Block):
         substatements = list(statement.statements)
         while substatements:
@@ -107,32 +108,10 @@ def is_axiom(statement: Statement) -> bool:
             if isinstance(substatement, Block):
                 substatements += substatement.statements
             elif not isinstance(substatement, (DisjointStatement, EssentialStatement, AxiomaticStatement)):
-                return False
-        return True
-    return False
-
-
-def axiom_get_label(statement: Statement) -> str:
-    # TODO: We have all this complexity because the `substitution-fold/unfold` axiom is stated in
-    # a non-standard way. I don't want to change that until after the PoC.
-    if isinstance(statement, AxiomaticStatement):
-        return statement.label
-    elif isinstance(statement, Block):
-        label = None
-        substatements = list(statement.statements)
-        while substatements:
-            substatement, *substatements = substatements
-            if isinstance(substatement, Block):
-                substatements += substatement.statements
-            elif isinstance(substatement, (DisjointStatement, EssentialStatement)):
-                continue
-            else:
-                assert isinstance(substatement, AxiomaticStatement)
-                label = substatement.label
-        assert label, statement
-        return label
-    else:
-        raise AssertionError('Statement is not axiom?')
+                return None
+        assert isinstance(substatement, AxiomaticStatement)
+        return substatement
+    return None
 
 
 def deconstruct_provable(
@@ -141,7 +120,7 @@ def deconstruct_provable(
     if isinstance(statement, ProvableStatement):
         return ((), statement)
     elif isinstance(statement, Block):
-        assert not is_axiom(statement)
+        assert not match_axiom(statement)
         for substatement in statement.statements[:-1]:
             assert isinstance(substatement, (DisjointStatement, EssentialStatement)), substatement
         assert isinstance(statement.statements[-1], ProvableStatement)
@@ -177,8 +156,8 @@ def slice_database(input_database: Database, include: set[str], exclude: set[str
                         global_disjoints.add(frozenset({var1.name, var2.name}))
         elif isinstance(statement, FloatingStatement):
             cut_antecedents[statement.label] = statement
-        elif is_axiom(statement):
-            cut_antecedents[axiom_get_label(statement)] = cast('AxiomaticStatement | Block', statement)
+        elif axiom_conclusion := match_axiom(statement):
+            cut_antecedents[axiom_conclusion.label] = cast('AxiomaticStatement | Block', statement)
         elif isinstance(statement, (ProvableStatement, Block)):
             antecedents, consequent = deconstruct_provable(statement)
             if (consequent.label in include) and (consequent.label not in exclude):
