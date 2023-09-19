@@ -251,10 +251,12 @@ class MetamathConverter:
                 proofexp.interpreter.pattern(
                     self.get_axiom_by_name(exported_proof.labels[instruction]).pattern
                 )
-            # elif instruction is a non-trivial axiom: # it cannot be #Pattern sigma
-            #    proofexp.load_axiom(instruction)
-            # elif instruction is "proof-rule-mp":
+            elif exported_proof.labels[instruction] in self.exported_axioms:
+                proofexp.load_axiom(self.get_axiom_by_name(exported_proof.labels[instruction]).pattern)
+            elif exported_proof.labels[instruction] in self.proof_rules:
+                pass
             #    ...
+        #proofexp.interpreter.publish_proof
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
