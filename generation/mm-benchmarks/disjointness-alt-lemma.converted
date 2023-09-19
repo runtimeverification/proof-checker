@@ -1,0 +1,367 @@
+Symbol 2
+	Stack:
+	0: σ2
+EVar 2
+	Stack:
+	0: x2
+	1: σ2
+Application
+	Stack:
+	0: (app (σ2) (x2))
+Symbol 2
+	Stack:
+	0: σ2
+	1: (app (σ2) (x2))
+EVar 2
+	Stack:
+	0: x2
+	1: σ2
+	2: (app (σ2) (x2))
+Application
+	Stack:
+	0: (app (σ2) (x2))
+	1: (app (σ2) (x2))
+Implication
+	Stack:
+	0: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Publish
+Symbol 2
+	Stack:
+	0: σ2
+	1: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 1
+	Stack:
+	0: X1
+	1: σ2
+	2: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Application
+	Stack:
+	0: (app (σ2) (X1))
+	1: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Symbol 2
+	Stack:
+	0: σ2
+	1: (app (σ2) (X1))
+	2: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 1
+	Stack:
+	0: X1
+	1: σ2
+	2: (app (σ2) (X1))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Application
+	Stack:
+	0: (app (σ2) (X1))
+	1: (app (σ2) (X1))
+	2: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	1: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Publish
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 0
+	Stack:
+	0: phi0
+	1: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	2: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	2: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Publish
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: phi0
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: phi0
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (phi0 -> (μ X0 . X0))
+	1: (phi0 -> phi0)
+	2: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: (phi0 -> (μ X0 . X0))
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: (phi0 -> (μ X0 . X0))
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	1: (phi0 -> phi0)
+	2: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 1
+	Stack:
+	0: phi1
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: phi1
+	2: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: phi1
+	2: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (phi1 -> (μ X0 . X0))
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0)))
+	1: (phi0 -> phi0)
+	2: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0)))
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0)))
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: ((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0))
+	1: (phi0 -> phi0)
+	2: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 0
+	Stack:
+	0: phi0
+	1: ((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0))
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	1: (phi0 -> phi0)
+	2: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	3: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Publish
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: phi0
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: phi0
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (phi0 -> (μ X0 . X0))
+	1: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: (phi0 -> (μ X0 . X0))
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: (phi0 -> (μ X0 . X0))
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	1: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 1
+	Stack:
+	0: phi1
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: phi1
+	2: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	3: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	4: (phi0 -> phi0)
+	5: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	6: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: phi1
+	2: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	3: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	4: (phi0 -> phi0)
+	5: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	6: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (phi1 -> (μ X0 . X0))
+	1: ((phi0 -> (μ X0 . X0)) -> (μ X0 . X0))
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0)))
+	1: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+SVar 0
+	Stack:
+	0: X0
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0)))
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+	1: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0)))
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: ((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0))
+	1: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+List=eFresh len=0 
+List=sFresh len=0 
+List=pos len=0 
+List=neg len=0 
+List=appctx len=0 
+MetaVar 1
+	Stack:
+	0: phi1
+	1: ((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0))
+	2: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	3: (phi0 -> phi0)
+	4: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	5: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Implication
+	Stack:
+	0: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi1)
+	1: (((((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> (phi1 -> (μ X0 . X0))) -> (μ X0 . X0)) -> phi0)
+	2: (phi0 -> phi0)
+	3: ((app (σ2) (X1)) -> (app (σ2) (X1)))
+	4: ((app (σ2) (x2)) -> (app (σ2) (x2)))
+Publish
