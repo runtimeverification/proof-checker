@@ -298,11 +298,11 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     antecedents = []
     ph0_mc = nf.MetaVar(
         ph0.name,
-        e_fresh=ph1.e_fresh + (y,),
-        s_fresh=ph1.s_fresh,
-        positive=ph1.positive,
-        negative=ph1.negative,
-        app_ctx_holes=ph1.app_ctx_holes + (x,),
+        e_fresh=ph0.e_fresh + (y,),
+        s_fresh=ph0.s_fresh,
+        positive=ph0.positive,
+        negative=ph0.negative,
+        app_ctx_holes=ph0.app_ctx_holes + (x,),
     )
     ph1_substututed = nf.ESubst(ph0_mc, x, ph5)
     evar = sorted_exists_(y, ph6, ph5)
@@ -333,11 +333,11 @@ def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
     name = 'disjointness-alt-lemma'
     ph0_mc = nf.MetaVar(
         ph0.name,
-        e_fresh=ph1.e_fresh + (x,),
-        s_fresh=ph1.s_fresh,
-        positive=ph1.positive,
-        negative=ph1.negative,
-        app_ctx_holes=ph1.app_ctx_holes,
+        e_fresh=ph0.e_fresh + (x,),
+        s_fresh=ph0.s_fresh,
+        positive=ph0.positive,
+        negative=ph0.negative,
+        app_ctx_holes=ph0.app_ctx_holes,
     )
     # ( \imp ( \sorted-exists x ph2 ( \ceil ( \and ph0 ph1 ) ) ) ( \ceil ( \and ph0 ( \sorted-exists x ph2 ph1 ) ) ) )
     pattern = nf.Implication(
