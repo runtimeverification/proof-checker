@@ -32,9 +32,19 @@ class Axiom:
 
 
 @dataclass(frozen=True)
-class AxiomWithAntecetends(Axiom):
+class AxiomWithAntecedents(Axiom):
     name: str
     args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
     pattern: nf.Pattern
     antecedents: tuple[nf.Pattern, ...]
+
+
+class Lemma(Axiom):
+    # TODO: Add proof or proof-related methods later
+    pass
+
+
+class LemmaWithAntecedents(AxiomWithAntecedents, Lemma):
+    # TODO: Add proof or proof-related methods later
+    pass
