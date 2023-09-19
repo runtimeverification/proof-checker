@@ -461,11 +461,18 @@ def test_provable(parsed_goal_database: Database) -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
-    NewProof.main(["", "pretty", "gamma", "test.txt"])
-    NewProof.main(["", "pretty", "claim", "test_claim2.txt"])
+    NewProof.main(["", "binary", "gamma", "transfer-goal.ml-gamma"])
+    NewProof.main(["", "binary", "claim", "transfer-goal.ml-claim"])
 
-    newproof = NewProof(p.BasicInterpreter(p.ExecutionPhase.Proof))
-    converter.exec_instruction(converter._declared_proof.instructions, newproof)
+    with open("transfer-goal.ml-proof", 'wb') as out:
+        newproof = NewProof(p.SerializingInterpreter(
+                p.ExecutionPhase.Proof,
+                out,
+                (Claim(claim) for claim in extracted_claims),
+                extracted_axioms
+            )
+        )
+        converter.exec_instruction(converter._declared_proof, newproof)
 
 
 if __name__ == '__main__':

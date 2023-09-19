@@ -245,11 +245,12 @@ class MetamathConverter:
                 continue
 
     # add builtin notation
-    def exec_instruction(self, instructions, proofexp: ProofExp):
-        for instruction in instructions:
-            pass
-            # if instruction is "*-is-pattern":
-            #    proofexp.interpreter.pattern(self.term_constructors[instruction].pattern)
+    def exec_instruction(self, exported_proof: Proof, proofexp: ProofExp):
+        for instruction in exported_proof.instructions:
+            if exported_proof.labels[instruction] in self.pattern_constructors:
+                proofexp.interpreter.pattern(
+                    self.get_axiom_by_name(exported_proof.labels[instruction]).pattern
+                )
             # elif instruction is a non-trivial axiom: # it cannot be #Pattern sigma
             #    proofexp.load_axiom(instruction)
             # elif instruction is "proof-rule-mp":
