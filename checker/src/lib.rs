@@ -748,7 +748,7 @@ fn execute_instructions<'a>(
                 }
 
                 let esubst_pat = esubst(Rc::clone(&pattern), evar_id, Rc::clone(&plug));
-                if !esubst_pat.well_formed() {
+                if esubst_pat.well_formed() {
                     // The substitution is redundant, we don't apply it.
                     stack.push(Term::Pattern(pattern))
                 } else {
@@ -763,7 +763,7 @@ fn execute_instructions<'a>(
 
                 match pattern.as_ref() {
                     Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. } => (),
-                    _ => panic!("Cannot apply ESubst on concrete term!"),
+                    _ => panic!("Cannot apply SSubst on concrete term!"),
                 }
 
                 let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, Rc::clone(&plug));
@@ -828,7 +828,20 @@ fn execute_instructions<'a>(
                     next().expect("Insufficient parameters for Substitution instruction.");
                 let plug = pop_stack_pattern(stack);
                 let pattern = pop_stack_proved(stack);
-                stack.push(Term::Proved(ssubst(pattern, svar_id, plug)));
+
+                match pattern.as_ref() {
+                    Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. } => (),
+                    _ => panic!("Cannot apply SSubst on concrete term!"),
+                }
+
+                let ssubst = ssubst(Rc::clone(&pattern), svar_id, plug);
+
+                if !ssubst.well_formed() {
+                    // The substitution is redundant, we don't apply it.
+                    stack.push(Term::Proved(pattern))
+                } else {
+                    stack.push(Term::Proved(ssubst));
+                }
             }
             Instruction::Instantiate => {
                 let n = next().expect("Insufficient parameters for Instantiate instruction");
