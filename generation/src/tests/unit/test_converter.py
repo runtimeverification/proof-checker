@@ -448,13 +448,13 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
 
 def test_provable(parsed_goal_database: Database) -> None:
-    converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
+    converter = MetamathConverter(parsed_goal_database)
 
     print(converter._declared_proof)
 
     class NewProof(p.ProofExp):
         def axioms() -> list[p.Pattern]:
-            return map(lambda x: x.pattern, converter._axioms.values())
+            return [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
 
         def claims() -> list[p.Pattern]:
             return []
