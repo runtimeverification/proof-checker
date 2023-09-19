@@ -32,7 +32,7 @@ class Axiom:
 
 
 @dataclass(frozen=True)
-class ComplexAxiom(Axiom):
+class AxiomWithAntecetends(Axiom):
     name: str
     args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
