@@ -180,11 +180,12 @@ class MetamathConverter:
     # add builtin notation
     def exec_instruction(self, instructions, proofexp: ProofExp):
         for instruction in instructions:
-            # if instruction is a non-trivial axiom: # it cannot be #Pattern sigma
+            pass
+            # if instruction is "*-is-pattern":
+            #    proofexp.interpreter.pattern(self.term_constructors[instruction].pattern)
+            # elif instruction is a non-trivial axiom: # it cannot be #Pattern sigma
             #    proofexp.load_axiom(instruction)
-            # elif instruction is "*-is-pattern":
-            #    proofexp.pattern(self.term_constructors[instruction].pattern)
-            #elif instruction is "proof-rule-mp":
+            # elif instruction is "proof-rule-mp":
             #    ...
 
     def _import_constants(self, statement: ConstantStatement) -> None:
