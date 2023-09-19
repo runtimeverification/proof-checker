@@ -447,6 +447,7 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
     for name in list(patterns) + list(axioms) + list(proof_rules):
         converter.is_axiom(name)
 
+
 def test_interpreting_axioms(parsed_lemma_database: Database) -> None:
     # TODO: Enable the following tests
     pass
