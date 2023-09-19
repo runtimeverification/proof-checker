@@ -397,9 +397,9 @@ class SerializingInterpreter(StatefulInterpreter):
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
         lists: list[tuple[EVar, ...] | tuple[SVar, ...]] = [e_fresh, s_fresh, positive, negative, application_context]
-        for list in lists:
-            self.out.write(bytes([Instruction.List, len(list), *[var.name for var in list]]))
         self.out.write(bytes([Instruction.MetaVar, id]))
+        for list in lists:
+            self.out.write(bytes([len(list), *[var.name for var in list]]))
         return ret
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
@@ -550,20 +550,22 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         application_context: tuple[EVar, ...] = (),
     ) -> None:
         def write_list(name: str, lst: tuple[EVar, ...] | tuple[SVar, ...]) -> None:
-            self.out.write(f'List={name} ')
-            self.out.write(f'len={len(lst)} ')
+            # Don't print empty arguments
+            if len(lst) == 0:
+                return
+            self.out.write(f'{name}, len={len(lst)} ')
             for item in lst:
                 self.out.write(str(item))
                 self.out.write(' ')
             self.out.write('\n')
 
+        self.out.write('MetaVar ')
+        self.out.write(str(id))
         write_list('eFresh', e_fresh)
         write_list('sFresh', s_fresh)
         write_list('pos', positive)
         write_list('neg', negative)
         write_list('appctx', application_context)
-        self.out.write('MetaVar ')
-        self.out.write(str(id))
 
     @pretty()
     def implies(self, left: Pattern, right: Pattern) -> None:

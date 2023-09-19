@@ -6,6 +6,11 @@ FORCE:
 clean-proofs:
 	rm -rf .build/proofs
 
+update-snapshots:
+	cp -rT .build/proofs proofs
+
+.PHONY: clean-proofs update-snapshots
+
 # Syntax and formatting checks
 # ============================
 
@@ -42,7 +47,7 @@ test-unit-python:
 # ==============
 
 test-system: test-proof-gen test-proof-verify
-.PHONY: test-proof-gen test-proof-verify test-risc0
+.PHONY: test-system test-proof-gen test-proof-verify test-zk
 
 PROOFS=$(wildcard proofs/*.ml-proof)
 
@@ -50,7 +55,6 @@ PROOFS=$(wildcard proofs/*.ml-proof)
 # Proof generation
 # ----------------
 
-PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 .build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
@@ -75,6 +79,7 @@ PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty gamma $@
 
+PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
 proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim .build/proofs/%.pretty-gamma
@@ -85,22 +90,23 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/
 	${BIN_DIFF} "proofs/$*.ml-proof" ".build/proofs/$*.ml-proof"
 	${BIN_DIFF} "proofs/$*.ml-gamma" ".build/proofs/$*.ml-gamma"
 
-
 test-proof-gen: ${PROOF_GEN_TARGETS}
 
 # Proof checking
 # ----------------
 
-PROOF_VERIFY_TARGETS=$(addsuffix .verify,${PROOFS})
+PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${PROOFS})
 proofs/%.ml-proof.verify: proofs/%.ml-proof
 	cargo run --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
-test-proof-verify: ${PROOF_VERIFY_TARGETS}
 
-PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify,.build/${PROOFS})
-.build/proofs/%.ml-proof.verify: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma
-	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim $<
+test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS}
 
-proof-verify: ${PROOF_VERIFY_BUILD_TARGETS}
+PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
+proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
+
+verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
+.PHONY: verify-generated
 
 # Proof conversion checking
 # -------------------------
