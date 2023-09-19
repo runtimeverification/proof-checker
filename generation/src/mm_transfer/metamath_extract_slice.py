@@ -64,17 +64,24 @@ def supporting_database_for_provable(
     provable: ProvableStatement,
     essentials: tuple[DisjointStatement | EssentialStatement, ...],
 ) -> Database:
+    def corresponding_sugar_axiom(label: str) -> str | None:
+        if not label.endswith('is-pattern'):
+            return None
+        sugar_label = label[0 : -len('is-pattern')] + 'is-sugar'
+        if sugar_label not in cut_antecedents.keys():
+            return None
+        return sugar_label
+
     statements: list[Statement] = []
-
     needed_lemmas, _ = deconstruct_compressed_proof(provable)
-
+    needed_lemmas += tuple(filter(None, map(corresponding_sugar_axiom, needed_lemmas)))
     needed_constants = set()
     needed_metavariables = set()
     for needed in (provable, *essentials, *(cut_antecedents[lemma_name] for lemma_name in needed_lemmas)):
         needed_constants.update(statements_get_constants((needed,)))
         needed_metavariables.update(needed.get_metavariables())
 
-    statements.append(ConstantStatement(tuple(needed_constants)))
+    statements.append(ConstantStatement(tuple(sorted(needed_constants))))
     if needed_metavariables:
         statements.append(VariableStatement(tuple(Metavariable(var) for var in needed_metavariables)))
     for pair in global_disjoints:
@@ -233,7 +240,7 @@ def main() -> None:
     include: set[str] = transitive_closure(deps, ['goal'])
     print(' Done.')
 
-    print('Writing slices...',  end='', flush=True)
+    print('Writing slices...', end='', flush=True)
     for label, slice in slice_database(input_database, include=include, exclude=exclude):
         with open(output_dir / (label + '.mm'), 'w') as output_file:
             Encoder.encode(output_file, slice)
