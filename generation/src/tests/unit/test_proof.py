@@ -81,7 +81,7 @@ def test_conclusion() -> None:
     ).assertc(Implication(phi0, phi0))
 
 
-def uncons_metavar(id: int) -> list[int]:
+def uncons_metavar_instrs(id: int) -> list[int]:
     return [Instruction.MetaVar, id, 0, 0, 0, 0, 0]
 
 
@@ -91,7 +91,7 @@ def test_serialize_phi_implies_phi() -> None:
     prop.phi0_implies_phi0()
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
-        *uncons_metavar(0),
+        *uncons_metavar_instrs(0),
         Instruction.Save,
         Instruction.Load, 0,
         Instruction.Implication,        # Stack: phi0 -> phi0
@@ -110,19 +110,19 @@ def test_prove_imp_reflexivity() -> None:
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         Instruction.Prop2,              # Stack: prop2
-        *uncons_metavar(0),
-        *uncons_metavar(0),
+        *uncons_metavar_instrs(0),
+        *uncons_metavar_instrs(0),
         Instruction.Implication,        # Stack: prop2 ; $ph0 -> ph0
-        *uncons_metavar(0),             # Stack: prop2[ph0 -> ph0/0] ; ph0
+        *uncons_metavar_instrs(0),             # Stack: prop2[ph0 -> ph0/0] ; ph0
         Instruction.Instantiate, 2, 2, 1, # Stack: prop2[ph0 -> ph0/0]
         Instruction.Prop1,              # Stack: p1 ; prop1
-        *uncons_metavar(0),
-        *uncons_metavar(0),
+        *uncons_metavar_instrs(0),
+        *uncons_metavar_instrs(0),
         Instruction.Implication,         # Stack: p1 ; prop1 ; $ph0 -> ph0
         Instruction.Instantiate, 1, 1,  # Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
         Instruction.ModusPonens,        # Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
         Instruction.Prop1,              # Stack: p3 ; prop1
-        *uncons_metavar(0),             # Stack: p3 ; prop1 ; ph0
+        *uncons_metavar_instrs(0),             # Stack: p3 ; prop1 ; ph0
         Instruction.Instantiate, 1, 1,  # Stack: p3 ; ph0 -> ph0 -> ph0
         Instruction.ModusPonens,        # Stack: phi0 -> phi0
         Instruction.Publish,
