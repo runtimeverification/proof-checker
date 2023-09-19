@@ -336,11 +336,11 @@ class MetamathConverter:
         # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
         def constant_is_pattern_axiom(st: AxiomaticStatement | EssentialStatement) -> bool:
             if (
-                isinstance(statement.terms[0], Application)
-                and statement.terms[0].symbol == '#Pattern'
-                and isinstance(statement.terms[1], Application)
-                and statement.terms[1].symbol in self._declared_constants
-                and is_constant.match(statement.terms[1].symbol)
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Pattern'
+                and isinstance(st.terms[1], Application)
+                and st.terms[1].symbol in self._declared_constants
+                and is_constant.match(st.terms[1].symbol)
             ):
                 # We can distinguish domain values from other constants, but we decided
                 # to keep quotes in favor of the direct correspondence between Metamath
@@ -352,10 +352,10 @@ class MetamathConverter:
 
         def symbol_axiom(st: AxiomaticStatement | EssentialStatement) -> bool:
             if (
-                isinstance(statement.terms[0], Application)
-                and statement.terms[0].symbol == '#Symbol'
-                and isinstance(statement.terms[1], Application)
-                and len(statement.terms[1].subterms) == 0
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Symbol'
+                and isinstance(st.terms[1], Application)
+                and len(st.terms[1].subterms) == 0
             ):
                 scope.add_symbol(st.terms[1].symbol)
                 return True
