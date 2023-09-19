@@ -461,10 +461,10 @@ def test_provable(parsed_goal_database: Database) -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
-    NewProof.main(["", "binary", "gamma", "transfer-goal.ml-gamma"])
-    NewProof.main(["", "binary", "claim", "transfer-goal.ml-claim"])
+    NewProof.main(["", "binary", "gamma", "impreflex.ml-gamma"])
+    NewProof.main(["", "binary", "claim", "impreflex.ml-claim"])
 
-    with open("transfer-goal.ml-proof", 'wb') as out:
+    with open("impreflex.ml-proof", 'wb') as out:
         newproof = NewProof(p.SerializingInterpreter(
                 p.ExecutionPhase.Proof,
                 out,
@@ -476,4 +476,4 @@ def test_provable(parsed_goal_database: Database) -> None:
 
 
 if __name__ == '__main__':
-    test_provable(load_database(os.path.join("generation", BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True))
+    test_provable(load_database(os.path.join("generation", BENCHMARK_LOCATION, 'impreflex.mm'), include_proof=True))

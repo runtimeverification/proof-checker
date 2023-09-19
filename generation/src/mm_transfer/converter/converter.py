@@ -138,6 +138,7 @@ class MetamathConverter:
             elif isinstance(statement, AxiomaticStatement):
                 sort_axiom(statement, statement)
             elif isinstance(statement, ProvableStatement):
+                self._import_provable(statement)
                 lemmas.append(statement)
             elif isinstance(statement, Block):
                 last_statment = statement.statements[-1]
@@ -164,9 +165,16 @@ class MetamathConverter:
 
     def _import_provable(self, statement: ProvableStatement) -> None:
         def split_proof(proof: str) -> tuple[dict[str, int], str]:
+            declared_lemmas: dict[str, int] = {}
+
+            metavars_id = 1
+            # TODO: Fix the order according to the one given by MM
+            for metavar in statement.get_metavariables():
+                declared_lemmas[metavars_id] = f'{metavar}-is-pattern'
+                metavars_id += 1
+
             offset = len(statement.get_metavariables())
             lemma_n = offset + 1
-            declared_lemmas: dict[str, int] = {}
             instructions: str = ""
 
             # TODO: Make some better whitespace handling
@@ -247,16 +255,29 @@ class MetamathConverter:
     # add builtin notation
     def exec_instruction(self, exported_proof: Proof, proofexp: ProofExp):
         for instruction in exported_proof.instructions:
-            if exported_proof.labels[instruction] in self.pattern_constructors:
+            instruction_label = exported_proof.labels[instruction]
+
+            if instruction_label in self.pattern_constructors:
                 proofexp.interpreter.pattern(
-                    self.get_axiom_by_name(exported_proof.labels[instruction]).pattern
+                    self.get_axiom_by_name(instruction_label).pattern
                 )
-            elif exported_proof.labels[instruction] in self.exported_axioms:
-                proofexp.load_axiom(self.get_axiom_by_name(exported_proof.labels[instruction]).pattern)
-            elif exported_proof.labels[instruction] in self.proof_rules:
-                pass
-            #    ...
-        #proofexp.interpreter.publish_proof
+            # TODO: phi0-is-pattern should be in pattern constructors
+            elif instruction_label == "ph0-is-pattern":
+                proofexp.interpreter.metavar(0)
+            elif instruction_label in self.exported_axioms:
+                proofexp.load_axiom(self.get_axiom_by_name(instruction_label).pattern)
+                # TODO: Instantiate
+            elif instruction_label in self.axioms:
+                if instruction_label == "proof-rule-prop-1":
+                    proofexp.interpreter.prop1()
+                if instruction_label == "proof-rule-prop-2":
+                    proofexp.interpreter.prop2()
+            elif instruction_label in self.proof_rules:
+                if instruction_label == "proof-rule-mp":
+                    proofexp.interpreter.modus_ponens(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
+                    proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
+                    proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
+        #proofexp.interpreter.publish_proof(proofexp.interpreter.stack[-1])
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
