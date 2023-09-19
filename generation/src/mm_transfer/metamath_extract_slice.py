@@ -83,7 +83,7 @@ def supporting_database_for_provable(
 
     statements.append(ConstantStatement(tuple(sorted(needed_constants))))
     if needed_metavariables:
-        statements.append(VariableStatement(tuple(Metavariable(var) for var in needed_metavariables)))
+        statements.append(VariableStatement(tuple(Metavariable(var) for var in sorted(needed_metavariables))))
     for pair in global_disjoints:
         if pair.issubset(needed_metavariables):
             statements.append(DisjointStatement(tuple(Metavariable(var) for var in pair)))
