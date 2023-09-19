@@ -1,19 +1,25 @@
 from __future__ import annotations
 
 import re
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.representation import Axiom, Notation
-from mm_transfer.converter.scope import GlobalScope, to_notation_scope
+from mm_transfer.converter.representation import Axiom, AxiomWithAntecetends, Notation
+from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
     AxiomaticStatement,
+    Block,
     ConstantStatement,
+    DisjointStatement,
+    EssentialStatement,
     FloatingStatement,
     Metavariable,
+    ProvableStatement,
+    Term,
     VariableStatement,
 )
 
@@ -21,7 +27,16 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from mm_transfer.converter.scope import NotationScope
-    from mm_transfer.metamath.ast import Database, Term
+    from mm_transfer.metamath.ast import Database
+
+
+class AxiomType(Enum):
+    Trivial = 1
+    Notation = 2
+    Provable = 3
+    LocalNotation = 4
+    Metacondition = 5
+    Substitution = 6
 
 
 class MetamathConverter:
@@ -52,14 +67,25 @@ class MetamathConverter:
         for statement in self.parsed.statements:
             if isinstance(statement, ConstantStatement):
                 self._import_constants(statement)
-            if isinstance(statement, VariableStatement):
+            elif isinstance(statement, VariableStatement):
                 self._import_variables(statement)
             elif isinstance(statement, FloatingStatement):
                 self._import_floating(statement)
             elif isinstance(statement, AxiomaticStatement):
-                self._import_axioms(statement)
+                self._import_axiom(statement)
+            elif isinstance(statement, Block):
+                last_statment = statement.statements[-1]
+                if isinstance(last_statment, AxiomaticStatement):
+                    # TODO: Remove me later
+                    if self._convert_axioms:
+                        self._import_axiom(statement)
+                elif isinstance(last_statment, ProvableStatement):
+                    # TODO: Implement parsing lemmas and proofs
+                    pass
+                else:
+                    raise NotImplementedError(f'Unknown statement: {repr(statement)}')
             else:
-                continue
+                raise NotImplementedError(f'Unknown statement: {repr(statement)}')
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
@@ -137,11 +163,65 @@ class MetamathConverter:
         else:
             print(f'Unknown floating statement: {repr(statement)}')
 
-    def _import_axioms(self, statement: AxiomaticStatement) -> None:
+    def _import_axiom(self, statement: AxiomaticStatement | Block) -> None:
+        actual_statement = statement if isinstance(statement, AxiomaticStatement) else statement.statements[-1]
+        assert isinstance(actual_statement, AxiomaticStatement)
+
+        axiom_type = self._check_axiom(self._scope, actual_statement)
+        if axiom_type in (AxiomType.Trivial, AxiomType.Substitution, AxiomType.Metacondition, AxiomType.LocalNotation):
+            # We don't need to do anything for such top-level axioms
+            return
+        elif axiom_type in (AxiomType.Notation, AxiomType.Provable):
+            if not self._convert_axioms and axiom_type == AxiomType.Provable:
+                # TODO: Bypass parsing for some slices
+                return
+
+            # Prepare scopes if we need more than one
+            args: tuple[Metavariable, ...]
+            if axiom_type == AxiomType.Provable:
+                args = self._collect_variables(actual_statement.terms[1])
+            elif axiom_type == AxiomType.Notation:
+                # It looks like #Notation (args) (replacement)
+                assert len(actual_statement.terms) == 3 and isinstance(actual_statement.terms[1], Application)
+                metavar_args = actual_statement.terms[1].subterms
+                # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
+                assert all(isinstance(arg, Metavariable) for arg in metavar_args)
+                args = tuple(metavar_args)  # type: ignore
+            else:
+                raise NotImplementedError(f'Unexpected axiom type: {axiom_type}')
+
+            ambiguous_args = tuple(arg.name for arg in args if self._scope.is_ambiguous(arg))
+            if len(ambiguous_args) > 0:
+                scopes = self._scope.unambiguize(ambiguous_args)
+            else:
+                scope = Scope()
+                scope.import_from_scope(self._scope)
+                scopes = (scope,)
+
+            # Then add actual axioms or notations
+            for scope in scopes:
+                # Update the scope depending on the Block statements
+                antecedents: tuple[nf.Pattern, ...] = ()
+                if isinstance(statement, Block):
+                    antecedents = self._prepare_scope_for_block(statement, scope)
+
+                if axiom_type == AxiomType.Provable:
+                    axiom = self._convert_axiom_for_scope(scope, actual_statement)
+                    if len(antecedents) > 0:
+                        axiom = AxiomWithAntecetends(
+                            axiom.name, axiom.args, axiom.type_check, axiom.pattern, antecedents
+                        )
+                    self._add_axiom(axiom.name, axiom)
+                else:
+                    self._add_notation(scope, self._scope, actual_statement)
+        else:
+            raise NotImplementedError(f'Unknown axiom type: {axiom_type}')
+
+    def _check_axiom(self, scope: Scope, statement: AxiomaticStatement | EssentialStatement) -> AxiomType:
         is_constant = re.compile(r'"\S+"')
 
         # TODO: Patterns and notations are searched as is. It is unclear do we need to support Blocks
-        def constant_is_pattern_axiom(st: AxiomaticStatement) -> bool:
+        def constant_is_pattern_axiom(st: AxiomaticStatement | EssentialStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Pattern'
@@ -152,66 +232,79 @@ class MetamathConverter:
                 # We can distinguish domain values from other constants, but we decided
                 # to keep quotes in favor of the direct correspondence between Metamath
                 # and the new format.
-                self._scope.add_domain_value(st.terms[1].symbol)
+                scope.add_domain_value(st.terms[1].symbol)
                 return True
             else:
                 return False
 
-        def symbol_axiom(st: AxiomaticStatement) -> bool:
+        def symbol_axiom(st: AxiomaticStatement | EssentialStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Symbol'
                 and isinstance(st.terms[1], Application)
                 and len(st.terms[1].subterms) == 0
             ):
-                self._scope.add_symbol(st.terms[1].symbol)
+                scope.add_symbol(st.terms[1].symbol)
                 return True
             else:
                 return False
 
-        def proved_axiom(st: AxiomaticStatement) -> bool:
+        def proved_axiom(st: AxiomaticStatement | EssentialStatement) -> bool:
             if isinstance(st.terms[0], Application) and st.terms[0].symbol == '|-':
-                # TODO: Remove me later
-                if self._convert_axioms:
-                    self._convert_axiom(st.label, st.terms[1])
                 return True
             else:
                 return False
 
-        def sugar_axiom(st: AxiomaticStatement) -> bool:
+        def sugar_axiom(st: AxiomaticStatement | EssentialStatement) -> bool:
             if (
                 isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Notation'
                 and isinstance(st.terms[1], Application)
                 and len(st.terms) == 3
+                and (st.terms[1].symbol != st.terms[2].symbol if isinstance(st.terms[2], Application) else True)
             ):
-                symbol: str = st.terms[1].symbol
-                args = st.terms[1].subterms
-
-                # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
-                assert all(isinstance(arg, Metavariable) for arg in args)
-                metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
-                arg_names = tuple(arg.name for arg in metavar_args)
-                ambiguous_args = tuple(arg.name for arg in metavar_args if self._scope.is_ambiguous(arg))
-
-                if len(ambiguous_args) > 0:
-                    scopes = self._scope.unambiguize(ambiguous_args)
-                    for scope in scopes:
-                        notation_scope = to_notation_scope(scope, metavar_args)
-                        notation_lambda = self._to_pattern(notation_scope, st.terms[2])
-                        notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
-                        self._scope.add_notation(notation)
-                else:
-                    notation_scope = to_notation_scope(self._scope, metavar_args)
-                    notation_lambda = self._to_pattern(notation_scope, st.terms[2])
-                    notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
-                    self._scope.add_notation(notation)
                 return True
             else:
                 return False
 
-        def the_rest_axioms(st: AxiomaticStatement) -> bool:
-            if isinstance(st.terms[0], Application) and st.terms[0].symbol.startswith('#'):
+        def local_notation(st: AxiomaticStatement | EssentialStatement) -> bool:
+            if (
+                isinstance(st, EssentialStatement)
+                and isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Notation'
+                and isinstance(st.terms[1], Metavariable)
+            ):
+                return True
+            else:
+                return False
+
+        def substitution(st: AxiomaticStatement | EssentialStatement) -> bool:
+            if (
+                isinstance(st, EssentialStatement)
+                and isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Substitution'
+            ):
+                return True
+            else:
+                return False
+
+        def metacondition(st: AxiomaticStatement | EssentialStatement) -> bool:
+            if (
+                isinstance(st, EssentialStatement)
+                and isinstance(st.terms[0], Application)
+                and st.terms[0].symbol
+                in ('#Fresh', '#ApplicationContext')  # We will add #Negative, #Positive as we add support for them
+            ):
+                return True
+            else:
+                return False
+
+        def the_rest_axioms(st: AxiomaticStatement | EssentialStatement) -> bool:
+            if (
+                isinstance(st, AxiomaticStatement)
+                and isinstance(st.terms[0], Application)
+                and st.terms[0].symbol.startswith('#')
+            ):
                 self._ignored_axioms.append(st)
                 return True
             else:
@@ -219,71 +312,106 @@ class MetamathConverter:
 
         # $a #Pattern ...
         if constant_is_pattern_axiom(statement):
-            return
+            return AxiomType.Trivial
         # $a #Symbol ...
         elif symbol_axiom(statement):
-            return
+            return AxiomType.Trivial
         # $a #Notation ...
         elif sugar_axiom(statement):
-            return
+            return AxiomType.Notation
+        # $a |- ...
         elif proved_axiom(statement):
-            return
+            return AxiomType.Provable
         # like $a #something ...
+        elif local_notation(statement):
+            return AxiomType.LocalNotation
+        # $a #Substitution ...
+        elif substitution(statement):
+            return AxiomType.Substitution
+        # $a #Fresh ... or $d x y
+        elif metacondition(statement):
+            return AxiomType.Metacondition
+        # The rest we ignoring
         elif the_rest_axioms(statement):
-            return
+            return AxiomType.Trivial
         else:
             raise NotImplementedError(f'Unknown axiom: {repr(statement)}')
 
-    def _add_builtin_notations(self) -> None:
-        bot = Notation('\\bot', (), lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
-        self._scope.add_notation(bot)
-
     def _to_pattern(self, scope: NotationScope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+        def resolve_as_notation(name: str, subterms: tuple[Term, ...]) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+            converted_args = tuple(self._to_pattern(scope, arg) for arg in subterms)
+
+            def resolve_notation(*args: nf.Pattern) -> nf.Pattern:
+                real_args = [arg(*args) for arg in converted_args]
+                notation = scope.resolve_notation(name, *real_args)
+                return notation(*real_args)
+
+            return resolve_notation
+
         match term:
             case Application(symbol, subterms):
-                if symbol == '\\imp':
-                    assert len(subterms) == 2
-                    left_term, right_term = subterms
-                    left_pattern = self._to_pattern(scope, left_term)
-                    right_pattern = self._to_pattern(scope, right_term)
-                    return lambda *args: nf.Implication(left_pattern(*args), right_pattern(*args))
-                elif symbol == '\\app':
-                    assert len(subterms) == 2
-                    left_term, right_term = subterms
-                    left_pattern = self._to_pattern(scope, left_term)
-                    right_pattern = self._to_pattern(scope, right_term)
-                    return lambda *args: nf.Application(left_pattern(*args), right_pattern(*args))
-                elif symbol == '\\exists':
-                    assert len(subterms) == 2
-                    var_term, subpattern_term = subterms
-                    var_pattern = self._to_pattern(scope, var_term)
-                    subpattern_pattern = self._to_pattern(scope, subpattern_term)
-
-                    def exists(*args: nf.Pattern) -> nf.Pattern:
-                        evar = var_pattern(*args)
-                        assert isinstance(evar, nf.EVar)
-                        return nf.Exists(evar, subpattern_pattern(*args))
-
-                    return exists
-                elif scope.is_notation(symbol):
-                    converted_args = tuple(self._to_pattern(scope, arg) for arg in term.subterms)
-
-                    def resolve_notation(*args: nf.Pattern) -> nf.Pattern:
-                        real_args = [arg(*args) for arg in converted_args]
-                        notation = scope.resolve_notation(symbol, *real_args)
-                        return notation(*real_args)
-
-                    return resolve_notation
+                if scope.is_notation(symbol):
+                    return resolve_as_notation(symbol, subterms)
                 elif scope.is_symbol(symbol):
                     resolved = scope.resolve_as_callable(symbol)
                     return lambda *args: resolved(*args)
                 else:
                     raise NotImplementedError
             case Metavariable(name):
+                if scope.is_notation(name):
+                    # Assumption: local notations don't have arguments
+                    subterms = ()
+                    return resolve_as_notation(name, subterms)
                 resolved = scope.resolve_as_callable(name)
                 return lambda *args: resolved(*args)
             case _:
                 raise NotImplementedError
+
+    def _add_notation(self, scope: Scope, add_to: Scope, statement: AxiomaticStatement | EssentialStatement) -> None:
+        if isinstance(statement.terms[1], Application):
+            symbol: str = statement.terms[1].symbol
+            args = statement.terms[1].subterms
+            term = statement.terms[2]
+        elif isinstance(statement.terms[1], Metavariable):
+            symbol = statement.terms[1].name
+            args = ()
+            term = statement.terms[2]
+        else:
+            raise NotImplementedError
+
+        # Typechecker cannot swallow code below, so we need to silence a warning for this assignment
+        assert all(isinstance(arg, Metavariable) for arg in args)
+        metavar_args: tuple[Metavariable, ...] = tuple(args)  # type: ignore
+        arg_names = tuple(arg.name for arg in metavar_args)
+        notation_scope = to_notation_scope(scope, metavar_args)
+        notation_lambda = self._to_pattern(notation_scope, term)
+        notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
+        add_to.add_notation(notation)
+
+    def _add_builtin_notations(self) -> None:
+        application = Notation(
+            '\\app',
+            ('ph0', 'ph1'),
+            lambda *args: isinstance(args[0], nf.Pattern) and isinstance(args[1], nf.Pattern),
+            lambda *args: nf.Application(args[0], args[1]),
+        )
+        self._scope.add_notation(application)
+        imp = Notation(
+            '\\imp',
+            ('ph0', 'ph1'),
+            lambda *args: isinstance(args[0], nf.Pattern) and isinstance(args[1], nf.Pattern),
+            lambda *args: nf.Implication(args[0], args[1]),
+        )
+        self._scope.add_notation(imp)
+        exists = Notation(
+            '\\exists',
+            ('x', 'ph1'),
+            lambda *args: isinstance(args[0], nf.EVar) and isinstance(args[0], nf.Pattern),
+            lambda *args: nf.Exists(args[0], args[1]),
+        )
+        self._scope.add_notation(exists)
+        bot = Notation('\\bot', (), lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
+        self._scope.add_notation(bot)
 
     def _collect_variables(self, term: Term) -> tuple[Metavariable, ...]:
         collected_variables: list[Metavariable] = []
@@ -307,22 +435,172 @@ class MetamathConverter:
         else:
             self._axioms[name] = [axiom]
 
-    def _convert_axiom(self, name: str, term: Term) -> None:
-        variables = self._collect_variables(term)
-        var_names = tuple(var.name for var in variables)
-
-        def add_axiom_for_scope(sc: NotationScope) -> None:
-            notation_lambda = self._to_pattern(sc, term)
-            notation = Notation(name, var_names, sc.arguments_type_check, notation_lambda)
-            axiom_pattern = sc.notation_as_axiom(notation)
-            axiom = Axiom(name, var_names, sc.arguments_type_check, axiom_pattern)
-            self._add_axiom(name, axiom)
-
-        if any(self._scope.is_ambiguous(var) for var in variables):
-            scopes = self._scope.unambiguize(var_names)
-            for scope in scopes:
-                notation_scope = to_notation_scope(scope, variables)
-                add_axiom_for_scope(notation_scope)
+    def _get_axiom_name(self, statement: AxiomaticStatement | EssentialStatement | Block) -> str:
+        if isinstance(statement, Block):
+            st = statement.statements[-1]
         else:
-            notation_scope = to_notation_scope(self._scope, variables)
-            add_axiom_for_scope(notation_scope)
+            st = statement
+        assert isinstance(st, AxiomaticStatement | EssentialStatement)
+        return st.label
+
+    def _get_axiom_term(self, statement: AxiomaticStatement | EssentialStatement | Block) -> Term:
+        if isinstance(statement, Block):
+            st = statement.statements[-1]
+        else:
+            st = statement
+        assert isinstance(st, AxiomaticStatement | EssentialStatement)
+        return st.terms[1]
+
+    def _prepare_scope_for_block(self, block: Block, scope: Scope) -> tuple[nf.Pattern, ...]:
+        # Typecheck for the assignments two lines below
+        assert all(isinstance(st, EssentialStatement | DisjointStatement) for st in block.statements[:-1])
+        eh_statements: list[EssentialStatement | DisjointStatement] = block.statements[:-1]  # type: ignore
+
+        # Update the scope with new notations and metaconditions
+        self._convert_metaconditions(
+            scope,
+            tuple(filter(lambda st: isinstance(st, EssentialStatement | DisjointStatement), eh_statements)),
+        )
+
+        # Now add antedecents
+        only_es = tuple(filter(lambda st: isinstance(st, EssentialStatement), eh_statements))
+        antecedents: tuple[nf.Pattern, ...] = self._convert_antedecents(scope, only_es)  # type: ignore
+        return antecedents
+
+    def _convert_metaconditions(
+        self, scope: Scope, statements: tuple[EssentialStatement | DisjointStatement, ...]
+    ) -> None:
+        def new_metavariable(
+            metavar: nf.MetaVar,
+            e_fresh: tuple[nf.EVar, ...] = (),
+            s_fresh: tuple[nf.SVar, ...] = (),
+            positive: tuple[nf.SVar, ...] = (),
+            negative: tuple[nf.SVar, ...] = (),
+            app_ctx_holes: tuple[nf.EVar, ...] = (),
+        ) -> nf.MetaVar:
+            name = metavar.name
+            e_fresh = metavar.e_fresh + e_fresh
+            s_fresh = metavar.s_fresh + s_fresh
+            positive = metavar.positive + positive
+            negative = metavar.negative + negative
+            app_ctx_holes = metavar.app_ctx_holes + app_ctx_holes
+            return nf.MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+
+        def add_fresh_mc(metavar_name: str, var_name: str) -> None:
+            var = scope.resolve(var_name)
+            metavar = scope.resolve(metavar_name)
+            assert isinstance(metavar, nf.MetaVar)
+            if isinstance(var, nf.EVar):
+                new_var = new_metavariable(metavar, e_fresh=(var,))
+            elif isinstance(var, nf.SVar):
+                new_var = new_metavariable(metavar, s_fresh=(var,))
+            else:
+                raise NotImplementedError
+            scope.supercede_metavariable(metavar_name, new_var)
+
+        for statement in statements:
+            if isinstance(statement, EssentialStatement):
+                kind = self._check_axiom(scope, statement)
+                match kind:
+                    case AxiomType.Metacondition:
+                        assert isinstance(statement.terms[0], Application)
+                        if statement.terms[0].symbol == '#Fresh':
+                            assert isinstance(statement.terms[1], Metavariable)
+                            assert isinstance(statement.terms[2], Metavariable)
+
+                            var_name = statement.terms[1].name
+                            metavar_name = statement.terms[2].name
+                            add_fresh_mc(metavar_name, var_name)
+                        elif statement.terms[0].symbol == '#ApplicationContext':
+                            assert isinstance(statement.terms[1], Metavariable)
+                            assert isinstance(statement.terms[2], Metavariable)
+
+                            var_name = statement.terms[1].name
+                            metavar_name = statement.terms[2].name
+                            var = scope.resolve(var_name)
+                            metavar = scope.resolve(metavar_name)
+                            assert isinstance(metavar, nf.MetaVar)
+                            assert isinstance(var, nf.EVar)
+                            new_var = new_metavariable(metavar, app_ctx_holes=(var,))
+                            scope.supercede_metavariable(metavar_name, new_var)
+                        else:
+                            raise NotImplementedError
+                    case _:
+                        continue
+            elif isinstance(statement, DisjointStatement):
+                var_name = statement.metavariables[0].name
+                metavar_name = statement.metavariables[1].name
+                assert len(statement.metavariables) == 2
+                add_fresh_mc(metavar_name, var_name)
+            else:
+                raise NotImplementedError
+
+    def _convert_antedecents(self, scope: Scope, statements: tuple[EssentialStatement, ...]) -> tuple[nf.Pattern, ...]:
+        antecedents: list[nf.Pattern] = []
+        for statement in statements:
+            kind = self._check_axiom(scope, statement)
+            match kind:
+                case AxiomType.LocalNotation:
+                    # This notation actually replaces an existing variable
+                    self._add_notation(scope, scope, statement)
+                case AxiomType.Provable:
+                    axiom = self._convert_axiom_for_scope(scope, statement)
+                    antecedents.append(axiom.pattern)
+                case AxiomType.Substitution:
+                    # $e #Substitution ph1 ph2 ph3 xX`,
+                    # we must replace `ph1` with `XSubst(ph2, ph3, xX)`
+                    assert isinstance(statement.terms[1], Metavariable)
+                    assert all(isinstance(arg, Term) for arg in statement.terms[2:])
+
+                    symbol = statement.terms[1].name
+                    # Typecheck is added with the 'all' statement
+                    args: tuple[Metavariable, ...] = statement.terms[2:]  # type: ignore
+                    assert len(args) == 3
+                    notation_scope = to_notation_scope(scope, ())
+                    last_arg = args[-1]
+                    assert isinstance(last_arg, Metavariable)
+
+                    def get_subst_lambda(
+                        notation_scope: NotationScope, meta_args: tuple[Metavariable, ...]
+                    ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+                        converted_args = tuple(self._to_pattern(notation_scope, arg) for arg in meta_args)
+
+                        def notation_lambda(*fargs: nf.Pattern) -> nf.Pattern:
+                            assert len(converted_args) == 3
+                            pattern, plug, var = tuple(arg(*fargs) for arg in converted_args)
+                            assert isinstance(pattern, nf.MetaVar | nf.ESubst | nf.SSubst)
+                            assert isinstance(plug, nf.Pattern)
+                            assert isinstance(var, nf.EVar | nf.SVar)
+                            if isinstance(var, nf.EVar):
+                                return nf.ESubst(pattern, var, plug)
+                            elif isinstance(var, nf.SVar):
+                                return nf.SSubst(pattern, var, plug)
+                            else:
+                                raise NotImplementedError
+
+                        return notation_lambda
+
+                    notation = Notation(
+                        symbol,
+                        (),
+                        notation_scope.arguments_type_check,
+                        get_subst_lambda(notation_scope, args),
+                    )
+                    scope.add_notation(notation)
+                case _:
+                    continue
+        return tuple(antecedents)
+
+    def _convert_axiom_for_scope(self, scope: Scope, statement: AxiomaticStatement | EssentialStatement) -> Axiom:
+        name = self._get_axiom_name(statement)
+        variables: tuple[Metavariable, ...] = self._collect_variables(statement.terms[1])
+        term = self._get_axiom_term(statement)
+
+        var_names = tuple(var.name for var in variables)
+        notation_scope = to_notation_scope(scope, variables)
+        notation_lambda = self._to_pattern(notation_scope, term)
+        notation = Notation(name, var_names, notation_scope.arguments_type_check, notation_lambda)
+
+        axiom_pattern = scope.notation_as_axiom(notation)
+        axiom = Axiom(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
+        return axiom
