@@ -570,7 +570,10 @@ class MetamathConverter:
                     resolved = scope.resolve_as_callable(symbol)
                     return lambda *args: resolved(*args)
                 else:
-                    raise NotImplementedError
+                    # TODO: Remove this (undefined notation should not be treated as symbols)
+                    scope.add_symbol(symbol)
+                    resolved = scope.resolve_as_callable(symbol)
+                    return lambda *args: resolved(*args)
             case Metavariable(name):
                 if scope.is_notation(name):
                     # Assumption: local notations don't have arguments
