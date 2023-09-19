@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, Notation
+from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents, Notation
 from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
@@ -46,14 +46,16 @@ class MetamathConverter:
 
     def __init__(self, parsed: Database, parse_axioms: bool = True) -> None:
         self.parsed = parsed
+        # TODO: Remove it after we start supporting all possible axioms in all our slices
+        self._convert_axioms = parse_axioms
+
         self._scope: GlobalScope = GlobalScope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
-        self._ignored_axioms: list[AxiomaticStatement] = []
         self._axioms: dict[str, list[Axiom]] = {}
+        self._ignored_axioms: list[AxiomaticStatement] = []
         self._lemmas: dict[str, list[Lemma]] = {}
-        # TODO: Remove it after we start supporting all possible axioms in all our slices
-        self._convert_axioms = parse_axioms
+        self._ignored_lemmas: list[ProvableStatement] = []
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -74,6 +76,8 @@ class MetamathConverter:
                 self._import_floating(statement)
             elif isinstance(statement, AxiomaticStatement):
                 self._import_axiom(statement)
+            elif isinstance(statement, ProvableStatement):
+                self._import_lemma(statement)
             elif isinstance(statement, Block):
                 last_statment = statement.statements[-1]
                 if isinstance(last_statment, AxiomaticStatement):
@@ -81,8 +85,8 @@ class MetamathConverter:
                     if self._convert_axioms:
                         self._import_axiom(statement)
                 elif isinstance(last_statment, ProvableStatement):
-                    # TODO: Implement parsing lemmas and proofs
-                    pass
+                    if self._convert_axioms:
+                        self._import_lemma(statement)
                 else:
                     raise NotImplementedError(f'Unknown statement: {repr(statement)}')
             else:
@@ -191,13 +195,8 @@ class MetamathConverter:
             else:
                 raise NotImplementedError(f'Unexpected axiom type: {axiom_type}')
 
-            ambiguous_args = tuple(arg.name for arg in args if self._scope.is_ambiguous(arg))
-            if len(ambiguous_args) > 0:
-                scopes = self._scope.unambiguize(ambiguous_args)
-            else:
-                scope = Scope()
-                scope.import_from_scope(self._scope)
-                scopes = (scope,)
+            # Get all possible scopes
+            scopes = self._unambiguize_scope(actual_statement, args)
 
             # Then add actual axioms or notations
             for scope in scopes:
@@ -217,6 +216,34 @@ class MetamathConverter:
                     self._add_notation(scope, self._scope, actual_statement)
         else:
             raise NotImplementedError(f'Unknown axiom type: {axiom_type}')
+
+    def _import_lemma(self, statement: ProvableStatement | Block) -> None:
+        actual_statement = statement if isinstance(statement, ProvableStatement) else statement.statements[-1]
+        assert isinstance(actual_statement, ProvableStatement)
+
+        if not self._convert_axioms:
+            # TODO: Remove this after we start supporting all possible axioms in all our slices
+            return
+        if not (isinstance(actual_statement.terms[0], Application) and actual_statement.terms[0].symbol == '|-'):
+            self._ignored_lemmas.append(actual_statement)
+            return
+
+        # Prepare scopes if we need more than one
+        args = self._collect_variables(actual_statement.terms[1])
+        scopes = self._unambiguize_scope(actual_statement, args)
+
+        # Then add actual axioms or notations
+        for scope in scopes:
+            # Update the scope depending on the Block statements
+            antecedents: tuple[nf.Pattern, ...] = ()
+            if isinstance(statement, Block):
+                antecedents = self._prepare_scope_for_block(statement, scope)
+
+            lemma = self._convert_axiom_for_scope(scope, actual_statement)
+            assert isinstance(lemma, Lemma)
+            if len(antecedents) > 0:
+                lemma = LemmaWithAntecedents(lemma.name, lemma.args, lemma.type_check, lemma.pattern, antecedents)
+            self._add_lemma(lemma.name, lemma)
 
     def _check_axiom(self, scope: Scope, statement: AxiomaticStatement | EssentialStatement) -> AxiomType:
         is_constant = re.compile(r'"\S+"')
@@ -338,6 +365,18 @@ class MetamathConverter:
         else:
             raise NotImplementedError(f'Unknown axiom: {repr(statement)}')
 
+    def _unambiguize_scope(
+        self, statement: AxiomaticStatement | ProvableStatement, args: tuple[Metavariable, ...]
+    ) -> tuple[Scope, ...]:
+        ambiguous_args = tuple(arg.name for arg in args if self._scope.is_ambiguous(arg))
+        if len(ambiguous_args) > 0:
+            scopes = self._scope.unambiguize(ambiguous_args)
+        else:
+            scope = Scope()
+            scope.import_from_scope(self._scope)
+            scopes = (scope,)
+        return scopes
+
     def _to_pattern(self, scope: NotationScope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
         def resolve_as_notation(name: str, subterms: tuple[Term, ...]) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
             converted_args = tuple(self._to_pattern(scope, arg) for arg in subterms)
@@ -436,20 +475,26 @@ class MetamathConverter:
         else:
             self._axioms[name] = [axiom]
 
-    def _get_axiom_name(self, statement: AxiomaticStatement | EssentialStatement | Block) -> str:
+    def _add_lemma(self, name: str, lemma: Lemma) -> None:
+        if name in self._lemmas:
+            self._lemmas[name].append(lemma)
+        else:
+            self._lemmas[name] = [lemma]
+
+    def _get_axiom_name(self, statement: AxiomaticStatement | EssentialStatement | ProvableStatement | Block) -> str:
         if isinstance(statement, Block):
             st = statement.statements[-1]
         else:
             st = statement
-        assert isinstance(st, AxiomaticStatement | EssentialStatement)
+        assert isinstance(st, AxiomaticStatement | EssentialStatement | ProvableStatement)
         return st.label
 
-    def _get_axiom_term(self, statement: AxiomaticStatement | EssentialStatement | Block) -> Term:
+    def _get_axiom_term(self, statement: AxiomaticStatement | EssentialStatement | ProvableStatement | Block) -> Term:
         if isinstance(statement, Block):
             st = statement.statements[-1]
         else:
             st = statement
-        assert isinstance(st, AxiomaticStatement | EssentialStatement)
+        assert isinstance(st, AxiomaticStatement | EssentialStatement | ProvableStatement)
         return st.terms[1]
 
     def _prepare_scope_for_block(self, block: Block, scope: Scope) -> tuple[nf.Pattern, ...]:
@@ -529,10 +574,21 @@ class MetamathConverter:
                     case _:
                         continue
             elif isinstance(statement, DisjointStatement):
+                assert len(statement.metavariables) == 2
                 var_name = statement.metavariables[0].name
                 metavar_name = statement.metavariables[1].name
-                assert len(statement.metavariables) == 2
-                add_fresh_mc(metavar_name, var_name)
+
+                resolved_var = scope.resolve(var_name)
+                assert isinstance(resolved_var, nf.EVar | nf.SVar)
+                resolved_metavar = scope.resolve(metavar_name)
+
+                if isinstance(resolved_metavar, nf.MetaVar):
+                    add_fresh_mc(metavar_name, var_name)
+                elif isinstance(resolved_metavar, nf.EVar | nf.SVar):
+                    # We just need to check their identifier without touching the scope
+                    assert resolved_metavar.name != resolved_var.name
+                else:
+                    raise NotImplementedError
             else:
                 raise NotImplementedError
 
@@ -592,7 +648,9 @@ class MetamathConverter:
                     continue
         return tuple(antecedents)
 
-    def _convert_axiom_for_scope(self, scope: Scope, statement: AxiomaticStatement | EssentialStatement) -> Axiom:
+    def _convert_axiom_for_scope(
+        self, scope: Scope, statement: AxiomaticStatement | EssentialStatement | ProvableStatement
+    ) -> Axiom:
         name = self._get_axiom_name(statement)
         variables: tuple[Metavariable, ...] = self._collect_variables(statement.terms[1])
         term = self._get_axiom_term(statement)
@@ -603,5 +661,10 @@ class MetamathConverter:
         notation = Notation(name, var_names, notation_scope.arguments_type_check, notation_lambda)
 
         axiom_pattern = scope.notation_as_axiom(notation)
-        axiom = Axiom(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
+        if isinstance(statement, AxiomaticStatement | EssentialStatement):
+            axiom = Axiom(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
+        elif isinstance(statement, ProvableStatement):
+            axiom = Lemma(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
+        else:
+            raise NotImplementedError
         return axiom

@@ -341,7 +341,7 @@ def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
     )
     # ( \imp ( \sorted-exists x ph2 ( \ceil ( \and ph0 ph1 ) ) ) ( \ceil ( \and ph0 ( \sorted-exists x ph2 ph1 ) ) ) )
     pattern = nf.Implication(
-        sorted_exists_(x, ph2, ceil_(and_(ph0_mc, ph1))), ceil_(and_(ph0, sorted_exists_(x, ph2, ph1)))
+        sorted_exists_(x, ph2, ceil_(and_(ph0_mc, ph1))), ceil_(and_(ph0_mc, sorted_exists_(x, ph2, ph1)))
     )
     assert name in converter._lemmas and len(converter._lemmas[name]) == 1
     converted = converter._lemmas[name][0]
