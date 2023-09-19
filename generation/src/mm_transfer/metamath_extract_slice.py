@@ -184,20 +184,6 @@ def slice_database(input_database: Database, include: set[str], exclude: set[str
             assert 'Unanticipated statement type', type(statement)
 
 
-# TODO: Unused so far
-# def collect_provable_names(database: Database) -> set[str]:
-#     ret = set()
-
-#     def collect(stmt: Statement) -> Statement:
-#         nonlocal ret
-#         if isinstance(stmt, ProvableStatement):
-#             ret.add(stmt.label)
-#         return stmt
-
-#     database.bottom_up(collect)
-#     return ret
-
-
 def dependency_graph(database: Database) -> dict[str, tuple[str, ...]]:
     ret = {}
 
