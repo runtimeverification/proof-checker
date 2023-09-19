@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.representation import Axiom, AxiomWithAntecetends, Notation
+from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, Notation
 from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
@@ -51,6 +51,7 @@ class MetamathConverter:
         self._declared_variables: dict[str, Metavariable] = {}
         self._ignored_axioms: list[AxiomaticStatement] = []
         self._axioms: dict[str, list[Axiom]] = {}
+        self._lemmas: dict[str, list[Lemma]] = {}
         # TODO: Remove it after we start supporting all possible axioms in all our slices
         self._convert_axioms = parse_axioms
 
@@ -208,7 +209,7 @@ class MetamathConverter:
                 if axiom_type == AxiomType.Provable:
                     axiom = self._convert_axiom_for_scope(scope, actual_statement)
                     if len(antecedents) > 0:
-                        axiom = AxiomWithAntecetends(
+                        axiom = AxiomWithAntecedents(
                             axiom.name, axiom.args, axiom.type_check, axiom.pattern, antecedents
                         )
                     self._add_axiom(axiom.name, axiom)

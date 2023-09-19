@@ -7,7 +7,7 @@ import pytest
 
 import proof_generation.pattern as nf
 from mm_transfer.converter.converter import MetamathConverter
-from mm_transfer.converter.representation import Axiom, AxiomWithAntecetends
+from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
 from mm_transfer.metamath.ast import ConstantStatement
 from mm_transfer.metamath.parser import load_database
 
@@ -257,7 +257,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     pattern = ph0
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
-    assert isinstance(converted, AxiomWithAntecetends)
+    assert isinstance(converted, AxiomWithAntecedents)
     assert len(converted.antecedents) == len(antecedents)
     assert antecedents[0] == converted.antecedents[0], pattern_mismatch(antecedents[0], converted.antecedents[0])
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
@@ -276,7 +276,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     pattern = nf.Implication(nf.Exists(x, ph0), ph1_mc)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
-    assert isinstance(converted, AxiomWithAntecetends)
+    assert isinstance(converted, AxiomWithAntecedents)
     assert len(converted.antecedents) == len(antecedents)
     assert antecedents[0] == converted.antecedents[0], pattern_mismatch(antecedents[0], converted.antecedents[0])
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
@@ -287,7 +287,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     pattern = nf.Implication(ph0, and_(ph1, ph2))
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
-    assert isinstance(converted, AxiomWithAntecetends)
+    assert isinstance(converted, AxiomWithAntecedents)
     assert len(converted.antecedents) == len(antecedents)
     for i in range(len(antecedents)):
         assert antecedents[i] == converted.antecedents[i], pattern_mismatch(antecedents[i], converted.antecedents[0])
@@ -314,5 +314,36 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     pattern = nf.Implication(sorted_exists_(y, ph6, ph1_substututed), ph2_substututed)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
-    assert isinstance(converted, Axiom) and not isinstance(converted, AxiomWithAntecetends)
+    assert isinstance(converted, Axiom) and not isinstance(converted, AxiomWithAntecedents)
+    assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
+
+
+def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
+    converter = MetamathConverter(parsed_lemma_database)
+    scope = converter._scope
+
+    ph0 = converter._scope._metavars['ph0']
+    ph1 = converter._scope._metavars['ph1']
+    ph2 = converter._scope._metavars['ph2']
+    x = converter._scope._element_vars['x']
+    and_ = scope.resolve_notation('\\and')
+    sorted_exists_ = scope.resolve_notation('\\sorted-exists')
+    ceil_ = scope.resolve_notation('\\ceil')
+
+    name = 'disjointness-alt-lemma'
+    ph0_mc = nf.MetaVar(
+        ph0.name,
+        e_fresh=ph1.e_fresh + (x,),
+        s_fresh=ph1.s_fresh,
+        positive=ph1.positive,
+        negative=ph1.negative,
+        app_ctx_holes=ph1.app_ctx_holes,
+    )
+    # ( \imp ( \sorted-exists x ph2 ( \ceil ( \and ph0 ph1 ) ) ) ( \ceil ( \and ph0 ( \sorted-exists x ph2 ph1 ) ) ) )
+    pattern = nf.Implication(
+        sorted_exists_(x, ph2, ceil_(and_(ph0_mc, ph1))), ceil_(and_(ph0, sorted_exists_(x, ph2, ph1)))
+    )
+    assert name in converter._lemmas and len(converter._lemmas[name]) == 1
+    converted = converter._lemmas[name][0]
+    assert isinstance(converted, Lemma) and not isinstance(converted, LemmaWithAntecedents)
     assert pattern == converted.pattern, pattern_mismatch(pattern, converted.pattern)
