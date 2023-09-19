@@ -68,6 +68,17 @@ top-is-pattern $a #Pattern \top $.
 top-is-sugar $a #Notation \top ( \not \bot ) $.
 definedness-is-symbol $a #Symbol \definedness $.
 ceil-is-pattern $a #Pattern ( \ceil ph0 ) $.
+
+$( Start section added for testng purposes $)
+
+$c \tst \tsymbol $. 
+tsymbol-is-symbol $a #Symbol \tsymbol $.
+tst-is-pattern $a #Pattern ( \tst xX ) $.
+tst-is-sugar $a #Notation ( \tst xX ) ( \app \tsymbol xX ) $.
+tst-trivial-axiom $a |- ( \imp ( \tst xX ) ( \tst xX ) ) $.
+
+$( End section added for testng purposes $)
+
 ceil-is-sugar $a #Notation ( \ceil ph0 ) ( \app \definedness ph0 ) $.
 floor-is-pattern $a #Pattern ( \floor ph0 ) $.
 floor-is-sugar $a #Notation ( \floor ph0 ) ( \not ( \ceil ( \not ph0 ) ) ) $.
