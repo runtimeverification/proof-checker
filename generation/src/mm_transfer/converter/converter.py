@@ -9,6 +9,7 @@ from mypy_extensions import VarArg
 import proof_generation.pattern as nf
 from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents, Notation
 from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
+from mm_transfer.converter.vardict import VarDict
 from mm_transfer.metamath.ast import (
     Application,
     AxiomaticStatement,
@@ -53,12 +54,15 @@ class MetamathConverter:
         self._scope: GlobalScope = GlobalScope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
+        self._symbols: VarDict = VarDict(None, nf.Symbol)
+        self._domain_values: set[str] = set()
         self._axioms: dict[str, list[Axiom]] = {}
         self._pattern_constructors: set[str] = set()
         self._proof_rules: set[str] = set()
         self._ignored_axioms: list[AxiomaticStatement] = []
         self._lemmas: dict[str, list[Lemma]] = {}
         self._ignored_lemmas: list[ProvableStatement] = []
+        self._missing_declarations: set[str] = set()
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -86,6 +90,10 @@ class MetamathConverter:
     def pattern_constructors(self) -> set[str]:
         return set(self._pattern_constructors)
 
+    @property
+    def misssing_notations(self) -> set[str]:
+        return set(self._missing_declarations)
+
     def is_lemma(self, name: str) -> bool:
         return name in self._lemmas
 
@@ -110,6 +118,28 @@ class MetamathConverter:
         # todo: Duplication is intentionally unsupported
         assert self.is_lemma(name)
         return self._lemmas[name][0]
+    
+    def get_all_exported_axioms(self) -> list[Axiom]:
+        axioms = []
+        for axiom_list in self._axioms.values():
+            axioms.extend(axiom_list)
+        return [a for a in axioms if self.is_exported_axiom(a.name)]
+
+    def publish_axioms(self, interpreter: BasicInterpreter) -> None:
+        axioms = self.get_all_exported_axioms()
+        for axiom in axioms:
+            interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
+        return
+
+    def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
+        raise NotImplementedError
+
+    def _add_symbol(self, var: Metavariable | str) -> None:
+        if var not in self._symbols:
+            self._symbols[var] = nf.Symbol(len(self._symbols))
+
+    def _is_symbol(self, name: str) -> bool:
+        return name in self._symbols
 
     def _top_down(self) -> None:
         """
@@ -226,7 +256,7 @@ class MetamathConverter:
         if var := get_pattern(statement):
             self._scope.add_metavariable(var)
         elif var := get_symbol(statement):
-            self._scope.add_symbol(var)
+            self._add_symbol(var)
         elif var := get_var(statement):
             self._scope.add_variable(var)
         elif var := get_element_var(statement):
@@ -264,7 +294,7 @@ class MetamathConverter:
                 raise NotImplementedError(f'Unexpected axiom type: {axiom_type}')
 
             # Get all possible scopes
-            scopes = self._unambiguize_scope(actual_statement, args)
+            scopes = self._unambiguize_scope(args)
 
             # Then add actual axioms or notations
             for scope in scopes:
@@ -298,7 +328,7 @@ class MetamathConverter:
 
         # Prepare scopes if we need more than one
         args = self._collect_variables(actual_statement.terms[1])
-        scopes = self._unambiguize_scope(actual_statement, args)
+        scopes = self._unambiguize_scope(args)
 
         # Then add actual axioms or notations
         for scope in scopes:
@@ -327,7 +357,8 @@ class MetamathConverter:
                 # We can distinguish domain values from other constants, but we decided
                 # to keep quotes in favor of the direct correspondence between Metamath
                 # and the new format.
-                scope.add_domain_value(st.terms[1].symbol)
+                self._domain_values.add(st.terms[1].symbol)
+                self._add_symbol(st.terms[1].symbol)
                 return True
             else:
                 return False
@@ -346,7 +377,7 @@ class MetamathConverter:
                 and isinstance(st.terms[1], Application)
                 and len(st.terms[1].subterms) == 0
             ):
-                scope.add_symbol(st.terms[1].symbol)
+                self._add_symbol(st.terms[1].symbol)
                 return True
             else:
                 return False
@@ -444,9 +475,7 @@ class MetamathConverter:
         else:
             raise NotImplementedError(f'Unknown axiom: {repr(statement)}')
 
-    def _unambiguize_scope(
-        self, statement: AxiomaticStatement | ProvableStatement, args: tuple[Metavariable, ...]
-    ) -> tuple[Scope, ...]:
+    def _unambiguize_scope(self, args: tuple[Metavariable, ...]) -> tuple[Scope, ...]:
         ambiguous_args = tuple(arg.name for arg in args if self._scope.is_ambiguous(arg))
         if len(ambiguous_args) > 0:
             scopes = self._scope.unambiguize(ambiguous_args)
@@ -471,18 +500,16 @@ class MetamathConverter:
             case Application(symbol, subterms):
                 if scope.is_notation(symbol):
                     return resolve_as_notation(symbol, subterms)
-                elif scope.is_symbol(symbol):
-                    resolved = scope.resolve_as_callable(symbol)
-                    return lambda *args: resolved(*args)
                 else:
-                    raise NotImplementedError
+                    return self._resolve_as_callable(scope, symbol)
             case Metavariable(name):
                 if scope.is_notation(name):
                     # Assumption: local notations don't have arguments
                     subterms = ()
                     return resolve_as_notation(name, subterms)
-                resolved = scope.resolve_as_callable(name)
-                return lambda *args: resolved(*args)
+                else:
+                    resolved = self._resolve_as_callable(scope, name)
+                    return lambda *args: resolved(*args)
             case _:
                 raise NotImplementedError
 
@@ -504,7 +531,7 @@ class MetamathConverter:
         arg_names = tuple(arg.name for arg in metavar_args)
         notation_scope = to_notation_scope(scope, metavar_args)
         notation_lambda = self._to_pattern(notation_scope, term)
-        notation = Notation(symbol, arg_names, notation_scope.arguments_type_check, notation_lambda)
+        notation = Notation(symbol, arg_names, self._get_arguments_type_check(notation_scope), notation_lambda)
         add_to.add_notation(notation)
 
     def _add_builtin_notations(self) -> None:
@@ -739,7 +766,7 @@ class MetamathConverter:
                     notation = Notation(
                         symbol,
                         (),
-                        notation_scope.arguments_type_check,
+                        self._get_arguments_type_check(notation_scope),
                         get_subst_lambda(notation_scope, args),
                     )
                     scope.add_notation(notation)
@@ -757,28 +784,55 @@ class MetamathConverter:
         var_names = tuple(var.name for var in variables)
         notation_scope = to_notation_scope(scope, variables)
         notation_lambda = self._to_pattern(notation_scope, term)
-        notation = Notation(name, var_names, notation_scope.arguments_type_check, notation_lambda)
+        notation = Notation(name, var_names, self._get_arguments_type_check(notation_scope), notation_lambda)
 
-        axiom_pattern = scope.notation_as_axiom(notation)
+        args = [self._resolve(scope, arg) for arg in notation.args]
+        axiom_pattern = notation(*args)
         if isinstance(statement, AxiomaticStatement | EssentialStatement):
-            axiom = Axiom(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
+            axiom = Axiom(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern)
         elif isinstance(statement, ProvableStatement):
-            axiom = Lemma(name, var_names, notation_scope.arguments_type_check, axiom_pattern)
+            axiom = Lemma(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern)
         else:
             raise NotImplementedError
         return axiom
 
-    def get_all_exported_axioms(self) -> list[Axiom]:
-        axioms = []
-        for axiom_list in self._axioms.values():
-            axioms.extend(axiom_list)
-        return [a for a in axioms if self.is_exported_axiom(a.name)]
+    def _resolve(self, scope: Scope, name: str) -> nf.Pattern:
+        if self._is_symbol(name):
+            return self._symbols[name]
+        elif name in self._declared_constants:
+            # This is missing notation likely
+            self._add_symbol(name)
+            self._missing_declarations.add(name)
+            return self._symbols[name]
+        else:
+            return scope.resolve(name)
 
-    def publish_axioms(self, interpreter: BasicInterpreter) -> None:
-        axioms = self.get_all_exported_axioms()
-        for axiom in axioms:
-            interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
-        return
+    def _resolve_as_callable(
+        self, notation_scope: NotationScope, name: str
+    ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+        position = notation_scope.is_arg(name)
+        if position is not None:
 
-    def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
-        raise NotImplementedError
+            def match_arg(*args: nf.Pattern) -> nf.Pattern:
+                assert len(args) > position
+                return args[position]
+
+            return match_arg
+        else:
+            var = self._resolve(notation_scope, name)
+            return lambda *args: var
+
+    def _get_arguments_type_check(self, notation_scope: NotationScope) -> Callable[[VarArg(nf.Pattern)], bool]:
+        def arguments_type_check(*args: nf.Pattern) -> bool:
+            for index, name in enumerate(notation_scope.arguments):
+                real_arg = args[index]
+                expected_type = type(self._resolve(notation_scope, name))
+                if expected_type is nf.MetaVar and isinstance(real_arg, nf.Pattern):
+                    continue
+                elif isinstance(real_arg, expected_type):
+                    continue
+                else:
+                    return False
+            return True
+
+        return arguments_type_check
