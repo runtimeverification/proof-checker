@@ -112,10 +112,10 @@ class Propositional(ProofExp):
         # fmt: off
         return self.modus_ponens(
             self.modus_ponens(
-                self.prop2().instantiate({1: phi0_implies_phi0, 2: phi0}),
-                self.prop1().instantiate({1: phi0_implies_phi0}),
+                self.dynamic_inst(self.prop2, {1: phi0_implies_phi0, 2: phi0}),
+                self.dynamic_inst(self.prop1, {1: phi0_implies_phi0})
             ),
-            self.prop1().instantiate({1: phi0}),
+            self.dynamic_inst(self.prop1, {1: phi0}),
         )
 
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
@@ -137,21 +137,24 @@ class Propositional(ProofExp):
 
         return self.modus_ponens(
             # (phi0 -> phi1) -> (phi0 -> phi2)
-            self.modus_ponens(
-                # (1 -> (phi1 -> phi2)) -> ((1 -> phi1) -> (1 -> phi2))
-                self.prop2().instantiate({0: MetaVar(1), 1: phi1, 2: phi2}),
-                #  1 -> (phi1 -> phi2)
-                self.modus_ponens(
-                    # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
-                    self.prop1().instantiate({0: phi1_imp_phi2_conc}),
-                    phi1_imp_phi2(),
+            self.dynamic_inst(
+                lambda: self.modus_ponens(
+                    # (1 -> (phi1 -> phi2)) -> ((1 -> phi1) -> (1 -> phi2))
+                    self.dynamic_inst(self.prop2, {0: MetaVar(1), 1: phi1, 2: phi2}),
+                    #  1 -> (phi1 -> phi2)
+                    self.modus_ponens(
+                        # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
+                        self.dynamic_inst(self.prop1, {0: phi1_imp_phi2_conc}),
+                        phi1_imp_phi2(),
+                    ),
                 ),
-            ).instantiate({1: phi0}),
+                {1: phi0},
+            ),
             phi0_imp_phi1(),
         )
 
     def top_intro(self) -> Proved:
-        return self.imp_reflexivity().instantiate({0: bot})
+        return self.dynamic_inst(self.imp_reflexivity, {0: bot})
 
     def bot_elim(self) -> Proved:
         neg_neg_phi0 = neg(neg(phi0))
@@ -160,22 +163,22 @@ class Propositional(ProofExp):
             # ((bot -> neg neg 0) -> (bot -> 0)))
             self.modus_ponens(
                 # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
-                self.prop2().instantiate({0: bot, 1: neg_neg_phi0, 2: phi0}),
+                self.dynamic_inst(self.prop2, {0: bot, 1: neg_neg_phi0, 2: phi0}),
                 # (bot -> (neg neg 0 -> 0))
                 self.modus_ponens(
                     # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.prop1().instantiate({0: Implication(neg_neg_phi0, phi0), 1: bot}),
+                    self.dynamic_inst(self.prop1, {0: Implication(neg_neg_phi0, phi0), 1: bot}),
                     # (neg neg 0 -> 0)
-                    self.prop3().instantiate({0: phi0}),
+                    self.dynamic_inst(self.prop3, {0: phi0}),
                 ),
             ),
             # (bot -> (neg neg phi0))
-            self.prop1().instantiate({0: bot, 1: neg(phi0)}),
+            self.dynamic_inst(self.prop1, {0: bot, 1: neg(phi0)}),
         )
 
     # (neg phi0 -> bot) -> phi0
     def contradiction_proof(self) -> Proved:
-        return self.prop3().instantiate({0: phi0})
+        return self.dynamic_inst(self.prop3, {0: phi0})
 
     # (neg phi0) -> phi0 -> phi1
     def absurd(self) -> Proved:
@@ -202,41 +205,45 @@ class Propositional(ProofExp):
 
         def modus_ponens_1() -> Proved:
             return self.modus_ponens(
-                self.prop2().instantiate(
+                self.dynamic_inst(
+                    self.prop2,
                     {
                         # ((ph0 -> bot) -> ph0) = neg 0 -> 0
                         0: phi0_bot_imp_ph0(),
                         # ((ph0 -> bot) -> bot) = neg 0 -> bot
                         1: phi0_bot_imp_bot(),
                         2: phi0,
-                    }
+                    },
                 ),
                 self.modus_ponens(
-                    self.prop1().instantiate(
+                    self.dynamic_inst(
+                        self.prop1,
                         {
                             # (((ph0 -> bot) -> bot) -> ph0)
                             0: Implication(phi0_bot_imp_bot(), phi0),
                             # ((ph0 -> bot) -> ph0)
                             1: phi0_bot_imp_ph0(),
-                        }
+                        },
                     ),
                     # ph0
-                    self.prop3().instantiate({0: phi0}),
+                    self.dynamic_inst(self.prop3, {0: phi0}),
                 ),
             )
 
         def modus_ponens_2() -> Proved:
             return self.modus_ponens(
-                self.prop2().instantiate(
+                self.dynamic_inst(
+                    self.prop2,
                     {
                         0: phi0_bot_imp_ph0(),
                         1: phi0_bot_imp_phi0_bot(),
                         # (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot)))
                         2: Implication(phi0_bot_imp_ph0(), phi0_bot_imp_bot()),
-                    }
+                    },
                 ),
                 self.modus_ponens(
-                    self.prop1().instantiate(
+                    self.dynamic_inst(
+                        self.prop1,
                         {
                             # ((phi0 -> bot) -> (phi0 -> bot)) -> (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot))),
                             0: Implication(
@@ -250,14 +257,15 @@ class Propositional(ProofExp):
                                 ),
                             ),
                             1: phi0_bot_imp_ph0(),
-                        }
+                        },
                     ),
-                    self.prop2().instantiate(
+                    self.dynamic_inst(
+                        self.prop2,
                         {
                             0: Implication(phi0, bot),
                             1: phi0,
                             2: bot,
-                        }
+                        },
                     ),
                 ),
             )
@@ -265,18 +273,20 @@ class Propositional(ProofExp):
         def modus_ponens_3() -> Proved:
             return self.modus_ponens(
                 # ((phi0 -> bot) -> (phi0 -> bot)) -> (((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> (phi0->bot)))
-                self.prop1().instantiate(
+                self.dynamic_inst(
+                    self.prop1,
                     {
                         0: phi0_bot_imp_phi0_bot(),
                         1: phi0_bot_imp_ph0(),
-                    }
+                    },
                 ),
                 # ((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> phi0)
-                self.imp_reflexivity().instantiate(
+                self.dynamic_inst(
+                    self.imp_reflexivity,
                     {
                         # (phi0 -> bot)
                         0: Implication(phi0, bot),
-                    }
+                    },
                 ),
             )
 
@@ -284,19 +294,20 @@ class Propositional(ProofExp):
             modus_ponens_1(),
             self.modus_ponens(
                 self.modus_ponens(
-                    self.prop2().instantiate(
+                    self.dynamic_inst(
+                        self.prop2,
                         {
                             0: phi0_bot_imp_ph0(),
                             1: phi0_bot_imp_ph0(),
                             2: phi0_bot_imp_bot(),
-                        }
+                        },
                     ),
                     self.modus_ponens(
                         modus_ponens_2(),
                         modus_ponens_3(),
                     ),
                 ),
-                self.imp_reflexivity().instantiate({0: phi0_bot_imp_ph0()}),
+                self.dynamic_inst(self.imp_reflexivity, {0: phi0_bot_imp_ph0()}),
             ),
         )
 
