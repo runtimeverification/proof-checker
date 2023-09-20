@@ -446,20 +446,3 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
     for name in list(patterns) + list(axioms) + list(proof_rules):
         converter.is_axiom(name)
-
-
-def test_publishing_axioms(parsed_lemma_database: Database) -> None:
-    # TODO: Enable the following tests
-    pass
-    # converter = MetamathConverter(parsed_lemma_database)
-
-    # test using a basic interpreter
-    # basic_interpreter = BasicInterpreter(phase=ExecutionPhase.Gamma)
-    # converter.interpret_axioms(basic_interpreter)
-    # # basic_interpreter object remains unchanged
-
-    # # test using a stateful interpreter
-    # state_interpreter = StatefulInterpreter(phase=ExecutionPhase.Gamma)
-    # converter.interpret_axioms(state_interpreter)
-    # expected = [a.pattern for a in converter.get_all_axioms()]
-    # assert state_interpreter.stack == expected
