@@ -258,26 +258,41 @@ class MetamathConverter:
             instruction_label = exported_proof.labels[instruction]
 
             if instruction_label in self.pattern_constructors:
-                proofexp.interpreter.pattern(
-                    self.get_axiom_by_name(instruction_label).pattern
-                )
+                # Cannot call .pattern here, as I have what I need on stack
+                if instruction_label == "imp-is-pattern":
+                    proofexp.interpreter.implies(
+                        proofexp.interpreter.stack[-2],
+                        proofexp.interpreter.stack[-1]
+                    )
             # TODO: phi0-is-pattern should be in pattern constructors
             elif instruction_label == "ph0-is-pattern":
                 proofexp.interpreter.metavar(0)
             elif instruction_label in self.exported_axioms:
                 proofexp.load_axiom(self.get_axiom_by_name(instruction_label).pattern)
                 # TODO: Instantiate
-            elif instruction_label in self.axioms:
-                if instruction_label == "proof-rule-prop-1":
-                    proofexp.interpreter.prop1()
-                if instruction_label == "proof-rule-prop-2":
-                    proofexp.interpreter.prop2()
             elif instruction_label in self.proof_rules:
+                if instruction_label == "proof-rule-prop-1":
+                    proofexp.interpreter.instantiate(proofexp.interpreter.prop1(), {
+                        0: proofexp.interpreter.stack[-3],
+                        1: proofexp.interpreter.stack[-2]
+                    })
+                if instruction_label == "proof-rule-prop-2":
+                    proofexp.interpreter.instantiate(proofexp.interpreter.prop2(), {
+                        0: proofexp.interpreter.stack[-4],
+                        1: proofexp.interpreter.stack[-3],
+                        2: proofexp.interpreter.stack[-2]
+                        })
                 if instruction_label == "proof-rule-mp":
                     proofexp.interpreter.modus_ponens(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
+
+                    conclusion_name, conclusion = (str(proofexp.interpreter.stack[-1]), proofexp.interpreter.stack[-1])
+                    proofexp.interpreter.save(conclusion_name, conclusion)
                     proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
                     proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
-        #proofexp.interpreter.publish_proof(proofexp.interpreter.stack[-1])
+                    proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
+                    proofexp.interpreter.load(conclusion_name, conclusion)
+
+        proofexp.interpreter.publish_proof(proofexp.interpreter.stack[-1])
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
@@ -590,13 +605,13 @@ class MetamathConverter:
             case Application(symbol, subterms):
                 if scope.is_notation(symbol):
                     return resolve_as_notation(symbol, subterms)
-                elif scope.is_symbol(symbol):
+                elif self._scope.is_symbol(symbol):
                     resolved = scope.resolve_as_callable(symbol)
                     return lambda *args: resolved(*args)
                 else:
                     # TODO: Remove this (undefined notation should not be treated as symbols)
-                    scope.add_symbol(symbol)
-                    resolved = scope.resolve_as_callable(symbol)
+                    self._scope.add_symbol(symbol)
+                    resolved = self._scope.resolve_as_callable(symbol)
                     return lambda *args: resolved(*args)
             case Metavariable(name):
                 if scope.is_notation(name):
