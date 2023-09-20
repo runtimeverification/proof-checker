@@ -1,0 +1,322 @@
+MetaVar 0
+	Stack:
+	0: phi0
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: phi0
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: phi0
+Implication
+	Stack:
+	0: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: phi0
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: phi0
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: phi0
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: ((phi0 -> phi0) -> phi0)
+	1: phi0
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> ((phi0 -> phi0) -> phi0))
+	1: (phi0 -> phi0)
+	2: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> ((phi0 -> phi0) -> phi0))
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> ((phi0 -> phi0) -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: phi0
+	3: (phi0 -> ((phi0 -> phi0) -> phi0))
+	4: (phi0 -> phi0)
+	5: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: phi0
+	2: (phi0 -> ((phi0 -> phi0) -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> (phi0 -> phi0))
+	1: (phi0 -> ((phi0 -> phi0) -> phi0))
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> (phi0 -> phi0))
+	2: (phi0 -> ((phi0 -> phi0) -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: (phi0 -> (phi0 -> phi0))
+	3: (phi0 -> ((phi0 -> phi0) -> phi0))
+	4: (phi0 -> phi0)
+	5: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: (phi0 -> (phi0 -> phi0))
+	2: (phi0 -> ((phi0 -> phi0) -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	1: (phi0 -> ((phi0 -> phi0) -> phi0))
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	2: (phi0 -> ((phi0 -> phi0) -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: (phi0 -> ((phi0 -> phi0) -> phi0))
+	4: (phi0 -> phi0)
+	5: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: phi0
+	3: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	4: (phi0 -> ((phi0 -> phi0) -> phi0))
+	5: (phi0 -> phi0)
+	6: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: phi0
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: (phi0 -> ((phi0 -> phi0) -> phi0))
+	4: (phi0 -> phi0)
+	5: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: (phi0 -> phi0)
+	2: phi0
+	3: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	4: (phi0 -> ((phi0 -> phi0) -> phi0))
+	5: (phi0 -> phi0)
+	6: (phi0 -> (phi0 -> phi0))
+Prop2
+	Stack:
+	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
+	1: phi0
+	2: (phi0 -> phi0)
+	3: phi0
+	4: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	5: (phi0 -> ((phi0 -> phi0) -> phi0))
+	6: (phi0 -> phi0)
+	7: (phi0 -> (phi0 -> phi0))
+Instantiate 0, 1, 2
+	Stack:
+	0: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	2: (phi0 -> ((phi0 -> phi0) -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: (phi0 -> ((phi0 -> phi0) -> phi0))
+	4: (phi0 -> phi0)
+	5: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	3: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	4: (phi0 -> ((phi0 -> phi0) -> phi0))
+	5: (phi0 -> phi0)
+	6: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: phi0
+	3: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	4: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	5: (phi0 -> ((phi0 -> phi0) -> phi0))
+	6: (phi0 -> phi0)
+	7: (phi0 -> (phi0 -> phi0))
+Implication
+	Stack:
+	0: (phi0 -> phi0)
+	1: phi0
+	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	3: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	4: (phi0 -> ((phi0 -> phi0) -> phi0))
+	5: (phi0 -> phi0)
+	6: (phi0 -> (phi0 -> phi0))
+Prop1
+	Stack:
+	0: (phi0 -> (phi1 -> phi0))
+	1: (phi0 -> phi0)
+	2: phi0
+	3: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	4: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	5: (phi0 -> ((phi0 -> phi0) -> phi0))
+	6: (phi0 -> phi0)
+	7: (phi0 -> (phi0 -> phi0))
+Instantiate 0, 1
+	Stack:
+	0: (phi0 -> ((phi0 -> phi0) -> phi0))
+	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: (phi0 -> ((phi0 -> phi0) -> phi0))
+	4: (phi0 -> phi0)
+	5: (phi0 -> (phi0 -> phi0))
+ModusPonens
+	Stack:
+	0: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	2: (phi0 -> ((phi0 -> phi0) -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+Save
+Pop
+	Stack:
+	0: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	1: (phi0 -> ((phi0 -> phi0) -> phi0))
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+Pop
+	Stack:
+	0: (phi0 -> ((phi0 -> phi0) -> phi0))
+	1: (phi0 -> phi0)
+	2: (phi0 -> (phi0 -> phi0))
+Pop
+	Stack:
+	0: (phi0 -> phi0)
+	1: (phi0 -> (phi0 -> phi0))
+Load ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))=0
+	Stack:
+	0: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	1: (phi0 -> phi0)
+	2: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+MetaVar 0
+	Stack:
+	0: phi0
+	1: phi0
+	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	3: (phi0 -> phi0)
+	4: (phi0 -> (phi0 -> phi0))
+Prop1
+	Stack:
+	0: (phi0 -> (phi1 -> phi0))
+	1: phi0
+	2: phi0
+	3: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	4: (phi0 -> phi0)
+	5: (phi0 -> (phi0 -> phi0))
+Instantiate 0, 1
+	Stack:
+	0: (phi0 -> (phi0 -> phi0))
+	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
+	2: (phi0 -> phi0)
+	3: (phi0 -> (phi0 -> phi0))
+ModusPonens
+	Stack:
+	0: (phi0 -> phi0)
+	1: (phi0 -> phi0)
+	2: (phi0 -> (phi0 -> phi0))
+Save
+Pop
+	Stack:
+	0: (phi0 -> phi0)
+	1: (phi0 -> (phi0 -> phi0))
+Pop
+	Stack:
+	0: (phi0 -> (phi0 -> phi0))
+Pop
+	Stack:
+Load (phi0 -> phi0)=1
+	Stack:
+	0: (phi0 -> phi0)
+Publish

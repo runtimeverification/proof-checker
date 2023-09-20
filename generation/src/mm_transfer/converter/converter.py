@@ -605,13 +605,13 @@ class MetamathConverter:
             case Application(symbol, subterms):
                 if scope.is_notation(symbol):
                     return resolve_as_notation(symbol, subterms)
-                elif self._scope.is_symbol(symbol):
+                elif scope.is_symbol(symbol):
                     resolved = scope.resolve_as_callable(symbol)
                     return lambda *args: resolved(*args)
                 else:
                     # TODO: Remove this (undefined notation should not be treated as symbols)
-                    self._scope.add_symbol(symbol)
-                    resolved = self._scope.resolve_as_callable(symbol)
+                    scope.add_symbol(symbol)
+                    resolved = scope.resolve_as_callable(symbol)
                     return lambda *args: resolved(*args)
             case Metavariable(name):
                 if scope.is_notation(name):
