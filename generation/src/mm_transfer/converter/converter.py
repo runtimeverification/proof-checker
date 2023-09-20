@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
     from mm_transfer.converter.scope import NotationScope
     from mm_transfer.metamath.ast import Database
+    from proof_generation.proof import BasicInterpreter
 
 
 class AxiomType(Enum):
@@ -766,3 +767,18 @@ class MetamathConverter:
         else:
             raise NotImplementedError
         return axiom
+
+    def get_all_exported_axioms(self) -> list[Axiom]:
+        axioms = []
+        for axiom_list in self._axioms.values():
+            axioms.extend(axiom_list)
+        return [a for a in axioms if self.is_exported_axiom(a.name)]
+
+    def publish_axioms(self, interpreter: BasicInterpreter) -> None:
+        axioms = self.get_all_exported_axioms()
+        for axiom in axioms:
+            interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
+        return
+
+    def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
+        raise NotImplementedError
