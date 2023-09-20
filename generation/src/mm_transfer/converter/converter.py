@@ -7,7 +7,14 @@ from typing import TYPE_CHECKING
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents, Notation, Proof
+from mm_transfer.converter.representation import (
+    Axiom,
+    AxiomWithAntecedents,
+    Lemma,
+    LemmaWithAntecedents,
+    Notation,
+    Proof,
+)
 from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.metamath.ast import (
     Application,
@@ -179,16 +186,16 @@ class MetamathConverter:
             applied_lemmas: str = ""
 
             # TODO: Make some better whitespace handling
-            for (i, letter) in enumerate(proof):
+            for i, letter in enumerate(proof):
                 if letter == "(":
                     break
 
-            for (j, letter) in enumerate(proof[i+1:]):
+            for j, letter in enumerate(proof[i + 1 :]):
                 if letter != " ":
                     break
 
             buffer = ""
-            for (l, letter) in enumerate(proof[i+j+1:]):
+            for l, letter in enumerate(proof[i + j + 1 :]):
                 if letter == " ":
                     declared_lemmas[lemma_n] = buffer
                     lemma_n += 1
@@ -200,7 +207,7 @@ class MetamathConverter:
 
                 buffer += letter
 
-            for letter in proof[i+j+l+2:]:
+            for letter in proof[i + j + l + 2 :]:
                 if letter == " ":
                     continue
                 applied_lemmas += letter
@@ -210,9 +217,26 @@ class MetamathConverter:
         declared_lemmas, applied_lemmas = split_proof(statement.proof)
 
         letter_to_number = {
-            'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9,
-            'J': 10, 'K': 11, 'L': 12, 'M': 13, 'N': 14, 'O': 15, 'P': 16, 'Q': 17,
-            'R': 18, 'S': 19, 'T': 20
+            'A': 1,
+            'B': 2,
+            'C': 3,
+            'D': 4,
+            'E': 5,
+            'F': 6,
+            'G': 7,
+            'H': 8,
+            'I': 9,
+            'J': 10,
+            'K': 11,
+            'L': 12,
+            'M': 13,
+            'N': 14,
+            'O': 15,
+            'P': 16,
+            'Q': 17,
+            'R': 18,
+            'S': 19,
+            'T': 20,
         }
 
         def convert_to_number(word: str) -> int:
@@ -221,9 +245,7 @@ class MetamathConverter:
 
             n: int = letter_to_number[first_letter]
 
-            letter_to_number2 = {
-                'U': 1, 'V': 2, 'W': 3, 'X': 4, 'Y': 5
-            }
+            letter_to_number2 = {'U': 1, 'V': 2, 'W': 3, 'X': 4, 'Y': 5}
 
             base = 0
             for letter in encoding:
@@ -261,10 +283,7 @@ class MetamathConverter:
             if lemma_label in self.pattern_constructors:
                 # Cannot call .pattern here, as I have what I need on stack
                 if lemma_label == "imp-is-pattern":
-                    proofexp.interpreter.implies(
-                        proofexp.interpreter.stack[-2],
-                        proofexp.interpreter.stack[-1]
-                    )
+                    proofexp.interpreter.implies(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
             # TODO: phi0-is-pattern should be in pattern constructors
             elif lemma_label == "ph0-is-pattern":
                 proofexp.interpreter.metavar(0)
@@ -273,16 +292,19 @@ class MetamathConverter:
                 # TODO: Instantiate
             elif lemma_label in self.proof_rules:
                 if lemma_label == "proof-rule-prop-1":
-                    proofexp.interpreter.instantiate(proofexp.interpreter.prop1(), {
-                        0: proofexp.interpreter.stack[-3],
-                        1: proofexp.interpreter.stack[-2]
-                    })
+                    proofexp.interpreter.instantiate(
+                        proofexp.interpreter.prop1(),
+                        {0: proofexp.interpreter.stack[-3], 1: proofexp.interpreter.stack[-2]},
+                    )
                 if lemma_label == "proof-rule-prop-2":
-                    proofexp.interpreter.instantiate(proofexp.interpreter.prop2(), {
-                        0: proofexp.interpreter.stack[-4],
-                        1: proofexp.interpreter.stack[-3],
-                        2: proofexp.interpreter.stack[-2]
-                        })
+                    proofexp.interpreter.instantiate(
+                        proofexp.interpreter.prop2(),
+                        {
+                            0: proofexp.interpreter.stack[-4],
+                            1: proofexp.interpreter.stack[-3],
+                            2: proofexp.interpreter.stack[-2],
+                        },
+                    )
                 if lemma_label == "proof-rule-mp":
                     proofexp.interpreter.modus_ponens(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
 

@@ -3,9 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
-import proof_generation.proof as p
+
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -53,11 +54,9 @@ def main() -> None:
 
     # Export proof
     with open(output_dir / f"{args.output}.ml-proof", 'wb') as out:
-        translated_proof = TranslatedProof(p.SerializingInterpreter(
-                p.ExecutionPhase.Proof,
-                out,
-                [p.Claim(claim) for claim in extracted_claims],
-                extracted_axioms
+        translated_proof = TranslatedProof(
+            p.SerializingInterpreter(
+                p.ExecutionPhase.Proof, out, [p.Claim(claim) for claim in extracted_claims], extracted_axioms
             )
         )
         converter.exec_proof(converter._declared_proof, translated_proof)

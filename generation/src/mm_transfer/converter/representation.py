@@ -42,9 +42,9 @@ class AxiomWithAntecedents(Axiom):
 
 # Need to merge this with Lemma* classes
 @dataclass(frozen=True)
-class Proof():
-    #name: str
-    #conclusion: nf.Pattern
+class Proof:
+    # name: str
+    # conclusion: nf.Pattern
     labels: dict[int, str]
     applied_lemmas: list[int]
 
