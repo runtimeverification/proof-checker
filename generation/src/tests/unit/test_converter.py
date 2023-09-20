@@ -445,35 +445,3 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
     for name in list(patterns) + list(axioms) + list(proof_rules):
         converter.is_axiom(name)
-
-
-def test_provable(parsed_goal_database: Database) -> None:
-    converter = MetamathConverter(parsed_goal_database)
-    extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
-    extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
-
-    class NewProof(p.ProofExp):
-        @staticmethod
-        def axioms() -> list[p.Pattern]:
-            return extracted_axioms
-
-        @staticmethod
-        def claims() -> list[p.Pattern]:
-            return extracted_claims
-
-    NewProof.main(["", "binary", "gamma", "impreflex.ml-gamma"])
-    NewProof.main(["", "binary", "claim", "impreflex.ml-claim"])
-
-    with open("impreflex.ml-proof", 'wb') as out:
-        newproof = NewProof(p.SerializingInterpreter(
-                p.ExecutionPhase.Proof,
-                out,
-                [p.Claim(claim) for claim in extracted_claims],
-                extracted_axioms
-            )
-        )
-        converter.exec_instruction(converter._declared_proof, newproof)
-
-
-if __name__ == '__main__':
-    test_provable(load_database(os.path.join("generation", BENCHMARK_LOCATION, 'impreflex.mm'), include_proof=True))

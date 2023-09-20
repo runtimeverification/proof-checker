@@ -5,7 +5,7 @@ from pathlib import Path
 
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
-
+import proof_generation.proof as p
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -34,10 +34,33 @@ def main() -> None:
     # Prepare the converter
     converter = MetamathConverter(input_database)
     assert converter
-    # TODO: Print files for different phases (gamma, claims, proofs)
-    # with open(output_dir / 'metavariables.ml-proof', 'w') as out:
-    #     printer = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, out=out)
-    #     converter.put_vars_on_stack(printer)
+
+    extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
+    extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
+
+    class NewProof(p.ProofExp):
+        @staticmethod
+        def axioms() -> list[p.Pattern]:
+            return extracted_axioms
+
+        @staticmethod
+        def claims() -> list[p.Pattern]:
+            return extracted_claims
+
+    # Export axioms and claims
+    NewProof.main(["", "binary", "gamma", output_dir / f"{args.output}.ml-gamma"])
+    NewProof.main(["", "binary", "claim", output_dir / f"{args.output}.ml-claim"])
+
+    # Export proof
+    with open(output_dir / f"{args.output}.ml-proof", 'wb') as out:
+        newproof = NewProof(p.SerializingInterpreter(
+                p.ExecutionPhase.Proof,
+                out,
+                [p.Claim(claim) for claim in extracted_claims],
+                extracted_axioms
+            )
+        )
+        converter.exec_instruction(converter._declared_proof, newproof)
 
 
 if __name__ == '__main__':
