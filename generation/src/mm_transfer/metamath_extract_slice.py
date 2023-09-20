@@ -23,8 +23,9 @@ from mm_transfer.metamath.parser import load_database
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
+    from typing import TypeGuard
 
-    from mm_transfer.metamath.ast import Statement, Terms
+    from mm_transfer.metamath.ast import Statement, Term, Terms
 
 
 def get_constants(terms: Terms) -> set[str]:
@@ -61,6 +62,7 @@ def deconstruct_compressed_proof(provable: ProvableStatement) -> tuple[tuple[str
 def supporting_database_for_provable(
     cut_antecedents: dict[str, FloatingStatement | AxiomaticStatement | Block],
     global_disjoints: set[frozenset[str]],
+    notation_deps: dict[str, tuple[str, ...]],
     provable: ProvableStatement,
     essentials: tuple[DisjointStatement | EssentialStatement, ...],
 ) -> Database:
@@ -73,8 +75,11 @@ def supporting_database_for_provable(
         return sugar_label
 
     statements: list[Statement] = []
-    needed_lemmas, _ = deconstruct_compressed_proof(provable)
-    needed_lemmas += tuple(filter(None, map(corresponding_sugar_axiom, needed_lemmas)))
+    needed_lemmas_tuple, _ = deconstruct_compressed_proof(provable)
+    needed_lemmas = frozenset(needed_lemmas_tuple)
+    needed_lemmas |= frozenset(filter(None, map(corresponding_sugar_axiom, needed_lemmas)))
+    for lemma in needed_lemmas:
+        needed_lemmas |= frozenset(notation_deps.get(lemma, ()))
     needed_constants = set()
     needed_metavariables = set()
     for needed in (provable, *essentials, *(cut_antecedents[lemma_name] for lemma_name in needed_lemmas)):
@@ -138,7 +143,9 @@ def construct_axiom(
     return Block((*antecedents, AxiomaticStatement(consequent.label, consequent.terms)))
 
 
-def slice_database(input_database: Database, include: set[str], exclude: set[str]) -> Iterator[tuple[str, Database]]:
+def slice_database(
+    input_database: Database, notation_deps: dict[str, tuple[str, ...]], include: set[str], exclude: set[str]
+) -> Iterator[tuple[str, Database]]:
     """Of the top-level statements, only floating statements are mandatory hypothesis.
     They are thus order sensitive.
     """
@@ -163,7 +170,9 @@ def slice_database(input_database: Database, include: set[str], exclude: set[str
             if (consequent.label in include) and (consequent.label not in exclude):
                 yield (
                     consequent.label,
-                    supporting_database_for_provable(cut_antecedents, global_disjoints, consequent, antecedents),
+                    supporting_database_for_provable(
+                        cut_antecedents, global_disjoints, notation_deps, consequent, antecedents
+                    ),
                 )
             cut_antecedents[consequent.label] = construct_axiom(antecedents, consequent)
         else:
@@ -181,6 +190,68 @@ def dependency_graph(database: Database) -> dict[str, tuple[str, ...]]:
         return stmt
 
     database.bottom_up(collect)
+    return ret
+
+
+def is_structured_statement(stmt: Statement) -> TypeGuard[StructuredStatement]:
+    return isinstance(stmt, StructuredStatement)
+
+
+def notation_dependencies(database: Database) -> dict[str, tuple[str, ...]]:
+    """Returns a maps from labels of structured statements to the
+    `foo-is-sugar` and `foo-is-pattern` axioms it depends on."""
+
+    notation_defs: dict[str, str] = {}
+    ret: dict[str, tuple[str, ...]] = {}
+
+    def collect_used_notations(term: Term) -> tuple[str, ...]:
+        ret: list[str] = []
+
+        def _collect(term: Term) -> Term:
+            nonlocal ret
+            if isinstance(term, Application) and term.symbol in notation_defs:
+                ret += (notation_defs[term.symbol],)
+            return term
+
+        term.bottom_up(_collect)
+        return tuple(ret)
+
+    for stmt in database.statements:
+        substmts: tuple[StructuredStatement, ...]
+        if isinstance(stmt, Block):
+            substmts = tuple(filter(is_structured_statement, stmt.statements))
+        elif isinstance(stmt, (ProvableStatement, AxiomaticStatement)):
+            substmts = (stmt,)
+        else:
+            continue
+        conclusion = substmts[-1]
+
+        if conclusion.label.endswith('is-sugar'):
+            assert len(conclusion.terms) == 3
+            sharp_notation, lhs, rhs = conclusion.terms
+            assert sharp_notation == Application('#Notation')
+            assert isinstance(conclusion.terms[1], Application)
+            notation_defs[conclusion.terms[1].symbol] = conclusion.label
+
+        used_notations: tuple[str, ...] = ()
+        for substmt in substmts:
+            match substmt.terms[0]:
+                case Application('#Notation'):
+                    used_notations = used_notations + collect_used_notations(substmt.terms[2])
+                case Application('#Substitution'):
+                    used_notations = (
+                        used_notations
+                        + collect_used_notations(substmt.terms[1])
+                        + collect_used_notations(substmt.terms[2])
+                    )
+                case Application('|-'):
+                    used_notations = used_notations + collect_used_notations(substmt.terms[1])
+
+        notation_deps = []
+        for notation_sugar in used_notations:
+            notation_pattern = notation_sugar[0:-len('sugar')] + 'pattern'
+            notation_deps += [notation_sugar, notation_pattern, *ret[notation_sugar]]
+        ret[conclusion.label] = tuple(notation_deps)
 
     return ret
 
@@ -219,8 +290,12 @@ def main() -> None:
     include: set[str] = transitive_closure(deps, ['goal'])
     print(' Done.')
 
+    print('Calculating notation dependency graph...', end='', flush=True)
+    notation_deps = notation_dependencies(input_database)
+    print(' Done.')
+
     print('Writing slices...', end='', flush=True)
-    for label, slice in slice_database(input_database, include=include, exclude=exclude):
+    for label, slice in slice_database(input_database, notation_deps, include=include, exclude=exclude):
         with open(output_dir / (label + '.mm'), 'w') as output_file:
             Encoder.encode(output_file, slice)
     print(' Done.')
