@@ -181,6 +181,8 @@ class MetamathConverter:
                 declared_lemmas[metavars_id] = f'{metavar}-is-pattern'
                 metavars_id += 1
 
+            # TODO: Add Essential Hypotheses Handling
+
             offset = len(statement.get_metavariables())
             lemma_n = offset + 1
             applied_lemmas: str = ""
