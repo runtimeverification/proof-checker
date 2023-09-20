@@ -34,12 +34,6 @@ class Proved:
     interpreter: BasicInterpreter
     conclusion: Pattern
 
-    def instantiate(self: Proved, delta: dict[int, Pattern]) -> Proved:
-        for idn, p in delta.items():
-            delta[idn] = self.interpreter.pattern(p)
-
-        return self.interpreter.instantiate(self, delta)
-
     def assertc(self, pattern: Pattern) -> Proved:
         assert self.conclusion == pattern
         return self
@@ -159,7 +153,7 @@ class BasicInterpreter:
         return Proved(self, proved.conclusion.instantiate(delta))
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        return pattern.instantiate(delta)
+        raise NotImplementedError('Instantiate notation implementation is incomplete')
 
     def pop(self, term: Pattern | Proved) -> None:
         ...
@@ -311,8 +305,10 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        *self.stack, expected_proved = self.stack
         expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_proved = self.stack[0 : -len(delta)]
+        self.stack = self.stack[: -len(delta)]
+
         assert expected_proved == proved, f'expected: {expected_proved}\ngot: {proved}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate(proved, delta)
@@ -320,8 +316,8 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        *self.stack, expected_pattern = self.stack
         expected_plugs = self.stack[-len(delta) :]
-        *self.stack, expected_pattern = self.stack[0 : -len(delta)]
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)
@@ -758,6 +754,11 @@ class ProofExp:
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         return self.interpreter.modus_ponens(left, right)
+
+    def dynamic_inst(self, proved_expr: ProvedExpression, delta: dict[int, Pattern]) -> Proved:
+        for idn, p in delta.items():
+            delta[idn] = self.interpreter.pattern(p)
+        return self.interpreter.instantiate(proved_expr(), delta)
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return self.interpreter.instantiate(proved, delta)

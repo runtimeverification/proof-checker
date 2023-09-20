@@ -791,15 +791,14 @@ Otherwise, execution aborts, and verification fails.
 ### Meta inference
 
 `MetaVar <id:u8, 5 * (len: u8, constraint: [u8] * len)`
-:   Consume the first five entries from the stack (corresponding to the
-    meta-requirements), and push an `MetaVar` onto the stack.
+:   Push an `MetaVar` onto the stack.
 
 `ESubst <metavar_id:u8>`/`SSubst <metavar_id:u8>`
 :   Consume a meta-pattern `phi` and a pattern `psi` from the stack, and push a
     corresponding substitution `phi[psi/metavar_id]`.
 
 `Instantiate n:u8 [metavar_id:u8]*n`
-:   Consume a `Proof` and n `Pattern`'s' off the stack, and push the instantiated proof term to the stack,
+:   Consume a `Proof` and then n `Pattern`s off the stack, and push the instantiated proof term to the stack,
     checking wellformedness as needed.
 
 ### Inference rules
