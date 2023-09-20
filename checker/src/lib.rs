@@ -891,6 +891,7 @@ fn execute_instructions<'a>(
     }
 }
 
+
 pub fn verify<'a>(
     gamma_next_byte: &mut impl FnMut() -> Option<InstByte>,
     claims_next_byte: &mut impl FnMut() -> Option<InstByte>,
@@ -922,6 +923,10 @@ pub fn verify<'a>(
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Proof,
     );
+
+    if claims.len() != 0 {
+        panic!("Some claims were not discharged {:?}", claims);
+    }
 }
 
 /// Testing

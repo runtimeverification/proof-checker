@@ -461,11 +461,11 @@ def test_provable(parsed_goal_database: Database) -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
-    NewProof.main(["", "pretty", "gamma", "impreflex.pretty-gamma"])
-    NewProof.main(["", "pretty", "claim", "impreflex.pretty-claim"])
+    NewProof.main(["", "binary", "gamma", "impreflex.ml-gamma"])
+    NewProof.main(["", "binary", "claim", "impreflex.ml-claim"])
 
-    with open("impreflex.pretty-proof", 'w') as out:
-        newproof = NewProof(p.PrettyPrintingInterpreter(
+    with open("impreflex.ml-proof", 'wb') as out:
+        newproof = NewProof(p.SerializingInterpreter(
                 p.ExecutionPhase.Proof,
                 out,
                 [p.Claim(claim) for claim in extracted_claims],
