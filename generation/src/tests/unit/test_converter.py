@@ -444,3 +444,6 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
     for name in list(patterns) + list(axioms) + list(proof_rules):
         converter.is_axiom(name)
+
+    assert converter.get_metavars_in_order('proof-rule-gen') == ('ph0', 'ph1')
+    assert converter.get_metavars_in_order('disjointness-alt-lemma') == ('ph0', 'ph1', 'ph2')

@@ -68,6 +68,9 @@ class Scope:
     def is_notation(self, name: str) -> bool:
         return name in self._notations
 
+    def is_metavar(self, name: str) -> bool:
+        return name in self._metavars
+
     def import_from_scope(self, other: Scope, except_names: None | tuple[str, ...] = None) -> None:
         self._metavars = VarDict(other._metavars)
         self._element_vars = VarDict(

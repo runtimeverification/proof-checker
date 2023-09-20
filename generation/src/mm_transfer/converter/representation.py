@@ -29,6 +29,7 @@ class Axiom:
     args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
     pattern: nf.Pattern
+    metavars: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,7 @@ class AxiomWithAntecedents(Axiom):
     args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
     pattern: nf.Pattern
+    metavars: tuple[str, ...]
     antecedents: tuple[nf.Pattern, ...]
 
 
