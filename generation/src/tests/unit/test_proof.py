@@ -98,7 +98,6 @@ def test_serialize_phi_implies_phi() -> None:
     # fmt: on
 
 
-# @pytest.mark.skip()
 def test_prove_imp_reflexivity() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)

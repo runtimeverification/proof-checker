@@ -799,7 +799,7 @@ Otherwise, execution aborts, and verification fails.
     corresponding substitution `phi[psi/metavar_id]`.
 
 `Instantiate n:u8 [metavar_id:u8]*n`
-:   Consume a `Proof` and n `Pattern`'s' off the stack, and push the instantiated proof term to the stack,
+:   Consume n `Pattern`s and then a `Proof` off the stack, and push the instantiated proof term to the stack,
     checking wellformedness as needed.
 
 ### Inference rules
