@@ -889,6 +889,8 @@ fn execute_instructions<'a>(
             }
         }
     }
+
+    assert!(claims.is_empty(), "There must be no claims left at the end of execution.");
 }
 
 pub fn verify<'a>(
