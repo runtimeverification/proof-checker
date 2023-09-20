@@ -468,7 +468,7 @@ def test_provable(parsed_goal_database: Database) -> None:
         newproof = NewProof(p.SerializingInterpreter(
                 p.ExecutionPhase.Proof,
                 out,
-                (Claim(claim) for claim in extracted_claims),
+                [p.Claim(claim) for claim in extracted_claims],
                 extracted_axioms
             )
         )
