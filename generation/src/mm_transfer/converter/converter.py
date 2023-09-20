@@ -768,14 +768,17 @@ class MetamathConverter:
             raise NotImplementedError
         return axiom
 
-    def get_all_axioms(self) -> list[Axiom]:
+    def get_all_exported_axioms(self) -> list[Axiom]:
         axioms = []
         for axiom_list in self._axioms.values():
             axioms.extend(axiom_list)
-        return axioms
+        return [a for a in axioms if self.is_exported_axiom(a.name)]
 
-    def interpret_axioms(self, interpreter: BasicInterpreter) -> None:
-        axioms = self.get_all_axioms()
+    def publish_axioms(self, interpreter: BasicInterpreter) -> None:
+        axioms = self.get_all_exported_axioms()
         for axiom in axioms:
             interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
         return
+
+    def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
+        raise NotImplementedError

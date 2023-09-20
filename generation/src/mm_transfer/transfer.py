@@ -42,7 +42,7 @@ def main() -> None:
     # TODO: Print files for different phases (gamma, claims, proofs)
     with open(os.path.join(output_dir, args.filename), 'w') as out:
         printer = PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, out=out)
-        converter.interpret_axioms(printer)
+        converter.publish_axioms(printer)
     print(' Done.')
 
 

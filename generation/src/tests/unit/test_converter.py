@@ -448,7 +448,7 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
         converter.is_axiom(name)
 
 
-def test_interpreting_axioms(parsed_lemma_database: Database) -> None:
+def test_publishing_axioms(parsed_lemma_database: Database) -> None:
     # TODO: Enable the following tests
     pass
     # converter = MetamathConverter(parsed_lemma_database)
