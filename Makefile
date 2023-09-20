@@ -3,7 +3,7 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
-clean-proofs:
+clean-proofs: 
 	rm -rf .build/proofs
 
 update-snapshots:
@@ -107,25 +107,6 @@ proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-
 
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
-
-# Proof conversion checking
-# -------------------------
-
-#TODO: Add all examples with something like $(wildcard generation/mm-benchmarks/*.mm)
-SLICES=generation/mm-benchmarks/impreflex.mm generation/mm-benchmarks/disjointness-alt-lemma.mm
-SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
-
-.build/proofs/%.converted: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) $*.converted > /dev/null
-
-generation/mm-benchmarks/%.mm.conv: .build/proofs/%.converted
-	${DIFF} --label expected "generation/mm-benchmarks/$*.converted" --label actual ".build/proofs/$*.converted"
-
-test-proof-conv: ${SLICE_CONV_TARGETS}
-
-clean-test-proof-conv:
-	rm -f .build/proofs/*.converted
 
 # Risc0
 # -----

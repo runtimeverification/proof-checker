@@ -1,19 +1,16 @@
 from __future__ import annotations
 
 import argparse
-import os
 from pathlib import Path
 
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
-from proof_generation.proof import ExecutionPhase, PrettyPrintingInterpreter
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('input', help='Input Metamath database path')
     parser.add_argument('output', help='Output directory')
-    parser.add_argument('filename', help='Output file name')
     parser.add_argument('--clean', default=True, help='Clean up the output directory if it exists')
     args = parser.parse_args()
 
@@ -37,13 +34,10 @@ def main() -> None:
     # Prepare the converter
     converter = MetamathConverter(input_database)
     assert converter
-
-    print('Converting statements...', end='', flush=True)
     # TODO: Print files for different phases (gamma, claims, proofs)
-    with open(os.path.join(output_dir, args.filename), 'w') as out:
-        printer = PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, out=out)
-        converter.publish_axioms(printer)
-    print(' Done.')
+    # with open(output_dir / 'metavariables.ml-proof', 'w') as out:
+    #     printer = PrettyPrintingInterpreter(phase=ExecutionPhase.Proof, out=out)
+    #     converter.put_vars_on_stack(printer)
 
 
 if __name__ == '__main__':
