@@ -28,7 +28,7 @@ if TYPE_CHECKING:
         [Application(EVar(7), Symbol(1)), 7, Symbol(0), Application(Symbol(0), Symbol(1))],
         [Application(EVar(7), Symbol(1)), 6, Symbol(0), Application(EVar(7), Symbol(1))],
         # Distribute over subpatterns unless evar_id = binder
-        [Exists(EVar(1), EVar(1)), 0, Symbol(2), Exists(EVar(1), EVar(1))],
+        [Exists(EVar(1), EVar(1)), 1, Symbol(2), Exists(EVar(1), EVar(1))],
         [Exists(EVar(0), EVar(1)), 1, Symbol(2), Exists(EVar(0), Symbol(2))],
         [Mu(SVar(1), EVar(1)), 0, Symbol(2), Mu(SVar(1), EVar(1))],
         [Mu(SVar(1), EVar(1)), 1, Symbol(2), Mu(SVar(1), Symbol(2))],
@@ -102,7 +102,8 @@ def test_instantiate_esubst(
         [Exists(EVar(1), SVar(0)), 0, Symbol(2), Exists(EVar(1), Symbol(2))],
         [Exists(EVar(1), Symbol(1)), 1, Symbol(2), Exists(EVar(1), Symbol(1))],
         [Mu(SVar(1), SVar(1)), 0, Symbol(2), Mu(SVar(1), SVar(1))],
-        [Mu(SVar(1), SVar(1)), 1, Symbol(2), Mu(SVar(1), Symbol(2))],
+        [Mu(SVar(1), SVar(1)), 1, Symbol(2), Mu(SVar(1), SVar(1))],
+        [Mu(SVar(1), SVar(2)), 2, Symbol(2), Mu(SVar(1), Symbol(2))],
         # Subst on metavar should wrap in constructor
         [MetaVar(0), 0, Symbol(1), SSubst(MetaVar(0), SVar(0), Symbol(1))],
         # Subst when evar_id is fresh should do nothing

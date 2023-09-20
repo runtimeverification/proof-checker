@@ -63,7 +63,7 @@ check-flake8: poetry-install
 	$(POETRY_RUN) flake8 src
 
 check-mypy: poetry-install
-	$(POETRY_RUN) mypy src
+	$(POETRY_RUN) mypy src --strict-equality
 
 autoflake: poetry-install
 	$(POETRY_RUN) autoflake --quiet --in-place src
