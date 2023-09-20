@@ -176,7 +176,7 @@ class MetamathConverter:
 
             offset = len(statement.get_metavariables())
             lemma_n = offset + 1
-            instructions: str = ""
+            applied_lemmas: str = ""
 
             # TODO: Make some better whitespace handling
             for (i, letter) in enumerate(proof):
@@ -203,11 +203,11 @@ class MetamathConverter:
             for letter in proof[i+j+l+2:]:
                 if letter == " ":
                     continue
-                instructions += letter
+                applied_lemmas += letter
 
-            return (declared_lemmas, instructions)
+            return (declared_lemmas, applied_lemmas)
 
-        declared_lemmas, instructions = split_proof(statement.proof)
+        declared_lemmas, applied_lemmas = split_proof(statement.proof)
 
         letter_to_number = {
             'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9,
@@ -241,49 +241,49 @@ class MetamathConverter:
         self._declared_proof = Proof(declared_lemmas, [])
 
         buffer: str = ""
-        for letter in instructions:
+        for letter in applied_lemmas:
             if letter == "Z":
                 assert buffer == ""
                 # The choice of 0 is arbitrary
-                self._declared_proof.instructions.append(0)
+                self._declared_proof.applied_lemmas.append(0)
 
             buffer += letter
             if letter in letter_to_number:
-                self._declared_proof.instructions.append(convert_to_number(buffer))
+                self._declared_proof.applied_lemmas.append(convert_to_number(buffer))
                 buffer = ""
                 continue
 
     # TODO: add builtin notation
-    def exec_instruction(self, exported_proof: Proof, proofexp: ProofExp):
-        for instruction in exported_proof.instructions:
-            instruction_label = exported_proof.labels[instruction]
+    def exec_proof(self, exported_proof: Proof, proofexp: ProofExp):
+        for lemma in exported_proof.applied_lemmas:
+            lemma_label = exported_proof.labels[lemma]
 
-            if instruction_label in self.pattern_constructors:
+            if lemma_label in self.pattern_constructors:
                 # Cannot call .pattern here, as I have what I need on stack
-                if instruction_label == "imp-is-pattern":
+                if lemma_label == "imp-is-pattern":
                     proofexp.interpreter.implies(
                         proofexp.interpreter.stack[-2],
                         proofexp.interpreter.stack[-1]
                     )
             # TODO: phi0-is-pattern should be in pattern constructors
-            elif instruction_label == "ph0-is-pattern":
+            elif lemma_label == "ph0-is-pattern":
                 proofexp.interpreter.metavar(0)
-            elif instruction_label in self.exported_axioms:
-                proofexp.load_axiom(self.get_axiom_by_name(instruction_label).pattern)
+            elif lemma_label in self.exported_axioms:
+                proofexp.load_axiom(self.get_axiom_by_name(lemma_label).pattern)
                 # TODO: Instantiate
-            elif instruction_label in self.proof_rules:
-                if instruction_label == "proof-rule-prop-1":
+            elif lemma_label in self.proof_rules:
+                if lemma_label == "proof-rule-prop-1":
                     proofexp.interpreter.instantiate(proofexp.interpreter.prop1(), {
                         0: proofexp.interpreter.stack[-3],
                         1: proofexp.interpreter.stack[-2]
                     })
-                if instruction_label == "proof-rule-prop-2":
+                if lemma_label == "proof-rule-prop-2":
                     proofexp.interpreter.instantiate(proofexp.interpreter.prop2(), {
                         0: proofexp.interpreter.stack[-4],
                         1: proofexp.interpreter.stack[-3],
                         2: proofexp.interpreter.stack[-2]
                         })
-                if instruction_label == "proof-rule-mp":
+                if lemma_label == "proof-rule-mp":
                     proofexp.interpreter.modus_ponens(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
 
                     conclusion_name, conclusion = (str(proofexp.interpreter.stack[-1]), proofexp.interpreter.stack[-1])

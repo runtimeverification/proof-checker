@@ -38,7 +38,7 @@ def main() -> None:
     extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
-    class NewProof(p.ProofExp):
+    class TranslatedProof(p.ProofExp):
         @staticmethod
         def axioms() -> list[p.Pattern]:
             return extracted_axioms
@@ -48,19 +48,19 @@ def main() -> None:
             return extracted_claims
 
     # Export axioms and claims
-    NewProof.main(["", "binary", "gamma", output_dir / f"{args.output}.ml-gamma"])
-    NewProof.main(["", "binary", "claim", output_dir / f"{args.output}.ml-claim"])
+    TranslatedProof.main(["", "binary", "gamma", output_dir / f"{args.output}.ml-gamma"])
+    TranslatedProof.main(["", "binary", "claim", output_dir / f"{args.output}.ml-claim"])
 
     # Export proof
     with open(output_dir / f"{args.output}.ml-proof", 'wb') as out:
-        newproof = NewProof(p.SerializingInterpreter(
+        translated_proof = TranslatedProof(p.SerializingInterpreter(
                 p.ExecutionPhase.Proof,
                 out,
                 [p.Claim(claim) for claim in extracted_claims],
                 extracted_axioms
             )
         )
-        converter.exec_instruction(converter._declared_proof, newproof)
+        converter.exec_proof(converter._declared_proof, translated_proof)
 
 
 if __name__ == '__main__':

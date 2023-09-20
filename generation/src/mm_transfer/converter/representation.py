@@ -46,7 +46,7 @@ class Proof():
     #name: str
     #conclusion: nf.Pattern
     labels: dict[int, str]
-    instructions: list[int]
+    applied_lemmas: list[int]
 
 
 class Lemma(Axiom):
