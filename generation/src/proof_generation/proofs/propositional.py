@@ -43,7 +43,14 @@ class Propositional(ProofExp):
         ]
 
     def proof_expressions(self) -> list[ProvedExpression]:
-        return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.contradiction_proof, self.absurd, self.peirce_bot]
+        return [
+            self.imp_reflexivity,
+            self.top_intro,
+            self.bot_elim,
+            self.contradiction_proof,
+            self.absurd,
+            self.peirce_bot,
+        ]
 
     # Notation
     # ========
