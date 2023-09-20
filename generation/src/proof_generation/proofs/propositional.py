@@ -185,8 +185,10 @@ class Propositional(ProofExp):
         bot_to_1 = Implication(bot, phi1)
 
         return self.modus_ponens(
-            self.prop2().instantiate({0: phi0, 1: bot, 2: phi1}),
-            self.modus_ponens(self.prop1().instantiate({0: bot_to_1, 1: phi0}), self.bot_elim().instantiate({0: phi1})),
+            self.dynamic_inst(self.prop2, {0: phi0, 1: bot, 2: phi1}),
+            self.modus_ponens(
+                self.dynamic_inst(self.prop1, {0: bot_to_1, 1: phi0}), self.dynamic_inst(self.bot_elim, {0: phi1})
+            ),
         )
 
     # (((ph0 -> bot) -> ph0) -> ph0)
