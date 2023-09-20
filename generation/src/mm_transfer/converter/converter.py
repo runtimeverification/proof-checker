@@ -58,6 +58,7 @@ class MetamathConverter:
         self._ignored_axioms: list[AxiomaticStatement] = []
         self._lemmas: dict[str, list[Lemma]] = {}
         self._ignored_lemmas: list[ProvableStatement] = []
+        # We only support one proof per slice
         self._declared_proof: Proof | None = None
 
         # Add special cases that formalized in the new format differently
@@ -252,7 +253,7 @@ class MetamathConverter:
                 buffer = ""
                 continue
 
-    # add builtin notation
+    # TODO: add builtin notation
     def exec_instruction(self, exported_proof: Proof, proofexp: ProofExp):
         for instruction in exported_proof.instructions:
             instruction_label = exported_proof.labels[instruction]

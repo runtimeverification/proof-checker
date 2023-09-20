@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 import pytest
 
 import proof_generation.pattern as nf
-import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
 from mm_transfer.metamath.ast import ConstantStatement
