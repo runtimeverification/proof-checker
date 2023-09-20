@@ -34,12 +34,6 @@ class Proved:
     interpreter: BasicInterpreter
     conclusion: Pattern
 
-    # def instantiate(self: Proved, delta: dict[int, Pattern]) -> Proved:
-    #     for idn, p in delta.items():
-    #         delta[idn] = self.interpreter.pattern(p)
-
-    #     return self.interpreter.instantiate(self, delta)
-
     def assertc(self, pattern: Pattern) -> Proved:
         assert self.conclusion == pattern
         return self
