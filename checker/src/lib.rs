@@ -891,7 +891,6 @@ fn execute_instructions<'a>(
     }
 }
 
-
 pub fn verify<'a>(
     gamma_next_byte: &mut impl FnMut() -> Option<InstByte>,
     claims_next_byte: &mut impl FnMut() -> Option<InstByte>,
