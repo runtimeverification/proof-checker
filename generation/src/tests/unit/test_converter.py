@@ -11,8 +11,6 @@ from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Le
 from mm_transfer.metamath.ast import ConstantStatement
 from mm_transfer.metamath.parser import load_database
 
-# from proof_generation.proof import BasicInterpreter, ExecutionPhase, StatefulInterpreter
-
 if TYPE_CHECKING:
     from mm_transfer.metamath.ast import Database
 
