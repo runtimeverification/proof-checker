@@ -6,7 +6,7 @@ from pathlib import Path
 
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
-from proof_generation.proof import ExecutionPhase, PrettyPrintingInterpreter
+from proof_generation.proof import ExecutionPhase, SerializingInterpreter
 
 
 def main() -> None:
@@ -40,9 +40,9 @@ def main() -> None:
 
     print('Converting statements...', end='', flush=True)
     # TODO: Print files for different phases (gamma, claims, proofs)
-    with open(os.path.join(output_dir, args.filename), 'w') as out:
-        printer = PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, out=out)
-        converter.interpret_axioms(printer)
+    with open(os.path.join(output_dir, args.filename), 'wb') as out:
+        serializer = SerializingInterpreter(phase=ExecutionPhase.Gamma, out=out)
+        converter.publish_axioms(serializer)
     print(' Done.')
 
 
