@@ -4,8 +4,8 @@ import argparse
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import proof_generation.proof as p
 import proof_generation.pattern as nf
+import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
 

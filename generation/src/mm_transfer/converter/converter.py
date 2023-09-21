@@ -258,14 +258,14 @@ class MetamathConverter:
                     break
 
             # Skip to first declared lemma
-            for _j, letter in enumerate(proof[_i + 1:]):
+            for _j, letter in enumerate(proof[_i + 1 :]):
                 if not letter.isspace():
                     break
 
             # Register each lemma with ' ' as a divider
             buffer = ''
             lemma_n = len(declared_lemmas) + 1
-            for _l, letter in enumerate(proof[_i + _j + 1:]):
+            for _l, letter in enumerate(proof[_i + _j + 1 :]):
                 if letter.isspace():
                     declared_lemmas[lemma_n] = buffer
                     lemma_n += 1
