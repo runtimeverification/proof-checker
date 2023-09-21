@@ -27,6 +27,16 @@ def parsed_goal_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True)
 
 
+@pytest.fixture
+def parsed_perceptron_goal_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'perceptron-goal.mm'), include_proof=True)
+
+
+@pytest.fixture
+def parsed_svm5_goal_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'svm5-goal.mm'), include_proof=True)
+
+
 def pattern_mismatch(p1: nf.Pattern, p2: nf.Pattern) -> str:
     return f'Pattern mismatch: {str(p1)} != {str(p2)}'
 
@@ -87,7 +97,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     definedness = converter._symbols['\\definedness']
     inhabitant = converter._symbols['\\inhabitant']
     tst = converter._symbols['\\tsymbol']
-    assert len(scope._notations) == 11 + 4  # from the file and builtin
+    assert len(scope._notations) == 11 + 5  # from the file and builtin
 
     def bot() -> nf.Pattern:
         return nf.Mu(nf.SVar(0), nf.SVar(0))
@@ -447,3 +457,15 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
     assert converter.get_metavars_in_order('proof-rule-gen') == ('ph0', 'ph1')
     assert converter.get_metavars_in_order('disjointness-alt-lemma') == ('ph0', 'ph1', 'ph2')
+
+
+def test_converting_perceptron_goal(parsed_perceptron_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_perceptron_goal_database)
+    assert set(converter._lemmas.keys()) == {'goal'}
+    assert len(converter._axioms) == 81
+
+
+def test_converting_svm_goal(parsed_svm5_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_svm5_goal_database)
+    assert set(converter._lemmas.keys()) == {'goal'}
+    assert len(converter._axioms) == 81
