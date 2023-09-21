@@ -116,17 +116,17 @@ verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 SLICES=generation/mm-benchmarks/impreflex.mm
 SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
 
-.build/proofs/%.ml-gamma: FORCE
+.build/proofs/conv/%.ml-gamma: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) $*.ml-gamma > /dev/null
 
-generation/mm-benchmarks/%.mm.conv: .build/proofs/%.ml-gamma
-	${DIFF} --label expected "generation/mm-benchmarks/$*.ml-gamma" --label actual ".build/proofs/$*.ml-gamma"
+generation/mm-benchmarks/%.mm.conv: .build/proofs/conv/%.ml-gamma
+	${DIFF} --label expected "generation/mm-benchmarks/$*.ml-gamma" --label actual ".build/proofs/conv/$*.ml-gamma"
 
 test-gamma-conv: ${SLICE_CONV_TARGETS}
 
 clean-test-gamma-conv:
-	rm -f .build/proofs/*.ml-gamma
+	rm -f .build/proofs/conv/*.ml-gamma
 
 # Risc0
 # -----
