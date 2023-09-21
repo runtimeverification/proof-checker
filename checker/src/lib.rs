@@ -914,7 +914,6 @@ pub fn verify<'a>(
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Claim,
     );
-
     execute_instructions(
         proof_next_byte,
         &mut vec![], // stack is empty initially.
