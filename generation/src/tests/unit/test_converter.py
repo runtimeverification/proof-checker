@@ -482,11 +482,11 @@ def test_parsing_proof(parsed_impreflex_database: Database) -> None:
     assert len(converter._axioms) == 4
 
     assert converter._lemmas['imp-reflexivity'][0].proof.labels == {
-        1: "ph0-is-pattern",
-        2: "imp-is-pattern",
-        3: "proof-rule-prop-1",
-        4: "proof-rule-mp",
-        5: "proof-rule-prop-2",
+        1: 'ph0-is-pattern',
+        2: 'imp-is-pattern',
+        3: 'proof-rule-prop-1',
+        4: 'proof-rule-mp',
+        5: 'proof-rule-prop-2',
     }
 
     assert converter._lemmas['imp-reflexivity'][0].proof.applied_lemmas == [

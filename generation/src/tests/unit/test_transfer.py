@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -8,6 +9,9 @@ import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
 from mm_transfer.transfer import exec_proof
+
+if TYPE_CHECKING:
+    from mm_transfer.metamath.parser import Database
 
 BENCHMARK_LOCATION = 'mm-benchmarks'
 
@@ -38,6 +42,7 @@ def test_exec_proof(parsed_impreflex_database: Database) -> None:
         p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], extracted_axioms)
     )
 
-    exec_proof(converter, "imp-reflexivity", proofexp)
+    exec_proof(converter, 'imp-reflexivity', proofexp)
 
+    assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
     assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, p.Implication(p.MetaVar(0), p.MetaVar(0)))]
