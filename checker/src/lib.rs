@@ -891,7 +891,10 @@ fn execute_instructions<'a>(
     }
 
     if matches!(phase, ExecutionPhase::Proof) {
-        assert!(claims.is_empty(), "There must be no claims left at the end of execution.");
+        assert!(
+            claims.is_empty(),
+            "There must be no claims left at the end of execution."
+        );
     }
 }
 
