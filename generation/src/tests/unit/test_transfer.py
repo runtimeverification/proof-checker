@@ -27,6 +27,7 @@ def test_exec_proof(parsed_impreflex_database: Database) -> None:
     extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
+    # TODO: Extract this code in transfer.py to a function
     class TranslatedProofSkeleton(p.ProofExp):
         @staticmethod
         def axioms() -> list[p.Pattern]:
