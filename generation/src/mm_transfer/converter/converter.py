@@ -499,7 +499,8 @@ class MetamathConverter:
                     lemma.pattern,
                     tuple(metavar_names),
                     tuple(a.pattern for a in antecedents),
-                    self._import_proof(statement)
+                    # TODO: Add support for using antecedents
+                    # self._import_proof(actual_statement)
                 )
             self._add_lemma(lemma.name, lemma)
 

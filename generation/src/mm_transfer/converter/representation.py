@@ -55,5 +55,4 @@ class Lemma(Axiom):
 
 
 class LemmaWithAntecedents(AxiomWithAntecedents, Lemma):
-    # TODO: Add proof or proof-related methods later
     pass

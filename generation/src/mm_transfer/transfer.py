@@ -2,15 +2,11 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import proof_generation.pattern as nf
 import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
-
-if TYPE_CHECKING:
-    from mm_transfer.converter.representation import Proof
 
 
 def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) -> None:
