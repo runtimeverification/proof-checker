@@ -42,13 +42,13 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                     proofexp.interpreter.stack[-1],
                     delta
                 )
-            # TODO: len(converter._axioms[lemma_label][0].args) > 0, pop them from stack
         # TODO: phi0-is-pattern should be in pattern constructors
         elif lemma_label == 'ph0-is-pattern':
             proofexp.interpreter.metavar(0)
         elif lemma_label in converter.exported_axioms:
             proofexp.load_axiom(converter.get_axiom_by_name(lemma_label).pattern)
             # TODO: Instantiate
+            # TODO: Support for axioms with EH
         elif lemma_label in converter.proof_rules:
             if lemma_label == 'proof-rule-prop-1':
                 prop1 = proofexp.interpreter.prop1()
