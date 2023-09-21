@@ -92,7 +92,7 @@ class MetamathConverter:
         return set(self._pattern_constructors)
 
     @property
-    def misssing_notations(self) -> set[str]:
+    def missing_notations(self) -> set[str]:
         return set(self._missing_declarations)
 
     def is_lemma(self, name: str) -> bool:
