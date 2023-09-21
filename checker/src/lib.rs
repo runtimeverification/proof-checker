@@ -890,7 +890,9 @@ fn execute_instructions<'a>(
         }
     }
 
-    assert!(claims.is_empty(), "There must be no claims left at the end of execution.");
+    if matches!(phase, ExecutionPhase::Proof) {
+        assert!(claims.is_empty(), "There must be no claims left at the end of execution.");
+    }
 }
 
 pub fn verify<'a>(
@@ -1855,4 +1857,23 @@ fn test_apply_ssubst() {
     for (pattern, svar_id, plug, expected) in test_cases {
         assert_eq!(apply_ssubst(&pattern, svar_id, &plug), expected);
     }
+}
+
+#[test]
+#[should_panic]
+fn test_no_remaining_claims() {
+    let proof = vec![Instruction::Publish as InstByte];
+
+    let mut stack = vec![Term::Pattern(symbol(0))];
+    let mut memory = vec![];
+    let mut claims = vec![symbol(0)];
+    let mut axioms = vec![];
+    execute_vector(
+        &proof,
+        &mut stack,
+        &mut memory,
+        &mut claims,
+        &mut axioms,
+        ExecutionPhase::Proof,
+    );
 }
