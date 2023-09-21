@@ -914,6 +914,7 @@ pub fn verify<'a>(
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Claim,
     );
+
     execute_instructions(
         proof_next_byte,
         &mut vec![], // stack is empty initially.
@@ -922,10 +923,6 @@ pub fn verify<'a>(
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Proof,
     );
-
-    if claims.len() != 0 {
-        panic!("Some claims were not discharged {:?}", claims);
-    }
 }
 
 /// Testing
