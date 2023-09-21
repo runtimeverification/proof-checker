@@ -69,8 +69,6 @@ class MetamathConverter:
         self._ignored_axioms: list[AxiomaticStatement] = []
         self._lemmas: dict[str, list[Lemma]] = {}
         self._ignored_lemmas: list[ProvableStatement] = []
-        # We only support one proof per slice
-        self._declared_proof: Proof | None = None
         self._missing_declarations: set[str] = set()
         self._floating_patterns: list[str] = []
 
@@ -199,7 +197,6 @@ class MetamathConverter:
             elif isinstance(statement, AxiomaticStatement):
                 sort_axiom(statement, statement)
             elif isinstance(statement, ProvableStatement):
-                self._import_provable(statement)
                 lemmas.append(statement)
             elif isinstance(statement, Block):
                 last_statment = statement.statements[-1]
@@ -207,8 +204,6 @@ class MetamathConverter:
                     if self._convert_axioms:
                         sort_axiom(last_statment, statement)
                 elif isinstance(last_statment, ProvableStatement):
-                    self._import_provable(last_statment)
-
                     if self._convert_axioms:
                         lemmas.append(statement)
                 else:
@@ -224,7 +219,7 @@ class MetamathConverter:
         for lemma in lemmas:
             self._import_lemma(lemma)
 
-    def _import_provable(self, statement: ProvableStatement) -> None:
+    def _import_proof(self, statement: ProvableStatement) -> Proof:
         # Least significant digits in MM encoding
         lsdigit = {
             'A': 1,
@@ -317,21 +312,23 @@ class MetamathConverter:
             return n
 
         declared_lemmas, applied_lemmas = split_proof(statement.proof)
-        self._declared_proof = Proof(declared_lemmas, [])
+        result = Proof(declared_lemmas, [])
 
         buffer: str = ''
         for letter in applied_lemmas:
             if letter == 'Z':
                 assert buffer == ''
                 # The choice of 0 is arbitrary to denote Load
-                self._declared_proof.applied_lemmas.append(0)
+                result.applied_lemmas.append(0)
                 continue
 
             buffer += letter
             if letter in lsdigit:
-                self._declared_proof.applied_lemmas.append(convert_to_number(buffer))
+                result.applied_lemmas.append(convert_to_number(buffer))
                 buffer = ''
                 continue
+
+        return result
 
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
@@ -502,6 +499,7 @@ class MetamathConverter:
                     lemma.pattern,
                     tuple(metavar_names),
                     tuple(a.pattern for a in antecedents),
+                    self._import_proof(statement)
                 )
             self._add_lemma(lemma.name, lemma)
 
@@ -971,7 +969,7 @@ class MetamathConverter:
         if isinstance(statement, AxiomaticStatement | EssentialStatement):
             axiom = Axiom(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars)
         elif isinstance(statement, ProvableStatement):
-            axiom = Lemma(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars)
+            axiom = Lemma(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars, self._import_proof(statement))
         else:
             raise NotImplementedError
         return axiom

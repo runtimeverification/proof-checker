@@ -13,8 +13,11 @@ if TYPE_CHECKING:
     from mm_transfer.converter.representation import Proof
 
 
-def exec_proof(converter: MetamathConverter, exported_proof: Proof, proofexp: p.ProofExp) -> None:
+def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) -> None:
     assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
+
+    # We do not support ambiguities right now
+    exported_proof = converter._lemmas[target][0].proof
 
     for lemma in exported_proof.applied_lemmas:
         lemma_label = exported_proof.labels[lemma]
@@ -73,6 +76,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('input', help='Input Metamath database path')
     parser.add_argument('output', help='Output directory')
+    parser.add_argument('target', help='Lemma whose proof is to be translated')
     parser.add_argument('--clean', default=True, help='Clean up the output directory if it exists')
     args = parser.parse_args()
 
@@ -96,7 +100,6 @@ def main() -> None:
     # Prepare the converter
     converter = MetamathConverter(input_database)
     assert converter
-    assert converter._declared_proof
 
     extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
@@ -121,7 +124,7 @@ def main() -> None:
                 p.ExecutionPhase.Proof, out, [p.Claim(claim) for claim in extracted_claims], extracted_axioms
             )
         )
-        exec_proof(converter, converter._declared_proof, proofexp)
+        exec_proof(converter, args.target, proofexp)
 
 
 if __name__ == '__main__':

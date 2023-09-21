@@ -45,15 +45,13 @@ class AxiomWithAntecedents(Axiom):
 # Need to merge this with Lemma* classes
 @dataclass(frozen=True)
 class Proof:
-    # name: str
-    # conclusion: nf.Pattern
     labels: dict[int, str]
     applied_lemmas: list[int]
 
 
+@dataclass(frozen=True)
 class Lemma(Axiom):
-    # TODO: Add proof or proof-related methods later
-    pass
+    proof: Proof
 
 
 class LemmaWithAntecedents(AxiomWithAntecedents, Lemma):
