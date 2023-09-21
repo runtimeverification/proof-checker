@@ -325,6 +325,7 @@ class MetamathConverter:
                 assert buffer == ''
                 # The choice of 0 is arbitrary to denote Load
                 self._declared_proof.applied_lemmas.append(0)
+                continue
 
             buffer += letter
             if letter in lsdigit:
