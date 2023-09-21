@@ -469,8 +469,7 @@ class MetamathConverter:
             if (
                 isinstance(st, EssentialStatement)
                 and isinstance(st.terms[0], Application)
-                and st.terms[0].symbol
-                in ('#Fresh', '#ApplicationContext')  # We will add #Negative, #Positive as we add support for them
+                and st.terms[0].symbol in ('#Fresh', '#ApplicationContext', '#Positive', '#Negative')
             ):
                 return True
             else:
@@ -725,7 +724,7 @@ class MetamathConverter:
                             var_name = statement.terms[1].name
                             metavar_name = statement.terms[2].name
                             add_fresh_mc(metavar_name, var_name)
-                        elif statement.terms[0].symbol == '#ApplicationContext':
+                        elif statement.terms[0].symbol in ('#ApplicationContext', '#Positive', '#Negative'):
                             assert isinstance(statement.terms[1], Metavariable)
                             assert isinstance(statement.terms[2], Metavariable)
 
@@ -734,8 +733,18 @@ class MetamathConverter:
                             var = scope.resolve(var_name)
                             metavar = scope.resolve(metavar_name)
                             assert isinstance(metavar, nf.MetaVar)
-                            assert isinstance(var, nf.EVar)
-                            new_var = new_metavariable(metavar, app_ctx_holes=(var,))
+
+                            if statement.terms[0].symbol == '#ApplicationContext':
+                                assert isinstance(var, nf.EVar)
+                                new_var = new_metavariable(metavar, app_ctx_holes=(var,))
+                            elif statement.terms[0].symbol == '#Positive':
+                                assert isinstance(var, nf.SVar)
+                                new_var = new_metavariable(metavar, positive=(var,))
+                            elif statement.terms[0].symbol == '#Negative':
+                                assert isinstance(var, nf.SVar)
+                                new_var = new_metavariable(metavar, negative=(var,))
+                            else:
+                                raise NotImplementedError(f'Unsupported symbol {statement.terms[0].symbol}')
                             scope.supercede_metavariable(metavar_name, new_var)
                         else:
                             raise NotImplementedError
