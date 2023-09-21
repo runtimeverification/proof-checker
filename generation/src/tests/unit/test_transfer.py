@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
 
 import pytest
 
-
-import proof_generation.pattern as nf
 import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
@@ -38,13 +35,9 @@ def test_exec_proof(parsed_impreflex_database: Database) -> None:
             return extracted_claims
 
     proofexp = TranslatedProofSkeleton(
-            p.StatefulInterpreter(
-                p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], extracted_axioms
-            )
-        )
+        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], extracted_axioms)
+    )
 
     exec_proof(converter, "imp-reflexivity", proofexp)
 
-    assert proofexp.interpreter.stack == [
-            p.Proved(proofexp.interpreter, p.Implication(p.MetaVar(0), p.MetaVar(0)))
-        ]
+    assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, p.Implication(p.MetaVar(0), p.MetaVar(0)))]
