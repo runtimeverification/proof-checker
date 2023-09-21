@@ -73,12 +73,11 @@ def test_parse_svm5() -> None:
 def test_parse_transfer() -> None:
     """Just checking that the parser works on the file"""
     input_database = load_database(os.path.join(BENCHMARK_LOCATION, 'transfer.mm'), include_proof=True)
-    assert len(input_database.statements) == 82
+    assert len(input_database.statements) == 11515
 
     assert isinstance(input_database.statements[0], ConstantStatement)
-    assert isinstance(input_database.statements[-1], Block)
-    assert isinstance(input_database.statements[-1].statements[0], ProvableStatement)
-    assert input_database.statements[-1].statements[0].label == 'goal'
+    assert isinstance(input_database.statements[-1], ProvableStatement)
+    assert input_database.statements[-1].label == 'goal'
 
 
 def test_parse_transfer5000() -> None:
@@ -95,7 +94,7 @@ def test_parse_transfer5000() -> None:
 def test_parse_transfer_goal() -> None:
     """Just checking that the parser works on the file"""
     input_database = load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True)
-    assert len(input_database.statements) == 82
+    assert len(input_database.statements) == 221
 
     assert isinstance(input_database.statements[0], ConstantStatement)
     assert isinstance(input_database.statements[-1], Block)

@@ -23,8 +23,9 @@ from mm_transfer.metamath.parser import load_database
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
+    from typing import TypeGuard
 
-    from mm_transfer.metamath.ast import Statement, Terms
+    from mm_transfer.metamath.ast import Statement, Term, Terms
 
 
 def get_constants(terms: Terms) -> set[str]:
@@ -61,12 +62,24 @@ def deconstruct_compressed_proof(provable: ProvableStatement) -> tuple[tuple[str
 def supporting_database_for_provable(
     cut_antecedents: dict[str, FloatingStatement | AxiomaticStatement | Block],
     global_disjoints: set[frozenset[str]],
+    syntax_deps: dict[str, tuple[str, ...]],
     provable: ProvableStatement,
     essentials: tuple[DisjointStatement | EssentialStatement, ...],
 ) -> Database:
-    statements: list[Statement] = []
+    def corresponding_sugar_axiom(label: str) -> str | None:
+        if not label.endswith('is-pattern'):
+            return None
+        sugar_label = label[0 : -len('is-pattern')] + 'is-sugar'
+        if sugar_label not in cut_antecedents.keys():
+            return None
+        return sugar_label
 
-    needed_lemmas, _ = deconstruct_compressed_proof(provable)
+    statements: list[Statement] = []
+    needed_lemmas_tuple, _ = deconstruct_compressed_proof(provable)
+    needed_lemmas = frozenset(needed_lemmas_tuple)
+    needed_lemmas |= frozenset(filter(None, map(corresponding_sugar_axiom, needed_lemmas)))
+    for lemma in needed_lemmas:
+        needed_lemmas |= frozenset(syntax_deps.get(lemma, ()))
 
     needed_constants = set()
     needed_metavariables = set()
@@ -74,9 +87,9 @@ def supporting_database_for_provable(
         needed_constants.update(statements_get_constants((needed,)))
         needed_metavariables.update(needed.get_metavariables())
 
-    statements.append(ConstantStatement(tuple(needed_constants)))
+    statements.append(ConstantStatement(tuple(sorted(needed_constants))))
     if needed_metavariables:
-        statements.append(VariableStatement(tuple(Metavariable(var) for var in needed_metavariables)))
+        statements.append(VariableStatement(tuple(Metavariable(var) for var in sorted(needed_metavariables))))
     for pair in global_disjoints:
         if pair.issubset(needed_metavariables):
             statements.append(DisjointStatement(tuple(Metavariable(var) for var in pair)))
@@ -90,9 +103,10 @@ def supporting_database_for_provable(
     return Database(tuple(statements))
 
 
-def is_axiom(statement: Statement) -> bool:
+def match_axiom(statement: Statement) -> AxiomaticStatement | None:
+    """Returns the main statement of an axiom statement or block ending with an axiom."""
     if isinstance(statement, AxiomaticStatement):
-        return True
+        return statement
     if isinstance(statement, Block):
         substatements = list(statement.statements)
         while substatements:
@@ -100,32 +114,10 @@ def is_axiom(statement: Statement) -> bool:
             if isinstance(substatement, Block):
                 substatements += substatement.statements
             elif not isinstance(substatement, (DisjointStatement, EssentialStatement, AxiomaticStatement)):
-                return False
-        return True
-    return False
-
-
-def axiom_get_label(statement: Statement) -> str:
-    # TODO: We have all this complexity because the `substitution-fold/unfold` axiom is stated in
-    # a non-standard way. I don't want to change that until after the PoC.
-    if isinstance(statement, AxiomaticStatement):
-        return statement.label
-    elif isinstance(statement, Block):
-        label = None
-        substatements = list(statement.statements)
-        while substatements:
-            substatement, *substatements = substatements
-            if isinstance(substatement, Block):
-                substatements += substatement.statements
-            elif isinstance(substatement, (DisjointStatement, EssentialStatement)):
-                continue
-            else:
-                assert isinstance(substatement, AxiomaticStatement)
-                label = substatement.label
-        assert label, statement
-        return label
-    else:
-        raise AssertionError('Statement is not axiom?')
+                return None
+        assert isinstance(substatement, AxiomaticStatement)
+        return substatement
+    return None
 
 
 def deconstruct_provable(
@@ -134,7 +126,7 @@ def deconstruct_provable(
     if isinstance(statement, ProvableStatement):
         return ((), statement)
     elif isinstance(statement, Block):
-        assert not is_axiom(statement)
+        assert not match_axiom(statement)
         for substatement in statement.statements[:-1]:
             assert isinstance(substatement, (DisjointStatement, EssentialStatement)), substatement
         assert isinstance(statement.statements[-1], ProvableStatement)
@@ -152,7 +144,9 @@ def construct_axiom(
     return Block((*antecedents, AxiomaticStatement(consequent.label, consequent.terms)))
 
 
-def slice_database(input_database: Database, include: set[str], exclude: set[str]) -> Iterator[tuple[str, Database]]:
+def slice_database(
+    input_database: Database, syntax_deps: dict[str, tuple[str, ...]], include: set[str], exclude: set[str]
+) -> Iterator[tuple[str, Database]]:
     """Of the top-level statements, only floating statements are mandatory hypothesis.
     They are thus order sensitive.
     """
@@ -170,32 +164,20 @@ def slice_database(input_database: Database, include: set[str], exclude: set[str
                         global_disjoints.add(frozenset({var1.name, var2.name}))
         elif isinstance(statement, FloatingStatement):
             cut_antecedents[statement.label] = statement
-        elif is_axiom(statement):
-            cut_antecedents[axiom_get_label(statement)] = cast('AxiomaticStatement | Block', statement)
+        elif axiom_conclusion := match_axiom(statement):
+            cut_antecedents[axiom_conclusion.label] = cast('AxiomaticStatement | Block', statement)
         elif isinstance(statement, (ProvableStatement, Block)):
             antecedents, consequent = deconstruct_provable(statement)
             if (consequent.label in include) and (consequent.label not in exclude):
                 yield (
                     consequent.label,
-                    supporting_database_for_provable(cut_antecedents, global_disjoints, consequent, antecedents),
+                    supporting_database_for_provable(
+                        cut_antecedents, global_disjoints, syntax_deps, consequent, antecedents
+                    ),
                 )
             cut_antecedents[consequent.label] = construct_axiom(antecedents, consequent)
         else:
             assert 'Unanticipated statement type', type(statement)
-
-
-# TODO: Unused so far
-# def collect_provable_names(database: Database) -> set[str]:
-#     ret = set()
-
-#     def collect(stmt: Statement) -> Statement:
-#         nonlocal ret
-#         if isinstance(stmt, ProvableStatement):
-#             ret.add(stmt.label)
-#         return stmt
-
-#     database.bottom_up(collect)
-#     return ret
 
 
 def dependency_graph(database: Database) -> dict[str, tuple[str, ...]]:
@@ -209,6 +191,77 @@ def dependency_graph(database: Database) -> dict[str, tuple[str, ...]]:
         return stmt
 
     database.bottom_up(collect)
+    return ret
+
+
+def is_structured_statement(stmt: Statement) -> TypeGuard[StructuredStatement]:
+    return isinstance(stmt, StructuredStatement)
+
+
+def syntax_dependencies(database: Database) -> dict[str, tuple[str, ...]]:
+    """Returns a maps from labels of structured statements to the
+    notation and symbol axioms it depends on.
+    e.g. `foo-is-sugar` and `foo-is-pattern`, and `sigma-is-symbol`
+    axioms it depends on.
+    """
+
+    syntax_defs: dict[str, str] = {}
+    ret: dict[str, tuple[str, ...]] = {}
+
+    def collect_needed_syntax(term: Term) -> tuple[str, ...]:
+        ret: list[str] = []
+
+        def _collect(term: Term) -> Term:
+            nonlocal ret
+            if isinstance(term, Application) and term.symbol in syntax_defs:
+                ret += (syntax_defs[term.symbol],)
+            return term
+
+        term.bottom_up(_collect)
+        return tuple(ret)
+
+    for stmt in database.statements:
+        substmts: tuple[StructuredStatement, ...]
+        if isinstance(stmt, Block):
+            substmts = tuple(filter(is_structured_statement, stmt.statements))
+        elif isinstance(stmt, (ProvableStatement, AxiomaticStatement)):
+            substmts = (stmt,)
+        else:
+            continue
+        conclusion = substmts[-1]
+
+        used_notations: tuple[str, ...] = ()
+
+        if conclusion.label.endswith('is-symbol'):
+            assert len(conclusion.terms) == 2, conclusion
+            sharp, symbol = conclusion.terms
+            assert sharp == Application('#Symbol')
+            assert isinstance(symbol, Application)
+            syntax_defs[symbol.symbol] = conclusion.label
+        elif conclusion.label.endswith('is-sugar'):
+            assert len(conclusion.terms) == 3, conclusion
+            sharp, lhs, rhs = conclusion.terms
+            assert sharp == Application('#Notation')
+            assert isinstance(lhs, Application)
+            syntax_defs[lhs.symbol] = conclusion.label
+            notation_is_pattern = conclusion.label[0 : -len('sugar')] + 'pattern'
+            used_notations = used_notations + (notation_is_pattern, *collect_needed_syntax(conclusion.terms[2]))
+
+        for substmt in substmts:
+            match substmt.terms[0]:
+                case Application('#Substitution'):
+                    used_notations = (
+                        used_notations
+                        + collect_needed_syntax(substmt.terms[1])
+                        + collect_needed_syntax(substmt.terms[2])
+                    )
+                case Application('|-'):
+                    used_notations = used_notations + collect_needed_syntax(substmt.terms[1])
+
+        syntax_deps = []
+        for syntax_def in used_notations:
+            syntax_deps += [syntax_def, *ret[syntax_def]]
+        ret[conclusion.label] = tuple(syntax_deps)
 
     return ret
 
@@ -239,13 +292,23 @@ def main() -> None:
 
     exclude: set[str] = set()
 
+    print('Calculating dependency graph...', end='', flush=True)
     deps = dependency_graph(input_database)
-    include: set[str] = transitive_closure(deps, ['goal'])
+    print(' Done.')
 
-    for label, slice in slice_database(input_database, include=include, exclude=exclude):
+    print('Collecting required lemmas...', end='', flush=True)
+    include: set[str] = transitive_closure(deps, ['goal'])
+    print(' Done.')
+
+    print('Calculating notation dependency graph...', end='', flush=True)
+    syntax_deps = syntax_dependencies(input_database)
+    print(' Done.')
+
+    print('Writing slices...', end='', flush=True)
+    for label, slice in slice_database(input_database, syntax_deps, include=include, exclude=exclude):
         with open(output_dir / (label + '.mm'), 'w') as output_file:
             Encoder.encode(output_file, slice)
-        print(f'Extracted {label}.', end='\x1b[2K\r', flush=True)
+    print(' Done.')
 
 
 if __name__ == '__main__':
