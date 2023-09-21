@@ -36,6 +36,10 @@ def parsed_perceptron_goal_database() -> Database:
 def parsed_svm5_goal_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'svm5-goal.mm'), include_proof=True)
 
+@pytest.fixture
+def parsed_impreflex_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'impreflex.mm'), include_proof=True)
+
 
 def pattern_mismatch(p1: nf.Pattern, p2: nf.Pattern) -> str:
     return f'Pattern mismatch: {str(p1)} != {str(p2)}'
@@ -469,3 +473,21 @@ def test_converting_svm_goal(parsed_svm5_goal_database: Database) -> None:
     converter = MetamathConverter(parsed_svm5_goal_database)
     assert set(converter._lemmas.keys()) == {'goal'}
     assert len(converter._axioms) == 81
+
+
+def test_parsing_proof(parsed_impreflex_database: Database) -> None:
+    converter = MetamathConverter(parsed_impreflex_database)
+    assert set(converter._lemmas.keys()) == {'imp-reflexivity'}
+    assert len(converter._axioms) == 4
+
+    assert converter._lemmas['imp-reflexivity'][0].proof.labels == {
+            1: "ph0-is-pattern",
+            2: "imp-is-pattern",
+            3: "proof-rule-prop-1",
+            4: "proof-rule-mp",
+            5: "proof-rule-prop-2"
+        }
+
+    assert converter._lemmas['imp-reflexivity'][0].proof.applied_lemmas == [
+        1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 1, 5, 1, 1, 1, 2, 3, 4, 1, 1, 3, 4
+        ]
