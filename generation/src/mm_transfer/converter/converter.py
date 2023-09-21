@@ -119,7 +119,7 @@ class MetamathConverter:
         # todo: Duplication is intentionally unsupported
         assert self.is_lemma(name)
         return self._lemmas[name][0]
-    
+
     def get_all_exported_axioms(self) -> list[Axiom]:
         axioms = []
         for axiom_list in self._axioms.values():
