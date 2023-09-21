@@ -33,18 +33,20 @@ def exec_proof(converter: MetamathConverter, exported_proof: Proof, proofexp: p.
             # TODO: Instantiate
         elif lemma_label in converter.proof_rules:
             if lemma_label == 'proof-rule-prop-1':
+                prop1 = proofexp.interpreter.prop1()
                 assert isinstance(proofexp.interpreter.stack[-3], nf.Pattern)
                 assert isinstance(proofexp.interpreter.stack[-2], nf.Pattern)
                 proofexp.interpreter.instantiate(
-                    proofexp.interpreter.prop1(),
+                    prop1,
                     {0: proofexp.interpreter.stack[-3], 1: proofexp.interpreter.stack[-2]},
                 )
             if lemma_label == 'proof-rule-prop-2':
+                prop2 = proofexp.interpreter.prop2()
                 assert isinstance(proofexp.interpreter.stack[-4], nf.Pattern)
                 assert isinstance(proofexp.interpreter.stack[-3], nf.Pattern)
                 assert isinstance(proofexp.interpreter.stack[-2], nf.Pattern)
                 proofexp.interpreter.instantiate(
-                    proofexp.interpreter.prop2(),
+                    prop2,
                     {
                         0: proofexp.interpreter.stack[-4],
                         1: proofexp.interpreter.stack[-3],
