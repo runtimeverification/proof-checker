@@ -251,7 +251,7 @@ class MetamathConverter:
         # "More" significant digits in MM encoding
         msdigit = {'U': 1, 'V': 2, 'W': 3, 'X': 4, 'Y': 5}
 
-        def parse_lemmas(proof: str, declared_lemmas: dict[str, int]) -> int:
+        def parse_lemmas(proof: str, declared_lemmas: dict[int, str]) -> int:
             # Skip to first (
             for _i, letter in enumerate(proof):
                 if letter == '(':
@@ -280,8 +280,9 @@ class MetamathConverter:
             # Return the offset starting at the proof sequence itself
             return _i + _j + _l + 2
 
-        def split_proof(proof: str) -> tuple[dict[str, int], str]:
-            declared_lemmas: dict[str, int] = {}
+        def split_proof(proof: str | None) -> tuple[dict[int, str], str]:
+            assert proof
+            declared_lemmas: dict[int, str] = {}
 
             metavars_id = 1
             # TODO: Fix the order according to the one given by MM
@@ -303,7 +304,7 @@ class MetamathConverter:
             return (declared_lemmas, applied_lemmas)
 
         def convert_to_number(word: str) -> int:
-            encoding = reversed(word)
+            encoding = list(reversed(word))
             first_letter, *encoding = encoding
 
             n: int = lsdigit[first_letter]
