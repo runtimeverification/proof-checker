@@ -225,53 +225,8 @@ class MetamathConverter:
             self._import_lemma(lemma)
 
     def _import_provable(self, statement: ProvableStatement) -> None:
-        def split_proof(proof: str) -> tuple[dict[str, int], str]:
-            declared_lemmas: dict[str, int] = {}
-
-            metavars_id = 1
-            # TODO: Fix the order according to the one given by MM
-            for metavar in statement.get_metavariables():
-                declared_lemmas[metavars_id] = f'{metavar}-is-pattern'
-                metavars_id += 1
-
-            # TODO: Add Essential Hypotheses Handling
-
-            offset = len(statement.get_metavariables())
-            lemma_n = offset + 1
-            applied_lemmas: str = ''
-
-            # TODO: Make some better whitespace handling
-            for i, letter in enumerate(proof):
-                if letter == '(':
-                    break
-
-            for j, letter in enumerate(proof[i + 1 :]):
-                if letter != ' ':
-                    break
-
-            buffer = ''
-            for l, letter in enumerate(proof[i + j + 1 :]):
-                if letter == ' ':
-                    declared_lemmas[lemma_n] = buffer
-                    lemma_n += 1
-                    buffer = ''
-                    continue
-
-                if letter == ')':
-                    break
-
-                buffer += letter
-
-            for letter in proof[i + j + l + 2 :]:
-                if letter == ' ':
-                    continue
-                applied_lemmas += letter
-
-            return (declared_lemmas, applied_lemmas)
-
-        declared_lemmas, applied_lemmas = split_proof(statement.proof)
-
-        letter_to_number = {
+        # Least significant digits in MM encoding
+        lsdigit = {
             'A': 1,
             'B': 2,
             'C': 3,
@@ -293,39 +248,85 @@ class MetamathConverter:
             'S': 19,
             'T': 20,
         }
+        # "More" significant digits in MM encoding
+        msdigit = {'U': 1, 'V': 2, 'W': 3, 'X': 4, 'Y': 5}
+
+        def parse_lemmas(proof: str, declared_lemmas: dict[str, int]) -> int:
+            # Skip to first (
+            for _i, letter in enumerate(proof):
+                if letter == '(':
+                    break
+
+            # Skip to first declared lemma
+            for _j, letter in enumerate(proof[_i + 1:]):
+                if not letter.isspace():
+                    break
+
+            # Register each lemma with ' ' as a divider
+            buffer = ''
+            lemma_n = len(declared_lemmas) + 1
+            for _l, letter in enumerate(proof[_i + _j + 1:]):
+                if letter.isspace():
+                    declared_lemmas[lemma_n] = buffer
+                    lemma_n += 1
+                    buffer = ''
+                    continue
+
+                if letter == ')':
+                    break
+
+                buffer += letter
+
+            # Return the offset starting at the proof sequence itself
+            return _i + _j + _l + 2
+
+        def split_proof(proof: str) -> tuple[dict[str, int], str]:
+            declared_lemmas: dict[str, int] = {}
+
+            metavars_id = 1
+            # TODO: Fix the order according to the one given by MM
+            for metavar in statement.get_metavariables():
+                declared_lemmas[metavars_id] = f'{metavar}-is-pattern'
+                metavars_id += 1
+
+            # TODO: Add Essential Hypotheses Handling
+
+            # TODO: Make some better whitespace handling
+            offset = parse_lemmas(proof, declared_lemmas)
+
+            applied_lemmas: str = ''
+            for letter in proof[offset:]:
+                if letter.isspace():
+                    continue
+                applied_lemmas += letter
+
+            return (declared_lemmas, applied_lemmas)
 
         def convert_to_number(word: str) -> int:
             encoding = reversed(word)
             first_letter, *encoding = encoding
 
-            n: int = letter_to_number[first_letter]
+            n: int = lsdigit[first_letter]
 
-            letter_to_number2 = {'U': 1, 'V': 2, 'W': 3, 'X': 4, 'Y': 5}
-
-            base = 0
+            exp = 0
             for letter in encoding:
-                n += letter_to_number2[letter] * pow(5, base) * 20
-                base += 1
+                n += msdigit[letter] * pow(5, exp) * 20
+                exp += 1
 
             return n
 
-        def convert_number_to_instr(number: int) -> str:
-            if number in declared_lemmas:
-                return declared_lemmas[number]
-
-            return f'Load {number}'
-
+        declared_lemmas, applied_lemmas = split_proof(statement.proof)
         self._declared_proof = Proof(declared_lemmas, [])
 
         buffer: str = ''
         for letter in applied_lemmas:
             if letter == 'Z':
                 assert buffer == ''
-                # The choice of 0 is arbitrary
+                # The choice of 0 is arbitrary to denote Load
                 self._declared_proof.applied_lemmas.append(0)
 
             buffer += letter
-            if letter in letter_to_number:
+            if letter in lsdigit:
                 self._declared_proof.applied_lemmas.append(convert_to_number(buffer))
                 buffer = ''
                 continue
