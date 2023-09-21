@@ -153,7 +153,7 @@ class BasicInterpreter:
         return Proved(self, proved.conclusion.instantiate(delta))
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        raise NotImplementedError('Instantiate notation implementation is incomplete')
+        return pattern.instantiate(delta)
 
     def pop(self, term: Pattern | Proved) -> None:
         ...

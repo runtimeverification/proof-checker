@@ -24,6 +24,25 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 assert isinstance(proofexp.interpreter.stack[-2], nf.Pattern)
                 assert isinstance(proofexp.interpreter.stack[-1], nf.Pattern)
                 proofexp.interpreter.implies(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
+                continue
+
+            proofexp.interpreter.pattern(converter._axioms[lemma_label][0].pattern)
+
+            # TODO: Evaluate in the correct order
+            nargs = len(converter._axioms[lemma_label][0].metavars)
+            if nargs > 0:
+                delta: dict[int, nf.Pattern] = {}
+
+                i = 0
+                for (metavar_id, metavar) in enumerate(converter._axioms[lemma_label][0].metavars):
+                    delta[metavar_id] = proofexp.interpreter.stack[-(nargs + 1) + i]
+                    i += 1
+
+                proofexp.interpreter.instantiate_notation(
+                    proofexp.interpreter.stack[-1],
+                    delta
+                )
+            # TODO: len(converter._axioms[lemma_label][0].args) > 0, pop them from stack
         # TODO: phi0-is-pattern should be in pattern constructors
         elif lemma_label == 'ph0-is-pattern':
             proofexp.interpreter.metavar(0)
