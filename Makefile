@@ -3,7 +3,7 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
-clean-proofs:
+clean-proofs: 
 	rm -rf .build/proofs
 
 update-snapshots:
