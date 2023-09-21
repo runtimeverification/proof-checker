@@ -970,7 +970,14 @@ class MetamathConverter:
         if isinstance(statement, AxiomaticStatement | EssentialStatement):
             axiom = Axiom(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars)
         elif isinstance(statement, ProvableStatement):
-            axiom = Lemma(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars, self._import_proof(statement))
+            axiom = Lemma(
+                name,
+                var_names,
+                self._get_arguments_type_check(notation_scope),
+                axiom_pattern,
+                metavars,
+                self._import_proof(statement),
+            )
         else:
             raise NotImplementedError
         return axiom
