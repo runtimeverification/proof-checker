@@ -597,12 +597,14 @@ class MetamathConverter:
             lambda *args: nf.Exists(args[0], args[1]),
         )
         self._scope.add_notation(exists)
-        self._scope.add_notation(Notation(
-            '\\mu',
-            ('X', 'ph1'),
-            lambda *args: isinstance(args[0], nf.SVar) and isinstance(args[0], nf.Pattern),
-            lambda *args: nf.Mu(args[0], args[1]),
-        ))
+        self._scope.add_notation(
+            Notation(
+                '\\mu',
+                ('X', 'ph1'),
+                lambda *args: isinstance(args[0], nf.SVar) and isinstance(args[0], nf.Pattern),
+                lambda *args: nf.Mu(args[0], args[1]),
+            )
+        )
         bot = Notation('\\bot', (), lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
         self._scope.add_notation(bot)
         not_ = Notation(
