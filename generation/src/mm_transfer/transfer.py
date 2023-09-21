@@ -2,10 +2,56 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
+
+if TYPE_CHECKING:
+    from mm_transfer.converter.representation import Proof
+
+
+def exec_proof(converter: MetamathConverter, exported_proof: Proof, proofexp: p.ProofExp):
+    for lemma in exported_proof.applied_lemmas:
+        lemma_label = exported_proof.labels[lemma]
+
+        if lemma_label in converter.pattern_constructors:
+            # Cannot call .pattern here, as I have what I need on stack
+            if lemma_label == 'imp-is-pattern':
+                proofexp.interpreter.implies(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
+        # TODO: phi0-is-pattern should be in pattern constructors
+        elif lemma_label == 'ph0-is-pattern':
+            proofexp.interpreter.metavar(0)
+        elif lemma_label in converter.exported_axioms:
+            proofexp.load_axiom(converter.get_axiom_by_name(lemma_label).pattern)
+            # TODO: Instantiate
+        elif lemma_label in converter.proof_rules:
+            if lemma_label == 'proof-rule-prop-1':
+                proofexp.interpreter.instantiate(
+                    proofexp.interpreter.prop1(),
+                    {0: proofexp.interpreter.stack[-3], 1: proofexp.interpreter.stack[-2]},
+                )
+            if lemma_label == 'proof-rule-prop-2':
+                proofexp.interpreter.instantiate(
+                    proofexp.interpreter.prop2(),
+                    {
+                        0: proofexp.interpreter.stack[-4],
+                        1: proofexp.interpreter.stack[-3],
+                        2: proofexp.interpreter.stack[-2],
+                    },
+                )
+            if lemma_label == 'proof-rule-mp':
+                proofexp.interpreter.modus_ponens(proofexp.interpreter.stack[-2], proofexp.interpreter.stack[-1])
+
+                conclusion_name, conclusion = (str(proofexp.interpreter.stack[-1]), proofexp.interpreter.stack[-1])
+                proofexp.interpreter.save(conclusion_name, conclusion)
+                proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
+                proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
+                proofexp.interpreter.pop(proofexp.interpreter.stack[-1])
+                proofexp.interpreter.load(conclusion_name, conclusion)
+
+    proofexp.interpreter.publish_proof(proofexp.interpreter.stack[-1])
 
 
 def main() -> None:
@@ -49,17 +95,17 @@ def main() -> None:
             return extracted_claims
 
     # Export axioms and claims
-    TranslatedProof.main(["", "binary", "gamma", output_dir / f"{args.output}.ml-gamma"])
-    TranslatedProof.main(["", "binary", "claim", output_dir / f"{args.output}.ml-claim"])
+    TranslatedProof.main(['', 'binary', 'gamma', output_dir / f'{args.output}.ml-gamma'])
+    TranslatedProof.main(['', 'binary', 'claim', output_dir / f'{args.output}.ml-claim'])
 
     # Export proof
-    with open(output_dir / f"{args.output}.ml-proof", 'wb') as out:
+    with open(output_dir / f'{args.output}.ml-proof', 'wb') as out:
         translated_proof = TranslatedProof(
             p.SerializingInterpreter(
                 p.ExecutionPhase.Proof, out, [p.Claim(claim) for claim in extracted_claims], extracted_axioms
             )
         )
-        converter.exec_proof(converter._declared_proof, translated_proof)
+        exec_proof(converter, converter._declared_proof, translated_proof)
 
 
 if __name__ == '__main__':
