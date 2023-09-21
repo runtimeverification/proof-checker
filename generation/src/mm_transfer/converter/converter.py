@@ -671,7 +671,7 @@ class MetamathConverter:
                     resolved = self._resolve_as_callable(scope, name)
                     return lambda *args: resolved(*args)
             case _:
-                raise NotImplementedError
+                raise NotImplementedError(str(term))
 
     def _add_notation(self, scope: Scope, add_to: Scope, statement: AxiomaticStatement | EssentialStatement) -> None:
         if isinstance(statement.terms[1], Application):
