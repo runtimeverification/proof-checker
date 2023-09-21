@@ -130,7 +130,6 @@ class MetamathConverter:
         axioms = self.get_all_exported_axioms()
         for axiom in axioms:
             interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
-        return
 
     def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
         raise NotImplementedError
