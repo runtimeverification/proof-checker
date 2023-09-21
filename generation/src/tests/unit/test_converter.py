@@ -27,6 +27,16 @@ def parsed_goal_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal.mm'), include_proof=True)
 
 
+@pytest.fixture
+def parsed_perceptron_goal_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'perceptron-goal.mm'), include_proof=True)
+
+
+@pytest.fixture
+def parsed_svm5_goal_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'svm5-goal.mm'), include_proof=True)
+
+
 def pattern_mismatch(p1: nf.Pattern, p2: nf.Pattern) -> str:
     return f'Pattern mismatch: {str(p1)} != {str(p2)}'
 
@@ -41,8 +51,8 @@ def test_importing_variables(parsed_lemma_database: Database) -> None:
 
     symbols = ('sg0', '\\definedness', '\\inhabitant', '\\tsymbol')
     for symbol in symbols:
-        assert symbol in converter._scope._symbols
-    assert len(converter._scope._symbols) == len(symbols)
+        assert symbol in converter._symbols
+    assert len(converter._symbols) == len(symbols)
 
     evars = ('x', 'y', 'xX')
     for evar in evars:
@@ -56,7 +66,7 @@ def test_importing_variables(parsed_lemma_database: Database) -> None:
 
 
 def test_importing_domain_values(parsed_goal_database: Database) -> None:
-    converter = MetamathConverter(parsed_goal_database, parse_axioms=False)
+    converter = MetamathConverter(parsed_goal_database)
 
     assert isinstance(parsed_goal_database.statements[0], ConstantStatement)
     constants_declaration: ConstantStatement = parsed_goal_database.statements[0]
@@ -78,16 +88,16 @@ def test_importing_domain_values(parsed_goal_database: Database) -> None:
         '"90"',
         '"210"',
     )
-    assert converter._scope._domain_values == set(domain_values)
+    assert converter._domain_values == set(domain_values)
 
 
 def test_importing_notations(parsed_lemma_database: Database) -> None:
     converter = MetamathConverter(parsed_lemma_database)
     scope = converter._scope
-    definedness = scope._symbols['\\definedness']
-    inhabitant = scope._symbols['\\inhabitant']
-    tst = scope._symbols['\\tsymbol']
-    assert len(scope._notations) == 11 + 4  # from the file and builtin
+    definedness = converter._symbols['\\definedness']
+    inhabitant = converter._symbols['\\inhabitant']
+    tst = converter._symbols['\\tsymbol']
+    assert len(scope._notations) == 11 + 5  # from the file and builtin
 
     def bot() -> nf.Pattern:
         return nf.Mu(nf.SVar(0), nf.SVar(0))
@@ -200,7 +210,7 @@ def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
     phi1 = converter._scope._metavars['ph1']
     exx = converter._scope._element_vars['xX']
     sxx = converter._scope._set_vars['xX']
-    tst = scope._symbols['\\tsymbol']
+    tst = converter._symbols['\\tsymbol']
     and_ = scope.resolve_notation('\\and')
 
     # imp-reflexivity $a |- ( \imp ph0 ph0 ) $.
@@ -364,7 +374,7 @@ def test_pattern_construction(parsed_lemma_database: Database) -> None:
     x = converter._scope._element_vars['x']
     exx = converter._scope._element_vars['xX']
     sxx = converter._scope._set_vars['xX']
-    tst = scope._symbols['\\tsymbol']
+    tst = converter._symbols['\\tsymbol']
     inh_ = scope.resolve_notation('\\inh')
     sorted_exists_ = scope.resolve_notation('\\sorted-exists')
 
@@ -444,3 +454,18 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
     for name in list(patterns) + list(axioms) + list(proof_rules):
         converter.is_axiom(name)
+
+    assert converter.get_metavars_in_order('proof-rule-gen') == ('ph0', 'ph1')
+    assert converter.get_metavars_in_order('disjointness-alt-lemma') == ('ph0', 'ph1', 'ph2')
+
+
+def test_converting_perceptron_goal(parsed_perceptron_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_perceptron_goal_database)
+    assert set(converter._lemmas.keys()) == {'goal'}
+    assert len(converter._axioms) == 81
+
+
+def test_converting_svm_goal(parsed_svm5_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_svm5_goal_database)
+    assert set(converter._lemmas.keys()) == {'goal'}
+    assert len(converter._axioms) == 81
