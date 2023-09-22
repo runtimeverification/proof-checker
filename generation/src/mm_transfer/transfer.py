@@ -69,23 +69,31 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
         # Lemma is in Gamma
         elif lemma_label in converter.exported_axioms:
             axiom = converter.get_axiom_by_name(lemma_label)
-            proofexp.load_axiom(axiom.pattern)
-
-            essential_hypotheses = 0
 
             if isinstance(axiom, AxiomWithAntecedents):
-                essential_hypotheses = len(axiom.antecedents)
+                # This means the concrete antecedents are on stack given by MM stack
+                # AFTER the instantiations for our lemma (as floatings go first)
+                # We need to pop the antecedents to instantiate our axiom first
+                for eh in axiom.antecedents:
+                    interpreter().save(str(eh), eh)
+                    interpreter().pop()
+
+            proofexp.load_axiom(axiom.pattern)
 
             # We need to instantiate the axiom depending on what we are given on stack
-            if len(converter._axioms[lemma_label][0].metavars) > 0:
+            if len(axioms.metavars) > 0:
                 interpreter().instantiate(
                     stack()[-1],
-                    get_delta(converter.get_metavars_in_order(lemma_label), essential_hypotheses)
+                    get_delta(converter.get_metavars_in_order(lemma_label), 0)
                 )
 
-            # If we have EH's, we need to apply the remaining arguments with MP
-            if essential_hypotheses:
-                pass
+            if isinstance(axiom, AxiomWithAntecedents):
+                for eh in axiom.antecedents:
+                    interpreter().load(str(eh), eh)
+                    interpreter().modus_ponens(
+                        stack()[-2],
+                        stack()[-1]
+                    )
 
         # Lemma is one of the fixed proof rules in the ML proof system
         elif lemma_label in converter.proof_rules:
