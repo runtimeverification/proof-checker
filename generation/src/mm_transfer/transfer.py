@@ -22,6 +22,12 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
         if lemma_label in converter.pattern_constructors:
             # Cannot call .pattern here, as I have what I need on stack
+            if lemma_label == 'app-is-pattern':
+                assert isinstance(stack()[-2], nf.Pattern)
+                assert isinstance(stack()[-1], nf.Pattern)
+                interpreter().app(stack()[-2], stack()[-1])
+                continue
+
             if lemma_label == 'imp-is-pattern':
                 assert isinstance(stack()[-2], nf.Pattern)
                 assert isinstance(stack()[-1], nf.Pattern)
