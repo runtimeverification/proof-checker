@@ -37,6 +37,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
                 i = 0
                 for (metavar_id, metavar) in enumerate(converter._axioms[lemma_label][0].metavars):
+                    # TODO: Get the actual metavar_id assigned to this particular metavar
                     delta[metavar_id] = stack()[-(nargs + 1) + i]
                     i += 1
 
@@ -45,10 +46,11 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                     delta
                 )
         # TODO: phi0-is-pattern should be in pattern constructors
+        # TODO: I need to also add `ptns, etc.`
         elif lemma_label == 'ph0-is-pattern':
             interpreter().metavar(0)
         elif lemma_label in converter.exported_axioms:
-            interpreter().load_axiom(converter.get_axiom_by_name(lemma_label).pattern)
+            proofexp.load_axiom(converter.get_axiom_by_name(lemma_label).pattern)
 
             # TODO: Instantiate
             # TODO: Support for axioms with EH
