@@ -472,8 +472,7 @@ class MetamathConverter:
                 else:
                     notation = self._add_notation(scope, self._scope, actual_statement)
                     axiom = self._make_axiom_from_notation(scope, notation)
-                    self._axioms.setdefault(actual_statement.label, [])
-                    self._axioms[actual_statement.label].append(axiom)
+                    self._add_axiom(actual_statement.label, axiom)
         else:
             raise NotImplementedError(f'Unknown axiom type: {axiom_type}')
 
@@ -530,6 +529,9 @@ class MetamathConverter:
                 # and the new format.
                 self._domain_values.add(st.terms[1].symbol)
                 self._add_symbol(st.terms[1].symbol)
+                if isinstance(st, AxiomaticStatement):
+                    self._pattern_constructors.add(st.label)
+                    self._add_trivial_axiom(st.label, st.terms[1].symbol)
                 return True
             else:
                 return False
@@ -549,6 +551,22 @@ class MetamathConverter:
                 and len(st.terms[1].subterms) == 0
             ):
                 self._add_symbol(st.terms[1].symbol)
+                if isinstance(st, AxiomaticStatement):
+                    self._pattern_constructors.add(st.label)
+                    self._add_trivial_axiom(st.label, st.terms[1].symbol)
+                return True
+            else:
+                return False
+
+        def variable_axiom(st: AxiomaticStatement | EssentialStatement) -> bool:
+            if (
+                isinstance(st.terms[0], Application)
+                and st.terms[0].symbol == '#Variable'
+                and isinstance(st.terms[1], Metavariable)
+            ):
+                if isinstance(st, AxiomaticStatement):
+                    self._pattern_constructors.add(st.label)
+                    self._add_trivial_axiom(st.label, st.terms[1].name)
                 return True
             else:
                 return False
@@ -569,6 +587,8 @@ class MetamathConverter:
                 and len(st.terms) == 3
                 and (st.terms[1].symbol != st.terms[2].symbol if isinstance(st.terms[2], Application) else True)
             ):
+                if isinstance(st, AxiomaticStatement):
+                    self._pattern_constructors.add(st.label)
                 return True
             else:
                 return False
@@ -590,6 +610,8 @@ class MetamathConverter:
                 and isinstance(st.terms[0], Application)
                 and st.terms[0].symbol == '#Substitution'
             ):
+                if isinstance(st, AxiomaticStatement):
+                    self._pattern_constructors.add(st.label)
                 return True
             else:
                 return False
@@ -639,6 +661,9 @@ class MetamathConverter:
         # $a #Fresh ... or $d x y
         elif metacondition(statement):
             return AxiomType.Metacondition
+        # $a #Variable ...
+        elif variable_axiom(statement):
+            return AxiomType.Trivial
         # The rest we ignoring
         elif the_rest_axioms(statement):
             return AxiomType.Trivial
@@ -705,7 +730,9 @@ class MetamathConverter:
             case _:
                 raise NotImplementedError(str(term))
 
-    def _add_notation(self, scope: Scope, add_to: Scope, statement: AxiomaticStatement | EssentialStatement) -> Notation:
+    def _add_notation(
+        self, scope: Scope, add_to: Scope, statement: AxiomaticStatement | EssentialStatement
+    ) -> Notation:
         if isinstance(statement.terms[1], Application):
             symbol: str = statement.terms[1].symbol
             args = statement.terms[1].subterms
@@ -795,6 +822,23 @@ class MetamathConverter:
                 raise NotImplementedError
 
         return tuple(collected_variables)
+
+    def _add_trivial_axiom(self, label: str, name: str) -> None:
+        if label not in self._axioms:
+            patterns: tuple[nf.Pattern, ...]
+            if self._scope.is_ambiguous(name):
+                p1 = self._scope._element_vars[name]
+                p2 = self._scope._set_vars[name]
+                patterns = (p1, p2)
+            else:
+                patterns = (self._resolve(self._scope, name),)
+
+            for pattern in patterns:
+                metavars = (name,) if self._scope.is_metavar(name) else ()
+                axiom = Axiom(label, metavars, lambda *args: True, pattern, metavars)
+                self._add_axiom(label, axiom)
+        else:
+            return
 
     def _add_axiom(self, name: str, axiom: Axiom) -> None:
         if name in self._axioms:
