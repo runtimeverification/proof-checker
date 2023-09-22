@@ -8,7 +8,7 @@ import pytest
 import proof_generation.pattern as nf
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
-from mm_transfer.metamath.ast import ConstantStatement
+from mm_transfer.metamath.ast import AxiomaticStatement, Block, ConstantStatement, FloatingStatement
 from mm_transfer.metamath.parser import load_database
 
 if TYPE_CHECKING:
@@ -68,6 +68,14 @@ def test_importing_variables(parsed_lemma_database: Database) -> None:
     for setvar in setvars:
         assert setvar in converter._scope._set_vars
     assert len(converter._scope._set_vars) == len(setvars)
+
+    # Check that all labels are accessible
+    floating_statements = filter(
+        lambda statement: isinstance(statement, FloatingStatement), parsed_lemma_database.statements
+    )
+    for statement in floating_statements:
+        assert isinstance(statement, FloatingStatement)
+        assert converter.get_floating_pattern_by_name(statement.label) is not None
 
 
 def test_importing_domain_values(parsed_goal_database: Database) -> None:
@@ -381,7 +389,7 @@ def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
 def test_pattern_construction(parsed_lemma_database: Database) -> None:
     converter = MetamathConverter(parsed_lemma_database)
     scope = converter._scope
-    assert len(converter.pattern_constructors) == 17
+    assert len(converter.pattern_constructors) == 32
 
     ph0 = converter._scope._metavars['ph0']
     ph1 = converter._scope._metavars['ph1']
@@ -424,6 +432,7 @@ def test_pattern_construction(parsed_lemma_database: Database) -> None:
 
 def test_axiom_sorting(parsed_lemma_database: Database) -> None:
     converter = MetamathConverter(parsed_lemma_database)
+
     patterns = (
         'var-is-pattern',
         'symbol-is-pattern',
@@ -442,6 +451,22 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
         'inh-is-pattern',
         'in-sort-is-pattern',
         'sorted-exists-is-pattern',
+        'included-is-sugar',
+        'ceil-is-sugar',
+        'floor-is-sugar',
+        'tsymbol-is-symbol',
+        'in-sort-is-sugar',
+        'not-is-sugar',
+        'element-var-is-var',
+        'and-is-sugar',
+        'inh-is-sugar',
+        'tst-is-sugar',
+        'or-is-sugar',
+        'inhabitant-is-symbol',
+        'top-is-sugar',
+        'definedness-is-symbol',
+        'sorted-exists-is-sugar',
+        'definedness-is-symbol',
     )
     assert converter.pattern_constructors == set(patterns)
     for pattern in patterns:
@@ -475,19 +500,41 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
     assert converter.get_metavars_in_order('disjointness-alt-lemma') == ('ph0', 'ph1', 'ph2')
 
     assert converter.resolve_metavar('ph1') == converter._scope._metavars['ph1']
-    assert converter.get_metavar_name_by_label('ph1-is-pattern') == 'ph1'
+    assert converter.get_metavar_name_by_label('ph1-is-pattern') == converter._scope._metavars['ph1']
+
+
+def test_transfer_goal_axioms_resolving(parsed_goal_database: Database) -> None:
+    converter = MetamathConverter(parsed_goal_database)
+
+    # Collect all axiom labels in a tuple or set
+    axiom_labels: list[str] = []
+    axiomatic_statements = list(
+        filter(lambda statement: isinstance(statement, AxiomaticStatement | Block), parsed_goal_database.statements)
+    )
+    for statement in axiomatic_statements:
+        if isinstance(statement, AxiomaticStatement):
+            axiom_labels.append(statement.label)
+        elif isinstance(statement, Block) and isinstance(statement.statements[-1], AxiomaticStatement):
+            axiom_labels.append(statement.statements[-1].label)
+        else:
+            continue
+
+    # Check that all axioms are resolved
+    for axiom_label in axiom_labels:
+        assert converter.is_axiom(axiom_label)
+        assert converter.get_axiom_by_name(axiom_label) is not None
 
 
 def test_converting_perceptron_goal(parsed_perceptron_goal_database: Database) -> None:
     converter = MetamathConverter(parsed_perceptron_goal_database)
     assert set(converter._lemmas.keys()) == {'goal'}
-    assert len(converter._axioms) == 81
+    assert len(converter._axioms) == 95
 
 
 def test_converting_svm_goal(parsed_svm5_goal_database: Database) -> None:
     converter = MetamathConverter(parsed_svm5_goal_database)
     assert set(converter._lemmas.keys()) == {'goal'}
-    assert len(converter._axioms) == 81
+    assert len(converter._axioms) == 95
 
 
 def test_parsing_proof(parsed_impreflex_database: Database) -> None:
