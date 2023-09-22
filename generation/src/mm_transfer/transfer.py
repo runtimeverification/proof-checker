@@ -14,6 +14,11 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     interpreter = lambda: proofexp.interpreter
     stack = lambda: proofexp.interpreter.stack
 
+    def metavar_id(id: str) -> int:
+        return interpreter()._floating_patterns.index(id)
+
+    fps = list(map(lambda var_id: var_id + "-is-pattern", converter._floating_patterns))
+
     # We do not support ambiguities right now
     exported_proof = converter._lemmas[target][0].proof
 
@@ -42,9 +47,9 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 delta: dict[int, nf.Pattern] = {}
 
                 i = 0
-                for (metavar_id, metavar) in enumerate(converter._axioms[lemma_label][0].metavars):
+                for metavar in enumerate(converter._axioms[lemma_label][0].metavars):
                     # TODO: Get the actual metavar_id assigned to this particular metavar
-                    delta[metavar_id] = stack()[-(nargs + 1) + i]
+                    delta[metavar_id(metavar)] = stack()[-(nargs + 1) + i]
                     i += 1
 
                 interpreter().instantiate_notation(
@@ -53,8 +58,8 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 )
         # TODO: phi0-is-pattern should be in pattern constructors
         # TODO: I need to also add `ptns, etc.`
-        elif lemma_label == 'ph0-is-pattern':
-            interpreter().metavar(0)
+        elif lemma_label in fps:
+            interpreter().metavar(fps.index(lemma_label))
         elif lemma_label in converter.exported_axioms:
             proofexp.load_axiom(converter.get_axiom_by_name(lemma_label).pattern)
 
