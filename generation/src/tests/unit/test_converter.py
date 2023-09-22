@@ -54,7 +54,7 @@ def test_importing_variables(parsed_lemma_database: Database) -> None:
         assert pattern in converter._scope._metavars
     assert len(converter._scope._metavars) == len(patterns)
 
-    symbols = ('sg0', '\\definedness', '\\inhabitant', '\\tsymbol')
+    symbols = ('sg0', '\\definedness', '\\inhabitant', '\\tsymbol', '\\tapp')
     for symbol in symbols:
         assert symbol in converter._symbols
     assert len(converter._symbols) == len(symbols)
@@ -213,9 +213,12 @@ def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
     scope = converter._scope
     phi0 = converter._scope._metavars['ph0']
     phi1 = converter._scope._metavars['ph1']
+    x = converter._scope._element_vars['x']
+    y = converter._scope._element_vars['y']
     exx = converter._scope._element_vars['xX']
     sxx = converter._scope._set_vars['xX']
     tst = converter._symbols['\\tsymbol']
+    tapp = converter._symbols['\\tapp']
     and_ = scope.resolve_notation('\\and')
 
     # imp-reflexivity $a |- ( \imp ph0 ph0 ) $.
@@ -244,6 +247,12 @@ def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
     assert expected1 == converted1, pattern_mismatch(expected1, converted1)
     converted2 = converter._axioms['tst-trivial-axiom'][1].pattern
     assert expected2 == converted2, pattern_mismatch(expected2, converted2)
+
+    # tst-missing-axiom $a |- ( \imp ( \tst x ) ( \tapp x y ) ) $.
+    expected = nf.Implication(nf.Application(tst, x), nf.Application(nf.Application(tapp, x), y))
+    assert 'tst-missing-symbol-axiom' in converter._axioms and len(converter._axioms['tst-missing-symbol-axiom']) == 1
+    converted = converter._axioms['tst-missing-symbol-axiom'][0].pattern
+    assert expected == converted, pattern_mismatch(expected, converted)
 
 
 def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
@@ -440,6 +449,7 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
     axioms = (
         'notation-proof',
         'tst-trivial-axiom',
+        'tst-missing-symbol-axiom',
         'imp-reflexivity',
         'rule-imp-transitivity',
         'and-elim-left-sugar',
