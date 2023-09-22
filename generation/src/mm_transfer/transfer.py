@@ -15,13 +15,11 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     interpreter = lambda: proofexp.interpreter
     stack = lambda: proofexp.interpreter.stack
 
-    def metavar_id(id: str) -> int:
-        return converter._floating_patterns.index(id)
-
-    def get_delta(metavars: tuple[str, ...]) -> dict[int, nf.Pattern]:
+    def get_delta(metavars: tuple[str, ...], essential_hypotheses: int) -> dict[int, nf.Pattern]:
         delta: dict[int, nf.Pattern] = {}
 
-        nargs = len(metavars)
+        nargs = len(metavars) + essential_hypotheses
+
         i = 0
         for metavar_label in metavars:
             metavar = converter.resolve_metavar(metavar_label)
@@ -35,7 +33,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     # We do not support ambiguities right now
     exported_proof = converter._lemmas[target][0].proof
 
-    for lemma in exported_proof.applied_lemmas:
+    for (_step, lemma) in enumerate(exported_proof.applied_lemmas):
         lemma_label = exported_proof.labels[lemma]
 
         if lemma_label in converter.pattern_constructors:
@@ -57,21 +55,31 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             if len(converter._axioms[lemma_label][0].metavars) > 0:
                 interpreter().instantiate_notation(
                     stack()[-1],
-                    get_delta(converter._axioms[lemma_label][0].get_metavars_in_order())
+                    get_delta(converter.get_metavars_in_order(lemma_label), 0)
                 )
         # TODO: phi0-is-pattern should be in pattern constructors
         elif lemma_label in fps:
             interpreter().metavar(fps.index(lemma_label))
 
         elif lemma_label in converter.exported_axioms:
-            proofexp.load_axiom(converter.get_axiom_by_name(lemma_label).pattern)
+            axiom = converter.get_axiom_by_name(lemma_label)
+            proofexp.load_axiom(axiom.pattern)
 
+            essential_hypotheses = 0
+
+            if isinstance(axiom, AxiomWithAntecedents):
+                essential_hypotheses = len(axiom.antecedents)
+
+            # We need to instantiate the axiom depending on what we are given on stack
             if len(converter._axioms[lemma_label][0].metavars) > 0:
                 interpreter().instantiate(
                     stack()[-1],
-                    get_delta(converter._axioms[lemma_label][0].get_metavars_in_order())
+                    get_delta(converter.get_metavars_in_order(lemma_label), essential_hypotheses)
                 )
-            # TODO: Support for axioms with EH
+
+            # If we have EH's, we need to apply the remaining arguments with MP
+            if essential_hypotheses:
+                pass
         elif lemma_label in converter.proof_rules:
             if lemma_label == 'proof-rule-prop-1':
                 prop1 = interpreter().prop1()
