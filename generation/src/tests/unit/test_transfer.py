@@ -23,6 +23,11 @@ def parsed_impreflex_database() -> Database:
 
 
 @pytest.fixture
+def parsed_impreflex_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'impreflex-compressed.mm'), include_proof=True)
+
+
+@pytest.fixture
 def parsed_transfer_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal-simple.mm'), include_proof=True)
 

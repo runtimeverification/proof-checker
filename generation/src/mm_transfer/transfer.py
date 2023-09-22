@@ -41,11 +41,24 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
         interpreter().pop(stack()[-1])
         interpreter().load(conclusion_name, conclusion)
 
-
     # We do not support ambiguities right now
     exported_proof = converter._lemmas[target][0].proof
 
+    # lemma -> memory id
+    mm_memory: list[nf.Pattern] = []
+    memory_offset = len(exported_proof.labels)  # + EH later
+
     for (_step, lemma) in enumerate(exported_proof.applied_lemmas):
+        if lemma not in exported_proof.labels:
+            if lemma == 0:  # Z save
+                mm_memory.append(stack()[-1])
+                interpreter().save(str(stack()[-1]), stack()[-1])
+            else:
+                # we sort of play with memory, so we need to look for the original
+                interpreter().load(str(mm_memory[lemma - memory_offset - 1]), mm_memory[lemma - memory_offset - 1])
+
+            continue
+
         lemma_label = exported_proof.labels[lemma]
 
         # Lemma is one of these pattern constructors/notations
