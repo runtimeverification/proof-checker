@@ -92,6 +92,10 @@ class MetamathConverter:
         return tuple(axiom for axiom in self.axioms if self.is_exported_axiom(axiom))
 
     @property
+    def exported_axioms_as_objects(self) -> tuple[Axiom, ...]:
+        return tuple(axiom for name in self.exported_axioms for axiom in self._axioms[name])
+
+    @property
     def proof_rules(self) -> set[str]:
         return set(self._proof_rules)
 
@@ -128,15 +132,8 @@ class MetamathConverter:
         assert self.is_lemma(name)
         return self._lemmas[name][0]
 
-    def get_all_exported_axioms(self) -> list[Axiom]:
-        axioms = []
-        for axiom_list in self._axioms.values():
-            axioms.extend(axiom_list)
-        return [a for a in axioms if self.is_exported_axiom(a.name)]
-
     def publish_axioms(self, interpreter: BasicInterpreter) -> None:
-        axioms = self.get_all_exported_axioms()
-        for axiom in axioms:
+        for axiom in self.exported_axioms_as_objects:
             interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
 
     def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
