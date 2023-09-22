@@ -53,11 +53,8 @@ class MetamathConverter:
     Get the parsed object and try to convert it making as few iterations as possible
     """
 
-    def __init__(self, parsed: Database, parse_axioms: bool = True) -> None:
+    def __init__(self, parsed: Database) -> None:
         self.parsed = parsed
-        # TODO: Remove it after we start supporting all possible axioms in all our slices
-        self._convert_axioms = parse_axioms
-
         self._scope: GlobalScope = GlobalScope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
@@ -212,11 +209,9 @@ class MetamathConverter:
             elif isinstance(statement, Block):
                 last_statment = statement.statements[-1]
                 if isinstance(last_statment, AxiomaticStatement):
-                    if self._convert_axioms:
-                        sort_axiom(last_statment, statement)
+                    sort_axiom(last_statment, statement)
                 elif isinstance(last_statment, ProvableStatement):
-                    if self._convert_axioms:
-                        lemmas.append(statement)
+                    lemmas.append(statement)
                 else:
                     raise NotImplementedError(f'Unknown statement: {repr(statement)}')
             else:
@@ -435,10 +430,6 @@ class MetamathConverter:
             # We don't need to do anything for such top-level axioms
             return
         elif axiom_type in (AxiomType.Notation, AxiomType.Provable):
-            if not self._convert_axioms and axiom_type == AxiomType.Provable:
-                # TODO: Bypass parsing for some slices
-                return
-
             # Prepare scopes if we need more than one
             args: tuple[Metavariable, ...]
             if axiom_type == AxiomType.Provable:
@@ -487,9 +478,6 @@ class MetamathConverter:
         actual_statement = statement if isinstance(statement, ProvableStatement) else statement.statements[-1]
         assert isinstance(actual_statement, ProvableStatement)
 
-        if not self._convert_axioms:
-            # TODO: Remove this after we start supporting all possible axioms in all our slices
-            return
         if not (isinstance(actual_statement.terms[0], Application) and actual_statement.terms[0].symbol == '|-'):
             self._ignored_lemmas.append(actual_statement)
             return
