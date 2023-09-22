@@ -71,6 +71,7 @@ class MetamathConverter:
         self._ignored_lemmas: list[ProvableStatement] = []
         self._missing_declarations: set[str] = set()
         self._floating_patterns: list[str] = []
+        self._fp_label_to_metavar: dict[str, str] = {}
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -162,6 +163,10 @@ class MetamathConverter:
         res = self._scope.resolve(name)
         assert isinstance(res, nf.MetaVar)
         return res
+
+    def get_metavar_name_by_label(self, label: str) -> str:
+        assert label in self._fp_label_to_metavar, f'Unknown floating pattern label: {label}'
+        return self._fp_label_to_metavar[label]
 
     def _add_symbol(self, var: Metavariable | str) -> None:
         if var not in self._symbols:
@@ -345,6 +350,7 @@ class MetamathConverter:
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
+                self._fp_label_to_metavar[st.label] = st.terms[1].name
                 self._floating_patterns.append(st.terms[1].name)
                 return self._declared_variables[st.terms[1].name]
             else:
