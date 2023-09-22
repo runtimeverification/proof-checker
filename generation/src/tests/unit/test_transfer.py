@@ -23,7 +23,7 @@ def parsed_impreflex_database() -> Database:
 
 
 @pytest.fixture
-def parsed_impreflex_database() -> Database:
+def parsed_impreflex_compressed_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'impreflex-compressed.mm'), include_proof=True)
 
 
@@ -33,12 +33,13 @@ def parsed_transfer_database() -> Database:
 
 
 @pytest.fixture
-def parsed_transfer_database() -> Database:
+def parsed_transfer_compressed_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal-simple-compressed.mm'), include_proof=True)
 
 
-def test_exec_proof(parsed_impreflex_database: Database) -> None:
-    converter = MetamathConverter(parsed_impreflex_database)
+@pytest.mark.parametrize('db', ["parsed_impreflex_database", "parsed_impreflex_compressed_database"])
+def test_exec_proof_impreflex(db: str, request) -> None:
+    converter = MetamathConverter(request.getfixturevalue(db))
     assert converter
 
     extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
@@ -64,8 +65,9 @@ def test_exec_proof(parsed_impreflex_database: Database) -> None:
     assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, p.Implication(p.MetaVar(0), p.MetaVar(0)))]
 
 
-def test_exec_transfer_proof(parsed_transfer_database: Database) -> None:
-    converter = MetamathConverter(parsed_transfer_database)
+@pytest.mark.parametrize('db', ["parsed_transfer_database", "parsed_transfer_compressed_database"])
+def test_exec_transfer_proof(db: str, request) -> None:
+    converter = MetamathConverter(request.getfixturevalue(db))
     assert converter
 
     extracted_axioms = []
@@ -95,4 +97,4 @@ def test_exec_transfer_proof(parsed_transfer_database: Database) -> None:
     exec_proof(converter, 'goal', proofexp)
 
     assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
-    assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, converter.get_lemma_by_name("goal").pattern)]
+    assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, converter.get_lemma_by_name('goal').pattern)]
