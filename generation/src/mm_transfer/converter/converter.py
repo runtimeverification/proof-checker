@@ -470,7 +470,10 @@ class MetamathConverter:
                         )
                     self._add_axiom(axiom.name, axiom)
                 else:
-                    self._add_notation(scope, self._scope, actual_statement)
+                    notation = self._add_notation(scope, self._scope, actual_statement)
+                    axiom = self._make_axiom_from_notation(scope, notation)
+                    self._axioms.setdefault(actual_statement.label, [])
+                    self._axioms[actual_statement.label].append(axiom)
         else:
             raise NotImplementedError(f'Unknown axiom type: {axiom_type}')
 
@@ -702,7 +705,7 @@ class MetamathConverter:
             case _:
                 raise NotImplementedError(str(term))
 
-    def _add_notation(self, scope: Scope, add_to: Scope, statement: AxiomaticStatement | EssentialStatement) -> None:
+    def _add_notation(self, scope: Scope, add_to: Scope, statement: AxiomaticStatement | EssentialStatement) -> Notation:
         if isinstance(statement.terms[1], Application):
             symbol: str = statement.terms[1].symbol
             args = statement.terms[1].subterms
@@ -722,6 +725,7 @@ class MetamathConverter:
         notation_lambda = self._to_pattern(notation_scope, term)
         notation = Notation(symbol, arg_names, self._get_arguments_type_check(notation_scope), notation_lambda)
         add_to.add_notation(notation)
+        return notation
 
     def _add_builtin_notations(self) -> None:
         application = Notation(
@@ -989,27 +993,38 @@ class MetamathConverter:
         term = self._get_axiom_term(statement)
 
         var_names: tuple[str, ...] = tuple(var.name for var in variables)
-        metavars: tuple[str, ...] = tuple(sorted({var for var in var_names if scope.is_metavar(var)}))
         notation_scope = to_notation_scope(scope, variables)
         notation_lambda = self._to_pattern(notation_scope, term)
         notation = Notation(name, var_names, self._get_arguments_type_check(notation_scope), notation_lambda)
 
-        args = [self._resolve(scope, arg) for arg in notation.args]
-        axiom_pattern = notation(*args)
         if isinstance(statement, AxiomaticStatement | EssentialStatement):
-            axiom = Axiom(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars)
+            axiom = self._make_axiom_from_notation(scope, notation)
         elif isinstance(statement, ProvableStatement):
-            axiom = Lemma(
-                name,
-                var_names,
-                self._get_arguments_type_check(notation_scope),
-                axiom_pattern,
-                metavars,
-                self._import_proof(statement),
-            )
+            axiom = self._make_lemma_from_notation(statement, scope, notation)
         else:
             raise NotImplementedError
         return axiom
+
+    def _make_axiom_from_notation(self, scope: Scope, notation: Notation) -> Axiom:
+        args = [self._resolve(scope, arg) for arg in notation.args]
+        metavars: tuple[str, ...] = tuple(sorted({var for var in notation.args if scope.is_metavar(var)}))
+        axiom_pattern = notation(*args)
+        axiom = Axiom(notation.name, notation.args, notation.type_check, axiom_pattern, metavars)
+        return axiom
+
+    def _make_lemma_from_notation(self, statement: ProvableStatement, scope: Scope, notation: Notation) -> Lemma:
+        args = [self._resolve(scope, arg) for arg in notation.args]
+        metavars: tuple[str, ...] = tuple(sorted({var for var in notation.args if scope.is_metavar(var)}))
+        axiom_pattern = notation(*args)
+        lemma = Lemma(
+            notation.name,
+            notation.args,
+            notation.type_check,
+            axiom_pattern,
+            metavars,
+            self._import_proof(statement),
+        )
+        return lemma
 
     def _resolve(self, scope: Scope, name: str) -> nf.Pattern:
         if self._is_symbol(name):
