@@ -35,6 +35,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
         lemma_label = exported_proof.labels[lemma]
 
         # Lemma is one of these pattern constructors/notations
+        # string-literal-9-is-pattern
         if lemma_label in converter.pattern_constructors:
             # Cannot call .pattern here, as I have what I need on stack
             if lemma_label == 'app-is-pattern':
@@ -49,9 +50,10 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 interpreter().implies(stack()[-2], stack()[-1])
                 continue
 
-            interpreter().pattern(converter._axioms[lemma_label][0].pattern)
+            pat_constructor_axiom = converter.get_axiom_by_name(lemma_label)
+            interpreter().pattern(pat_constructor_axiom.pattern)
 
-            if len(converter._axioms[lemma_label][0].metavars) > 0:
+            if len(pat_constructor_axiom.metavars) > 0:
                 interpreter().instantiate_notation(
                     stack()[-1],
                     get_delta(converter.get_metavars_in_order(lemma_label), 0)
