@@ -69,27 +69,31 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
         # Lemma is in Gamma
         elif lemma_label in converter.exported_axioms:
             axiom = converter.get_axiom_by_name(lemma_label)
+            saved_antecedents = []
 
             if isinstance(axiom, AxiomWithAntecedents):
                 # This means the concrete antecedents are on stack given by MM stack
                 # AFTER the instantiations for our lemma (as floatings go first)
                 # We need to pop the antecedents to instantiate our axiom first
-                for eh in axiom.antecedents:
-                    interpreter().save(str(eh), eh)
-                    interpreter().pop()
-
-            proofexp.load_axiom(axiom.pattern)
+                for i in range(0, len(axiom.antecedents)):
+                    index = len(axiom.antecedents) - i
+                    saved_antecedents.append((str(stack()[-index]), stack()[-index]))
+                    interpreter().save(str(stack()[-index]), stack()[-index])
+                    interpreter().pop(stack()[-1])
+                proofexp.load_axiom(convert_to_implication(axiom.antecedents, axiom.pattern))
+            else:
+                proofexp.load_axiom(axiom.pattern)
 
             # We need to instantiate the axiom depending on what we are given on stack
-            if len(axioms.metavars) > 0:
+            if len(axiom.metavars) > 0:
                 interpreter().instantiate(
                     stack()[-1],
                     get_delta(converter.get_metavars_in_order(lemma_label), 0)
                 )
 
             if isinstance(axiom, AxiomWithAntecedents):
-                for eh in axiom.antecedents:
-                    interpreter().load(str(eh), eh)
+                for (eh, pat) in saved_antecedents:
+                    interpreter().load(eh, pat)
                     interpreter().modus_ponens(
                         stack()[-2],
                         stack()[-1]
@@ -130,6 +134,15 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 interpreter().pop(stack()[-1])
                 interpreter().load(conclusion_name, conclusion)
         else:
+            if lemma_label.startswith("string-literal-"):
+                # This does not work as order is actually wrong
+                order = lemma_label.split("string-literal-")[1].split("-")[0]
+                #sym_id = list(converter._domain_values)[int(order) - 1]
+                #name = converter._symbols[f'"{sym_id}"-symbol']
+                # I need to remove this once I have access to the literal patterns
+                interpreter().symbol(int(order))
+                continue
+
             raise NotImplementedError(f'The proof label {lemma_label} is not recognized as an implemented instruction')
 
     assert isinstance(stack()[-1], p.Proved)
