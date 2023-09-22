@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import proof_generation.pattern as nf
@@ -212,12 +213,14 @@ def main() -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
+    module = os.path.splitext(os.path.basename(args.input))[0]
+
     # Export axioms and claims
-    TranslatedProofSkeleton.main(['', 'binary', 'gamma', str(output_dir / f'{args.output}.ml-gamma')])
-    TranslatedProofSkeleton.main(['', 'binary', 'claim', str(output_dir / f'{args.output}.ml-claim')])
+    TranslatedProofSkeleton.main(['', 'binary', 'gamma', str(output_dir / f'{module}.ml-gamma')])
+    TranslatedProofSkeleton.main(['', 'binary', 'claim', str(output_dir / f'{module}.ml-claim')])
 
     # Export proof
-    with open(output_dir / f'{args.output}.ml-proof', 'wb') as out:
+    with open(output_dir / f'{module}.ml-proof', 'wb') as out:
         proofexp = TranslatedProofSkeleton(
             p.SerializingInterpreter(
                 p.ExecutionPhase.Proof, out, [p.Claim(claim) for claim in extracted_claims], extracted_axioms
