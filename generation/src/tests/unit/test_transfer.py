@@ -12,6 +12,8 @@ from mm_transfer.metamath.parser import load_database
 from mm_transfer.transfer import convert_to_implication, exec_proof
 
 if TYPE_CHECKING:
+    from pytest import FixtureRequest
+
     from mm_transfer.metamath.parser import Database
 
 BENCHMARK_LOCATION = 'mm-benchmarks'
@@ -38,7 +40,7 @@ def parsed_transfer_compressed_database() -> Database:
 
 
 @pytest.mark.parametrize('db', ['parsed_impreflex_database', 'parsed_impreflex_compressed_database'])
-def test_exec_proof_impreflex(db: str, request) -> None:
+def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
     converter = MetamathConverter(request.getfixturevalue(db))
     assert converter
 
@@ -66,7 +68,7 @@ def test_exec_proof_impreflex(db: str, request) -> None:
 
 
 @pytest.mark.parametrize('db', ['parsed_transfer_database', 'parsed_transfer_compressed_database'])
-def test_exec_transfer_proof(db: str, request) -> None:
+def test_exec_transfer_proof(db: str, request: FixtureRequest) -> None:
     converter = MetamathConverter(request.getfixturevalue(db))
     assert converter
 

@@ -92,9 +92,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             if len(pat_constructor_axiom.metavars) > 0:
                 pat = stack()[-1]
                 assert isinstance(pat, nf.Pattern)
-                interpreter().instantiate_notation(
-                    pat, get_delta(converter.get_metavars_in_order(lemma_label), 0)
-                )
+                interpreter().instantiate_notation(pat, get_delta(converter.get_metavars_in_order(lemma_label), 0))
 
         # Lemma is one of these `metavar-is-pattern` functions
         elif lemma_label in converter._fp_label_to_pattern and isinstance(
@@ -176,13 +174,14 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
 
 # TODO: This is unsound and should be replaced with a different handling
-def convert_to_implication(antecedents: tuple[nf.Pattern], conclusion: nf.Pattern) -> nf.Pattern:
-    antecedent, *antecedents = antecedents
+# TODO: Fix that ugly list to tuples and back
+def convert_to_implication(antecedents: tuple[nf.Pattern, ...], conclusion: nf.Pattern) -> nf.Pattern:
+    ant, *ants = list(antecedents)
 
-    if antecedents:
-        return nf.Implication(antecedent, convert_to_implication(antecedents, conclusion))
+    if ants:
+        return nf.Implication(ant, convert_to_implication(tuple(ants), conclusion))
 
-    return nf.Implication(antecedent, conclusion)
+    return nf.Implication(ant, conclusion)
 
 
 def main() -> None:
