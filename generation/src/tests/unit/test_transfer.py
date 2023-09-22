@@ -7,9 +7,9 @@ import pytest
 
 import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
-from mm_transfer.metamath.parser import load_database
-from mm_transfer.transfer import exec_proof, convert_to_implication
 from mm_transfer.converter.representation import AxiomWithAntecedents
+from mm_transfer.metamath.parser import load_database
+from mm_transfer.transfer import convert_to_implication, exec_proof
 
 if TYPE_CHECKING:
     from mm_transfer.metamath.parser import Database
@@ -25,7 +25,6 @@ def parsed_impreflex_database() -> Database:
 @pytest.fixture
 def parsed_impreflex_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'impreflex-compressed.mm'), include_proof=True)
-
 
 
 @pytest.fixture

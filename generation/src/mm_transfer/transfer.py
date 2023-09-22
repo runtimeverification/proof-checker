@@ -7,8 +7,8 @@ from pathlib import Path
 import proof_generation.pattern as nf
 import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
-from mm_transfer.metamath.parser import load_database
 from mm_transfer.converter.representation import AxiomWithAntecedents
+from mm_transfer.metamath.parser import load_database
 
 
 def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) -> None:
@@ -48,7 +48,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     mm_memory: list[nf.Pattern] = []
     memory_offset = len(exported_proof.labels)  # + EH later
 
-    for (_step, lemma) in enumerate(exported_proof.applied_lemmas):
+    for _step, lemma in enumerate(exported_proof.applied_lemmas):
         if lemma not in exported_proof.labels:
             if lemma == 0:  # Z save
                 mm_memory.append(stack()[-1])
@@ -82,16 +82,15 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
             if len(pat_constructor_axiom.metavars) > 0:
                 interpreter().instantiate_notation(
-                    stack()[-1],
-                    get_delta(converter.get_metavars_in_order(lemma_label), 0)
+                    stack()[-1], get_delta(converter.get_metavars_in_order(lemma_label), 0)
                 )
 
         # Lemma is one of these `metavar-is-pattern` functions
-        elif lemma_label in converter._fp_label_to_pattern and isinstance(converter.get_floating_pattern_by_name(lemma_label)[0], nf.MetaVar):
+        elif lemma_label in converter._fp_label_to_pattern and isinstance(
+            converter.get_floating_pattern_by_name(lemma_label)[0], nf.MetaVar
+        ):
             # TODO: phi0-is-pattern should be in pattern constructors
-            interpreter().metavar(
-                    converter.get_floating_pattern_by_name(lemma_label)[0].name
-                )
+            interpreter().metavar(converter.get_floating_pattern_by_name(lemma_label)[0].name)
 
         # Lemma is in Gamma
         elif lemma_label in converter.exported_axioms:
@@ -112,18 +111,12 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
             # We need to instantiate the axiom depending on what we are given on stack
             if len(axiom.metavars) > 0:
-                interpreter().instantiate(
-                    stack()[-1],
-                    get_delta(converter.get_metavars_in_order(lemma_label), 0)
-                )
+                interpreter().instantiate(stack()[-1], get_delta(converter.get_metavars_in_order(lemma_label), 0))
 
             if isinstance(axiom, AxiomWithAntecedents):
-                for (eh, pat) in reversed(saved_antecedents):
+                for eh, pat in reversed(saved_antecedents):
                     interpreter().load(eh, pat)
-                    interpreter().modus_ponens(
-                        stack()[-2],  # eh -> (...)
-                        stack()[-1]   # eh
-                    )
+                    interpreter().modus_ponens(stack()[-2], stack()[-1])  # eh -> (...)  # eh
 
         # Lemma is one of the fixed proof rules in the ML proof system
         elif lemma_label in converter.proof_rules:
@@ -162,12 +155,7 @@ def convert_to_implication(antecedents: tuple[nf.Pattern], conclusion: nf.Patter
     antecedent, *antecedents = antecedents
 
     if antecedents:
-        return nf.Implication(
-            antecedent,
-            convert_to_implication(
-                antecedents, conclusion
-            )
-        )
+        return nf.Implication(antecedent, convert_to_implication(antecedents, conclusion))
 
     return nf.Implication(antecedent, conclusion)
 
