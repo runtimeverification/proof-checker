@@ -452,6 +452,7 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
     assert set(converter.exported_axioms) == set(axioms)
     for axiom in axioms:
         assert converter.is_exported_axiom(axiom)
+
     proof_rules = ('proof-rule-gen',)
     assert converter.proof_rules == set(proof_rules)
     for proof_rule in proof_rules:
@@ -462,6 +463,9 @@ def test_axiom_sorting(parsed_lemma_database: Database) -> None:
 
     assert converter.get_metavars_in_order('proof-rule-gen') == ('ph0', 'ph1')
     assert converter.get_metavars_in_order('disjointness-alt-lemma') == ('ph0', 'ph1', 'ph2')
+
+    assert converter.resolve_metavar('ph1') == converter._scope._metavars['ph1']
+    assert converter.get_metavar_name_by_label('ph1-is-pattern') == 'ph1'
 
 
 def test_converting_perceptron_goal(parsed_perceptron_goal_database: Database) -> None:
