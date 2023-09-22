@@ -32,6 +32,11 @@ def parsed_transfer_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal-simple.mm'), include_proof=True)
 
 
+@pytest.fixture
+def parsed_transfer_database() -> Database:
+    return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal-simple-compressed.mm'), include_proof=True)
+
+
 def test_exec_proof(parsed_impreflex_database: Database) -> None:
     converter = MetamathConverter(parsed_impreflex_database)
     assert converter
