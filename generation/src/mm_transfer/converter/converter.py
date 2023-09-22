@@ -656,12 +656,34 @@ class MetamathConverter:
 
             return resolve_notation
 
+        def resolve_as_app(
+            left: Callable[[VarArg(nf.Pattern)], nf.Pattern], right: Callable[[VarArg(nf.Pattern)], nf.Pattern]
+        ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+            app = scope.resolve_notation('\\app')
+
+            def symbol_application(*args: nf.Pattern) -> nf.Pattern:
+                real_args = (left(*args), right(*args))
+                return app(*real_args)
+
+            return symbol_application
+
         match term:
             case Application(symbol, subterms):
                 if scope.is_notation(symbol):
                     return resolve_as_notation(symbol, subterms)
                 else:
-                    return self._resolve_as_callable(scope, symbol)
+                    converted = self._resolve_as_callable(scope, symbol)
+                    if symbol in self._missing_declarations and len(subterms) > 0:
+                        converted_args = [self._to_pattern(scope, arg) for arg in subterms]
+
+                        current_callable = converted
+                        while len(converted_args) > 0:
+                            next_one, *converted_args = converted_args
+                            current_callable = resolve_as_app(current_callable, next_one)
+
+                        return current_callable
+                    else:
+                        return converted
             case Metavariable(name):
                 if scope.is_notation(name):
                     # Assumption: local notations don't have arguments
