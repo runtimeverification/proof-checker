@@ -71,11 +71,13 @@ ceil-is-pattern $a #Pattern ( \ceil ph0 ) $.
 
 $( Start section added for testng purposes $)
 
-$c \tst \tsymbol $. 
+$c \tst \tsymbol \tapp $. 
 tsymbol-is-symbol $a #Symbol \tsymbol $.
 tst-is-pattern $a #Pattern ( \tst xX ) $.
-tst-is-sugar $a #Notation ( \tst xX ) ( \app \tsymbol xX ) $.
+${ $d xX ph0 $.
+   tst-is-sugar $a #Notation ( \tst xX ) ( \app \tsymbol xX ) $. $}
 tst-trivial-axiom $a |- ( \imp ( \tst xX ) ( \tst xX ) ) $.
+tst-missing-symbol-axiom $a |- ( \imp ( \tst x ) ( \tapp x y ) ) $.
 
 $( End section added for testng purposes $)
 

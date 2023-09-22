@@ -29,6 +29,7 @@ class Axiom:
     args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
     pattern: nf.Pattern
+    metavars: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -37,14 +38,21 @@ class AxiomWithAntecedents(Axiom):
     args: tuple[str, ...]
     type_check: Callable[[VarArg(nf.Pattern)], bool]
     pattern: nf.Pattern
+    metavars: tuple[str, ...]
     antecedents: tuple[nf.Pattern, ...]
 
 
+# Need to merge this with Lemma* classes
+@dataclass(frozen=True)
+class Proof:
+    labels: dict[int, str]
+    applied_lemmas: list[int]
+
+
+@dataclass(frozen=True)
 class Lemma(Axiom):
-    # TODO: Add proof or proof-related methods later
-    pass
+    proof: Proof
 
 
 class LemmaWithAntecedents(AxiomWithAntecedents, Lemma):
-    # TODO: Add proof or proof-related methods later
     pass
