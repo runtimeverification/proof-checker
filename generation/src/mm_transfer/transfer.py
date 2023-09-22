@@ -36,6 +36,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     for (_step, lemma) in enumerate(exported_proof.applied_lemmas):
         lemma_label = exported_proof.labels[lemma]
 
+        # Lemma is one of these pattern constructors/notations
         if lemma_label in converter.pattern_constructors:
             # Cannot call .pattern here, as I have what I need on stack
             if lemma_label == 'app-is-pattern':
@@ -57,10 +58,13 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                     stack()[-1],
                     get_delta(converter.get_metavars_in_order(lemma_label), 0)
                 )
-        # TODO: phi0-is-pattern should be in pattern constructors
-        elif lemma_label in fps:
-            interpreter().metavar(fps.index(lemma_label))
 
+        # Lemma is one of these `metavar-is-pattern` functions
+        elif lemma_label in converter._fp_label_to_metavar:
+            # TODO: phi0-is-pattern should be in pattern constructors
+            interpreter().metavar(converter.get_metavar_name_by_label(lemma_label))
+
+        # Lemma is in Gamma
         elif lemma_label in converter.exported_axioms:
             axiom = converter.get_axiom_by_name(lemma_label)
             proofexp.load_axiom(axiom.pattern)
@@ -80,6 +84,8 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             # If we have EH's, we need to apply the remaining arguments with MP
             if essential_hypotheses:
                 pass
+
+        # Lemma is one of the fixed proof rules in the ML proof system
         elif lemma_label in converter.proof_rules:
             if lemma_label == 'proof-rule-prop-1':
                 prop1 = interpreter().prop1()
@@ -113,6 +119,8 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 interpreter().pop(stack()[-1])
                 interpreter().pop(stack()[-1])
                 interpreter().load(conclusion_name, conclusion)
+
+        raise NotImplementedError(f'The proof label {lemma_label} is not recognized as an implemented instruction')
 
     assert isinstance(stack()[-1], p.Proved)
     interpreter().publish_proof(stack()[-1])
