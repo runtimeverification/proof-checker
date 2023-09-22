@@ -4,8 +4,8 @@
 extern crate alloc;
 
 use alloc::rc::Rc;
-use alloc::vec;
 use alloc::vec::Vec;
+use alloc::{format, vec};
 
 /// Instructions
 /// ============
@@ -889,13 +889,6 @@ fn execute_instructions<'a>(
             }
         }
     }
-
-    if matches!(phase, ExecutionPhase::Proof) {
-        assert!(
-            claims.is_empty(),
-            "There must be no claims left at the end of execution."
-        );
-    }
 }
 
 pub fn verify<'a>(
@@ -928,6 +921,16 @@ pub fn verify<'a>(
         &mut claims, // claims are consumed by publish instruction
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Proof,
+    );
+
+    assert!(
+        claims.is_empty(),
+        "Checking finished but there are claims left unproved:\n{}\n",
+        claims
+            .iter()
+            .map(|claim| format!("{:#?}", claim))
+            .collect::<Vec<_>>()
+            .join("\n")
     );
 }
 
@@ -1865,18 +1868,21 @@ fn test_apply_ssubst() {
 #[test]
 #[should_panic]
 fn test_no_remaining_claims() {
-    let proof = vec![Instruction::Publish as InstByte];
+    let gamma = vec![];
+    let claims = vec![
+        Instruction::Symbol as InstByte,
+        0u8,
+        Instruction::Publish as InstByte,
+    ];
+    let proof = vec![];
 
-    let mut stack = vec![Term::Pattern(symbol(0))];
-    let mut memory = vec![];
-    let mut claims = vec![symbol(0)];
-    let mut axioms = vec![];
-    execute_vector(
-        &proof,
-        &mut stack,
-        &mut memory,
-        &mut claims,
-        &mut axioms,
-        ExecutionPhase::Proof,
+    let mut iter_gamma = gamma.iter();
+    let mut iter_claims = claims.iter();
+    let mut iter_proof = proof.iter();
+
+    verify(
+        &mut (|| iter_gamma.next().cloned()),
+        &mut (|| iter_claims.next().cloned()),
+        &mut (|| iter_proof.next().cloned()),
     );
 }
