@@ -4,8 +4,8 @@
 extern crate alloc;
 
 use alloc::rc::Rc;
+use alloc::vec;
 use alloc::vec::Vec;
-use alloc::{format, vec};
 
 /// Instructions
 /// ============
@@ -925,12 +925,8 @@ pub fn verify<'a>(
 
     assert!(
         claims.is_empty(),
-        "Checking finished but there are claims left unproved:\n{}\n",
+        "Checking finished but there are claims left unproved:\n{:?}\n",
         claims
-            .iter()
-            .map(|claim| format!("{:#?}", claim))
-            .collect::<Vec<_>>()
-            .join("\n")
     );
 }
 
