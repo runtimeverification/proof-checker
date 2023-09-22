@@ -806,7 +806,7 @@ class ProofExp:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
             proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out))
-            for axiom in proof_exp.axioms():
+            for axiom in cls.axioms():
                 proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
 
     @classmethod
@@ -814,7 +814,7 @@ class ProofExp:
         with open(output, 'wb') as out:
             claims = list(map(Claim, cls.claims()))
             proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out))
-            for claim_expr in reversed(proof_exp.claims()):
+            for claim_expr in reversed(cls.claims()):
                 proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
 
     @classmethod
@@ -835,7 +835,7 @@ class ProofExp:
             proof_exp = cls(interpreter)
             # TODO: A bit ugly
             interpreter.plug_in_notation(proof_exp.notation)
-            for axiom in proof_exp.axioms():
+            for axiom in cls.axioms():
                 proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
 
     @classmethod
@@ -846,7 +846,7 @@ class ProofExp:
             proof_exp = cls(interpreter)
             # TODO: A bit ugly
             interpreter.plug_in_notation(proof_exp.notation)
-            for claim_expr in reversed(proof_exp.claims()):
+            for claim_expr in reversed(cls.claims()):
                 proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
 
     @classmethod

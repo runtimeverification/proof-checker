@@ -7,7 +7,14 @@ from typing import TYPE_CHECKING
 from mypy_extensions import VarArg
 
 import proof_generation.pattern as nf
-from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents, Notation
+from mm_transfer.converter.representation import (
+    Axiom,
+    AxiomWithAntecedents,
+    Lemma,
+    LemmaWithAntecedents,
+    Notation,
+    Proof,
+)
 from mm_transfer.converter.scope import GlobalScope, Scope, to_notation_scope
 from mm_transfer.converter.vardict import VarDict
 from mm_transfer.metamath.ast import (
@@ -212,6 +219,117 @@ class MetamathConverter:
         for lemma in lemmas:
             self._import_lemma(lemma)
 
+    def _import_proof(self, statement: ProvableStatement) -> Proof:
+        # Least significant digits in MM encoding
+        lsdigit = {
+            'A': 1,
+            'B': 2,
+            'C': 3,
+            'D': 4,
+            'E': 5,
+            'F': 6,
+            'G': 7,
+            'H': 8,
+            'I': 9,
+            'J': 10,
+            'K': 11,
+            'L': 12,
+            'M': 13,
+            'N': 14,
+            'O': 15,
+            'P': 16,
+            'Q': 17,
+            'R': 18,
+            'S': 19,
+            'T': 20,
+        }
+        # "More" significant digits in MM encoding
+        msdigit = {'U': 1, 'V': 2, 'W': 3, 'X': 4, 'Y': 5}
+
+        def parse_lemmas(proof: str, declared_lemmas: dict[int, str]) -> int:
+            # Skip to first (
+            for _i, letter in enumerate(proof):
+                if letter == '(':
+                    break
+
+            # Skip to first declared lemma
+            for _j, letter in enumerate(proof[_i + 1 :]):
+                if not letter.isspace():
+                    break
+
+            # Register each lemma with ' ' as a divider
+            buffer = ''
+            lemma_n = len(declared_lemmas) + 1
+            for _l, letter in enumerate(proof[_i + _j + 1 :]):
+                if letter.isspace():
+                    declared_lemmas[lemma_n] = buffer
+                    lemma_n += 1
+                    buffer = ''
+                    continue
+
+                if letter == ')':
+                    break
+
+                buffer += letter
+
+            # Return the offset starting at the proof sequence itself
+            return _i + _j + _l + 2
+
+        def split_proof(proof: str | None) -> tuple[dict[int, str], str]:
+            assert proof
+            declared_lemmas: dict[int, str] = {}
+
+            metavars_id = 1
+            # TODO: Fix the order according to the one given by MM
+            for metavar in statement.get_metavariables():
+                declared_lemmas[metavars_id] = f'{metavar}-is-pattern'
+                metavars_id += 1
+
+            # TODO: Add Essential Hypotheses Handling
+
+            # TODO: Make some better whitespace handling
+            offset = parse_lemmas(proof, declared_lemmas)
+
+            applied_lemmas: str = ''
+            for letter in proof[offset:]:
+                if letter.isspace():
+                    continue
+                applied_lemmas += letter
+
+            return (declared_lemmas, applied_lemmas)
+
+        def convert_to_number(word: str) -> int:
+            encoding = list(reversed(word))
+            first_letter, *encoding = encoding
+
+            n: int = lsdigit[first_letter]
+
+            exp = 0
+            for letter in encoding:
+                n += msdigit[letter] * pow(5, exp) * 20
+                exp += 1
+
+            return n
+
+        declared_lemmas, applied_lemmas = split_proof(statement.proof)
+        result = Proof(declared_lemmas, [])
+
+        buffer: str = ''
+        for letter in applied_lemmas:
+            if letter == 'Z':
+                assert buffer == ''
+                # The choice of 0 is arbitrary to denote Load
+                result.applied_lemmas.append(0)
+                continue
+
+            buffer += letter
+            if letter in lsdigit:
+                result.applied_lemmas.append(convert_to_number(buffer))
+                buffer = ''
+                continue
+
+        return result
+
     def _import_constants(self, statement: ConstantStatement) -> None:
         self._declared_constants.update(set(statement.constants))
 
@@ -381,6 +499,8 @@ class MetamathConverter:
                     lemma.pattern,
                     tuple(metavar_names),
                     tuple(a.pattern for a in antecedents),
+                    # TODO: Add support for using antecedents
+                    # self._import_proof(actual_statement)
                 )
             self._add_lemma(lemma.name, lemma)
 
@@ -850,7 +970,14 @@ class MetamathConverter:
         if isinstance(statement, AxiomaticStatement | EssentialStatement):
             axiom = Axiom(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars)
         elif isinstance(statement, ProvableStatement):
-            axiom = Lemma(name, var_names, self._get_arguments_type_check(notation_scope), axiom_pattern, metavars)
+            axiom = Lemma(
+                name,
+                var_names,
+                self._get_arguments_type_check(notation_scope),
+                axiom_pattern,
+                metavars,
+                self._import_proof(statement),
+            )
         else:
             raise NotImplementedError
         return axiom
