@@ -3,7 +3,7 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
-clean-proofs:
+clean-proofs: 
 	rm -rf .build/proofs
 
 update-snapshots:
@@ -107,6 +107,26 @@ proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-
 
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
+
+# Proof conversion checking
+# -------------------------
+
+CONV_DIR=.build/proofs/conv
+
+#TODO: Add all examples
+#SLICES=$(wildcard generation/mm-benchmarks/*.mm)
+SLICES=generation/mm-benchmarks/impreflex.mm
+SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
+
+${CONV_DIR}/%/%.ml-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) > /dev/null
+
+generation/mm-benchmarks/%.mm.conv: ${CONV_DIR}/%/%.ml-proof
+	cargo run --release --bin checker ${CONV_DIR}/$*/$*.ml-gamma ${CONV_DIR}/$*/$*.ml-claim ${CONV_DIR}/$*/$*.ml-proof
+
+test-mm-conv: ${SLICE_CONV_TARGETS}
+
 
 # Risc0
 # -----
