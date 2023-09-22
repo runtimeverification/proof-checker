@@ -71,6 +71,7 @@ class MetamathConverter:
         self._ignored_lemmas: list[ProvableStatement] = []
         self._missing_declarations: set[str] = set()
         self._floating_patterns: list[str] = []
+        self._fp_label_to_metavar: dict[str, str] = {}
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -89,6 +90,10 @@ class MetamathConverter:
     @property
     def exported_axioms(self) -> tuple[str, ...]:
         return tuple(axiom for axiom in self.axioms if self.is_exported_axiom(axiom))
+
+    @property
+    def exported_axioms_as_objects(self) -> tuple[Axiom, ...]:
+        return tuple(axiom for name in self.exported_axioms for axiom in self._axioms[name])
 
     @property
     def proof_rules(self) -> set[str]:
@@ -127,15 +132,8 @@ class MetamathConverter:
         assert self.is_lemma(name)
         return self._lemmas[name][0]
 
-    def get_all_exported_axioms(self) -> list[Axiom]:
-        axioms = []
-        for axiom_list in self._axioms.values():
-            axioms.extend(axiom_list)
-        return [a for a in axioms if self.is_exported_axiom(a.name)]
-
     def publish_axioms(self, interpreter: BasicInterpreter) -> None:
-        axioms = self.get_all_exported_axioms()
-        for axiom in axioms:
+        for axiom in self.exported_axioms_as_objects:
             interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
 
     def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
@@ -162,6 +160,10 @@ class MetamathConverter:
         res = self._scope.resolve(name)
         assert isinstance(res, nf.MetaVar)
         return res
+
+    def get_metavar_name_by_label(self, label: str) -> str:
+        assert label in self._fp_label_to_metavar, f'Unknown floating pattern label: {label}'
+        return self._fp_label_to_metavar[label]
 
     def _add_symbol(self, var: Metavariable | str) -> None:
         if var not in self._symbols:
@@ -345,6 +347,7 @@ class MetamathConverter:
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
+                self._fp_label_to_metavar[st.label] = st.terms[1].name
                 self._floating_patterns.append(st.terms[1].name)
                 return self._declared_variables[st.terms[1].name]
             else:
