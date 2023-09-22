@@ -7,6 +7,7 @@ import proof_generation.pattern as nf
 import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.metamath.parser import load_database
+from mm_transfer.converter.representation import AxiomWithAntecedents
 
 
 def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) -> None:
@@ -15,7 +16,19 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     stack = lambda: proofexp.interpreter.stack
 
     def metavar_id(id: str) -> int:
-        return interpreter()._floating_patterns.index(id)
+        return converter._floating_patterns.index(id)
+
+    def get_delta(metavars: tuple[str, ...]) -> dict[int, nf.Pattern]:
+        delta: dict[int, nf.Pattern] = {}
+
+        nargs = len(metavars)
+        i = 0
+        for metavar_label in metavars:
+            metavar = converter.resolve_metavar(metavar_label)
+            delta[metavar.name] = stack()[-(nargs + 1) + i]
+            i += 1
+
+        return delta
 
     fps = list(map(lambda var_id: var_id + "-is-pattern", converter._floating_patterns))
 
@@ -41,29 +54,23 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
             interpreter().pattern(converter._axioms[lemma_label][0].pattern)
 
-            # TODO: Evaluate in the correct order
-            nargs = len(converter._axioms[lemma_label][0].metavars)
-            if nargs > 0:
-                delta: dict[int, nf.Pattern] = {}
-
-                i = 0
-                for metavar in enumerate(converter._axioms[lemma_label][0].metavars):
-                    # TODO: Get the actual metavar_id assigned to this particular metavar
-                    delta[metavar_id(metavar)] = stack()[-(nargs + 1) + i]
-                    i += 1
-
+            if len(converter._axioms[lemma_label][0].metavars) > 0:
                 interpreter().instantiate_notation(
                     stack()[-1],
-                    delta
+                    get_delta(converter._axioms[lemma_label][0].get_metavars_in_order())
                 )
         # TODO: phi0-is-pattern should be in pattern constructors
-        # TODO: I need to also add `ptns, etc.`
         elif lemma_label in fps:
             interpreter().metavar(fps.index(lemma_label))
+
         elif lemma_label in converter.exported_axioms:
             proofexp.load_axiom(converter.get_axiom_by_name(lemma_label).pattern)
 
-            # TODO: Instantiate
+            if len(converter._axioms[lemma_label][0].metavars) > 0:
+                interpreter().instantiate(
+                    stack()[-1],
+                    get_delta(converter._axioms[lemma_label][0].get_metavars_in_order())
+                )
             # TODO: Support for axioms with EH
         elif lemma_label in converter.proof_rules:
             if lemma_label == 'proof-rule-prop-1':
@@ -103,6 +110,21 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     interpreter().publish_proof(stack()[-1])
 
 
+# TODO: This is unsound and should be replaced with a different handling
+def convert_to_implication(antecedents: tuple[nf.Pattern], conclusion: nf.Pattern) -> nf.Pattern:
+    antecedent, *antecedents = antecedents
+
+    if antecedents:
+        return nf.Implication(
+            antecedent,
+            convert_to_implication(
+                antecedents, conclusion
+            )
+        )
+
+    return nf.Implication(antecedent, conclusion)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('input', help='Input Metamath database path')
@@ -132,7 +154,14 @@ def main() -> None:
     converter = MetamathConverter(input_database)
     assert converter
 
-    extracted_axioms = [converter.get_axiom_by_name(axiom_name).pattern for axiom_name in converter.exported_axioms]
+    extracted_axioms = []
+    for axiom_name in converter.exported_axioms:
+        axiom = converter.get_axiom_by_name(axiom_name)
+        if isinstance(axiom, AxiomWithAntecedents):
+            extracted_axioms.append(convert_to_implication(axiom.antecedents, axiom.pattern))
+            continue
+        extracted_axioms.append(axiom.pattern)
+
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
     class TranslatedProofSkeleton(p.ProofExp):
