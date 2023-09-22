@@ -61,10 +61,10 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 )
 
         # Lemma is one of these `metavar-is-pattern` functions
-        elif lemma_label in converter._fp_label_to_metavar:
+        elif lemma_label in converter._fp_label_to_pattern and isinstance(converter.get_floating_pattern_by_name(lemma_label)[0], nf.MetaVar):
             # TODO: phi0-is-pattern should be in pattern constructors
             interpreter().metavar(
-                    converter.resolve_metavar(converter.get_metavar_name_by_label(lemma_label)).name
+                    converter.get_floating_pattern_by_name(lemma_label)[0].name
                 )
 
         # Lemma is in Gamma
