@@ -71,7 +71,7 @@ class MetamathConverter:
         self._ignored_lemmas: list[ProvableStatement] = []
         self._missing_declarations: set[str] = set()
         self._floating_patterns: list[str] = []
-        self._fp_label_to_metavar: dict[str, str] = {}
+        self._fp_label_to_pattern: dict[str, tuple[nf.Pattern, ...]] = {}
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -155,15 +155,24 @@ class MetamathConverter:
         metavars = axiom.metavars
         return set(metavars)
 
+    def resolve(self, name: str) -> nf.Pattern:
+        return self._resolve(self._scope, name)
+
     def resolve_metavar(self, name: str) -> nf.MetaVar:
         assert self._scope.is_metavar(name)
         res = self._scope.resolve(name)
         assert isinstance(res, nf.MetaVar)
         return res
 
-    def get_metavar_name_by_label(self, label: str) -> str:
-        assert label in self._fp_label_to_metavar, f'Unknown floating pattern label: {label}'
-        return self._fp_label_to_metavar[label]
+    def get_floating_pattern_by_name(self, label: str) -> tuple[nf.Pattern, ...]:
+        assert label in self._fp_label_to_pattern, f'Unknown floating pattern label: {label}'
+        return self._fp_label_to_pattern[label]
+
+    def get_metavar_name_by_label(self, label: str) -> nf.Pattern:
+        # TODO: Keep it still for the backward compatibility
+        pattern = self.get_floating_pattern_by_name(label)[0]
+        assert isinstance(pattern, nf.MetaVar)
+        return pattern
 
     def _add_symbol(self, var: Metavariable | str) -> None:
         if var not in self._symbols:
@@ -347,7 +356,6 @@ class MetamathConverter:
                 and isinstance(st.terms[1], Metavariable)
                 and st.terms[1].name in self._declared_variables
             ):
-                self._fp_label_to_metavar[st.label] = st.terms[1].name
                 self._floating_patterns.append(st.terms[1].name)
                 return self._declared_variables[st.terms[1].name]
             else:
@@ -399,16 +407,24 @@ class MetamathConverter:
 
         if var := get_pattern(statement):
             self._scope.add_metavariable(var)
+            self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         elif var := get_symbol(statement):
             self._add_symbol(var)
+            self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         elif var := get_var(statement):
             self._scope.add_variable(var)
+            # It is an ambiguos case
+            p1 = self._scope._element_vars[var.name]
+            p2 = self._scope._set_vars[var.name]
+            self._fp_label_to_pattern[statement.label] = (p1, p2)
         elif var := get_element_var(statement):
             self._scope.add_element_var(var)
+            self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         elif var := get_set_var(statement):
             self._scope.add_set_var(var)
+            self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         else:
-            print(f'Unknown floating statement: {repr(statement)}')
+            raise NotImplementedError(f'Unknown floating statement: {repr(statement)}')
 
     def _import_axiom(self, statement: AxiomaticStatement | Block) -> None:
         actual_statement = statement if isinstance(statement, AxiomaticStatement) else statement.statements[-1]
