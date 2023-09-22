@@ -37,7 +37,7 @@ def parsed_transfer_compressed_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'transfer-goal-simple-compressed.mm'), include_proof=True)
 
 
-@pytest.mark.parametrize('db', ["parsed_impreflex_database", "parsed_impreflex_compressed_database"])
+@pytest.mark.parametrize('db', ['parsed_impreflex_database', 'parsed_impreflex_compressed_database'])
 def test_exec_proof_impreflex(db: str, request) -> None:
     converter = MetamathConverter(request.getfixturevalue(db))
     assert converter
@@ -65,7 +65,7 @@ def test_exec_proof_impreflex(db: str, request) -> None:
     assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, p.Implication(p.MetaVar(0), p.MetaVar(0)))]
 
 
-@pytest.mark.parametrize('db', ["parsed_transfer_database", "parsed_transfer_compressed_database"])
+@pytest.mark.parametrize('db', ['parsed_transfer_database', 'parsed_transfer_compressed_database'])
 def test_exec_transfer_proof(db: str, request) -> None:
     converter = MetamathConverter(request.getfixturevalue(db))
     assert converter
