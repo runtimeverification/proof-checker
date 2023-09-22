@@ -29,6 +29,19 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
         return delta
 
+    def do_mp() -> None:
+        assert isinstance(stack()[-2], p.Proved)
+        assert isinstance(stack()[-1], p.Proved)
+        interpreter().modus_ponens(stack()[-2], stack()[-1])
+
+        conclusion_name, conclusion = (str(stack()[-1]), stack()[-1])
+        interpreter().save(conclusion_name, conclusion)
+        interpreter().pop(stack()[-1])
+        interpreter().pop(stack()[-1])
+        interpreter().pop(stack()[-1])
+        interpreter().load(conclusion_name, conclusion)
+
+
     # We do not support ambiguities right now
     exported_proof = converter._lemmas[target][0].proof
 
@@ -76,7 +89,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 # This means the concrete antecedents are on stack given by MM stack
                 # AFTER the instantiations for our lemma (as floatings go first)
                 # We need to pop the antecedents to instantiate our axiom first
-                for _ in range(0, len(axiom.antecedents)):
+                for _ in axiom.antecedents:
                     saved_antecedents.append((str(stack()[-1]), stack()[-1]))
                     interpreter().save(str(stack()[-1]), stack()[-1])
                     interpreter().pop(stack()[-1])
@@ -95,8 +108,8 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 for (eh, pat) in reversed(saved_antecedents):
                     interpreter().load(eh, pat)
                     interpreter().modus_ponens(
-                        stack()[-2],
-                        stack()[-1]
+                        stack()[-2],  # eh -> (...)
+                        stack()[-1]   # eh
                     )
 
         # Lemma is one of the fixed proof rules in the ML proof system
@@ -123,16 +136,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                     },
                 )
             if lemma_label == 'proof-rule-mp':
-                assert isinstance(stack()[-2], p.Proved)
-                assert isinstance(stack()[-1], p.Proved)
-                interpreter().modus_ponens(stack()[-2], stack()[-1])
-
-                conclusion_name, conclusion = (str(stack()[-1]), stack()[-1])
-                interpreter().save(conclusion_name, conclusion)
-                interpreter().pop(stack()[-1])
-                interpreter().pop(stack()[-1])
-                interpreter().pop(stack()[-1])
-                interpreter().load(conclusion_name, conclusion)
+                do_mp()
         else:
             raise NotImplementedError(f'The proof label {lemma_label} is not recognized as an implemented instruction')
 
