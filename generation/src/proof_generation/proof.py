@@ -153,7 +153,7 @@ class BasicInterpreter:
         return Proved(self, proved.conclusion.instantiate(delta))
 
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        raise NotImplementedError('Instantiate notation implementation is incomplete')
+        return pattern.instantiate(delta)
 
     def pop(self, term: Pattern | Proved) -> None:
         ...
@@ -318,6 +318,8 @@ class StatefulInterpreter(BasicInterpreter):
     def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         *self.stack, expected_pattern = self.stack
         expected_plugs = self.stack[-len(delta) :]
+        self.stack = self.stack[: -len(delta)]
+
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_notation(pattern, delta)

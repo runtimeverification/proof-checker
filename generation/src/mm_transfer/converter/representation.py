@@ -42,7 +42,6 @@ class AxiomWithAntecedents(Axiom):
     antecedents: tuple[nf.Pattern, ...]
 
 
-# Need to merge this with Lemma* classes
 @dataclass(frozen=True)
 class Proof:
     labels: dict[int, str]
