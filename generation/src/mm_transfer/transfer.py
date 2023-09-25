@@ -16,11 +16,10 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     interpreter = lambda: proofexp.interpreter
     stack = lambda: proofexp.interpreter.stack
 
-    def get_delta(metavars: tuple[str, ...], essential_hypotheses: int) -> dict[int, nf.Pattern]:
+    def get_delta(metavars: tuple[str, ...]) -> dict[int, nf.Pattern]:
         delta: dict[int, nf.Pattern] = {}
 
-        nargs = len(metavars) + essential_hypotheses
-
+        nargs = len(metavars)
         i = 0
         for metavar_label in metavars:
             metavar = converter.resolve_metavar(metavar_label)
@@ -38,36 +37,31 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
         assert isinstance(right, p.Proved)
         interpreter().modus_ponens(left, right)
 
-        conclusion_name, conclusion = (str(stack()[-1]), stack()[-1])
-        interpreter().save(conclusion_name, conclusion)
-        interpreter().pop(stack()[-1])
-        interpreter().pop(stack()[-1])
-        interpreter().pop(stack()[-1])
-        interpreter().load(conclusion_name, conclusion)
-
     # We do not support ambiguities right now
     exported_proof = converter._lemmas[target][0].proof
 
-    # lemma -> memory id
+    # lemma |-> memory id in MM
     mm_memory: list[nf.Pattern | p.Proved] = []
-    memory_offset = len(exported_proof.labels)  # + EH later
+    # MM encoding offset
+    memory_offset = len(exported_proof.labels)  # TODO: Add EH later
 
+    # Keep track of proof step number
     for _step, lemma in enumerate(exported_proof.applied_lemmas):
         if lemma not in exported_proof.labels:
-            if lemma == 0:  # Z save
+            if lemma == 0:
+                # Z save
                 pat = stack()[-1]
                 mm_memory.append(pat)
                 interpreter().save(str(pat), pat)
             else:
-                # we sort of play with memory, so we need to look for the original
+                # We play with memory, so we need to look for the original index in MM memory
                 interpreter().load(str(mm_memory[lemma - memory_offset - 1]), mm_memory[lemma - memory_offset - 1])
-
+            # We do not do anything else, as this was a load/save
             continue
 
         lemma_label = exported_proof.labels[lemma]
 
         # Lemma is one of these pattern constructors/notations
-        # string-literal-9-is-pattern
         if lemma_label in converter.pattern_constructors:
             # Cannot call .pattern here, as I have what I need on stack
             if lemma_label == 'app-is-pattern':
@@ -86,13 +80,15 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 interpreter().implies(left, right)
                 continue
 
+            # Construct the axiom on stack
             pat_constructor_axiom = converter.get_axiom_by_name(lemma_label)
             interpreter().pattern(pat_constructor_axiom.pattern)
 
+            # Instantiate it with instantiations given by MM (as MM does this implicitly)
             if len(pat_constructor_axiom.metavars) > 0:
                 pat = stack()[-1]
                 assert isinstance(pat, nf.Pattern)
-                interpreter().instantiate_notation(pat, get_delta(converter.get_metavars_in_order(lemma_label), 0))
+                interpreter().instantiate_notation(pat, get_delta(converter.get_metavars_in_order(lemma_label)))
 
         # Lemma is one of these `metavar-is-pattern` functions
         elif lemma_label in converter._fp_label_to_pattern and isinstance(
@@ -108,6 +104,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             axiom = converter.get_axiom_by_name(lemma_label)
             saved_antecedents = []
 
+            # For now, we treat EH's as antecedents in the pattern
             if isinstance(axiom, AxiomWithAntecedents):
                 # This means the concrete antecedents are on stack given by MM stack
                 # AFTER the instantiations for our lemma (as floatings go first)
@@ -124,16 +121,14 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             if len(axiom.metavars) > 0:
                 pat = stack()[-1]
                 assert isinstance(pat, p.Proved)
-                interpreter().instantiate(pat, get_delta(converter.get_metavars_in_order(lemma_label), 0))
+                interpreter().instantiate(pat, get_delta(converter.get_metavars_in_order(lemma_label)))
 
+            # Now we need to get rid of the antecedents
             if isinstance(axiom, AxiomWithAntecedents):
                 for eh, pat in reversed(saved_antecedents):
-                    interpreter().load(eh, pat)
-                    left = stack()[-2]
-                    right = stack()[-1]
-                    assert isinstance(left, p.Proved)
-                    assert isinstance(right, p.Proved)
-                    interpreter().modus_ponens(left, right)  # eh -> (...)  # eh
+                    interpreter().load(eh, pat)  # stack[-1]: eh1
+                    pass  # stack[-2]: eh1 -> (eh2 -> (...))
+                    do_mp()  # stack[-1]: eh2 -> (...)
 
         # Lemma is one of the fixed proof rules in the ML proof system
         elif lemma_label in converter.proof_rules:
@@ -165,6 +160,14 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 )
             if lemma_label == 'proof-rule-mp':
                 do_mp()
+
+                # We need to clean up redundant wellformedness checks
+                conclusion_name, conclusion = (str(stack()[-1]), stack()[-1])
+                interpreter().save(conclusion_name, conclusion)
+                interpreter().pop(stack()[-1])
+                interpreter().pop(stack()[-1])
+                interpreter().pop(stack()[-1])
+                interpreter().load(conclusion_name, conclusion)
         else:
             raise NotImplementedError(f'The proof label {lemma_label} is not recognized as an implemented instruction')
 
@@ -174,9 +177,8 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
 
 # TODO: This is unsound and should be replaced with a different handling
-# TODO: Fix that ugly list to tuples and back
 def convert_to_implication(antecedents: tuple[nf.Pattern, ...], conclusion: nf.Pattern) -> nf.Pattern:
-    ant, *ants = list(antecedents)
+    (ant, *ants) = antecedents
 
     if ants:
         return nf.Implication(ant, convert_to_implication(tuple(ants), conclusion))
