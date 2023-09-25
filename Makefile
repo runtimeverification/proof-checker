@@ -108,6 +108,19 @@ proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
 
+# Profiling
+# ---------
+
+PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
+proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+	cargo build --release --bin profiler
+	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
+	cp flamegraph.svg $*.svg
+	rm flamegraph.svg
+	rm perf.data
+
+profile: ${PROFILING_TARGETS}
+
 # Risc0
 # -----
 
