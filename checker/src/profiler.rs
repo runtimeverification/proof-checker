@@ -4,7 +4,6 @@ use std::io::BufReader;
 use std::io::Read;
 
 pub fn main() {
-
     for _ in 0..100000 {
         let (mut gamma_reader, mut claims_reader, mut proof_reader) = match std::env::args().len() {
             3 => (
