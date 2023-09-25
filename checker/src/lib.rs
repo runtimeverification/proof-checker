@@ -922,6 +922,12 @@ pub fn verify<'a>(
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Proof,
     );
+
+    assert!(
+        claims.is_empty(),
+        "Checking finished but there are claims left unproved:\n{:?}\n",
+        claims
+    );
 }
 
 /// Testing
@@ -1853,4 +1859,26 @@ fn test_apply_ssubst() {
     for (pattern, svar_id, plug, expected) in test_cases {
         assert_eq!(apply_ssubst(&pattern, svar_id, &plug), expected);
     }
+}
+
+#[test]
+#[should_panic]
+fn test_no_remaining_claims() {
+    let gamma = vec![];
+    let claims = vec![
+        Instruction::Symbol as InstByte,
+        0u8,
+        Instruction::Publish as InstByte,
+    ];
+    let proof = vec![];
+
+    let mut iter_gamma = gamma.iter();
+    let mut iter_claims = claims.iter();
+    let mut iter_proof = proof.iter();
+
+    verify(
+        &mut (|| iter_gamma.next().cloned()),
+        &mut (|| iter_claims.next().cloned()),
+        &mut (|| iter_proof.next().cloned()),
+    );
 }

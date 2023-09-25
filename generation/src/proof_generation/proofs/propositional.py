@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 
 bot = Mu(SVar(0), SVar(0))
 phi0 = MetaVar(0)
+phi1 = MetaVar(1)
+phi2 = MetaVar(2)
 phi0_implies_phi0 = Implication(phi0, phi0)
 
 
@@ -36,11 +38,19 @@ class Propositional(ProofExp):
             top,  # Top
             Implication(bot, phi0),  # Bot_elim
             Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
+            Implication(neg(phi0), Implication(phi0, phi1)),  # Absurd
             Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Peirce_bot
         ]
 
     def proof_expressions(self) -> list[ProvedExpression]:
-        return [self.imp_reflexivity, self.top_intro, self.bot_elim, self.contradiction_proof, self.peirce_bot]
+        return [
+            self.imp_reflexivity,
+            self.top_intro,
+            self.bot_elim,
+            self.contradiction_proof,
+            self.absurd,
+            self.peirce_bot,
+        ]
 
     # Notation
     # ========
@@ -176,6 +186,17 @@ class Propositional(ProofExp):
     # (neg phi0 -> bot) -> phi0
     def contradiction_proof(self) -> Proved:
         return self.dynamic_inst(self.prop3, {0: phi0})
+
+    # (neg phi0) -> phi0 -> phi1
+    def absurd(self) -> Proved:
+        bot_to_1 = Implication(bot, phi1)
+
+        return self.modus_ponens(
+            self.dynamic_inst(self.prop2, {0: phi0, 1: bot, 2: phi1}),
+            self.modus_ponens(
+                self.dynamic_inst(self.prop1, {0: bot_to_1, 1: phi0}), self.dynamic_inst(self.bot_elim, {0: phi1})
+            ),
+        )
 
     # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
