@@ -108,7 +108,6 @@ proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
 
-<<<<<<< HEAD
 # Profiling
 # ---------
 
@@ -121,7 +120,7 @@ proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .bu
 	rm perf.data
 
 profile: ${PROFILING_TARGETS}
-=======
+
 # Proof conversion checking
 # -------------------------
 
@@ -141,7 +140,6 @@ generation/mm-benchmarks/%.mm.conv: ${CONV_DIR}/%/%.ml-proof
 
 test-mm-conv: ${SLICE_CONV_TARGETS}
 
->>>>>>> main
 
 # Risc0
 # -----
