@@ -49,3 +49,21 @@ You can inspect the [Makefile](Makefile) to explore more granular commands. For 
 `cargo run --bin checker <ML-PROOF> <ML-CLAIM>` 
 
 to run the checker on arbitrary proofs/claims.
+
+Profiling
+=========
+
+We use [flamegraph-rs](https://github.com/flamegraph-rs/flamegraph/tree/main) for profiling. Run these commands to set it up:
+
+```
+sudo apt install linux-tools-common linux-tools-generic linux-tools-`uname -r`
+cargo install flamegraph
+```
+
+To run the tool without root, you may need to configure `perf_event_paranoid` to a lower value. See details [here](https://github.com/flamegraph-rs/flamegraph/tree/main#enabling-perf-for-use-by-unprivileged-users).
+
+You should now be able to run `make profile`. This should produce several flamegraph files (such as `propositional.svg`), which can be visualized in a browser. 
+
+Currently we only profile normal execution of the checker (as opposed to `Risc0` execution). Furthermore, because normal execution on the existing proofs is too fast to lend itself to meaningful profiling, the `profiler.rs` binary actually runs the checker `100 000` times for each proof.
+
+**Warning**: `flamegraph`'s default sampling frequency (`-F 997`) can lead to huge `perf.data` files when you run it on longer executions. For example, running it on our host binary can output several GBs. If you want to profile long executions, consider reducing the sampling frequency accordingly. 
