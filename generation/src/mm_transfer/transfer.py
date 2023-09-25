@@ -38,7 +38,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
         interpreter().modus_ponens(left, right)
 
     # We do not support ambiguities right now
-    exported_proof = converter._lemmas[target][0].proof
+    exported_proof = converter.get_lemma_by_name(target).proof
 
     # lemma |-> memory id in MM
     mm_memory: list[nf.Pattern | p.Proved] = []
