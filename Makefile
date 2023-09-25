@@ -97,16 +97,29 @@ test-proof-gen: ${PROOF_GEN_TARGETS}
 
 PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${PROOFS})
 proofs/%.ml-proof.verify: proofs/%.ml-proof
-	cargo run --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
+	cargo run --release --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
 
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS}
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
 proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
-	cargo run --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
+	cargo run --release --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
+
+# Profiling
+# ---------
+
+PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
+proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+	cargo build --release --bin profiler
+	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
+	cp flamegraph.svg $*.svg
+	rm flamegraph.svg
+	rm perf.data
+
+profile: ${PROFILING_TARGETS}
 
 # Proof conversion checking
 # -------------------------
