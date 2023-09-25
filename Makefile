@@ -3,7 +3,7 @@ all: check test-unit test-system test-zk
 .SECONDARY:
 FORCE:
 
-clean-proofs: 
+clean-proofs:
 	rm -rf .build/proofs
 
 update-snapshots:
@@ -46,10 +46,11 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-proof-gen test-proof-verify
+test-system: test-proof-gen test-proof-verify test-proof-translate
 .PHONY: test-system test-proof-gen test-proof-verify test-zk
 
 PROOFS=$(wildcard proofs/*.ml-proof)
+TRANSLATED_PROOFS=$(wildcard translated-proofs/*.ml-proof)
 
 
 # Proof generation
@@ -92,6 +93,21 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/
 
 test-proof-gen: ${PROOF_GEN_TARGETS}
 
+
+# Proof translation
+# -----------------
+.build/translated-proofs/%.ml-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm .build/translated-proofs/$* goal
+
+PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
+translated-proofs/%.ml-proof.translate: .build/translated-proofs/%.ml-proof
+	${BIN_DIFF} "translated-proofs/$*.ml-claim" ".build/translated-proofs/$*/$*.ml-claim"
+	${BIN_DIFF} "translated-proofs/$*.ml-proof" ".build/translated-proofs/$*/$*.ml-proof"
+	${BIN_DIFF} "translated-proofs/$*.ml-gamma" ".build/translated-proofs/$*/$*.ml-gamma"
+
+test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
+
 # Proof checking
 # ----------------
 
@@ -99,7 +115,11 @@ PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${PROOFS})
 proofs/%.ml-proof.verify: proofs/%.ml-proof
 	cargo run --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
 
-test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS}
+TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${TRANSLATED_PROOFS})
+translated-proofs/%.ml-proof.verify: translated-proofs/%.ml-proof
+	cargo run --bin checker translated-proofs/$*.ml-gamma translated-proofs/$*.ml-claim $<
+
+test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
 proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
