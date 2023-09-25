@@ -7,5 +7,9 @@ edition = "2021"
 name = "checker"
 path = "src/lib.rs"
 
+[[bin]]
+name = "profiler"
+path = "src/profiler.rs"
+
 [dependencies]
 
