@@ -46,7 +46,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     memory_offset = len(exported_proof.labels)  # TODO: Add EH later
 
     # Keep track of proof step number
-    for _step, lemma in enumerate(exported_proof.applied_lemmas):
+    for lemma in exported_proof.applied_lemmas:
         if lemma not in exported_proof.labels:
             if lemma == 0:
                 # Z save
@@ -173,6 +173,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
     pat = stack()[-1]
     assert isinstance(pat, p.Proved)
+    assert pat == p.Proved(interpreter(), converter.get_lemma_by_name(target).pattern)
     interpreter().publish_proof(pat)
 
 
