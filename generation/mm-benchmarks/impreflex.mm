@@ -14,4 +14,4 @@ ${
     proof-rule-mp.1 $e |- ph0 $.
     proof-rule-mp   $a |- ph1 $.
 $}
-imp-reflexivity $p |- ( \imp ph0 ph0 ) $= ( imp-is-pattern proof-rule-prop-1 proof-rule-mp proof-rule-prop-2 ) AAABBAABAAABABBAAABBAABBAAABAEAAABCDAACD $.
+goal $p |- ( \imp ph0 ph0 ) $= ( imp-is-pattern proof-rule-prop-1 proof-rule-mp proof-rule-prop-2 ) AAABBAABAAABABBAAABBAABBAAABAEAAABCDAACD $.

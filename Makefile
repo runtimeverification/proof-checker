@@ -46,7 +46,7 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-proof-gen test-proof-verify test-proof-translate
+test-system: test-proof-gen test-proof-translate test-proof-verify
 .PHONY: test-system test-proof-gen test-proof-verify test-zk
 
 PROOFS=$(wildcard proofs/*.ml-proof)
@@ -94,20 +94,6 @@ proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/
 test-proof-gen: ${PROOF_GEN_TARGETS}
 
 
-# Proof translation
-# -----------------
-.build/translated-proofs/%.ml-proof: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm .build/translated-proofs/$* goal
-
-PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
-translated-proofs/%.ml-proof.translate: .build/translated-proofs/%.ml-proof
-	${BIN_DIFF} "translated-proofs/$*.ml-claim" ".build/translated-proofs/$*/$*.ml-claim"
-	${BIN_DIFF} "translated-proofs/$*.ml-proof" ".build/translated-proofs/$*/$*.ml-proof"
-	${BIN_DIFF} "translated-proofs/$*.ml-gamma" ".build/translated-proofs/$*/$*.ml-gamma"
-
-test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
-
 # Proof checking
 # ----------------
 
@@ -128,24 +114,37 @@ proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
 
+
 # Proof conversion checking
 # -------------------------
 
-CONV_DIR=.build/proofs/conv
+.build/translated-proofs/%.ml-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm .build/translated-proofs/$* goal
 
-#TODO: Add all examples
-#SLICES=$(wildcard generation/mm-benchmarks/*.mm)
-SLICES=generation/mm-benchmarks/impreflex.mm
+PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
+translated-proofs/%.ml-proof.translate: .build/translated-proofs/%.ml-proof
+	${BIN_DIFF} "translated-proofs/$*.ml-claim" ".build/translated-proofs/$*/$*.ml-claim"
+	${BIN_DIFF} "translated-proofs/$*.ml-proof" ".build/translated-proofs/$*/$*.ml-proof"
+	${BIN_DIFF} "translated-proofs/$*.ml-gamma" ".build/translated-proofs/$*/$*.ml-gamma"
+
+test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
+
+CONV_DIR=.build/proofs/conv
+SLICES=$(wildcard translated-proofs/*.ml-proof)
 SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
 
 ${CONV_DIR}/%/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) > /dev/null
+	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) goal > /dev/null
 
-generation/mm-benchmarks/%.mm.conv: ${CONV_DIR}/%/%.ml-proof
+translated-proofs/%.ml-proof.conv: ${CONV_DIR}/%/%.ml-proof
 	cargo run --release --bin checker ${CONV_DIR}/$*/$*.ml-gamma ${CONV_DIR}/$*/$*.ml-claim ${CONV_DIR}/$*/$*.ml-proof
 
-test-mm-conv: ${SLICE_CONV_TARGETS}
+clean-translated-proofs:
+	rm -rf ${CONV_DIR}
+
+verify-mm-conv: clean-translated-proofs ${SLICE_CONV_TARGETS}
 
 
 # Risc0
