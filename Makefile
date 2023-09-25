@@ -150,7 +150,7 @@ SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
 
 ${CONV_DIR}/%/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) goal > /dev/null
+	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) goal
 
 translated-proofs/%.ml-proof.conv: ${CONV_DIR}/%/%.ml-proof
 	cargo run --release --bin checker ${CONV_DIR}/$*/$*.ml-gamma ${CONV_DIR}/$*/$*.ml-claim ${CONV_DIR}/$*/$*.ml-proof
