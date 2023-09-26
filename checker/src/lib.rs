@@ -33,6 +33,8 @@ pub enum Instruction {
     Save, Load,
     // Journal Manipulation,
     Publish,
+    // Metavar with no constraints
+    CleanMetaVar = (9 + 128)
 }
 
 type InstByte = u8;
@@ -69,6 +71,8 @@ impl Instruction {
             28 => Instruction::Save,
             29 => Instruction::Load,
             30 => Instruction::Publish,
+            // Sub-instructions
+            137 => Instruction::CleanMetaVar,
             _ => panic!("Bad Instruction!"),
         }
     }
@@ -699,6 +703,21 @@ fn execute_instructions<'a>(
                     panic!("Constructed meta-var {:?} is ill-formed.", &metavar_pat);
                 }
 
+                stack.push(Term::Pattern(metavar_pat));
+            }
+            Instruction::CleanMetaVar => {
+                let id = next().expect("Expected id for MetaVar instruction") as Id;
+
+                let metavar_pat = Rc::new(Pattern::MetaVar {
+                    id,
+                    e_fresh: vec![],
+                    s_fresh: vec![],
+                    positive: vec![],
+                    negative: vec![],
+                    app_ctx_holes: vec![],
+                });
+
+                // Clean metavars are always well-formed
                 stack.push(Term::Pattern(metavar_pat));
             }
             Instruction::Implication => {

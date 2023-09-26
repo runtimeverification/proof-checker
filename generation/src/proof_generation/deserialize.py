@@ -90,6 +90,10 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
             e_fresh, s_fresh, positive, negative, app_ctxt_holes = (read_list() for _ in range(5))
             _ = interpreter.metavar(id, e_fresh, s_fresh, positive, negative, app_ctxt_holes)
 
+        elif instruction == Instruction.CleanMetaVar:
+            id = next_byte('Expected MetaVar id.')
+            _ = interpreter.metavar(id, (), (), (), (), ())
+
         elif instruction == Instruction.Prop1:
             _ = interpreter.prop1()
 

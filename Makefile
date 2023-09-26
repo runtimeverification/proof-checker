@@ -138,9 +138,9 @@ profile: ${PROFILING_TARGETS}
 
 PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
 translated-proofs/%.ml-proof.translate: .build/translated-proofs/%.ml-proof
+	${BIN_DIFF} "translated-proofs/$*.ml-gamma" ".build/translated-proofs/$*/$*.ml-gamma"
 	${BIN_DIFF} "translated-proofs/$*.ml-claim" ".build/translated-proofs/$*/$*.ml-claim"
 	${BIN_DIFF} "translated-proofs/$*.ml-proof" ".build/translated-proofs/$*/$*.ml-proof"
-	${BIN_DIFF} "translated-proofs/$*.ml-gamma" ".build/translated-proofs/$*/$*.ml-gamma"
 
 test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 

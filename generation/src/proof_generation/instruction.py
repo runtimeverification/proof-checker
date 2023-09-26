@@ -56,6 +56,8 @@ class Instruction(IntEnum):
     # Journal Manipulation
     Publish = 0x1E
 
+    CleanMetaVar = 0x89
+
 
 def pack(input: Iterator[int]) -> bytes:
     """Render into a binary representation.
