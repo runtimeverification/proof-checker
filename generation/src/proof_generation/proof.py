@@ -395,9 +395,14 @@ class SerializingInterpreter(StatefulInterpreter):
     ) -> Pattern:
         ret = super().metavar(id, e_fresh, s_fresh, positive, negative, application_context)
         lists: list[tuple[EVar, ...] | tuple[SVar, ...]] = [e_fresh, s_fresh, positive, negative, application_context]
-        self.out.write(bytes([Instruction.MetaVar, id]))
-        for list in lists:
-            self.out.write(bytes([len(list), *[var.name for var in list]]))
+
+        if sum([len(list) for list in lists]) == 0:
+            # If all arrays are empty, metavar is "clean", we use a more succint instruction
+            self.out.write(bytes([Instruction.CleanMetaVar, id]))
+        else:
+            self.out.write(bytes([Instruction.MetaVar, id]))
+            for list in lists:
+                self.out.write(bytes([len(list), *[var.name for var in list]]))
         return ret
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:

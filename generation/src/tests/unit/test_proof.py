@@ -80,7 +80,7 @@ def test_conclusion() -> None:
 
 
 def uncons_metavar_instrs(id: int) -> list[int]:
-    return [Instruction.MetaVar, id, 0, 0, 0, 0, 0]
+    return [Instruction.CleanMetaVar, id]
 
 
 def test_serialize_phi_implies_phi() -> None:
