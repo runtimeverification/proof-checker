@@ -371,10 +371,6 @@ pub enum Entry {
     Proved(AnnoPattern),
 }
 
-fn compute_var_mask(vars: &[Id]) -> u8 {
-    return vars.iter().fold(0u8, |acc, id| acc | (1u8 << id));
-}
-
 /// Pattern construction utilities
 /// ------------------------------
 
@@ -561,7 +557,8 @@ fn apply_ssubst(pattern: &AnnoPattern, svar_id: Id, plug: &AnnoPattern) -> AnnoP
 }
 
 fn instantiate_helper(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern]) -> AnnoPattern {
-    instantiate(p, vars, plugs, compute_var_mask(vars))
+    let var_mask = vars.iter().fold(0u8, |acc, id| acc | (1u8 << id));
+    instantiate(p, vars, plugs, var_mask)
 }
 
 fn instantiate(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern], var_mask: u8) -> AnnoPattern {
@@ -626,7 +623,6 @@ fn instantiate(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern], var_mask: u8)
             p
         }
         Pattern::Implication { left, right } => {
-            let var_mask = compute_var_mask(vars);
             let new_left = instantiate(left.clone_rc(), vars, plugs, var_mask);
             let new_right = instantiate(right.clone_rc(), vars, plugs, var_mask);
             if Rc::ptr_eq(&left.pat, &new_left.pat) && Rc::ptr_eq(&right.pat, &new_right.pat) {
@@ -636,7 +632,6 @@ fn instantiate(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern], var_mask: u8)
             }
         }
         Pattern::Application { left, right } => {
-            let var_mask = compute_var_mask(vars);
             let new_left = instantiate(left.clone_rc(), vars, plugs, var_mask);
             let new_right = instantiate(right.clone_rc(), vars, plugs, var_mask);
             if Rc::ptr_eq(&left.pat, &new_left.pat) && Rc::ptr_eq(&right.pat, &new_right.pat) {
@@ -646,7 +641,6 @@ fn instantiate(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern], var_mask: u8)
             }
         }
         Pattern::Exists { var, subpattern } => {
-            let var_mask = compute_var_mask(vars);
             let new_sub = instantiate(subpattern.clone_rc(), vars, plugs, var_mask);
             if Rc::ptr_eq(&subpattern.pat, &new_sub.pat) {
                 p
@@ -655,7 +649,6 @@ fn instantiate(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern], var_mask: u8)
             }
         }
         Pattern::Mu { var, subpattern } => {
-            let var_mask = compute_var_mask(vars);
             let new_sub = instantiate(subpattern.clone_rc(), vars, plugs, var_mask);
             if Rc::ptr_eq(&subpattern.pat, &new_sub.pat) {
                 p
@@ -668,7 +661,6 @@ fn instantiate(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern], var_mask: u8)
             evar_id,
             plug,
         } => {
-            let var_mask = compute_var_mask(vars);
             let inst_pat = instantiate(pattern.clone_rc(), vars, plugs, var_mask);
             let inst_plug = instantiate(plug.clone_rc(), vars, plugs, var_mask);
             if Rc::ptr_eq(&pattern.pat, &inst_pat.pat) && Rc::ptr_eq(&plug.pat, &inst_plug.pat) {
@@ -682,7 +674,6 @@ fn instantiate(p: AnnoPattern, vars: &[Id], plugs: &[AnnoPattern], var_mask: u8)
             svar_id,
             plug,
         } => {
-            let var_mask = compute_var_mask(vars);
             let inst_pat = instantiate(pattern.clone_rc(), vars, plugs, var_mask);
             let inst_plug = instantiate(plug.clone_rc(), vars, plugs, var_mask);
             if Rc::ptr_eq(&pattern.pat, &inst_pat.pat) && Rc::ptr_eq(&plug.pat, &inst_plug.pat) {
@@ -818,14 +809,17 @@ fn execute_instructions<'a>(
             Instruction::CleanMetaVar => {
                 let id = next().expect("Expected id for MetaVar instruction") as Id;
 
-                let metavar_pat = Rc::new(Pattern::MetaVar {
-                    id,
-                    e_fresh: vec![],
-                    s_fresh: vec![],
-                    positive: vec![],
-                    negative: vec![],
-                    app_ctx_holes: vec![],
-                });
+                let metavar_pat = AnnoPattern {
+                    pat: Rc::new(Pattern::MetaVar {
+                        id,
+                        e_fresh: vec![],
+                        s_fresh: vec![],
+                        positive: vec![],
+                        negative: vec![],
+                        app_ctx_holes: vec![],
+                    }),
+                    metavars_mask: !(1u8 << id),
+                };
 
                 // Clean metavars are always well-formed
                 stack.push(Term::Pattern(metavar_pat));
