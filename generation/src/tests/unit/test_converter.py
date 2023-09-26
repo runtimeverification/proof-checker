@@ -57,7 +57,7 @@ def test_importing_variables(parsed_lemma_database: Database) -> None:
     symbols = ('sg0', '\\definedness', '\\inhabitant', '\\tsymbol', '\\tapp')
     for symbol in symbols:
         assert symbol in converter._symbols
-    assert len(converter._symbols) == len(symbols)
+    assert len(converter._symbols) == len(symbols) + 1  # +1 is given by an undefined \and
 
     evars = ('x', 'y', 'xX')
     for evar in evars:
@@ -110,13 +110,14 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     definedness = converter._symbols['\\definedness']
     inhabitant = converter._symbols['\\inhabitant']
     tst = converter._symbols['\\tsymbol']
-    assert len(scope._notations) == 11 + 5  # from the file and builtin
+    assert len(scope._notations) == 11 + 4  # from the file and builtin
 
     def bot() -> nf.Pattern:
-        return nf.Mu(nf.SVar(0), nf.SVar(0))
+        return nf.Symbol(4)
 
+    # bot does not have a definition, so it is treated as a logical symbol
     expected = bot()
-    converted = scope.resolve_notation('\\bot')()
+    converted = converter._symbols['\\bot']
     assert expected == converted, pattern_mismatch(expected, converted)
 
     def neg(p: nf.Pattern) -> nf.Pattern:
