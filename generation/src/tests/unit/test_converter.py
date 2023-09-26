@@ -112,7 +112,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     tst = converter._symbols['\\tsymbol']
     assert len(scope._notations) == 11 + 4  # from the file and builtin
 
-    def bot():
+    def bot() -> nf.Pattern:
         return nf.Symbol(4)
 
     # bot does not have a definition, so it is treated as a logical symbol
