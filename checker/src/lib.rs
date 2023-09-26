@@ -917,26 +917,31 @@ pub fn verify<'a>(
 ) {
     let mut claims: Claims = vec![];
     let mut axioms: Memory = vec![];
+    let mut memory: Memory = vec![];
+
     execute_instructions(
         gamma_next_byte,
         &mut vec![], // stack is empty initially.
-        &mut vec![], // memory is empty initially.
+        &mut memory,
         &mut vec![], // claims is unused in this phase.
         &mut axioms, // populate axioms
         ExecutionPhase::Gamma,
     );
+
     execute_instructions(
         claims_next_byte,
         &mut vec![], // stack is empty initially.
-        &mut vec![], // memory is empty initially, though we may think of reusing for sharing notation between phases.
+        &mut memory, // reuse memory
         &mut claims, // claims populated in this phase
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Claim,
     );
+    memory.extend(axioms);
+    
     execute_instructions(
         proof_next_byte,
         &mut vec![], // stack is empty initially.
-        &mut axioms, // axioms are used as initial memory
+        &mut memory, // axioms are used as initial memory
         &mut claims, // claims are consumed by publish instruction
         &mut vec![], // axioms is unused in this phase.
         ExecutionPhase::Proof,
