@@ -1132,7 +1132,7 @@ fn test_sfresh() {
 
 #[test]
 #[should_panic]
-fn test_instantiate_helper_fresh() {
+fn test_instantiate_fresh() {
     let svar_0 = svar(0);
     let phi0_s_fresh_0 = metavar_s_fresh(0, 0, vec![0], vec![0]);
     _ = instantiate_helper(phi0_s_fresh_0, &[0], &[svar_0]);
@@ -1315,7 +1315,7 @@ fn test_wellformedness_positive() {
     assert!(!mux_phi2.well_formed());
 
     // It's ok if 2 is negative, the only thing we care about is that 2 is guaranteed to be positive
-    // (we can instantiate_helper without this variable)
+    // (we can instantiate without this variable)
     let phi3 = metavar_s_fresh(99, 1, vec![2], vec![2]);
     let mux_phi3 = mu(2, phi3);
     assert!(mux_phi3.well_formed());
@@ -1327,7 +1327,7 @@ fn test_wellformedness_positive() {
 
 #[test]
 #[allow(non_snake_case)]
-fn test_instantiate_helper() {
+fn test_instantiate() {
     let x0 = evar(0);
     let X0 = svar(0);
     let c0 = symbol(0);
@@ -1595,7 +1595,7 @@ fn test_instantiate_helper() {
         ssubst(phi1.clone_rc(), 0, Rc::clone(&c0))
     );
 
-    // The plug in a subst. needs to be instantiate_helperd as well
+    // The plug in a subst. needs to be instantiated as well
     assert_eq!(
         instantiate_helper(
             ssubst(phi0.clone_rc(), 0, phi0.clone_rc()),
