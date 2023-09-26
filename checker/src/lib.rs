@@ -542,19 +542,39 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
 
             p
         }
-        Pattern::Implication { left, right } => implies(
-            instantiate(Rc::clone(&left), vars, plugs),
-            instantiate(Rc::clone(&right), vars, plugs),
-        ),
-        Pattern::Application { left, right } => app(
-            instantiate(Rc::clone(&left), vars, plugs),
-            instantiate(Rc::clone(&right), vars, plugs),
-        ),
+        Pattern::Implication { left, right } => {
+            let new_left = instantiate(Rc::clone(&left), vars, plugs);
+            let new_right = instantiate(Rc::clone(&right), vars, plugs);
+            if Rc::ptr_eq(left, &new_left) && Rc::ptr_eq(right, &new_right) {
+                p
+            } else {
+                implies(new_left, new_right)
+            }
+        }
+        Pattern::Application { left, right } => {
+            let new_left = instantiate(Rc::clone(&left), vars, plugs);
+            let new_right = instantiate(Rc::clone(&right), vars, plugs);
+            if Rc::ptr_eq(left, &new_left) && Rc::ptr_eq(right, &new_right) {
+                p
+            } else {
+                app(new_left, new_right)
+            }
+        }
         Pattern::Exists { var, subpattern } => {
-            exists(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
+            let new_sub = instantiate(Rc::clone(&subpattern), vars, plugs);
+            if Rc::ptr_eq(subpattern, &new_sub) {
+                p
+            } else {
+                exists(*var, new_sub)
+            }
         }
         Pattern::Mu { var, subpattern } => {
-            mu(*var, instantiate(Rc::clone(&subpattern), vars, plugs))
+            let new_sub = instantiate(Rc::clone(&subpattern), vars, plugs);
+            if Rc::ptr_eq(subpattern, &new_sub) {
+                p
+            } else {
+                mu(*var, new_sub)
+            }
         }
         Pattern::ESubst {
             pattern,
@@ -563,7 +583,11 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
         } => {
             let inst_pat = instantiate(Rc::clone(pattern), vars, plugs);
             let inst_plug = instantiate(Rc::clone(plug), vars, plugs);
-            return apply_esubst(&inst_pat, *evar_id, &inst_plug);
+            if Rc::ptr_eq(pattern, &inst_pat) && Rc::ptr_eq(plug, &inst_plug) {
+                p
+            } else {
+                apply_esubst(&inst_pat, *evar_id, &inst_plug)
+            }
         }
         Pattern::SSubst {
             pattern,
@@ -572,7 +596,11 @@ fn instantiate(p: Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) -> Rc<Pattern
         } => {
             let inst_pat = instantiate(Rc::clone(pattern), vars, plugs);
             let inst_plug = instantiate(Rc::clone(plug), vars, plugs);
-            return apply_ssubst(&inst_pat, *svar_id, &inst_plug);
+            if Rc::ptr_eq(pattern, &inst_pat) && Rc::ptr_eq(plug, &inst_plug) {
+                p
+            } else {
+                apply_ssubst(&inst_pat, *svar_id, &inst_plug)
+            }
         }
     }
 }
