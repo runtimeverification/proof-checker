@@ -38,6 +38,7 @@ pub enum Instruction {
 }
 
 type InstByte = u8;
+type InstrIterator<'a> = core::slice::Iter<'a, u8>;
 
 impl Instruction {
     fn from(value: InstByte) -> Instruction {
@@ -618,7 +619,7 @@ pub enum ExecutionPhase {
     Proof,
 }
 
-fn read_u8_vec<'a>(iterator: &mut core::slice::Iter<'_, u8>) -> Vec<u8> {
+fn read_u8_vec<'a>(iterator: &mut InstrIterator) -> Vec<u8> {
     let len = (*iterator.next().expect("Expected length for array")) as usize;
 
     let mut vec: Vec<u8> = Vec::with_capacity(len);
@@ -641,7 +642,7 @@ fn execute_instructions<'a>(
     phase: ExecutionPhase,
 ) {
     // Get an iterator for the input buffer
-    let iterator = &mut buffer.iter();
+    let iterator: &mut InstrIterator = &mut buffer.iter();
 
     // Metavars
     let phi0 = metavar_unconstrained(0);
