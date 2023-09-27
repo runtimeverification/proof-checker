@@ -641,20 +641,15 @@ fn instantiate_internal(
     }
 }
 
-fn instantiate_in_place(
-    p: &mut Rc<Pattern>,
-    vars: &[Id],
-    plugs: &[Rc<Pattern>],
-)
-{
+fn instantiate_in_place(p: &mut Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) {
     let ret = instantiate_internal(p, vars, plugs);
     match ret {
-        Some(_) => { *p = ret.unwrap(); }
-        None => ()
+        Some(_) => {
+            *p = ret.unwrap();
+        }
+        None => (),
     }
 }
-
-
 
 /// Proof checker
 /// =============
@@ -1329,16 +1324,35 @@ fn test_instantiate() {
     let existsx0phi0 = exists(0, Rc::clone(&phi0));
     let muX0phi0 = mu(0, Rc::clone(&phi0));
     let existsx0X0 = exists(0, Rc::clone(&X0));
-    assert!(instantiate_internal(&phi0_implies_phi0, &[0], &[Rc::clone(&x0)]) == Some(Rc::clone(&x0_implies_x0)));
     assert!(
-        instantiate_internal(&phi0_implies_phi0, &[1], &[Rc::clone(&x0)]) == None
+        instantiate_internal(&phi0_implies_phi0, &[0], &[Rc::clone(&x0)])
+            == Some(Rc::clone(&x0_implies_x0))
     );
-    assert_eq!(instantiate_internal(&appphi0phi0, &[0], &[Rc::clone(&x0)]), Some(Rc::clone(&appx0x0)));
-    assert_eq!(instantiate_internal(&appphi0phi0, &[1], &[Rc::clone(&x0)]), None);
-    assert_eq!(instantiate_internal(&existsx0phi0, &[0], &[Rc::clone(&x0)]), Some(Rc::clone(&existsx0x0)));
-    assert_eq!(instantiate_internal(&existsx0phi0, &[1], &[Rc::clone(&x0)]), None);
-    assert_eq!(instantiate_internal(&muX0phi0, &[0], &[Rc::clone(&x0)]), Some(Rc::clone(&muX0x0)));
-    assert_eq!(instantiate_internal(&muX0phi0, &[1], &[Rc::clone(&x0)]), None);
+    assert!(instantiate_internal(&phi0_implies_phi0, &[1], &[Rc::clone(&x0)]) == None);
+    assert_eq!(
+        instantiate_internal(&appphi0phi0, &[0], &[Rc::clone(&x0)]),
+        Some(Rc::clone(&appx0x0))
+    );
+    assert_eq!(
+        instantiate_internal(&appphi0phi0, &[1], &[Rc::clone(&x0)]),
+        None
+    );
+    assert_eq!(
+        instantiate_internal(&existsx0phi0, &[0], &[Rc::clone(&x0)]),
+        Some(Rc::clone(&existsx0x0))
+    );
+    assert_eq!(
+        instantiate_internal(&existsx0phi0, &[1], &[Rc::clone(&x0)]),
+        None
+    );
+    assert_eq!(
+        instantiate_internal(&muX0phi0, &[0], &[Rc::clone(&x0)]),
+        Some(Rc::clone(&muX0x0))
+    );
+    assert_eq!(
+        instantiate_internal(&muX0phi0, &[1], &[Rc::clone(&x0)]),
+        None
+    );
 
     // Simultaneous instantiations
     let phi1 = metavar_unconstrained(1);
@@ -1346,62 +1360,30 @@ fn test_instantiate() {
     let muX0X0 = mu(0, Rc::clone(&X0));
     // Empty substs have no effect
     assert!(
-        instantiate_internal(
-            &existsx0phi0,
-            &[1, 2],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == None
+        instantiate_internal(&existsx0phi0, &[1, 2], &[Rc::clone(&x0), Rc::clone(&X0)]) == None
     );
     assert!(
-        instantiate_internal(
-            &existsx0phi0,
-            &[2, 1],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == None
+        instantiate_internal(&existsx0phi0, &[2, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == None
     );
-    assert!(
-        instantiate_internal(
-            &muX0phi0,
-            &[1, 2],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == None
-    );
-    assert!(
-        instantiate_internal(
-            &muX0phi0,
-            &[2, 1],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == None
-    );
+    assert!(instantiate_internal(&muX0phi0, &[1, 2], &[Rc::clone(&x0), Rc::clone(&X0)]) == None);
+    assert!(instantiate_internal(&muX0phi0, &[2, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == None);
 
     // Order matters if corresponding value is not moved
     assert!(
-        instantiate_internal(
-            &existsx0phi0,
-            &[1, 0],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == Some(Rc::clone(&existsx0X0))
+        instantiate_internal(&existsx0phi0, &[1, 0], &[Rc::clone(&x0), Rc::clone(&X0)])
+            == Some(Rc::clone(&existsx0X0))
     );
     assert!(
-        instantiate_internal(
-            &existsx0phi0,
-            &[0, 1],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == Some(Rc::clone(&existsx0x0))
+        instantiate_internal(&existsx0phi0, &[0, 1], &[Rc::clone(&x0), Rc::clone(&X0)])
+            == Some(Rc::clone(&existsx0x0))
     );
     assert!(
-        instantiate_internal(
-            &muX0phi0,
-            &[1, 0],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == Some(Rc::clone(&muX0X0))
+        instantiate_internal(&muX0phi0, &[1, 0], &[Rc::clone(&x0), Rc::clone(&X0)])
+            == Some(Rc::clone(&muX0X0))
     );
     assert!(
-        instantiate_internal(
-            &muX0phi0,
-            &[0, 1],
-            &[Rc::clone(&x0), Rc::clone(&X0)]
-        ) == Some(Rc::clone(&muX0x0))
+        instantiate_internal(&muX0phi0, &[0, 1], &[Rc::clone(&x0), Rc::clone(&X0)])
+            == Some(Rc::clone(&muX0x0))
     );
 
     // Order does not matter if corresponding value is moved
@@ -1514,73 +1496,45 @@ fn test_instantiate() {
     // Instantiate with concrete patterns applies pending substitutions
     let val = esubst(Rc::clone(&phi0), 0, Rc::clone(&c0));
     assert_eq!(
-        instantiate_internal(
-            &val,
-            &[0],
-            &[Rc::clone(&x0)]
-        ),
+        instantiate_internal(&val, &[0], &[Rc::clone(&x0)]),
         Some(Rc::clone(&c0))
     );
     let val = ssubst(Rc::clone(&phi0), 0, Rc::clone(&c0));
     assert_eq!(
-        instantiate_internal(
-            &val,
-            &[0],
-            &[Rc::clone(&X0)]
-        ),
+        instantiate_internal(&val, &[0], &[Rc::clone(&X0)]),
         Some(Rc::clone(&c0))
     );
     let val = ssubst(
-                Rc::clone(&esubst(Rc::clone(&phi0), 0, Rc::clone(&X0))),
-                0,
-                Rc::clone(&c0)
-            );
+        Rc::clone(&esubst(Rc::clone(&phi0), 0, Rc::clone(&X0))),
+        0,
+        Rc::clone(&c0),
+    );
     assert_eq!(
-        instantiate_internal(
-            &val,
-            &[0],
-            &[Rc::clone(&X0)]
-        ),
+        instantiate_internal(&val, &[0], &[Rc::clone(&X0)]),
         Some(Rc::clone(&c0))
     );
 
     // Instantiate with metavar keeps pending substitutions
     let val = esubst(Rc::clone(&phi0), 0, Rc::clone(&c0));
     assert_eq!(
-        instantiate_internal(
-            &val,
-            &[0],
-            &[Rc::clone(&phi1)]
-        ),
+        instantiate_internal(&val, &[0], &[Rc::clone(&phi1)]),
         Some(esubst(Rc::clone(&phi1), 0, Rc::clone(&c0)))
     );
     let val = ssubst(Rc::clone(&phi0), 0, Rc::clone(&c0));
     assert_eq!(
-        instantiate_internal(
-            &val,
-            &[0],
-            &[Rc::clone(&phi1)]
-        ),
+        instantiate_internal(&val, &[0], &[Rc::clone(&phi1)]),
         Some(ssubst(Rc::clone(&phi1), 0, Rc::clone(&c0)))
     );
 
     // The plug in a subst. needs to be instantiated as well
     let val = ssubst(Rc::clone(&phi0), 0, Rc::clone(&phi0));
     assert_eq!(
-        instantiate_internal(
-            &val,
-            &[0],
-            &[Rc::clone(&X0)]
-        ),
+        instantiate_internal(&val, &[0], &[Rc::clone(&X0)]),
         Some(Rc::clone(&X0))
     );
     let val = ssubst(Rc::clone(&phi0), 0, Rc::clone(&phi1));
     assert_eq!(
-        instantiate_internal(
-            &val,
-            &[0, 1],
-            &[Rc::clone(&X0), Rc::clone(&c0)]
-        ),
+        instantiate_internal(&val, &[0, 1], &[Rc::clone(&X0), Rc::clone(&c0)]),
         Some(c0)
     );
 }
