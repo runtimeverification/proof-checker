@@ -242,14 +242,20 @@ def main() -> None:
     claims = list(map(p.Claim, TranslatedProofSkeleton.claims()))
     counting_interpreter = p.CountingInterpreter(phase=p.ExecutionPhase.Gamma, claims=claims)
     proof_exp = TranslatedProofSkeleton(counting_interpreter)
-    for axiom in TranslatedProofSkeleton.axioms():
+    for axiom in TranslatedProofSkeleton.axioms():  # type: ignore
+        assert isinstance(axiom, p.Pattern)
         proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
     counting_interpreter.finalize()
 
     # Actual export
     with open(output_dir / f'{module}.ml-gamma', 'wb') as out:
-        proof_exp = TranslatedProofSkeleton(p.MemoizingInterpreter(phase=p.ExecutionPhase.Gamma, claims=claims, out=out, counting_interpreter=counting_interpreter))
-        for axiom in TranslatedProofSkeleton.axioms():
+        proof_exp = TranslatedProofSkeleton(
+            p.MemoizingInterpreter(
+                phase=p.ExecutionPhase.Gamma, claims=claims, out=out, counting_interpreter=counting_interpreter
+            )
+        )
+        for axiom in TranslatedProofSkeleton.axioms():  # type: ignore
+            assert isinstance(axiom, p.Pattern)
             proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
 
     # Export claims
@@ -258,17 +264,25 @@ def main() -> None:
     counting_interpreter = p.CountingInterpreter(phase=p.ExecutionPhase.Claim, claims=claims)
     proof_exp = TranslatedProofSkeleton(counting_interpreter)
     for claim_expr in reversed(TranslatedProofSkeleton.claims()):
+        assert isinstance(claim_expr, p.Pattern)
         proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
     counting_interpreter.finalize()
 
     # Actual export
     with open(output_dir / f'{module}.ml-claim', 'wb') as out:
-        proof_exp = TranslatedProofSkeleton(p.MemoizingInterpreter(phase=p.ExecutionPhase.Claim, claims=claims, out=out, counting_interpreter=counting_interpreter))
+        proof_exp = TranslatedProofSkeleton(
+            p.MemoizingInterpreter(
+                phase=p.ExecutionPhase.Claim, claims=claims, out=out, counting_interpreter=counting_interpreter
+            )
+        )
         for claim_expr in reversed(TranslatedProofSkeleton.claims()):
+            assert isinstance(claim_expr, p.Pattern)
             proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
 
     # Export proof dry run
-    counting_interpreter = p.CountingInterpreter(phase=p.ExecutionPhase.Proof, claims=[p.Claim(claim) for claim in extracted_claims], axioms=extracted_axioms)
+    counting_interpreter = p.CountingInterpreter(
+        phase=p.ExecutionPhase.Proof, claims=[p.Claim(claim) for claim in extracted_claims], axioms=extracted_axioms
+    )
     proofexp = TranslatedProofSkeleton(counting_interpreter)
     exec_proof(converter, args.target, proofexp)
     counting_interpreter.finalize()
@@ -277,7 +291,11 @@ def main() -> None:
     with open(output_dir / f'{module}.ml-proof', 'wb') as out:
         proofexp = TranslatedProofSkeleton(
             p.MemoizingInterpreter(
-                phase=p.ExecutionPhase.Proof, out=out, claims=[p.Claim(claim) for claim in extracted_claims], axioms=extracted_axioms, counting_interpreter=counting_interpreter
+                phase=p.ExecutionPhase.Proof,
+                out=out,
+                claims=[p.Claim(claim) for claim in extracted_claims],
+                axioms=extracted_axioms,
+                counting_interpreter=counting_interpreter,
             )
         )
         exec_proof(converter, args.target, proofexp)

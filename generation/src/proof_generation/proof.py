@@ -372,7 +372,7 @@ class CountingInterpreter(StatefulInterpreter):
         self._max_allowed_slots = 256
         self._finalized = False
         self._pattern_usage: dict[Pattern, CountingInterpreter.Stats] = {}
-        self._saved_by_implementation = set()
+        self._saved_by_implementation: set[Pattern] = set()
         self._suggested_for_memoization: set[Pattern] = set()
 
     @property
@@ -385,7 +385,7 @@ class CountingInterpreter(StatefulInterpreter):
 
     @property
     def suggested_for_memoization(self) -> set[Pattern]:
-        assert self.finalized, "Suggestions cannot be accessed until the interpreter is finalized"
+        assert self.finalized, 'Suggestions cannot be accessed until the interpreter is finalized'
         return set(self._suggested_for_memoization)
 
     def finalize(self) -> None:
@@ -394,12 +394,18 @@ class CountingInterpreter(StatefulInterpreter):
         self._finalized = True
         memoized = [p.conclusion if isinstance(p, Proved) else p for p in self.memory]
 
-        def get_suitable():
-            already_selected = [p for p in memoized if p not in self._suggested_for_memoization and p in self._pattern_usage]
+        def get_suitable() -> list[Pattern]:
+            already_selected = [
+                p for p in memoized if p not in self._suggested_for_memoization and p in self._pattern_usage
+            ]
             if already_selected:
                 return already_selected
             else:
-                suitable = [pattern for pattern in self._pattern_usage if self._pattern_usage[pattern].uses > 1 and self._pattern_usage[pattern].complexity > 1]
+                suitable = [
+                    pattern
+                    for pattern in self._pattern_usage
+                    if self._pattern_usage[pattern].uses > 1 and self._pattern_usage[pattern].complexity > 1
+                ]
                 suitable.sort(key=lambda pattern: self._pattern_usage[pattern].complexity_score, reverse=True)
                 return suitable
 
@@ -433,7 +439,9 @@ class CountingInterpreter(StatefulInterpreter):
 
                 # We also start using less patterns that are used by the memoized one
                 for child in pattern_stats.used_patterns:
-                    self._pattern_usage[dependency].used_patterns[child] -= pattern_stats.used_patterns[child] * old_stats.used_patterns[pattern]
+                    self._pattern_usage[dependency].used_patterns[child] -= (
+                        pattern_stats.used_patterns[child] * old_stats.used_patterns[pattern]
+                    )
 
             # As we memoized the pattern, patterns that are used by this one become less frequently used,
             # so we need to update their usage and later update the score metric
@@ -562,7 +570,9 @@ class CountingInterpreter(StatefulInterpreter):
             children.append(p.subpattern)
 
         if p not in self._pattern_usage:
-            self._pattern_usage[p] = CountingInterpreter.Stats(uses=1, complexity_score=0, complexity=1, used_patterns={})
+            self._pattern_usage[p] = CountingInterpreter.Stats(
+                uses=1, complexity_score=0, complexity=1, used_patterns={}
+            )
 
             # Go deeper recusively
             for child in children:
@@ -570,7 +580,8 @@ class CountingInterpreter(StatefulInterpreter):
 
             # Increase the complexity score for each child plus one
             self._pattern_usage[p] = self._pattern_usage[p]._replace(
-                complexity=self._pattern_usage[p].complexity + sum(self._pattern_usage[child].complexity for child in children)
+                complexity=self._pattern_usage[p].complexity
+                + sum(self._pattern_usage[child].complexity for child in children)
             )
 
             # Add usages of children to the pattern
@@ -589,9 +600,7 @@ class CountingInterpreter(StatefulInterpreter):
         entries = self._pattern_usage[p].uses
         complexity = self._pattern_usage[p].complexity
 
-        self._pattern_usage[p] = self._pattern_usage[p]._replace(
-            complexity_score=entries * complexity
-        )
+        self._pattern_usage[p] = self._pattern_usage[p]._replace(complexity_score=entries * complexity)
 
 
 class SerializingInterpreter(StatefulInterpreter):
@@ -738,8 +747,12 @@ class MemoizingInterpreter(SerializingInterpreter):
         counting_interpreter: CountingInterpreter | None = None,
     ) -> None:
         super().__init__(phase, out, claims, axioms)
-        assert counting_interpreter.finalized
-        self._memoized_patterns = counting_interpreter.suggested_for_memoization
+        self._memoized_patterns: set[Pattern]
+        if counting_interpreter is not None:
+            assert counting_interpreter.finalized
+            self._memoized_patterns = counting_interpreter.suggested_for_memoization
+        else:
+            self._memoized_patterns = set()
 
     def pattern(self, p: Pattern) -> Pattern:
         if p in self.memory:
