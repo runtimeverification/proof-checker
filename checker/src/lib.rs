@@ -948,9 +948,9 @@ pub fn verify<'a>(
     execute_instructions(
         gamma_next_byte,
         &mut Vec::with_capacity(32), // stack is empty initially.
-        &mut vec![], // memory is empty initially.
-        &mut vec![], // claims is unused in this phase.
-        &mut axioms, // populate axioms
+        &mut vec![],                 // memory is empty initially.
+        &mut vec![],                 // claims is unused in this phase.
+        &mut axioms,                 // populate axioms
         ExecutionPhase::Gamma,
     );
     execute_instructions(
@@ -964,9 +964,9 @@ pub fn verify<'a>(
     execute_instructions(
         proof_next_byte,
         &mut Vec::with_capacity(32), // stack is empty initially.
-        &mut axioms, // axioms are used as initial memory
-        &mut claims, // claims are consumed by publish instruction
-        &mut vec![], // axioms is unused in this phase.
+        &mut axioms,                 // axioms are used as initial memory
+        &mut claims,                 // claims are consumed by publish instruction
+        &mut vec![],                 // axioms is unused in this phase.
         ExecutionPhase::Proof,
     );
 
