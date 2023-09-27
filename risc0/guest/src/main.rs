@@ -18,15 +18,12 @@ pub fn main() {
 
     let gamma_buffer = &mut Vec::new();
     let _ = env::FdReader::new(10).read_to_end(gamma_buffer).unwrap();
-    //println!("gamma buffer size: {} bytes", gamma_buf_size);
 
     let claims_buffer = &mut Vec::new();
     let _ = env::FdReader::new(11).read_to_end(claims_buffer).unwrap();
-    //println!("claims buffer size: {} bytes", claims_buf_size);
 
     let proof_buffer: &mut Vec<u8> = &mut Vec::new();
     let _ = env::stdin().read_to_end(proof_buffer).unwrap();
-    //println!("proof buffer size: {} bytes", proof_buf_size);
 
     end = env::get_cycle_count();
 
