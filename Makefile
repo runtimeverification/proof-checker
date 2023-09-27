@@ -126,7 +126,15 @@ proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .bu
 	rm flamegraph.svg
 	rm perf.data
 
-profile: ${PROFILING_TARGETS}
+PROFILING_TRANSLATED_TARGETS=$(addsuffix .profile,${TRANSLATED_PROOFS})
+translated-proofs/%.ml-proof.profile: .build/translated-proofs/%.ml-gamma .build/translated-proofs/%.ml-claim .build/translated-proofs/%.ml-proof
+	cargo build --release --bin profiler
+	flamegraph -- .build/target/release/profiler .build/translated-proofs/$*.ml-gamma .build/translated-proofs/$*.ml-claim .build/translated-proofs/$*.ml-proof
+	cp flamegraph.svg $*.svg
+	rm flamegraph.svg
+	rm perf.data
+
+profile: ${PROFILING_TARGETS} ${PROFILING_TRANSLATED_TARGETS}
 
 
 # Proof conversion checking
@@ -169,3 +177,10 @@ proofs/%.ml-proof.zk: proofs/%.ml-proof
 	cargo run --release --bin host proofs/$*.ml-gamma proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
+
+PROOF_ZK_TRANSLATED_TARGETS=$(addsuffix .zk,${TRANSLATED_PROOFS})
+translated-proofs/%.ml-proof.zk: translated-proofs/%.ml-proof
+	cargo run --release --bin host translated-proofs/$*.ml-gamma translated-proofs/$*.ml-claim $^
+
+# For now, we do not add this to test-zk to avoid a decrease of CI performance
+zk-mm-conv: ${PROOF_ZK_TRANSLATED_TARGETS}
