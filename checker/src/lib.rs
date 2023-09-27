@@ -944,13 +944,13 @@ pub fn verify<'a>(
     proof_next_byte: &mut impl FnMut() -> Option<InstByte>,
 ) {
     let mut claims: Claims = Vec::with_capacity(2);
-    let mut axioms: Memory = Vec::with_capacity(128);
+    let mut axioms: Memory = Vec::with_capacity(256);
     execute_instructions(
         gamma_next_byte,
-        &mut Vec::with_capacity(32), // stack is empty initially.
-        &mut Vec::with_capacity(0),  // memory is empty initially.
-        &mut Vec::with_capacity(0),  // claims is unused in this phase.
-        &mut axioms,                 // populate axioms
+        &mut Vec::with_capacity(32),  // stack is empty initially.
+        &mut Vec::with_capacity(256), // memory is empty initially.
+        &mut Vec::with_capacity(0),   // claims is unused in this phase.
+        &mut axioms,                  // populate axioms
         ExecutionPhase::Gamma,
     );
     execute_instructions(
