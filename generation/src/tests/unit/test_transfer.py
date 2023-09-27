@@ -58,13 +58,13 @@ def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
             return extracted_claims
 
     proofexp = TranslatedProofSkeleton(
-        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], extracted_axioms)
+        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], list(map(p.Proved, extracted_axioms)))
     )
 
     exec_proof(converter, 'imp-reflexivity', proofexp)
 
     assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
-    assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, p.Implication(p.MetaVar(0), p.MetaVar(0)))]
+    assert proofexp.interpreter.stack == [p.Proved(p.Implication(p.MetaVar(0), p.MetaVar(0)))]
 
 
 @pytest.mark.parametrize('db', ['parsed_transfer_database', 'parsed_transfer_compressed_database'])
@@ -93,10 +93,10 @@ def test_exec_transfer_proof(db: str, request: FixtureRequest) -> None:
             return extracted_claims
 
     proofexp = TranslatedProofSkeleton(
-        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], extracted_axioms)
+        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], list(map(p.Proved, extracted_axioms)))
     )
 
     exec_proof(converter, 'goal', proofexp)
 
     assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
-    assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, converter.get_lemma_by_name('goal').pattern)]
+    assert proofexp.interpreter.stack == [p.Proved(converter.get_lemma_by_name('goal').pattern)]

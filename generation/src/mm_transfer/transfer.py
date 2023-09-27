@@ -173,7 +173,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
 
     pat = stack()[-1]
     assert isinstance(pat, p.Proved)
-    assert pat == p.Proved(interpreter(), converter.get_lemma_by_name(target).pattern)
+    assert pat == p.Proved(converter.get_lemma_by_name(target).pattern)
     interpreter().publish_proof(pat)
 
 
@@ -245,7 +245,7 @@ def main() -> None:
     with open(output_dir / f'{module}.ml-proof', 'wb') as out:
         proofexp = TranslatedProofSkeleton(
             p.SerializingInterpreter(
-                p.ExecutionPhase.Proof, out, [p.Claim(claim) for claim in extracted_claims], extracted_axioms
+                p.ExecutionPhase.Proof, out, [p.Claim(claim) for claim in extracted_claims], seed=list(map(p.Proved, extracted_axioms))
             )
         )
         exec_proof(converter, args.target, proofexp)
