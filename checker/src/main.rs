@@ -1,26 +1,20 @@
 use checker::verify;
-use std::fs::File;
-use std::io::BufReader;
-use std::io::Read;
+use std::fs;
 
 pub fn main() {
     let (mut gamma_reader, mut claims_reader, mut proof_reader) = match std::env::args().len() {
         3 => (
-            BufReader::new(File::open(std::env::args().nth(1).unwrap()).unwrap()).bytes(),
-            BufReader::new(File::open("/dev/null").unwrap()).bytes(),
-            BufReader::new(File::open(std::env::args().nth(2).unwrap()).unwrap()).bytes(),
+            fs::read(std::env::args().nth(1).unwrap()).unwrap(),
+            fs::read("/dev/null").unwrap(),
+            fs::read(std::env::args().nth(2).unwrap()).unwrap(),
         ),
         4 => (
-            BufReader::new(File::open(std::env::args().nth(1).unwrap()).unwrap()).bytes(),
-            BufReader::new(File::open(std::env::args().nth(2).unwrap()).unwrap()).bytes(),
-            BufReader::new(File::open(std::env::args().nth(3).unwrap()).unwrap()).bytes(),
+            fs::read(std::env::args().nth(1).unwrap()).unwrap(),
+            fs::read(std::env::args().nth(2).unwrap()).unwrap(),
+            fs::read(std::env::args().nth(3).unwrap()).unwrap(),
         ),
         _ => panic!("Usage: checker gamma-file [claims-file] proof-file"),
     };
 
-    let gamma_next = &mut (|| gamma_reader.next()?.ok());
-    let claims_next = &mut (|| claims_reader.next()?.ok());
-    let proof_next = &mut (|| proof_reader.next()?.ok());
-
-    verify(gamma_next, claims_next, proof_next);
+    verify(&mut gamma_reader, &mut claims_reader, &mut proof_reader);
 }
