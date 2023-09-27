@@ -57,7 +57,7 @@ You may also use specific targets to run a subset of tests:
         To generate and check a single proof, we may run `make translated-proofs/<name>.ml-proof.gen`.
     -   `test-proof-verify`: Run the verifier against both `proofs` and `translated-proofs`. An individual
         proof may be checked by running `make proofs/<name>.ml-proof.verify` (or `make translated-proofs/<name>.ml-proof.verify`)
--   `test-zk`: Same as `test-proof-verify` on proofs, but also generate a ZK cerificate.
+-   `test-zk`: Same as `test-proof-verify` against `proofs` (not `translated-proofs`), but also generate a ZK cerificate.
     An individual proof may be checked by running
     `make proofs/<name>.ml-proof.zk`
 
