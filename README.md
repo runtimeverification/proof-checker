@@ -50,12 +50,12 @@ You may also use specific targets to run a subset of tests:
         checker.
 -   `test-system`: Run tests for generating proofs and verifying them.
     -   `test-proof-gen`: Generate proofs from the python DSL, and check that
-        they are what we expect. To generate and check a single proof, we may
-        run `make proofs/<name>.ml-proof.gen`.
+        they are what we expect (given by snapshots in `proofs`).
+        To generate and check a single proof, we may run `make proofs/<name>.ml-proof.gen`.
     -   `test-proof-translate`: Generate proofs from translating MM proofs, and check that
-        they are what we expect (given by snapshots). To generate and check a single proof, we may
-        run `make translated-proofs/<name>.ml-proof.gen`.
-    -   `test-proof-verify`: Run the verifier against both proofs and translated-proofs. An individual
+        they are what we expect (given by snapshots in `translated-proofs`).
+        To generate and check a single proof, we may run `make translated-proofs/<name>.ml-proof.gen`.
+    -   `test-proof-verify`: Run the verifier against both `proofs` and `translated-proofs`. An individual
         proof may be checked by running `make proofs/<name>.ml-proof.verify` (or `make translated-proofs/<name>.ml-proof.verify`)
 -   `test-zk`: Same as `test-proof-verify` on proofs, but also generate a ZK cerificate.
     An individual proof may be checked by running
@@ -63,7 +63,7 @@ You may also use specific targets to run a subset of tests:
 
 You can inspect the [Makefile](Makefile) to explore more granular commands. For example, examining `test-proof-verify` reveals that you can use
 
-`cargo run --release --bin checker <ML-PROOF> <ML-CLAIM>`
+`cargo run --release --bin checker <ML-THEORY> <ML-CLAIM> <ML-PROOF>`
 
 to run the checker on arbitrary proofs/claims.
 
