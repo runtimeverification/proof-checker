@@ -103,7 +103,7 @@ proofs/%.ml-proof.verify: proofs/%.ml-proof
 
 TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${TRANSLATED_PROOFS})
 translated-proofs/%.ml-proof.verify: translated-proofs/%.ml-proof
-	cargo run --bin checker translated-proofs/$*.ml-gamma translated-proofs/$*.ml-claim $<
+	cargo run --release --bin checker translated-proofs/$*.ml-gamma translated-proofs/$*.ml-claim $<
 
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
