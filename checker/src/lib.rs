@@ -943,30 +943,30 @@ pub fn verify<'a>(
     claims_next_byte: &mut impl FnMut() -> Option<InstByte>,
     proof_next_byte: &mut impl FnMut() -> Option<InstByte>,
 ) {
-    let mut claims: Claims = vec![];
-    let mut axioms: Memory = vec![];
+    let mut claims: Claims = Vec::with_capacity(2);
+    let mut axioms: Memory = Vec::with_capacity(256);
     execute_instructions(
         gamma_next_byte,
-        &mut vec![], // stack is empty initially.
-        &mut vec![], // memory is empty initially.
-        &mut vec![], // claims is unused in this phase.
-        &mut axioms, // populate axioms
+        &mut Vec::with_capacity(32),  // stack is empty initially.
+        &mut Vec::with_capacity(256), // memory is empty initially.
+        &mut Vec::with_capacity(0),   // claims is unused in this phase.
+        &mut axioms,                  // populate axioms
         ExecutionPhase::Gamma,
     );
     execute_instructions(
         claims_next_byte,
-        &mut vec![], // stack is empty initially.
-        &mut vec![], // memory is empty initially, though we may think of reusing for sharing notation between phases.
-        &mut claims, // claims populated in this phase
-        &mut vec![], // axioms is unused in this phase.
+        &mut Vec::with_capacity(32), // stack is empty initially.
+        &mut Vec::with_capacity(0), // memory is empty initially, though we may think of reusing for sharing notation between phases.
+        &mut claims,                // claims populated in this phase
+        &mut Vec::with_capacity(0), // axioms is unused in this phase.
         ExecutionPhase::Claim,
     );
     execute_instructions(
         proof_next_byte,
-        &mut vec![], // stack is empty initially.
-        &mut axioms, // axioms are used as initial memory
-        &mut claims, // claims are consumed by publish instruction
-        &mut vec![], // axioms is unused in this phase.
+        &mut Vec::with_capacity(32), // stack is empty initially.
+        &mut axioms,                 // axioms are used as initial memory
+        &mut claims,                 // claims are consumed by publish instruction
+        &mut Vec::with_capacity(0),  // axioms is unused in this phase.
         ExecutionPhase::Proof,
     );
 
