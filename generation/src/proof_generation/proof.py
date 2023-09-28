@@ -364,13 +364,12 @@ class StatefulInterpreter(BasicInterpreter):
         assert self.stack[-1] == proved
 
     def publish_axiom(self, axiom: Pattern) -> None:
+        self.memory.append(Proved(axiom))
         super().publish_axiom(axiom)
         assert self.stack[-1] == axiom
 
     def publish_claim(self, pattern: Pattern) -> None:
         super().publish_claim(pattern)
-        expected_claim, *self.claims = self.claims
-        # assert expected_claim.pattern == pattern, 'expected: {}\ngot: {}'.format(expected_claim.pattern, pattern)
         assert self.stack[-1] == pattern
 
 
@@ -923,14 +922,17 @@ class ProofExp:
 
         # Execute gamma phase and change output file
         interpreter = next(prover_sim)
+        interpreter.out.close()
         interpreter.out = open(file_names[1], 'wb')
 
         # Execute claim phase and change output file
         interpreter = next(prover_sim)
+        interpreter.out.close()
         interpreter.out = open(file_names[2], 'wb')
 
         # Execute proof phase
-        _ = next(prover_sim)
+        interpreter = next(prover_sim)
+        interpreter.out.close()
 
     @classmethod
     def prettyprint(cls, file_names: list[str]) -> None:
@@ -943,14 +945,17 @@ class ProofExp:
 
         # Execute gamma phase and change output file
         interpreter = next(prover_sim)
+        interpreter.out.close()
         interpreter.out = open(file_names[1], 'w')
 
         # Execute claim phase and change output file
         interpreter = next(prover_sim)
+        interpreter.out.close()
         interpreter.out = open(file_names[2], 'w')
 
         # Execute proof phase
-        _ = next(prover_sim)
+        interpreter = next(prover_sim)
+        interpreter.out.close()
 
     @classmethod
     def main(cls, argv: list[str]) -> None:
