@@ -52,6 +52,15 @@ class BasicInterpreter:
     def __init__(self, phase: ExecutionPhase):
         self.phase = phase
 
+    def advance(self):
+        ...
+
+    def into_claim_phase(self):
+        self.phase = ExecutionPhase.Claim
+
+    def into_proof_phase(self):
+        self.phase = ExecutionPhase.Proof
+
     def evar(self, id: int) -> Pattern:
         return EVar(id)
 
@@ -200,6 +209,14 @@ class StatefulInterpreter(BasicInterpreter):
 
         if phase == ExecutionPhase.Proof:
             self.memory = seed if seed else []
+
+    def into_claim_phase(self):
+        self.stack = []
+        super().into_claim_phase()
+
+    def into_proof_phase(self):
+        self.stack = []
+        super().into_proof_phase()
 
     def print_state(self) -> None:
         for i, item in enumerate(self.stack):
@@ -366,6 +383,15 @@ class SerializingInterpreter(StatefulInterpreter):
     ) -> None:
         super().__init__(phase=phase, claims=claims, seed=seed)
         self.out = out
+
+    def advance(self, claims: list[Claim] | None = None) -> None:
+        # Always clear the stack
+        self.out = []
+        match self.phase:
+            case ExecutionPhase.Gamma:
+                assert claims is not None
+                self.claims = claims   
+        super().advance(claims=claims)
 
     def evar(self, id: int) -> Pattern:
         ret = super().evar(id)
@@ -867,7 +893,7 @@ class ProofExp:
             for proof_expr in proof_exp.proof_expressions():
                 proof_exp.publish_proof(proof_expr())
 
-    def run(self) -> None:
+    def simulation(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Gamma
 
         # Gamma phase
@@ -875,15 +901,54 @@ class ProofExp:
             self.publish_axiom(self.interpreter.pattern(axiom))
         
         # Claim phase
+        self.interpeter.into_claim_phase()
+        yield self.interpreter
+
         claims = list(map(Claim, self.claims()))
-        self.interpreter.advance(ExecutionPhase.Claim, claims=claims)
         for claim in claims:
             self.publish_claim(self.interpreter.pattern(claim))
 
         #Proof phase
-        self.interpreter.advance(ExecutionPhase.Proof)
+        self.interpreter.into_proof_phase()
+        yield self.interpreter
+
         for proof_expr in self.proof_expressions():
             self.publish_proof(proof_expr())
+
+        yield self.interpreter
+
+    @classmethod
+    def serialize(cls, file_names: list[str]):
+        prover = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, out=open(file_names[0], 'wb'), claims=cls.claims()))
+        prover_sim = prover.simulation()
+
+        # Execute gamma phase and change output file
+        interpreter = next(prover_sim)
+        interpreter.out = open(file_names[1], 'wb')
+
+        # Execute claim phase and change output file
+        interpreter = next(prover_sim)
+        interpreter.out = open(file_names[2], 'wb')
+
+        # Execute proof phase
+        _ = next(prover_sim)
+
+    @classmethod    
+    def prettyprint(cls, file_names: list[str]):
+        prover = cls(PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, out=open(file_names[0], 'w'), claims=cls.claims()))
+        prover_sim = prover.simulation()
+
+        # Execute gamma phase and change output file
+        interpreter = next(prover_sim)
+        interpreter.out = open(file_names[1], 'w')
+
+        # Execute claim phase and change output file
+        interpreter = next(prover_sim)
+        interpreter.out = open(file_names[2], 'w')
+
+        # Execute proof phase
+        _ = next(prover_sim)
+        
 
 
     @classmethod
@@ -904,18 +969,21 @@ class ProofExp:
         assert len(argv) == 3, usage
         format, mode, output_path = argv
 
-        interpreter: BasicInterpreter
+        file_names = ['dev/null', 'dev/null', 'dev/null']
+
+        match mode:
+            case 'gamma':
+                file_names[0] = output_path
+            case 'claim':
+                file_names[1] = output_path
+            case 'proof':
+                file_names[2] = output_path
 
         match format:
             case 'pretty': 
-                interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, out=open(output_path, 'w'))
+                cls.prettyprint(file_names)
             case 'binary':
-                interpreter = SerializingInterpreter(phase=ExecutionPhase.Gamma, out=open(output_path, 'wb'))
-            case _:
-                raise AssertionError(usage)
-            
-        cls(interpreter).run()
-
+                cls.serialize(file_names)
 
         # match (format, mode):
         #     case ('pretty', 'gamma'):
