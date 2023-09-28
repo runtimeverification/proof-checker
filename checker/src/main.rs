@@ -16,5 +16,5 @@ pub fn main() {
         _ => panic!("Usage: checker gamma-file [claims-file] proof-file"),
     };
 
-    verify(&mut gamma_reader, &mut claims_reader, &mut proof_reader);
+    verify(&gamma_reader, &claims_reader, &proof_reader);
 }
