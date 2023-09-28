@@ -977,7 +977,11 @@ fn execute_instructions<'a>(
     }
 }
 
-pub fn verify<'a>(gamma_buffer: &Vec<InstByte>, claims_buffer: &Vec<InstByte>, proof_buffer: &Vec<InstByte>) {
+pub fn verify<'a>(
+    gamma_buffer: &Vec<InstByte>,
+    claims_buffer: &Vec<InstByte>,
+    proof_buffer: &Vec<InstByte>,
+) {
     let mut claims: Claims = Vec::with_capacity(2);
     let mut axioms: Memory = Vec::with_capacity(256);
     execute_instructions(
