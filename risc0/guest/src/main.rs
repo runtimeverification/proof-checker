@@ -9,38 +9,37 @@ extern crate checker;
 use checker::verify;
 
 pub fn main() {
-    let mut gamma_stream = env::FdReader::new(10).bytes();
-    let gamma_next = &mut (|| {
-        match gamma_stream.next() {
-            Some(Ok(v)) => Some(v),
-            // TODO: Error handling
-            Some(Err(_r)) => None,
-            None => None
-        }
-    });
+    let mut begin: usize;
+    let mut end: usize;
 
-    let mut claims_stream = env::FdReader::new(11).bytes();
-    let claim_next = &mut (|| {
-        match claims_stream.next() {
-            Some(Ok(v)) => Some(v),
-            // TODO: Error handling
-            Some(Err(_r)) => None,
-            None => None
-        }
-    });
+    // TODO: remove all cycle count statements when we are done profiling
 
-    let mut proof_stream = env::stdin().bytes();
-    let proof_next = &mut (|| {
-        match proof_stream.next() {
-            Some(Ok(v)) => Some(v),
-            // TODO: Error handling
-            Some(Err(_r)) => None,
-            None => None
-        }
-    });
+    begin = env::get_cycle_count();
 
-    verify(gamma_next, claim_next, proof_next);
+    let gamma_buffer = &mut Vec::new();
+    let _ = env::FdReader::new(10).read_to_end(gamma_buffer).unwrap();
 
-    // This is optional
-    env::commit(&env::get_cycle_count());
+    let claims_buffer = &mut Vec::new();
+    let _ = env::FdReader::new(11).read_to_end(claims_buffer).unwrap();
+
+    let proof_buffer = &mut Vec::new();
+    let _ = env::stdin().read_to_end(proof_buffer).unwrap();
+
+    end = env::get_cycle_count();
+
+    // count_0: cycles spent reading input files
+    env::commit(&(end - begin));
+
+    begin = env::get_cycle_count();
+
+    verify(&*gamma_buffer, &*claims_buffer, &*proof_buffer);
+
+    end = env::get_cycle_count();
+
+    // count_1: cycles spent verifying the theorem
+    env::commit(&(end - begin));
+
+    // count_2: cycles spent throughout
+    env::commit(&(env::get_cycle_count()));
+
 }
