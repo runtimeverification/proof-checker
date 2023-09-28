@@ -52,10 +52,24 @@ fn main() {
 
     // TODO: Implement code for transmitting or serializing the receipt for
     // other parties to verify here
-    let theorem: usize = from_slice(&receipt.journal).unwrap();
+
+    // Get the host's size of a usize pointer
+    let size_of_usize = std::mem::size_of::<usize>();
+
+    // Create an array for holding deserialized counts
+    let mut counts: [usize; 3] = [0; 3];
+
+    // Iterate over usize chunks of the journal, deserializing and saving values
+    for (i, chunk) in receipt.journal.chunks(size_of_usize).enumerate() {
+        counts[i] = from_slice(&chunk.to_vec()).unwrap();
+    }
+
+    // print out cycle counts
+    println!("Reading files: {} cycles", counts[0]);
+    println!("Verifying the theorem: {} cycles", counts[1]);
     println!(
-        "We can prove the theorem in {} cycles and have a ZK certificate for it!",
-        theorem
+        "Overall (environment setup, reading files, and verification): {} cycles!",
+        counts[2]
     );
 
     // Optional: Verify receipt to confirm that recipients will also be able to
