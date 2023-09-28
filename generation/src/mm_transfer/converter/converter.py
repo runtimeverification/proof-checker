@@ -784,28 +784,6 @@ class MetamathConverter:
                 lambda *args: nf.Mu(args[0], args[1]),
             )
         )
-        bot = Notation('\\bot', (), lambda *args: True, lambda *args: nf.Mu(nf.SVar(0), nf.SVar(0)))
-        self._scope.add_notation(bot)
-        not_ = Notation(
-            '\\not',
-            ('ph0',),
-            lambda *args: True,
-            lambda *args: nf.Implication(args[0], bot()),
-        )
-        self._scope.add_notation(not_)
-        or_ = Notation(
-            '\\or',
-            ('ph0', 'ph1'),
-            lambda *args: True,
-            lambda *args: nf.Implication(not_(args[0]), args[1]),
-        )
-        self._scope.add_notation(or_)
-        and_ = Notation(
-            '\\and', ('ph0', 'ph1'), lambda *args: True, lambda *args: not_(or_(not_(args[0]), not_(args[1])))
-        )
-        self._scope.add_notation(and_)
-        top = Notation('\\top', (), lambda *args: True, lambda *args: not_(bot()))
-        self._scope.add_notation(top)
 
     def _collect_variables(self, term: Term) -> tuple[Metavariable, ...]:
         collected_variables: list[Metavariable] = []
