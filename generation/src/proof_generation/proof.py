@@ -391,7 +391,6 @@ class CountingInterpreter(StatefulInterpreter):
     def finalize(self) -> None:
         assert not self._finalized
         self._max_allowed_slots -= len(self.memory)
-        self._finalized = True
         memoized = [p.conclusion if isinstance(p, Proved) else p for p in self.memory]
 
         def get_suitable() -> list[Pattern]:
@@ -462,7 +461,7 @@ class CountingInterpreter(StatefulInterpreter):
             # Recalculate options
             todo = get_suitable()
 
-        return
+        self._finalized = True
 
     def evar(self, id: int) -> Pattern:
         ret = super().evar(id)
@@ -551,10 +550,6 @@ class CountingInterpreter(StatefulInterpreter):
         ret = super().instantiate_notation(pattern, delta)
         self._collect_patterns(ret)
         return ret
-
-    def _calculate_suggestions(self) -> None:
-        # TODO: Update
-        self._suggested_for_memoization
 
     def _collect_patterns(self, p: Pattern) -> None:
         children: list[Pattern] = []
@@ -762,7 +757,8 @@ class MemoizingInterpreter(SerializingInterpreter):
             ret = super().pattern(p)
             self.save(repr(p), p)
             return ret
-        return super().pattern(p)
+        else:
+            return super().pattern(p)
 
 
 class PrettyPrintingInterpreter(StatefulInterpreter):
