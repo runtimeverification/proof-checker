@@ -38,7 +38,7 @@ pub enum Instruction {
 }
 
 type InstByte = u8;
-type InstrIterator<'a> = core::slice::Iter<'a, u8>;
+type InstrIterator<'a> = core::slice::Iter<'a, InstByte>;
 
 impl Instruction {
     fn from(value: InstByte) -> Instruction {
@@ -662,7 +662,7 @@ fn read_u8_vec<'a>(iterator: &mut InstrIterator) -> Vec<u8> {
 }
 
 fn execute_instructions<'a>(
-    buffer: &Vec<u8>,
+    buffer: &Vec<InstByte>,
     stack: &mut Stack,
     memory: &mut Memory,
     claims: &mut Claims,
@@ -977,7 +977,7 @@ fn execute_instructions<'a>(
     }
 }
 
-pub fn verify<'a>(gamma_buffer: &Vec<u8>, claims_buffer: &Vec<u8>, proof_buffer: &Vec<u8>) {
+pub fn verify<'a>(gamma_buffer: &Vec<InstByte>, claims_buffer: &Vec<InstByte>, proof_buffer: &Vec<InstByte>) {
     let mut claims: Claims = Vec::with_capacity(2);
     let mut axioms: Memory = Vec::with_capacity(256);
     execute_instructions(
@@ -1584,14 +1584,14 @@ fn execute_vector(
 
 #[test]
 fn test_publish() {
-    let proof = &mut vec![Instruction::Publish as InstByte];
+    let proof = vec![Instruction::Publish as InstByte];
 
     let mut stack = vec![Term::Pattern(symbol(0))];
     let mut memory = vec![];
     let mut claims = vec![];
     let mut axioms = vec![];
     execute_vector(
-        proof,
+        &proof,
         &mut stack,
         &mut memory,
         &mut claims,
@@ -1608,7 +1608,7 @@ fn test_publish() {
     let mut claims = vec![];
     let mut axioms = vec![];
     execute_vector(
-        proof,
+        &proof,
         &mut stack,
         &mut memory,
         &mut claims,
@@ -1625,7 +1625,7 @@ fn test_publish() {
     let mut claims = vec![symbol(0)];
     let mut axioms = vec![];
     execute_vector(
-        proof,
+        &proof,
         &mut stack,
         &mut memory,
         &mut claims,
@@ -1641,7 +1641,7 @@ fn test_publish() {
 #[test]
 fn test_construct_phi_implies_phi() {
     #[rustfmt::skip]
-    let proof = &vec![
+    let proof = vec![
         Instruction::MetaVar as InstByte, 0, 0, 0, 0, 0, 0, // Stack: Phi
         Instruction::Save as InstByte,        // @ 0
         Instruction::Load as InstByte, 0,     // Phi ; Phi
@@ -1650,7 +1650,7 @@ fn test_construct_phi_implies_phi() {
 
     let mut stack = vec![];
     execute_vector(
-        proof,
+        &proof,
         &mut stack,
         &mut vec![],
         &mut vec![],
@@ -1694,7 +1694,7 @@ fn test_construct_phi_implies_phi_with_constraints() {
 
         let mut stack = vec![];
         execute_vector(
-            &mut proof,
+            &proof,
             &mut stack,
             &mut vec![],
             &mut vec![],
@@ -1727,7 +1727,7 @@ fn test_construct_phi_implies_phi_with_constraints() {
 #[test]
 fn test_phi_implies_phi_impl() {
     #[rustfmt::skip]
-    let proof = &vec![
+    let proof = vec![
         Instruction::MetaVar as InstByte, 0, 0, 0, 0, 0, 0, // Stack: $ph0
         Instruction::Save as InstByte,                    // @0
         Instruction::Load as InstByte, 0,                 // Stack: $ph0; ph0
@@ -1752,7 +1752,7 @@ fn test_phi_implies_phi_impl() {
     ];
     let mut stack = vec![];
     execute_vector(
-        proof,
+        &proof,
         &mut stack,
         &mut vec![],
         &mut vec![],
@@ -1772,7 +1772,7 @@ fn test_phi_implies_phi_impl() {
 #[test]
 fn test_universal_quantification() {
     #[rustfmt::skip]
-    let proof = &vec![
+    let proof = vec![
         Instruction::Generalization as InstByte
     ];
     let mut stack = vec![Term::Proved(implies(symbol(0), symbol(1)))];
@@ -1780,7 +1780,7 @@ fn test_universal_quantification() {
     let mut claims = vec![];
     let mut axioms = vec![];
     execute_vector(
-        proof,
+        &proof,
         &mut stack,
         &mut memory,
         &mut claims,
@@ -1944,13 +1944,13 @@ fn test_apply_ssubst() {
 #[test]
 #[should_panic]
 fn test_no_remaining_claims() {
-    let gamma = &vec![];
-    let claims = &vec![
+    let gamma = vec![];
+    let claims = vec![
         Instruction::Symbol as InstByte,
         0u8,
         Instruction::Publish as InstByte,
     ];
-    let proof: &Vec<u8> = &vec![];
+    let proof = vec![];
 
-    verify(gamma, claims, proof);
+    verify(&gamma, &claims, &proof);
 }
