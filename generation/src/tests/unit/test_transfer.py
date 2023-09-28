@@ -58,7 +58,11 @@ def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
             return extracted_claims
 
     proofexp = TranslatedProofSkeleton(
-        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], list(map(p.Proved, extracted_axioms)))
+        p.StatefulInterpreter(
+            p.ExecutionPhase.Proof,
+            [p.Claim(claim) for claim in extracted_claims],
+            list(map(p.Proved, extracted_axioms)),
+        )
     )
 
     exec_proof(converter, 'imp-reflexivity', proofexp)
@@ -93,7 +97,11 @@ def test_exec_transfer_proof(db: str, request: FixtureRequest) -> None:
             return extracted_claims
 
     proofexp = TranslatedProofSkeleton(
-        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], list(map(p.Proved, extracted_axioms)))
+        p.StatefulInterpreter(
+            p.ExecutionPhase.Proof,
+            [p.Claim(claim) for claim in extracted_claims],
+            list(map(p.Proved, extracted_axioms)),
+        )
     )
 
     exec_proof(converter, 'goal', proofexp)

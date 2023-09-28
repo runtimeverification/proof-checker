@@ -3,9 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from functools import partial
-from pathlib import Path
-from typing import BinaryIO, TextIO
+from typing import TYPE_CHECKING, BinaryIO, TextIO
 
 from proof_generation.instruction import Instruction
 from proof_generation.pattern import (
@@ -22,6 +20,9 @@ from proof_generation.pattern import (
     Symbol,
 )
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
 
 class ExecutionPhase(Enum):
     Gamma = 0
@@ -31,7 +32,7 @@ class ExecutionPhase(Enum):
 
 @dataclass
 class Proved:
-    #interpreter: BasicInterpreter
+    # interpreter: BasicInterpreter
     conclusion: Pattern
 
     def assertc(self, pattern: Pattern) -> Proved:
@@ -52,13 +53,10 @@ class BasicInterpreter:
     def __init__(self, phase: ExecutionPhase):
         self.phase = phase
 
-    def advance(self):
-        ...
-
-    def into_claim_phase(self):
+    def into_claim_phase(self) -> None:
         self.phase = ExecutionPhase.Claim
 
-    def into_proof_phase(self):
+    def into_proof_phase(self) -> None:
         self.phase = ExecutionPhase.Proof
 
     def evar(self, id: int) -> Pattern:
@@ -125,7 +123,7 @@ class BasicInterpreter:
 
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
-        raise NotImplementedError
+        raise NotImplementedError(f'{type(p)}')
 
     def patterns(self, ps: tuple[Pattern, ...]) -> tuple[Pattern, ...]:
         return tuple(self.pattern(p) for p in ps)
@@ -200,7 +198,10 @@ class StatefulInterpreter(BasicInterpreter):
     memory: list[Pattern | Proved]
 
     def __init__(
-        self, phase: ExecutionPhase, claims: list[Claim] | None = None, seed: list[Pattern | Proved] | None = None,
+        self,
+        phase: ExecutionPhase,
+        claims: list[Claim] | None = None,
+        seed: list[Pattern | Proved] | None = None,
     ) -> None:
         super().__init__(phase=phase)
         self.stack = []
@@ -210,11 +211,11 @@ class StatefulInterpreter(BasicInterpreter):
         if phase == ExecutionPhase.Proof:
             self.memory = seed if seed else []
 
-    def into_claim_phase(self):
+    def into_claim_phase(self) -> None:
         self.stack = []
         super().into_claim_phase()
 
-    def into_proof_phase(self):
+    def into_proof_phase(self) -> None:
         self.stack = []
         super().into_proof_phase()
 
@@ -384,15 +385,6 @@ class SerializingInterpreter(StatefulInterpreter):
         super().__init__(phase=phase, claims=claims, seed=seed)
         self.out = out
 
-    def advance(self, claims: list[Claim] | None = None) -> None:
-        # Always clear the stack
-        self.out = []
-        match self.phase:
-            case ExecutionPhase.Gamma:
-                assert claims is not None
-                self.claims = claims   
-        super().advance(claims=claims)
-
     def evar(self, id: int) -> Pattern:
         ret = super().evar(id)
         self.out.write(bytes([Instruction.EVar, id]))
@@ -518,7 +510,11 @@ class SerializingInterpreter(StatefulInterpreter):
 
 class PrettyPrintingInterpreter(StatefulInterpreter):
     def __init__(
-        self, phase: ExecutionPhase, out: TextIO, claims: list[Claim] | None = None, seed: list[Pattern | Proved] | None = None
+        self,
+        phase: ExecutionPhase,
+        out: TextIO,
+        claims: list[Claim] | None = None,
+        seed: list[Pattern | Proved] | None = None,
     ) -> None:
         super().__init__(phase=phase, claims=claims, seed=seed)
         self.out = out
@@ -832,83 +828,82 @@ class ProofExp:
         self.interpreter.publish_claim(pattern)
         return pattern
 
-    @classmethod
-    def serialize_gamma(cls, output: Path) -> None:
-        with open(output, 'wb') as out:
-            claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out))
-            for axiom in cls.axioms():
-                proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
+    # @classmethod
+    # def serialize_gamma(cls, output: Path) -> None:
+    #     with open(output, 'wb') as out:
+    #         claims = list(map(Claim, cls.claims()))
+    #         proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out))
+    #         for axiom in cls.axioms():
+    #             proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
 
-    @classmethod
-    def serialize_claims(cls, output: Path) -> None:
-        with open(output, 'wb') as out:
-            claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out))
-            for claim_expr in reversed(cls.claims()):
-                proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
+    # @classmethod
+    # def serialize_claims(cls, output: Path) -> None:
+    #     with open(output, 'wb') as out:
+    #         claims = list(map(Claim, cls.claims()))
+    #         proof_exp = cls(SerializingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out))
+    #         for claim_expr in reversed(cls.claims()):
+    #             proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
 
-    @classmethod
-    def serialize_proofs(cls, output: Path) -> None:
-        with open(output, 'wb') as out:
-            claims = list(map(Claim, cls.claims()))
-            proof_exp = cls(
-                SerializingInterpreter(phase=ExecutionPhase.Proof, claims=claims, axioms=cls.axioms(), out=out)
-            )
-            for proof_expr in proof_exp.proof_expressions():
-                proof_exp.publish_proof(proof_expr())
+    # @classmethod
+    # def serialize_proofs(cls, output: Path) -> None:
+    #     with open(output, 'wb') as out:
+    #         claims = list(map(Claim, cls.claims()))
+    #         proof_exp = cls(
+    #             SerializingInterpreter(phase=ExecutionPhase.Proof, claims=claims, axioms=cls.axioms(), out=out)
+    #         )
+    #         for proof_expr in proof_exp.proof_expressions():
+    #             proof_exp.publish_proof(proof_expr())
 
-    @classmethod
-    def pretty_print_gamma(cls, output: Path) -> None:
-        with open(output, 'w') as out:
-            claims = list(map(Claim, cls.claims()))
-            interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out)
-            proof_exp = cls(interpreter)
-            # TODO: A bit ugly
-            interpreter.plug_in_notation(proof_exp.notation)
-            for axiom in cls.axioms():
-                proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
+    # @classmethod
+    # def pretty_print_gamma(cls, output: Path) -> None:
+    #     with open(output, 'w') as out:
+    #         claims = list(map(Claim, cls.claims()))
+    #         interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, claims=claims, out=out)
+    #         proof_exp = cls(interpreter)
+    #         # TODO: A bit ugly
+    #         interpreter.plug_in_notation(proof_exp.notation)
+    #         for axiom in cls.axioms():
+    #             proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
 
-    @classmethod
-    def pretty_print_claims(cls, output: Path) -> None:
-        with open(output, 'w') as out:
-            claims = list(map(Claim, cls.claims()))
-            interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out)
-            proof_exp = cls(interpreter)
-            # TODO: A bit ugly
-            interpreter.plug_in_notation(proof_exp.notation)
-            for claim_expr in reversed(cls.claims()):
-                proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
+    # @classmethod
+    # def pretty_print_claims(cls, output: Path) -> None:
+    #     with open(output, 'w') as out:
+    #         claims = list(map(Claim, cls.claims()))
+    #         interpreter = PrettyPrintingInterpreter(phase=ExecutionPhase.Claim, claims=claims, out=out)
+    #         proof_exp = cls(interpreter)
+    #         # TODO: A bit ugly
+    #         interpreter.plug_in_notation(proof_exp.notation)
+    #         for claim_expr in reversed(cls.claims()):
+    #             proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
 
-    @classmethod
-    def pretty_print_proofs(cls, output: Path) -> None:
-        with open(output, 'w') as out:
-            claims = list(map(Claim, cls.claims()))
-            interpreter = PrettyPrintingInterpreter(
-                phase=ExecutionPhase.Proof, claims=claims, axioms=cls.axioms(), out=out
-            )
-            proof_exp = cls(interpreter)
-            # TODO: A bit ugly
-            interpreter.plug_in_notation(proof_exp.notation)
-            for proof_expr in proof_exp.proof_expressions():
-                proof_exp.publish_proof(proof_expr())
+    # @classmethod
+    # def pretty_print_proofs(cls, output: Path) -> None:
+    #     with open(output, 'w') as out:
+    #         claims = list(map(Claim, cls.claims()))
+    #         interpreter = PrettyPrintingInterpreter(
+    #             phase=ExecutionPhase.Proof, claims=claims, axioms=cls.axioms(), out=out
+    #         )
+    #         proof_exp = cls(interpreter)
+    #         # TODO: A bit ugly
+    #         interpreter.plug_in_notation(proof_exp.notation)
+    #         for proof_expr in proof_exp.proof_expressions():
+    #             proof_exp.publish_proof(proof_expr())
 
-    def simulation(self) -> None:
+    def simulation(self) -> Generator:
         assert self.interpreter.phase == ExecutionPhase.Gamma
 
         # Gamma phase
         for axiom in self.axioms():
             self.publish_axiom(self.interpreter.pattern(axiom))
-        
+
         # Claim phase
-        self.interpeter.into_claim_phase()
+        self.interpreter.into_claim_phase()
         yield self.interpreter
 
-        claims = list(map(Claim, self.claims()))
-        for claim in claims:
+        for claim in reversed(self.claims()):
             self.publish_claim(self.interpreter.pattern(claim))
 
-        #Proof phase
+        # Proof phase
         self.interpreter.into_proof_phase()
         yield self.interpreter
 
@@ -918,8 +913,12 @@ class ProofExp:
         yield self.interpreter
 
     @classmethod
-    def serialize(cls, file_names: list[str]):
-        prover = cls(SerializingInterpreter(phase=ExecutionPhase.Gamma, out=open(file_names[0], 'wb'), claims=cls.claims()))
+    def serialize(cls, file_names: list[str]) -> None:
+        prover = cls(
+            SerializingInterpreter(
+                phase=ExecutionPhase.Gamma, out=open(file_names[0], 'wb'), claims=list(map(Claim, cls.claims()))
+            )
+        )
         prover_sim = prover.simulation()
 
         # Execute gamma phase and change output file
@@ -933,9 +932,13 @@ class ProofExp:
         # Execute proof phase
         _ = next(prover_sim)
 
-    @classmethod    
-    def prettyprint(cls, file_names: list[str]):
-        prover = cls(PrettyPrintingInterpreter(phase=ExecutionPhase.Gamma, out=open(file_names[0], 'w'), claims=cls.claims()))
+    @classmethod
+    def prettyprint(cls, file_names: list[str]) -> None:
+        prover = cls(
+            PrettyPrintingInterpreter(
+                phase=ExecutionPhase.Gamma, out=open(file_names[0], 'w'), claims=list(map(Claim, cls.claims()))
+            )
+        )
         prover_sim = prover.simulation()
 
         # Execute gamma phase and change output file
@@ -948,12 +951,9 @@ class ProofExp:
 
         # Execute proof phase
         _ = next(prover_sim)
-        
-
 
     @classmethod
     def main(cls, argv: list[str]) -> None:
-
         exe, *argv = argv
         usage = f'Usage:\n\n python3 {exe} (binary|pretty) (claim|proof) output-file\n python3 {exe} --help\n\n'
         examples = (
@@ -969,7 +969,7 @@ class ProofExp:
         assert len(argv) == 3, usage
         format, mode, output_path = argv
 
-        file_names = ['dev/null', 'dev/null', 'dev/null']
+        file_names = ['/dev/null', '/dev/null', '/dev/null']
 
         match mode:
             case 'gamma':
@@ -980,7 +980,7 @@ class ProofExp:
                 file_names[2] = output_path
 
         match format:
-            case 'pretty': 
+            case 'pretty':
                 cls.prettyprint(file_names)
             case 'binary':
                 cls.serialize(file_names)

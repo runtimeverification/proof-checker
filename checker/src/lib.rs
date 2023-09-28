@@ -937,7 +937,7 @@ pub fn verify<'a>(
         ExecutionPhase::Claim,
     );
     memory.extend(axioms);
-    
+
     execute_instructions(
         proof_next_byte,
         &mut vec![], // stack is empty initially.
