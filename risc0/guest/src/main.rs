@@ -22,7 +22,7 @@ pub fn main() {
     let claims_buffer = &mut Vec::new();
     let _ = env::FdReader::new(11).read_to_end(claims_buffer).unwrap();
 
-    let proof_buffer: &mut Vec<u8> = &mut Vec::new();
+    let proof_buffer = &mut Vec::new();
     let _ = env::stdin().read_to_end(proof_buffer).unwrap();
 
     end = env::get_cycle_count();
@@ -32,7 +32,7 @@ pub fn main() {
 
     begin = env::get_cycle_count();
 
-    verify(gamma_buffer, claims_buffer, proof_buffer);
+    verify(&*gamma_buffer, &*claims_buffer, &*proof_buffer);
 
     end = env::get_cycle_count();
 
