@@ -403,7 +403,7 @@ class CountingInterpreter(StatefulInterpreter):
                 suitable = [
                     pattern
                     for pattern in self._pattern_usage
-                    if self._pattern_usage[pattern].uses > 1 and self._pattern_usage[pattern].complexity > 1
+                    if self._pattern_usage[pattern].uses > 1 and pattern not in self._suggested_for_memoization
                 ]
                 suitable.sort(key=lambda pattern: self._pattern_usage[pattern].complexity_score, reverse=True)
                 return suitable
