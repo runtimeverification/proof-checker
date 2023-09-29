@@ -1,8 +1,9 @@
+#![deny(warnings)]
 use checker::verify;
 use std::fs;
 
 pub fn main() {
-    let (mut gamma_reader, mut claims_reader, mut proof_reader) = match std::env::args().len() {
+    let (gamma_reader, claims_reader, proof_reader) = match std::env::args().len() {
         3 => (
             fs::read(std::env::args().nth(1).unwrap()).unwrap(),
             fs::read("/dev/null").unwrap(),
