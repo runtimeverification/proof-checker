@@ -235,7 +235,7 @@ def main() -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
-        def execute_proofs_phase(self):
+        def execute_proofs_phase(self) -> None:
             assert self.interpreter.phase == p.ExecutionPhase.Proof
             exec_proof(converter, args.target, self)
 

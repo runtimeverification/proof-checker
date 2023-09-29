@@ -983,26 +983,31 @@ pub fn verify<'a>(
 ) {
     let mut claims: Claims = Vec::with_capacity(2);
     let mut memory: Memory = Vec::with_capacity(256);
+    let mut stack = Vec::with_capacity(256);
 
     execute_instructions(
         gamma_buffer,
-        &mut Vec::with_capacity(32),  // stack is empty initially.
-        &mut Vec::with_capacity(256), // memory is empty initially.
-        &mut Vec::with_capacity(0),   // claims is unused in this phase.
+        &mut stack,  // stack is empty initially.
+        &mut memory, // memory is empty initially.
+        &mut claims, // claims is unused in this phase.
         ExecutionPhase::Gamma,
     );
 
+    stack.clear();
+
     execute_instructions(
         claims_buffer,
-        &mut vec![], // stack is empty initially.
+        &mut stack,  // stack is empty initially.
         &mut memory, // reuse memory
         &mut claims, // claims populated in this phase
         ExecutionPhase::Claim,
     );
 
+    stack.clear();
+
     execute_instructions(
         proof_buffer,
-        &mut vec![], // stack is empty initially.
+        &mut stack,  // stack is empty initially.
         &mut memory, // axioms are used as initial memory
         &mut claims, // claims are consumed by publish instruction
         ExecutionPhase::Proof,

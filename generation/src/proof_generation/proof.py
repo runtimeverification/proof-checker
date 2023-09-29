@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, BinaryIO, TextIO
+from typing import BinaryIO, TextIO
 
 from proof_generation.instruction import Instruction
 from proof_generation.pattern import (
@@ -20,8 +20,8 @@ from proof_generation.pattern import (
     Symbol,
 )
 
-if TYPE_CHECKING:
-    from collections.abc import Generator
+# if TYPE_CHECKING:
+#     from collections.abc import Generator
 
 
 class ExecutionPhase(Enum):
@@ -201,15 +201,11 @@ class StatefulInterpreter(BasicInterpreter):
         self,
         phase: ExecutionPhase,
         claims: list[Claim] | None = None,
-        seed: list[Pattern | Proved] | None = None,
     ) -> None:
         super().__init__(phase=phase)
         self.stack = []
         self.memory = []
         self.claims = claims if claims else []
-
-        if phase == ExecutionPhase.Proof:
-            self.memory = seed if seed else []
 
     def into_claim_phase(self) -> None:
         self.stack = []
@@ -379,9 +375,8 @@ class SerializingInterpreter(StatefulInterpreter):
         phase: ExecutionPhase,
         out: BinaryIO,
         claims: list[Claim] | None = None,
-        seed: list[Pattern | Proved] | None = None,
     ) -> None:
-        super().__init__(phase=phase, claims=claims, seed=seed)
+        super().__init__(phase=phase, claims=claims)
         self.out = out
 
     def evar(self, id: int) -> Pattern:
@@ -513,9 +508,8 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         phase: ExecutionPhase,
         out: TextIO,
         claims: list[Claim] | None = None,
-        seed: list[Pattern | Proved] | None = None,
     ) -> None:
-        super().__init__(phase=phase, claims=claims, seed=seed)
+        super().__init__(phase=phase, claims=claims)
         self.out = out
         self._notation: dict[str, Pattern] = {}
 
@@ -827,30 +821,38 @@ class ProofExp:
         self.interpreter.publish_claim(pattern)
         return pattern
 
-    def execute_gamma_phase(self):
+    def execute_gamma_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Gamma
         for axiom in self.axioms():
             self.publish_axiom(self.interpreter.pattern(axiom))
         self.interpreter.into_claim_phase()
 
-    def execute_claims_phase(self):
+    def execute_claims_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self.claims()):
             self.publish_claim(self.interpreter.pattern(claim))
         self.interpreter.into_proof_phase()
 
-    def execute_proofs_phase(self):
+    def execute_proofs_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Proof
         for proof_expr in self.proof_expressions():
             self.publish_proof(proof_expr())
 
+    def execute_full(self) -> None:
+        assert self.interpreter.phase == ExecutionPhase.Gamma
+        self.execute_gamma_phase()
+        self.execute_claims_phase()
+        self.execute_proofs_phase()
+
     @classmethod
     def serialize(cls, file_names: list[str]) -> None:
         prover = cls(
-            SerializingInterpreter(
+            interpreter=SerializingInterpreter(
                 phase=ExecutionPhase.Gamma, out=open(file_names[0], 'wb'), claims=list(map(Claim, cls.claims()))
             )
         )
+
+        assert isinstance(prover.interpreter, SerializingInterpreter)
 
         prover.execute_gamma_phase()
         # Execute gamma phase and change output file
@@ -873,6 +875,8 @@ class ProofExp:
                 phase=ExecutionPhase.Gamma, out=open(file_names[0], 'w'), claims=list(map(Claim, cls.claims()))
             )
         )
+
+        assert isinstance(prover.interpreter, PrettyPrintingInterpreter)
 
         prover.execute_gamma_phase()
         # Execute gamma phase and change output file

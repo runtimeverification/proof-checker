@@ -13,7 +13,9 @@ def test_prove_transitivity() -> None:
 
 
 def test_prove_transitivity_via_theory() -> None:
-    th = SmallTheory(StatefulInterpreter(phase=ExecutionPhase.Proof, seed=list(map(Proved, SmallTheory.axioms()))))
+    th = SmallTheory(StatefulInterpreter(phase=ExecutionPhase.Gamma))
+    th.execute_gamma_phase()
+    th.execute_claims_phase()
     phi0_implies_phi2 = th.claims()[0]
     assert th.sym0_implies_sym2_proof().conclusion == phi0_implies_phi2
 
