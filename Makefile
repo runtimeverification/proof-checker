@@ -6,10 +6,13 @@ FORCE:
 clean-proofs:
 	rm -rf .build/proofs
 
+clean-translated-proofs:
+	rm -rf .build/proofs/translated
+
 update-snapshots:
 	cp -rT .build/proofs proofs
 
-.PHONY: clean-proofs update-snapshots
+.PHONY: clean-proofs update-snapshots clean-translated-proofs
 
 # Syntax and formatting checks
 # ============================
@@ -122,6 +125,9 @@ TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${TRANSLATED_PROOFS
 proofs/translated/%.ml-proof.verify: proofs/translated/%.ml-proof
 	cargo run --bin checker proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
 
+test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
+.PHONY: test-proof-verify-translated
+
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
@@ -153,3 +159,13 @@ proofs/%.ml-proof.zk: proofs/%.ml-proof
 	cargo run --release --bin host proofs/$*.ml-gamma proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
+
+# Run checker on converted files in the ZK mode
+TRANSLATED_PROOF_ZK_TARGETS=$(addsuffix .zk-translated,${TRANSLATED_PROOFS})
+proofs/translated/%.ml-proof.zk-translated: proofs/translated/%.ml-proof
+	cargo run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
+
+test-translated-zk: ${TRANSLATED_PROOF_ZK_TARGETS}
+
+# Clean translated proofs, translate them, then run checker and then run the ZK checker
+test-translated-zk-all: clean-translated-proofs test-proof-verify-translated test-translated-zk
