@@ -6,10 +6,13 @@ FORCE:
 clean-proofs:
 	rm -rf .build/proofs
 
+clean-translated-proofs:
+	rm -rf .build/proofs/translated
+
 update-snapshots:
 	cp -rT .build/proofs proofs
 
-.PHONY: clean-proofs update-snapshots
+.PHONY: clean-proofs update-snapshots clean-translated-proofs
 
 # Syntax and formatting checks
 # ============================
@@ -49,8 +52,25 @@ test-unit-python:
 test-system: test-proof-gen test-proof-translate test-proof-verify
 .PHONY: test-system test-proof-gen test-proof-verify test-zk
 
-PROOFS=$(wildcard proofs/*.ml-proof)
-TRANSLATED_PROOFS=$(wildcard translated-proofs/*.ml-proof)
+PROOFS_FILES := $(wildcard proofs/*)
+PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
+TRANSLATED_PROOFS=$(wildcard proofs/translated/*.ml-proof)
+
+
+# Proof conversion checking
+# -------------------------
+
+.build/proofs/translated/%.ml-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
+
+PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
+proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
+	${BIN_DIFF} "proofs/translated/$*.ml-gamma" ".build/proofs/translated/$*/$*.ml-gamma"
+	${BIN_DIFF} "proofs/translated/$*.ml-claim" ".build/proofs/translated/$*/$*.ml-claim"
+	${BIN_DIFF} "proofs/translated/$*.ml-proof" ".build/proofs/translated/$*/$*.ml-proof"
+
+test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
 
 # Proof generation
@@ -102,8 +122,11 @@ proofs/%.ml-proof.verify: proofs/%.ml-proof
 	cargo run --release --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
 
 TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${TRANSLATED_PROOFS})
-translated-proofs/%.ml-proof.verify: translated-proofs/%.ml-proof
-	cargo run --bin checker translated-proofs/$*.ml-gamma translated-proofs/$*.ml-claim $<
+proofs/translated/%.ml-proof.verify: proofs/translated/%.ml-proof
+	cargo run --bin checker proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
+
+test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
+.PHONY: test-proof-verify-translated
 
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
@@ -128,39 +151,6 @@ proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .bu
 
 profile: ${PROFILING_TARGETS}
 
-
-# Proof conversion checking
-# -------------------------
-
-.build/translated-proofs/%.ml-proof: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm .build/translated-proofs/$* goal
-
-PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
-translated-proofs/%.ml-proof.translate: .build/translated-proofs/%.ml-proof
-	${BIN_DIFF} "translated-proofs/$*.ml-gamma" ".build/translated-proofs/$*/$*.ml-gamma"
-	${BIN_DIFF} "translated-proofs/$*.ml-claim" ".build/translated-proofs/$*/$*.ml-claim"
-	${BIN_DIFF} "translated-proofs/$*.ml-proof" ".build/translated-proofs/$*/$*.ml-proof"
-
-test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
-
-CONV_DIR=.build/proofs/conv
-SLICES=$(wildcard translated-proofs/*.ml-proof)
-SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
-
-${CONV_DIR}/%/%.ml-proof: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) goal
-
-translated-proofs/%.ml-proof.conv: ${CONV_DIR}/%/%.ml-proof
-	cargo run --release --bin checker ${CONV_DIR}/$*/$*.ml-gamma ${CONV_DIR}/$*/$*.ml-claim ${CONV_DIR}/$*/$*.ml-proof
-
-clean-translated-proofs:
-	rm -rf ${CONV_DIR}
-
-verify-mm-conv: clean-translated-proofs ${SLICE_CONV_TARGETS}
-
-
 # Risc0
 # -----
 
@@ -169,3 +159,39 @@ proofs/%.ml-proof.zk: proofs/%.ml-proof
 	cargo run --release --bin host proofs/$*.ml-gamma proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
+
+# Run checker on converted files in the ZK mode
+TRANSLATED_PROOF_ZK_TARGETS=$(addsuffix .zk-translated,${TRANSLATED_PROOFS})
+proofs/translated/%.ml-proof.zk-translated: proofs/translated/%.ml-proof
+	cargo run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
+
+test-translated-zk: ${TRANSLATED_PROOF_ZK_TARGETS}
+
+# Clean translated proofs, translate them, then run checker and then run the ZK checker
+test-translated-zk-all: clean-translated-proofs test-proof-verify-translated test-translated-zk
+
+# Output file for one-liner
+OUTPUT_FILE=zk-report.txt
+
+# Reset the output file
+reset-output:
+	@rm -f $(OUTPUT_FILE)
+	@touch $(OUTPUT_FILE)
+
+# Run host and collect the output
+proofs/translated/%.ml-proof.zk-translated-ol: proofs/translated/%.ml-proof reset-output
+	@echo "Processing: $*.ml-proof" >> $(OUTPUT_FILE)
+	@{ \
+	output=$$(cargo run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<) ; \
+	echo "$$output" | grep -E "Reading files:|Verifying the theorem:|Overall \(environment setup, reading files, and verification\):|Running execution \+ ZK certficate generation \+ verification took" >> $(OUTPUT_FILE) ; \
+	echo "$* .ml-gamma proofs/translated/$* .ml-claim $<" >> $(OUTPUT_FILE) ; \
+	echo "$$output" | grep -E "Reading files:|Verifying the theorem:|Overall \(environment setup, reading files, and verification\):|Running execution \+ ZK certficate generation \+ verification took" ; \
+	echo "" >> $(OUTPUT_FILE) ; \
+	} ; true
+
+TRANSLATED_PROOF_ZK_TARGETS_OL=$(addsuffix .zk-translated-ol,${TRANSLATED_PROOFS})
+test-translated-zk-all-ol: ${TRANSLATED_PROOF_ZK_TARGETS_OL}
+	@cat $(OUTPUT_FILE)
+
+# New combined target 
+test-translated-report: clean-translated-proofs test-proof-verify-translated test-translated-zk-all-ol
