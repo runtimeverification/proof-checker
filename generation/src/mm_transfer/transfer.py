@@ -235,27 +235,15 @@ def main() -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
-        @staticmethod
-        def proof_expressions() -> list[p.ProvedExpression]:
-            return []
+        def execute_proofs_phase(self):
+            assert self.interpreter.phase == p.ExecutionPhase.Proof
+            exec_proof(converter, args.target, self)
 
     module = os.path.splitext(os.path.basename(args.input))[0]
 
-    # Export axioms and claims
     TranslatedProofSkeleton.main(['', 'binary', 'gamma', str(output_dir / f'{module}.ml-gamma')])
     TranslatedProofSkeleton.main(['', 'binary', 'claim', str(output_dir / f'{module}.ml-claim')])
-
-    # Export proof
-    with open(output_dir / f'{module}.ml-proof', 'wb') as out:
-        proofexp = TranslatedProofSkeleton(
-            p.SerializingInterpreter(
-                p.ExecutionPhase.Proof,
-                out,
-                [p.Claim(claim) for claim in extracted_claims],
-                seed=list(map(p.Proved, extracted_axioms)),
-            )
-        )
-        exec_proof(converter, args.target, proofexp)
+    TranslatedProofSkeleton.main(['', 'binary', 'proof', str(output_dir / f'{module}.ml-proof')])
 
 
 if __name__ == '__main__':
