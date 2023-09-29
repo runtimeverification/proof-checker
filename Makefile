@@ -169,3 +169,29 @@ test-translated-zk: ${TRANSLATED_PROOF_ZK_TARGETS}
 
 # Clean translated proofs, translate them, then run checker and then run the ZK checker
 test-translated-zk-all: clean-translated-proofs test-proof-verify-translated test-translated-zk
+
+# Output file for one-liner
+OUTPUT_FILE=zk-report.txt
+
+# Reset the output file
+reset-output:
+	@rm -f $(OUTPUT_FILE)
+	@touch $(OUTPUT_FILE)
+
+# Run host and collect the output
+proofs/translated/%.ml-proof.zk-translated-ol: proofs/translated/%.ml-proof reset-output
+	@echo "Processing: $*.ml-proof" >> $(OUTPUT_FILE)
+	@{ \
+	output=$$(cargo run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<) ; \
+	echo "$$output" | grep -E "Reading files:|Verifying the theorem:|Overall \(environment setup, reading files, and verification\):|Running execution \+ ZK certficate generation \+ verification took" >> $(OUTPUT_FILE) ; \
+	echo "$* .ml-gamma proofs/translated/$* .ml-claim $<" >> $(OUTPUT_FILE) ; \
+	echo "$$output" | grep -E "Reading files:|Verifying the theorem:|Overall \(environment setup, reading files, and verification\):|Running execution \+ ZK certficate generation \+ verification took" ; \
+	echo "" >> $(OUTPUT_FILE) ; \
+	} ; true
+
+TRANSLATED_PROOF_ZK_TARGETS_OL=$(addsuffix .zk-translated-ol,${TRANSLATED_PROOFS})
+test-translated-zk-all-ol: ${TRANSLATED_PROOF_ZK_TARGETS_OL}
+	@cat $(OUTPUT_FILE)
+
+# New combined target 
+test-translated-report: clean-translated-proofs test-proof-verify-translated test-translated-zk-all-ol
