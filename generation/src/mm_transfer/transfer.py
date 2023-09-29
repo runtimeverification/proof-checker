@@ -242,9 +242,11 @@ def main() -> None:
     claims = list(map(p.Claim, TranslatedProofSkeleton.claims()))
     counting_interpreter = p.CountingInterpreter(phase=p.ExecutionPhase.Gamma, claims=claims)
     proof_exp = TranslatedProofSkeleton(counting_interpreter)
-    for axiom in TranslatedProofSkeleton.axioms():  # type: ignore
-        assert isinstance(axiom, p.Pattern)
-        proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
+
+    axiom_patterns = TranslatedProofSkeleton.axioms()
+    for pattern in axiom_patterns:
+        assert isinstance(pattern, p.Pattern)
+        proof_exp.publish_axiom(proof_exp.interpreter.pattern(pattern))
     counting_interpreter.finalize()
 
     # Actual export
@@ -254,9 +256,9 @@ def main() -> None:
                 phase=p.ExecutionPhase.Gamma, claims=claims, out=out, counting_interpreter=counting_interpreter
             )
         )
-        for axiom in TranslatedProofSkeleton.axioms():  # type: ignore
-            assert isinstance(axiom, p.Pattern)
-            proof_exp.publish_axiom(proof_exp.interpreter.pattern(axiom))
+        for pattern in axiom_patterns:
+            assert isinstance(pattern, p.Pattern)
+            proof_exp.publish_axiom(proof_exp.interpreter.pattern(pattern))
 
     # Export claims
     # Dry run
