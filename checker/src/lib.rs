@@ -666,7 +666,6 @@ fn execute_instructions<'a>(
     stack: &mut Stack,
     memory: &mut Memory,
     claims: &mut Claims,
-    axioms: &mut Memory,
     phase: ExecutionPhase,
 ) {
     // Get an iterator for the input buffer
@@ -954,7 +953,7 @@ fn execute_instructions<'a>(
                 }
             }
             Instruction::Publish => match phase {
-                ExecutionPhase::Gamma => axioms.push(Entry::Proved(pop_stack_pattern(stack))),
+                ExecutionPhase::Gamma => memory.push(Entry::Proved(pop_stack_pattern(stack))),
                 ExecutionPhase::Claim => {
                     let claim = pop_stack_pattern(stack);
                     claims.push(claim)
@@ -983,29 +982,34 @@ pub fn verify<'a>(
     proof_buffer: &Vec<InstByte>,
 ) {
     let mut claims: Claims = Vec::with_capacity(2);
-    let mut axioms: Memory = Vec::with_capacity(256);
+    let mut memory: Memory = Vec::with_capacity(256);
+    let mut stack = Vec::with_capacity(256);
+
     execute_instructions(
         gamma_buffer,
-        &mut Vec::with_capacity(32),  // stack is empty initially.
-        &mut Vec::with_capacity(256), // memory is empty initially.
-        &mut Vec::with_capacity(0),   // claims is unused in this phase.
-        &mut axioms,                  // populate axioms
+        &mut stack,  // stack is empty initially.
+        &mut memory, // memory is empty initially.
+        &mut claims, // claims is unused in this phase.
         ExecutionPhase::Gamma,
     );
+
+    stack.clear();
+
     execute_instructions(
         claims_buffer,
-        &mut Vec::with_capacity(32), // stack is empty initially.
-        &mut Vec::with_capacity(0), // memory is empty initially, though we may think of reusing for sharing notation between phases.
-        &mut claims,                // claims populated in this phase
-        &mut Vec::with_capacity(0), // axioms is unused in this phase.
+        &mut stack,  // stack is empty initially.
+        &mut memory, // reuse memory
+        &mut claims, // claims populated in this phase
         ExecutionPhase::Claim,
     );
+
+    stack.clear();
+
     execute_instructions(
         proof_buffer,
-        &mut Vec::with_capacity(32), // stack is empty initially.
-        &mut axioms,                 // axioms are used as initial memory
-        &mut claims,                 // claims are consumed by publish instruction
-        &mut Vec::with_capacity(0),  // axioms is unused in this phase.
+        &mut stack,  // stack is empty initially.
+        &mut memory, // axioms are used as initial memory
+        &mut claims, // claims are consumed by publish instruction
         ExecutionPhase::Proof,
     );
 
@@ -1580,10 +1584,9 @@ fn execute_vector(
     stack: &mut Stack,
     memory: &mut Memory,
     claims: &mut Claims,
-    axioms: &mut Memory,
     phase: ExecutionPhase,
 ) {
-    return execute_instructions(instrs, stack, memory, claims, axioms, phase);
+    return execute_instructions(instrs, stack, memory, claims, phase);
 }
 
 #[test]
@@ -1593,53 +1596,44 @@ fn test_publish() {
     let mut stack = vec![Term::Pattern(symbol(0))];
     let mut memory = vec![];
     let mut claims = vec![];
-    let mut axioms = vec![];
     execute_vector(
         &proof,
         &mut stack,
         &mut memory,
         &mut claims,
-        &mut axioms,
         ExecutionPhase::Gamma,
     );
     assert_eq!(stack, vec![]);
     assert_eq!(claims, vec![]);
-    assert_eq!(memory, vec![]);
-    assert_eq!(axioms, vec![Entry::Proved(symbol(0))]);
+    assert_eq!(memory, vec![Entry::Proved(symbol(0))]);
 
     let mut stack = vec![Term::Pattern(symbol(0))];
     let mut memory = vec![];
     let mut claims = vec![];
-    let mut axioms = vec![];
     execute_vector(
         &proof,
         &mut stack,
         &mut memory,
         &mut claims,
-        &mut axioms,
         ExecutionPhase::Claim,
     );
     assert_eq!(stack, vec![]);
     assert_eq!(memory, vec![]);
     assert_eq!(claims, vec![symbol(0)]);
-    assert_eq!(axioms, vec![]);
 
     let mut stack = vec![Term::Proved(symbol(0))];
     let mut memory = vec![];
     let mut claims = vec![symbol(0)];
-    let mut axioms = vec![];
     execute_vector(
         &proof,
         &mut stack,
         &mut memory,
         &mut claims,
-        &mut axioms,
         ExecutionPhase::Proof,
     );
     assert_eq!(stack, vec![]);
     assert_eq!(memory, vec![]);
     assert_eq!(claims, vec![]);
-    assert_eq!(axioms, vec![]);
 }
 
 #[test]
@@ -1656,7 +1650,6 @@ fn test_construct_phi_implies_phi() {
     execute_vector(
         &proof,
         &mut stack,
-        &mut vec![],
         &mut vec![],
         &mut vec![],
         ExecutionPhase::Proof,
@@ -1700,7 +1693,6 @@ fn test_construct_phi_implies_phi_with_constraints() {
         execute_vector(
             &proof,
             &mut stack,
-            &mut vec![],
             &mut vec![],
             &mut vec![],
             ExecutionPhase::Proof,
@@ -1760,7 +1752,6 @@ fn test_phi_implies_phi_impl() {
         &mut stack,
         &mut vec![],
         &mut vec![],
-        &mut vec![],
         ExecutionPhase::Proof,
     );
     let phi0 = metavar_unconstrained(0);
@@ -1782,13 +1773,11 @@ fn test_universal_quantification() {
     let mut stack = vec![Term::Proved(implies(symbol(0), symbol(1)))];
     let mut memory = vec![];
     let mut claims = vec![];
-    let mut axioms = vec![];
     execute_vector(
         &proof,
         &mut stack,
         &mut memory,
         &mut claims,
-        &mut axioms,
         ExecutionPhase::Proof,
     );
     assert_eq!(
