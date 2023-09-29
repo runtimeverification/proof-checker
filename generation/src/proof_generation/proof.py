@@ -51,9 +51,11 @@ class BasicInterpreter:
         self.phase = phase
 
     def into_claim_phase(self) -> None:
+        assert self.phase == ExecutionPhase.Gamma
         self.phase = ExecutionPhase.Claim
 
     def into_proof_phase(self) -> None:
+        assert self.phase == ExecutionPhase.Claim
         self.phase = ExecutionPhase.Proof
 
     def evar(self, id: int) -> Pattern:
