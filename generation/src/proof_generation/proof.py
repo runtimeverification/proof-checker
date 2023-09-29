@@ -388,7 +388,7 @@ class CountingInterpreter(StatefulInterpreter):
         assert self.finalized, 'Suggestions cannot be accessed until the interpreter is finalized'
         return set(self._suggested_for_memoization)
 
-    def finalize(self) -> None:
+    def finalize(self) -> set[Pattern]:
         assert not self._finalized
         self._max_allowed_slots -= len(self.memory)
         memoized = [p.conclusion if isinstance(p, Proved) else p for p in self.memory]
@@ -462,6 +462,7 @@ class CountingInterpreter(StatefulInterpreter):
             todo = get_suitable()
 
         self._finalized = True
+        return self.suggested_for_memoization
 
     def evar(self, id: int) -> Pattern:
         ret = super().evar(id)
@@ -739,21 +740,20 @@ class MemoizingInterpreter(SerializingInterpreter):
         out: BinaryIO,
         claims: list[Claim] | None = None,
         axioms: list[Pattern] | None = None,
-        counting_interpreter: CountingInterpreter | None = None,
+        patterns_for_memoization: set[Pattern] | None = None,
     ) -> None:
         super().__init__(phase, out, claims, axioms)
-        self._memoized_patterns: set[Pattern]
-        if counting_interpreter is not None:
-            assert counting_interpreter.finalized
-            self._memoized_patterns = counting_interpreter.suggested_for_memoization
+        self._patterns_for_memoization: set[Pattern]
+        if patterns_for_memoization is None:
+            self._patterns_for_memoization = set()
         else:
-            self._memoized_patterns = set()
+            self._patterns_for_memoization = patterns_for_memoization
 
     def pattern(self, p: Pattern) -> Pattern:
         if p in self.memory:
             self.load(str(p), p)
             return p
-        elif p in self._memoized_patterns:
+        elif p in self._patterns_for_memoization:
             ret = super().pattern(p)
             self.save(repr(p), p)
             return ret

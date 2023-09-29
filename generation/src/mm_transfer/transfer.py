@@ -247,13 +247,13 @@ def main() -> None:
     for pattern in axiom_patterns:
         assert isinstance(pattern, p.Pattern)
         proof_exp.publish_axiom(proof_exp.interpreter.pattern(pattern))
-    counting_interpreter.finalize()
+    memoized_for_gamma = counting_interpreter.finalize()
 
     # Actual export
     with open(output_dir / f'{module}.ml-gamma', 'wb') as out:
         proof_exp = TranslatedProofSkeleton(
             p.MemoizingInterpreter(
-                phase=p.ExecutionPhase.Gamma, claims=claims, out=out, counting_interpreter=counting_interpreter
+                phase=p.ExecutionPhase.Gamma, claims=claims, out=out, patterns_for_memoization=memoized_for_gamma
             )
         )
         for pattern in axiom_patterns:
@@ -268,13 +268,13 @@ def main() -> None:
     for claim_expr in reversed(TranslatedProofSkeleton.claims()):
         assert isinstance(claim_expr, p.Pattern)
         proof_exp.publish_claim(proof_exp.interpreter.pattern(claim_expr))
-    counting_interpreter.finalize()
+    memoized_for_claims = counting_interpreter.finalize()
 
     # Actual export
     with open(output_dir / f'{module}.ml-claim', 'wb') as out:
         proof_exp = TranslatedProofSkeleton(
             p.MemoizingInterpreter(
-                phase=p.ExecutionPhase.Claim, claims=claims, out=out, counting_interpreter=counting_interpreter
+                phase=p.ExecutionPhase.Claim, claims=claims, out=out, patterns_for_memoization=memoized_for_claims
             )
         )
         for claim_expr in reversed(TranslatedProofSkeleton.claims()):
@@ -287,7 +287,7 @@ def main() -> None:
     )
     proofexp = TranslatedProofSkeleton(counting_interpreter)
     exec_proof(converter, args.target, proofexp)
-    counting_interpreter.finalize()
+    memoized_for_proofs = counting_interpreter.finalize()
 
     # Export proof
     with open(output_dir / f'{module}.ml-proof', 'wb') as out:
@@ -297,7 +297,7 @@ def main() -> None:
                 out=out,
                 claims=[p.Claim(claim) for claim in extracted_claims],
                 axioms=extracted_axioms,
-                counting_interpreter=counting_interpreter,
+                patterns_for_memoization=memoized_for_proofs,
             )
         )
         exec_proof(converter, args.target, proofexp)
