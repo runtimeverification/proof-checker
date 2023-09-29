@@ -48,6 +48,7 @@ def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
     # TODO: Extract this code in transfer.py to a function
+
     class TranslatedProofSkeleton(p.ProofExp):
         @staticmethod
         def axioms() -> list[p.Pattern]:
@@ -57,14 +58,21 @@ def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
+        def execute_proofs_phase(self) -> None:
+            assert self.interpreter.phase == p.ExecutionPhase.Proof
+            exec_proof(converter, 'imp-reflexivity', self)
+
     proofexp = TranslatedProofSkeleton(
-        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], extracted_axioms)
+        p.StatefulInterpreter(
+            p.ExecutionPhase.Gamma,
+            [p.Claim(claim) for claim in extracted_claims],
+        )
     )
 
-    exec_proof(converter, 'imp-reflexivity', proofexp)
+    proofexp.execute_full()
 
     assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
-    assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, p.Implication(p.MetaVar(0), p.MetaVar(0)))]
+    assert proofexp.interpreter.stack == [p.Proved(p.Implication(p.MetaVar(0), p.MetaVar(0)))]
 
 
 @pytest.mark.parametrize('db', ['parsed_transfer_database', 'parsed_transfer_compressed_database'])
@@ -92,11 +100,18 @@ def test_exec_transfer_proof(db: str, request: FixtureRequest) -> None:
         def claims() -> list[p.Pattern]:
             return extracted_claims
 
+        def execute_proofs_phase(self) -> None:
+            assert self.interpreter.phase == p.ExecutionPhase.Proof
+            exec_proof(converter, 'goal', self)
+
     proofexp = TranslatedProofSkeleton(
-        p.StatefulInterpreter(p.ExecutionPhase.Proof, [p.Claim(claim) for claim in extracted_claims], extracted_axioms)
+        p.StatefulInterpreter(
+            p.ExecutionPhase.Gamma,
+            [p.Claim(claim) for claim in extracted_claims],
+        )
     )
 
-    exec_proof(converter, 'goal', proofexp)
+    proofexp.execute_full()
 
     assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
-    assert proofexp.interpreter.stack == [p.Proved(proofexp.interpreter, converter.get_lemma_by_name('goal').pattern)]
+    assert proofexp.interpreter.stack == [p.Proved(converter.get_lemma_by_name('goal').pattern)]

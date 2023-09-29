@@ -139,7 +139,7 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).__getattribute__(target)()
+    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).__getattribute__(target)()
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 
@@ -158,9 +158,7 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).interpreter.pattern(
-        target
-    )
+    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).interpreter.pattern(target)
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 
