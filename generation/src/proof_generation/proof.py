@@ -20,10 +20,6 @@ from proof_generation.pattern import (
     Symbol,
 )
 
-# if TYPE_CHECKING:
-#     from collections.abc import Generator
-
-
 class ExecutionPhase(Enum):
     Gamma = 0
     Claim = 1
@@ -32,7 +28,6 @@ class ExecutionPhase(Enum):
 
 @dataclass
 class Proved:
-    # interpreter: BasicInterpreter
     conclusion: Pattern
 
     def assertc(self, pattern: Pattern) -> Proved:
