@@ -20,6 +20,7 @@ from proof_generation.pattern import (
     Symbol,
 )
 
+
 class ExecutionPhase(Enum):
     Gamma = 0
     Claim = 1
