@@ -49,8 +49,25 @@ test-unit-python:
 test-system: test-proof-gen test-proof-translate test-proof-verify
 .PHONY: test-system test-proof-gen test-proof-verify test-zk
 
-PROOFS=$(wildcard proofs/*.ml-proof)
-TRANSLATED_PROOFS=$(wildcard translated-proofs/*.ml-proof)
+PROOFS_FILES := $(wildcard proofs/*)
+PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
+TRANSLATED_PROOFS=$(wildcard proofs/translated/*.ml-proof)
+
+
+# Proof conversion checking
+# -------------------------
+
+.build/proofs/translated/%.ml-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
+
+PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
+proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
+	${BIN_DIFF} "proofs/translated/$*.ml-gamma" ".build/proofs/translated/$*/$*.ml-gamma"
+	${BIN_DIFF} "proofs/translated/$*.ml-claim" ".build/proofs/translated/$*/$*.ml-claim"
+	${BIN_DIFF} "proofs/translated/$*.ml-proof" ".build/proofs/translated/$*/$*.ml-proof"
+
+test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
 
 # Proof generation
@@ -102,8 +119,8 @@ proofs/%.ml-proof.verify: proofs/%.ml-proof
 	cargo run --release --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
 
 TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${TRANSLATED_PROOFS})
-translated-proofs/%.ml-proof.verify: translated-proofs/%.ml-proof
-	cargo run --bin checker translated-proofs/$*.ml-gamma translated-proofs/$*.ml-claim $<
+proofs/translated/%.ml-proof.verify: proofs/translated/%.ml-proof
+	cargo run --bin checker proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
 
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
@@ -128,31 +145,15 @@ proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .bu
 
 profile: ${PROFILING_TARGETS}
 
-
-# Proof conversion checking
-# -------------------------
-
-.build/translated-proofs/%.ml-proof: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm .build/translated-proofs/$* goal
-
-PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
-translated-proofs/%.ml-proof.translate: .build/translated-proofs/%.ml-proof
-	${BIN_DIFF} "translated-proofs/$*.ml-gamma" ".build/translated-proofs/$*/$*.ml-gamma"
-	${BIN_DIFF} "translated-proofs/$*.ml-claim" ".build/translated-proofs/$*/$*.ml-claim"
-	${BIN_DIFF} "translated-proofs/$*.ml-proof" ".build/translated-proofs/$*/$*.ml-proof"
-
-test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
-
 CONV_DIR=.build/proofs/conv
-SLICES=$(wildcard translated-proofs/*.ml-proof)
+SLICES=$(wildcard proofs/translated/*.ml-proof)
 SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
 
 ${CONV_DIR}/%/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) goal
 
-translated-proofs/%.ml-proof.conv: ${CONV_DIR}/%/%.ml-proof
+proofs/translated/%.ml-proof.conv: ${CONV_DIR}/%/%.ml-proof
 	cargo run --release --bin checker ${CONV_DIR}/$*/$*.ml-gamma ${CONV_DIR}/$*/$*.ml-claim ${CONV_DIR}/$*/$*.ml-proof
 
 clean-translated-proofs:
