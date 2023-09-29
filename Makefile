@@ -145,23 +145,6 @@ proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .bu
 
 profile: ${PROFILING_TARGETS}
 
-CONV_DIR=.build/proofs/conv
-SLICES=$(wildcard proofs/translated/*.ml-proof)
-SLICE_CONV_TARGETS=$(addsuffix .conv,${SLICES})
-
-${CONV_DIR}/%/%.ml-proof: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_transfer.transfer" generation/mm-benchmarks/$*.mm $(dir $@) goal
-
-proofs/translated/%.ml-proof.conv: ${CONV_DIR}/%/%.ml-proof
-	cargo run --release --bin checker ${CONV_DIR}/$*/$*.ml-gamma ${CONV_DIR}/$*/$*.ml-claim ${CONV_DIR}/$*/$*.ml-proof
-
-clean-translated-proofs:
-	rm -rf ${CONV_DIR}
-
-verify-mm-conv: clean-translated-proofs ${SLICE_CONV_TARGETS}
-
-
 # Risc0
 # -----
 
