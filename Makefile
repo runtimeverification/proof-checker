@@ -34,12 +34,23 @@ format-python:
 .PHONY: format format-cargo format-python
 
 
+# Setup
+# =====
+
+ARCH := $(shell uname -m)
+ifeq ($(ARCH),arm64)
+    CARGO := cargo +nightly-2023-03-06-aarch64-apple-darwin
+else
+    CARGO := cargo
+endif
+
+
 # Unit testing
 # ============
 
 test-unit: test-unit-python test-unit-cargo
 test-unit-cargo:
-	cargo test
+	$(CARGO) test
 test-unit-python:
 	make -C generation test-unit
 
@@ -119,11 +130,11 @@ test-proof-gen: ${PROOF_GEN_TARGETS}
 
 PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${PROOFS})
 proofs/%.ml-proof.verify: proofs/%.ml-proof
-	cargo run --release --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
+	$(CARGO) run --release --bin checker proofs/$*.ml-gamma proofs/$*.ml-claim $<
 
 TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.verify: proofs/translated/%.ml-proof
-	cargo run --bin checker proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
+	$(CARGO) run --bin checker proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
 
 test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 .PHONY: test-proof-verify-translated
@@ -132,7 +143,7 @@ test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SN
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
 proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
-	cargo run --release --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
+	$(CARGO) run --release --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
@@ -143,7 +154,7 @@ verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 
 PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
 proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
-	cargo build --release --bin profiler
+	$(CARGO)  build --release --bin profiler
 	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 	cp flamegraph.svg $*.svg
 	rm flamegraph.svg
@@ -156,14 +167,14 @@ profile: ${PROFILING_TARGETS}
 
 PROOF_ZK_TARGETS=$(addsuffix .zk,${PROOFS})
 proofs/%.ml-proof.zk: proofs/%.ml-proof
-	cargo run --release --bin host proofs/$*.ml-gamma proofs/$*.ml-claim $^
+	$(CARGO) run --release --bin host proofs/$*.ml-gamma proofs/$*.ml-claim $^
 
 test-zk: ${PROOF_ZK_TARGETS}
 
 # Run checker on converted files in the ZK mode
 TRANSLATED_PROOF_ZK_TARGETS=$(addsuffix .zk-translated,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.zk-translated: proofs/translated/%.ml-proof
-	cargo run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
+	$(CARGO) run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
 
 test-translated-zk: ${TRANSLATED_PROOF_ZK_TARGETS}
 
@@ -182,7 +193,7 @@ reset-output:
 proofs/translated/%.ml-proof.zk-translated-ol: proofs/translated/%.ml-proof reset-output
 	@echo "Processing: $*.ml-proof" >> $(OUTPUT_FILE)
 	@{ \
-	output=$$(cargo run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<) ; \
+	output=$$($(CARGO) run --release --bin host proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<) ; \
 	echo "$$output" | grep -E "Reading files:|Verifying the theorem:|Overall \(environment setup, reading files, and verification\):|Running execution \+ ZK certficate generation \+ verification took" >> $(OUTPUT_FILE) ; \
 	echo "$* .ml-gamma proofs/translated/$* .ml-claim $<" >> $(OUTPUT_FILE) ; \
 	echo "$$output" | grep -E "Reading files:|Verifying the theorem:|Overall \(environment setup, reading files, and verification\):|Running execution \+ ZK certficate generation \+ verification took" ; \
