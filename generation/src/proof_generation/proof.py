@@ -19,6 +19,7 @@ from proof_generation.pattern import (
     SSubst,
     SVar,
     Symbol,
+    Notation
 )
 
 
@@ -121,6 +122,8 @@ class BasicInterpreter:
                 self.patterns(app_ctx_holes)
 
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+            case Notation:
+                return self.pattern(p.pattern)
 
         raise NotImplementedError(f'{type(p)}')
 
@@ -946,6 +949,9 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
+            case Notation:
+                return f'{str(p)}'
+
         return str(p)
 
     def print_stack(self) -> None:

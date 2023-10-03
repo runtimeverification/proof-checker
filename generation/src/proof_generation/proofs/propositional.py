@@ -4,6 +4,7 @@ import sys
 from typing import TYPE_CHECKING
 
 from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
+from proof_generation.pattern import Notation
 
 if TYPE_CHECKING:
     from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
@@ -15,8 +16,21 @@ phi2 = MetaVar(2)
 phi0_implies_phi0 = Implication(phi0, phi0)
 
 
+class Negation(Notation):
+    @staticmethod
+    def label() -> Pattern:
+        return "not"
+
+    @staticmethod
+    def definition() -> Pattern:
+        return Implication(MetaVar(0), bot)
+
+    def __str__(self) -> str:
+        return f'~ {self.delta[0]}'
+
+
 def neg(p: Pattern) -> Pattern:
-    return Implication(p, bot)
+    return Negation({0: p})
 
 
 class Propositional(ProofExp):
