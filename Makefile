@@ -204,5 +204,5 @@ TRANSLATED_PROOF_ZK_TARGETS_OL=$(addsuffix .zk-translated-ol,${TRANSLATED_PROOFS
 test-translated-zk-all-ol: ${TRANSLATED_PROOF_ZK_TARGETS_OL}
 	@cat $(OUTPUT_FILE)
 
-# New combined target 
+# New combined target
 test-translated-report: clean-translated-proofs test-proof-verify-translated test-translated-zk-all-ol
