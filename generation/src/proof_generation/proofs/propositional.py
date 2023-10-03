@@ -26,7 +26,7 @@ class Negation(Notation):
         return Implication(MetaVar(0), bot)
 
     def __str__(self) -> str:
-        return f'~ {self.delta[0]}'
+        return f'~({self.delta[0]})'
 
 
 def neg(p: Pattern) -> Pattern:

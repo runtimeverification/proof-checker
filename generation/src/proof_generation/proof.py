@@ -122,8 +122,11 @@ class BasicInterpreter:
                 self.patterns(app_ctx_holes)
 
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
-            case Notation:
-                return self.pattern(p.pattern)
+
+        if isinstance(p, Notation):
+            self.pattern(p.conclusion())
+
+            return p
 
         raise NotImplementedError(f'{type(p)}')
 
@@ -370,6 +373,7 @@ class StatefulInterpreter(BasicInterpreter):
         super().publish_claim(pattern)
         assert self.stack[-1] == pattern
 
+    # TODO: Add a modified pattern function that will load notation from memory
 
 class CountingInterpreter(StatefulInterpreter):
     Stats = namedtuple('Stats', ['uses', 'complexity_score', 'complexity', 'used_patterns'])
@@ -931,8 +935,8 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Publish')
 
     def pretty_print_pattern(self, p: Pattern) -> str:
-        if p in self.notation:
-            return self.notation[p]
+        if isinstance(p, Notation):
+            return f'{str(p)}'
 
         # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
         # like implication while keeping notations
@@ -949,8 +953,6 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
-            case Notation:
-                return f'{str(p)}'
 
         return str(p)
 

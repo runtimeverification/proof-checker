@@ -211,9 +211,9 @@ class SSubst(Pattern):
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
 
+@dataclass(frozen=True)
 class Notation(Pattern):
-    pattern: Pattern
-    delta: dict[int, Pattern]
+    delta: list[Pattern]
 
     @staticmethod
     def label(self) -> Pattern:
@@ -223,22 +223,23 @@ class Notation(Pattern):
     def definition(self) -> Pattern:
         raise NotImplementedError("This notation has no definition.")
 
-    def __init__(self, delta: dict[int, Pattern]):
-        self.pattern = self.definition().instantiate(delta)
-        self.delta = delta
-
     def __eq__(self, o: object) -> bool:
-        return self.pattern == o
+        return self.conclusion() == o
+
+    def conclusion(self) -> Pattern:
+        return self.definition().instantiate(dict(self.delta))
 
     # By applying any one of pattern transformations, we're leaving the realm of notation
     # as there can be no direct reference to the original notation
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return self.pattern.instantiate(delta)
+        return self.conclusion().instantiate(delta)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return self.pattern.apply_esubst(evar_id, plug)
+        return self.conclusion().apply_esubst(evar_id, plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return self.pattern.apply_ssubst(svar_id, plug)
+        return self.conclusion().apply_ssubst(svar_id, plug)
 
     # Each subclass can implement its own __str__
+    def __str__(self) -> str:
+        return f'{self.label()} {str(delta)}'
