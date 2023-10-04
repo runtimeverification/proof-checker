@@ -143,8 +143,8 @@ test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
 TRANSLATED_PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-translated,${TRANSLATED_PROOFS})
-proofs/translated/%.ml-proof.verify-translated: .build/proofs/translated/%/%.ml-proof
-	$(CARGO) run --release --bin checker .build/translated-proofs/$*/$*.ml-gamma .build/translated-proofs/$*/$*.ml-claim .build/translated-proofs/$*/$*.ml-proof
+proofs/translated/%.ml-proof.verify-translated: .build/proofs/translated/%.ml-proof
+	$(CARGO) run --release --bin checker .build/proofs/translated/$*/$*.ml-gamma .build/proofs/translated/$*/$*.ml-claim .build/proofs/translated/$*/$*.ml-proof
 
 verify-translated: clean-translated-proofs ${TRANSLATED_PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-translated
