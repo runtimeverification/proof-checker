@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
-from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, SSubst
+from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, SSubst, Notation
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
@@ -175,8 +175,8 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Publish')
 
     def pretty_print_pattern(self, p: Pattern) -> str:
-        if p in self.notation:
-            return self.notation[p]
+        if isinstance(p, Notation):
+            return f'{str(p)}'
 
         # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
         # like implication while keeping notations

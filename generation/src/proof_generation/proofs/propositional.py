@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import sys
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implication, MetaVar, Mu, SVar
+from proof_generation.pattern import Implication, MetaVar, Mu, SVar, Notation, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -41,6 +42,26 @@ def neg(p: Pattern) -> Pattern:
     return Negation(p)
 
 
+@dataclass(frozen=True, eq=False)
+class Top(Notation):
+    @staticmethod
+    def label() -> str:
+        return "top"
+
+    @staticmethod
+    def definition() -> Pattern:
+        return neg(bot)
+
+    def delta(self) -> dict[int, Pattern]:
+        return {}
+
+    def __str__(self) -> str:
+        return f'\u22A4'
+
+
+top = Top()
+
+
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
         super().__init__(interpreter)
@@ -52,8 +73,6 @@ class Propositional(ProofExp):
     @staticmethod
     def claims() -> list[Pattern]:
         phi0 = MetaVar(0)
-        top = Implication(bot, bot)
-        neg_phi0 = Implication(phi0, bot)
         return [
             Implication(phi0, phi0),  # Reflexivity
             top,  # Top

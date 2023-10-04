@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol, Notation
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -93,6 +93,10 @@ class BasicInterpreter:
                 self.patterns(app_ctx_holes)
 
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+
+        if isinstance(p, Notation):
+            self.pattern(p.conclusion())
+            return p
 
         raise NotImplementedError(f'{type(p)}')
 
