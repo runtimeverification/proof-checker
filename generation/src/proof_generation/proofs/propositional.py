@@ -315,6 +315,23 @@ class Propositional(ProofExp):
             ),
         )
 
+    #     p
+    # --------
+    # phi -> p
+    def imp_provable(self, phi:Pattern, p: Proved) -> Proved:
+        return self.modus_ponens(
+            self.dynamic_inst(self.prop1, {0: p.conclusion, 1: phi}),
+            p)
+
+    #    p
+    # ------
+    # T -> p
+    def top_imp(self, p: Proved) -> Proved:
+        self.imp_provable(top, p)
+
+    # phi -> T
+    def imp_top(self, phi:Pattern) -> Proved:
+        self.imp_provable(phi, self.top_intro())
 
 if __name__ == '__main__':
     Propositional.main(sys.argv)
