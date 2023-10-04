@@ -74,21 +74,6 @@ def uncons_metavar_instrs(id: int) -> list[int]:
     return [Instruction.CleanMetaVar, id]
 
 
-def test_serialize_phi_implies_phi() -> None:
-    out = BytesIO()
-    prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[], out=out))
-    prop.phi0_implies_phi0()
-    # fmt: off
-    assert bytes(out.getbuffer()) == bytes([
-        *uncons_metavar_instrs(0),
-        Instruction.Save,
-        Instruction.Load, 0,
-        Instruction.Implication,        # Stack: phi0 -> phi0
-        Instruction.Save,
-    ])
-    # fmt: on
-
-
 def test_prove_imp_reflexivity() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)

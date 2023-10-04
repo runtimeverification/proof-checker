@@ -122,9 +122,9 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(f'SSubst id={svar_id}')
 
     @pretty()
-    def add_notation(self, notation: Pattern):
+    def add_notation(self, notation: Pattern) -> None:
         if isinstance(notation, Notation):
-            self.out.write(f'// Notation "{notation.label()}"')
+            self.out.write(f'// Notation {notation.label()}')
 
     @pretty()
     def prop1(self) -> None:

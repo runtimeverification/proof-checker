@@ -214,15 +214,15 @@ class SSubst(Pattern):
 @dataclass(frozen=True)
 class Notation(Pattern):
     @staticmethod
-    def label(self) -> str:
-        raise NotImplementedError("This notation has no label.")
+    def label() -> str:
+        raise NotImplementedError('This notation has no label.')
 
     @staticmethod
-    def definition(self) -> Pattern:
-        raise NotImplementedError("This notation has no definition.")
+    def definition() -> Pattern:
+        raise NotImplementedError('This notation has no definition.')
 
     def arguments(self) -> dict[int, Pattern]:
-        raise NotImplementedError("This notation needs to define a way to collect inputs.")
+        raise NotImplementedError('This notation needs to define a way to collect inputs.')
 
     def __eq__(self, o: object) -> bool:
         return self.conclusion() == o
@@ -247,7 +247,7 @@ class Notation(Pattern):
 class Bot(Notation):
     @staticmethod
     def label() -> str:
-        return "bot"
+        return 'bot'
 
     @staticmethod
     def definition() -> Pattern:
@@ -257,7 +257,7 @@ class Bot(Notation):
         return {}
 
     def __str__(self) -> str:
-        return f'\u22A5 '
+        return '\u22A5 '
 
 
 bot = Bot()
