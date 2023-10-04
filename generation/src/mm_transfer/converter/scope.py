@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import proof_generation.pattern as nf
 from mm_transfer.converter.vardict import VarDict
 from mm_transfer.metamath.ast import Metavariable
+from proof_generation.pattern import EVar, MetaVar, SVar
 
 if TYPE_CHECKING:
-    pass
-
     from mm_transfer.converter.representation import Notation
+    from proof_generation.pattern import Pattern
 
 
 class Scope:
@@ -18,30 +17,30 @@ class Scope:
     def __init__(
         self,
     ) -> None:
-        self._metavars: VarDict = VarDict(None, nf.MetaVar)
-        self._element_vars: VarDict = VarDict(None, nf.EVar)
-        self._set_vars: VarDict = VarDict(None, nf.SVar)
+        self._metavars: VarDict = VarDict(None, MetaVar)
+        self._element_vars: VarDict = VarDict(None, EVar)
+        self._set_vars: VarDict = VarDict(None, SVar)
         self._notations: dict[str, tuple[Notation, ...]] = {}
 
     def add_metavariable(self, var: Metavariable | str) -> None:
-        self._metavars[var] = nf.MetaVar(len(self._metavars))
+        self._metavars[var] = MetaVar(len(self._metavars))
 
-    def supercede_metavariable(self, name: str, var: nf.MetaVar) -> None:
+    def supercede_metavariable(self, name: str, var: MetaVar) -> None:
         assert name in self._metavars
         assert self._metavars[name].name == var.name
         self._metavars[name] = var
 
     def add_element_var(self, var: Metavariable | str) -> None:
-        self._element_vars[var] = nf.EVar(len(self._element_vars))
+        self._element_vars[var] = EVar(len(self._element_vars))
 
     def add_set_var(self, var: Metavariable | str) -> None:
-        self._set_vars[var] = nf.SVar(len(self._set_vars))
+        self._set_vars[var] = SVar(len(self._set_vars))
 
     def add_notation(self, notation: Notation) -> None:
         self._notations.setdefault(notation.name, ())
         self._notations[notation.name] += (notation,)
 
-    def resolve(self, name: str) -> nf.Pattern:
+    def resolve(self, name: str) -> Pattern:
         if name in self._metavars:
             var = self._metavars[name]
         elif name in self._element_vars:
@@ -52,7 +51,7 @@ class Scope:
             raise KeyError(f'Unknown variable {name}')
         return var
 
-    def resolve_notation(self, name: str, *args: nf.Pattern) -> Notation:
+    def resolve_notation(self, name: str, *args: Pattern) -> Notation:
         if name not in self._notations:
             raise KeyError(f'Unknown notation {name}')
         notations = self._notations[name]
@@ -74,10 +73,10 @@ class Scope:
     def import_from_scope(self, other: Scope, except_names: None | tuple[str, ...] = None) -> None:
         self._metavars = VarDict(other._metavars)
         self._element_vars = VarDict(
-            {k: v for k, v in other._element_vars.items() if except_names is None or k not in except_names}, nf.EVar
+            {k: v for k, v in other._element_vars.items() if except_names is None or k not in except_names}, EVar
         )
         self._set_vars = VarDict(
-            {k: v for k, v in other._set_vars.items() if except_names is None or k not in except_names}, nf.SVar
+            {k: v for k, v in other._set_vars.items() if except_names is None or k not in except_names}, SVar
         )
         self._notations = dict(other._notations)
 

@@ -5,14 +5,15 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-import proof_generation.pattern as nf
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
 from mm_transfer.metamath.ast import AxiomaticStatement, Block, ConstantStatement, FloatingStatement
 from mm_transfer.metamath.parser import load_database
+from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, SVar, Symbol
 
 if TYPE_CHECKING:
     from mm_transfer.metamath.ast import Database
+    from proof_generation.pattern import Pattern
 
 BENCHMARK_LOCATION = 'mm-benchmarks'
 
@@ -42,7 +43,7 @@ def parsed_impreflex_database() -> Database:
     return load_database(os.path.join(BENCHMARK_LOCATION, 'impreflex.mm'), include_proof=True)
 
 
-def pattern_mismatch(p1: nf.Pattern, p2: nf.Pattern) -> str:
+def pattern_mismatch(p1: Pattern, p2: Pattern) -> str:
     return f'Pattern mismatch: {str(p1)} != {str(p2)}'
 
 
@@ -112,39 +113,39 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     tst = converter._symbols['\\tsymbol']
     assert len(scope._notations) == 11 + 4  # from the file and builtin
 
-    def bot() -> nf.Pattern:
-        return nf.Symbol(4)
+    def bot() -> Pattern:
+        return Symbol(4)
 
     # bot does not have a definition, so it is treated as a logical symbol
     expected = bot()
     converted = converter._symbols['\\bot']
     assert expected == converted, pattern_mismatch(expected, converted)
 
-    def neg(p: nf.Pattern) -> nf.Pattern:
-        return nf.Implication(p, bot())
+    def neg(p: Pattern) -> Pattern:
+        return Implication(p, bot())
 
-    expected = neg(nf.MetaVar(10))
-    converted = scope.resolve_notation('\\not')(nf.MetaVar(10))
+    expected = neg(MetaVar(10))
+    converted = scope.resolve_notation('\\not')(MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \imp ( \not ph0 ) ph1
-    def or_(p: nf.Pattern, q: nf.Pattern) -> nf.Pattern:
-        return nf.Implication(neg(p), q)
+    def or_(p: Pattern, q: Pattern) -> Pattern:
+        return Implication(neg(p), q)
 
-    expected = or_(nf.MetaVar(10), nf.MetaVar(11))
-    converted = scope.resolve_notation('\\or')(nf.MetaVar(10), nf.MetaVar(11))
+    expected = or_(MetaVar(10), MetaVar(11))
+    converted = scope.resolve_notation('\\or')(MetaVar(10), MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     #  \not ( \or ( \not ph0 ) ( \not ph1 ) )
-    def and_(p: nf.Pattern, q: nf.Pattern) -> nf.Pattern:
+    def and_(p: Pattern, q: Pattern) -> Pattern:
         return neg(or_(neg(p), neg(q)))
 
-    expected = and_(nf.MetaVar(10), nf.MetaVar(11))
-    converted = scope.resolve_notation('\\and')(nf.MetaVar(10), nf.MetaVar(11))
+    expected = and_(MetaVar(10), MetaVar(11))
+    converted = scope.resolve_notation('\\and')(MetaVar(10), MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \not \bot
-    def top() -> nf.Pattern:
+    def top() -> Pattern:
         return neg(bot())
 
     expected = top()
@@ -152,68 +153,68 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \app \definedness ph0
-    def ceil(p: nf.Pattern) -> nf.Pattern:
-        return nf.Application(definedness, p)
+    def ceil(p: Pattern) -> Pattern:
+        return Application(definedness, p)
 
-    expected = ceil(nf.MetaVar(10))
-    converted = scope.resolve_notation('\\ceil')(nf.MetaVar(10))
+    expected = ceil(MetaVar(10))
+    converted = scope.resolve_notation('\\ceil')(MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \not ( \ceil ( \not ph0 ) )
-    def floor(p: nf.Pattern) -> nf.Pattern:
+    def floor(p: Pattern) -> Pattern:
         return neg(ceil(neg(p)))
 
-    expected = floor(nf.MetaVar(10))
-    converted = scope.resolve_notation('\\floor')(nf.MetaVar(10))
+    expected = floor(MetaVar(10))
+    converted = scope.resolve_notation('\\floor')(MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \floor ( \imp ph0 ph1 )
-    def included(p: nf.Pattern, q: nf.Pattern) -> nf.Pattern:
-        return floor(nf.Implication(p, q))
+    def included(p: Pattern, q: Pattern) -> Pattern:
+        return floor(Implication(p, q))
 
-    expected = included(nf.MetaVar(10), nf.MetaVar(11))
-    converted = scope.resolve_notation('\\included')(nf.MetaVar(10), nf.MetaVar(11))
+    expected = included(MetaVar(10), MetaVar(11))
+    converted = scope.resolve_notation('\\included')(MetaVar(10), MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \app \inhabitant ph0
-    def inh(p: nf.Pattern) -> nf.Pattern:
-        return nf.Application(inhabitant, p)
+    def inh(p: Pattern) -> Pattern:
+        return Application(inhabitant, p)
 
-    expected = inh(nf.MetaVar(10))
-    converted = scope.resolve_notation('\\inh')(nf.MetaVar(10))
+    expected = inh(MetaVar(10))
+    converted = scope.resolve_notation('\\inh')(MetaVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \included ph0 ( \inh ph1 )
-    def in_sort(p: nf.Pattern, q: nf.Pattern) -> nf.Pattern:
+    def in_sort(p: Pattern, q: Pattern) -> Pattern:
         return included(p, inh(q))
 
-    expected = in_sort(nf.MetaVar(10), nf.MetaVar(11))
-    converted = scope.resolve_notation('\\in-sort')(nf.MetaVar(10), nf.MetaVar(11))
+    expected = in_sort(MetaVar(10), MetaVar(11))
+    converted = scope.resolve_notation('\\in-sort')(MetaVar(10), MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # \exists x ( \and ( \in-sort x ph0 ) ph1 )
-    def sorted_exists(x: nf.Pattern, p: nf.Pattern, q: nf.Pattern) -> nf.Pattern:
-        assert isinstance(x, nf.EVar)
-        return nf.Exists(x, and_(in_sort(x, p), q))
+    def sorted_exists(x: Pattern, p: Pattern, q: Pattern) -> Pattern:
+        assert isinstance(x, EVar)
+        return Exists(x, and_(in_sort(x, p), q))
 
-    expected = sorted_exists(nf.EVar(10), nf.MetaVar(10), nf.MetaVar(11))
-    converted = scope.resolve_notation('\\sorted-exists')(nf.EVar(10), nf.MetaVar(10), nf.MetaVar(11))
+    expected = sorted_exists(EVar(10), MetaVar(10), MetaVar(11))
+    converted = scope.resolve_notation('\\sorted-exists')(EVar(10), MetaVar(10), MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # ( \tst xX )  = ( \tsymbol xX )
-    def tste(x: nf.Pattern) -> nf.Pattern:
-        assert isinstance(x, nf.EVar)
-        return nf.Application(tst, x)
+    def tste(x: Pattern) -> Pattern:
+        assert isinstance(x, EVar)
+        return Application(tst, x)
 
-    def tsts(xs: nf.Pattern) -> nf.Pattern:
-        assert isinstance(xs, nf.SVar)
-        return nf.Application(tst, xs)
+    def tsts(xs: Pattern) -> Pattern:
+        assert isinstance(xs, SVar)
+        return Application(tst, xs)
 
-    expected = tste(nf.EVar(10))
-    converted = scope.resolve_notation('\\tst', nf.EVar(10))(nf.EVar(10))
+    expected = tste(EVar(10))
+    converted = scope.resolve_notation('\\tst', EVar(10))(EVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
-    expected = tsts(nf.SVar(10))
-    converted = scope.resolve_notation('\\tst', nf.SVar(10))(nf.SVar(10))
+    expected = tsts(SVar(10))
+    converted = scope.resolve_notation('\\tst', SVar(10))(SVar(10))
     assert expected == converted, pattern_mismatch(expected, converted)
 
 
@@ -231,26 +232,26 @@ def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
     and_ = scope.resolve_notation('\\and')
 
     # imp-reflexivity $a |- ( \imp ph0 ph0 ) $.
-    expected = nf.Implication(phi0, phi0)
+    expected = Implication(phi0, phi0)
     assert 'imp-reflexivity' in converter._axioms and len(converter._axioms['imp-reflexivity']) == 1
     converted = converter._axioms['imp-reflexivity'][0].pattern
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # and-elim-left-sugar $a |- ( \imp ( \and ph0 ph1 ) ph0 ) $.
-    expected = nf.Implication(and_(phi0, phi1), phi0)
+    expected = Implication(and_(phi0, phi1), phi0)
     assert 'and-elim-left-sugar' in converter._axioms and len(converter._axioms['and-elim-left-sugar']) == 1
     converted = converter._axioms['and-elim-left-sugar'][0].pattern
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # and-elim-right-sugar $a |- ( \imp ( \and ph0 ph1 ) ph1 ) $.
-    expected = nf.Implication(and_(phi0, phi1), phi1)
+    expected = Implication(and_(phi0, phi1), phi1)
     assert 'and-elim-right-sugar' in converter._axioms and len(converter._axioms['and-elim-right-sugar']) == 1
     converted = converter._axioms['and-elim-right-sugar'][0].pattern
     assert expected == converted, pattern_mismatch(expected, converted)
 
     # tst-trivial-axiom $a |- ( \imp ( \tst xX ) ( \tst xX ) ) $.
-    expected1 = nf.Implication(nf.Application(tst, exx), nf.Application(tst, exx))
-    expected2 = nf.Implication(nf.Application(tst, sxx), nf.Application(tst, sxx))
+    expected1 = Implication(Application(tst, exx), Application(tst, exx))
+    expected2 = Implication(Application(tst, sxx), Application(tst, sxx))
     assert 'tst-trivial-axiom' in converter._axioms and len(converter._axioms['tst-trivial-axiom']) == 2
     converted1 = converter._axioms['tst-trivial-axiom'][0].pattern
     assert expected1 == converted1, pattern_mismatch(expected1, converted1)
@@ -258,7 +259,7 @@ def test_importing_simple_axioms(parsed_lemma_database: Database) -> None:
     assert expected2 == converted2, pattern_mismatch(expected2, converted2)
 
     # tst-missing-axiom $a |- ( \imp ( \tst x ) ( \tapp x y ) ) $.
-    expected = nf.Implication(nf.Application(tst, x), nf.Application(nf.Application(tapp, x), y))
+    expected = Implication(Application(tst, x), Application(Application(tapp, x), y))
     assert 'tst-missing-symbol-axiom' in converter._axioms and len(converter._axioms['tst-missing-symbol-axiom']) == 1
     converted = converter._axioms['tst-missing-symbol-axiom'][0].pattern
     assert expected == converted, pattern_mismatch(expected, converted)
@@ -276,9 +277,9 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     ph5 = converter._scope._metavars['ph5']
     ph6 = converter._scope._metavars['ph6']
     x = converter._scope._element_vars['x']
-    assert isinstance(x, nf.EVar)
+    assert isinstance(x, EVar)
     y = converter._scope._element_vars['y']
-    assert isinstance(y, nf.EVar)
+    assert isinstance(y, EVar)
     and_ = scope.resolve_notation('\\and')
     sorted_exists_ = scope.resolve_notation('\\sorted-exists')
     in_sort_ = scope.resolve_notation('\\in-sort')
@@ -286,7 +287,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
 
     # notation-proof
     name = 'notation-proof'
-    antecedents: list[nf.Pattern] = [ph0]
+    antecedents: list[Pattern] = [ph0]
     pattern = ph0
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
@@ -298,7 +299,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
 
     # proof-rule-gen
     name = 'proof-rule-gen'
-    ph1_mc = nf.MetaVar(
+    ph1_mc = MetaVar(
         ph1.name,
         e_fresh=ph1.e_fresh + (x,),
         s_fresh=ph1.s_fresh,
@@ -306,8 +307,8 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
         negative=ph1.negative,
         app_ctx_holes=ph1.app_ctx_holes,
     )
-    antecedents = [nf.Implication(ph0, ph1_mc)]
-    pattern = nf.Implication(nf.Exists(x, ph0), ph1_mc)
+    antecedents = [Implication(ph0, ph1_mc)]
+    pattern = Implication(Exists(x, ph0), ph1_mc)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
     assert isinstance(converted, AxiomWithAntecedents)
@@ -318,8 +319,8 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
 
     # rule-and-intro-alt2
     name = 'rule-and-intro-alt2-sugar'
-    antecedents = [nf.Implication(ph0, ph1), nf.Implication(ph0, ph2)]
-    pattern = nf.Implication(ph0, and_(ph1, ph2))
+    antecedents = [Implication(ph0, ph1), Implication(ph0, ph2)]
+    pattern = Implication(ph0, and_(ph1, ph2))
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
     assert isinstance(converted, AxiomWithAntecedents)
@@ -332,7 +333,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
     # sorted-exists-propagation-converse
     name = 'sorted-exists-propagation-converse'
     antecedents = []
-    ph0_mc = nf.MetaVar(
+    ph0_mc = MetaVar(
         ph0.name,
         e_fresh=ph0.e_fresh + (y,),
         s_fresh=ph0.s_fresh,
@@ -340,14 +341,14 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
         negative=ph0.negative,
         app_ctx_holes=ph0.app_ctx_holes + (x,),
     )
-    ph1_substututed = nf.ESubst(ph0_mc, x, ph5)
+    ph1_substututed = ESubst(ph0_mc, x, ph5)
     evar = sorted_exists_(y, ph6, ph5)
-    ph2_substututed = nf.ESubst(ph0_mc, x, evar)
+    ph2_substututed = ESubst(ph0_mc, x, evar)
     and_subpattern = and_(in_sort_(y, ph6), ph5)
-    nf.ESubst(ph0_mc, x, and_subpattern)
+    ESubst(ph0_mc, x, and_subpattern)
     and_subpattern = and_(top_(), ph5)
-    nf.ESubst(ph0_mc, x, and_subpattern)
-    pattern = nf.Implication(sorted_exists_(y, ph6, ph1_substututed), ph2_substututed)
+    ESubst(ph0_mc, x, and_subpattern)
+    pattern = Implication(sorted_exists_(y, ph6, ph1_substututed), ph2_substututed)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
     assert isinstance(converted, Axiom) and not isinstance(converted, AxiomWithAntecedents)
@@ -367,7 +368,7 @@ def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
     ceil_ = scope.resolve_notation('\\ceil')
 
     name = 'disjointness-alt-lemma'
-    ph0_mc = nf.MetaVar(
+    ph0_mc = MetaVar(
         ph0.name,
         e_fresh=ph0.e_fresh + (x,),
         s_fresh=ph0.s_fresh,
@@ -376,7 +377,7 @@ def test_lemma_with_mc(parsed_lemma_database: Database) -> None:
         app_ctx_holes=ph0.app_ctx_holes,
     )
     # ( \imp ( \sorted-exists x ph2 ( \ceil ( \and ph0 ph1 ) ) ) ( \ceil ( \and ph0 ( \sorted-exists x ph2 ph1 ) ) ) )
-    pattern = nf.Implication(
+    pattern = Implication(
         sorted_exists_(x, ph2, ceil_(and_(ph0_mc, ph1))), ceil_(and_(ph0_mc, sorted_exists_(x, ph2, ph1)))
     )
     assert name in converter._lemmas and len(converter._lemmas[name]) == 1
@@ -403,8 +404,8 @@ def test_pattern_construction(parsed_lemma_database: Database) -> None:
 
     # $a #Pattern ( \tst xX ) $.
     name = 'tst-is-pattern'
-    expected1 = nf.Application(tst, exx)
-    expected2 = nf.Application(tst, sxx)
+    expected1 = Application(tst, exx)
+    expected2 = Application(tst, sxx)
     assert converter.is_pattern_constructor(name) and name in converter._axioms
     assert len(converter._axioms[name]) == 2
     converted1 = converter._axioms[name][0].pattern

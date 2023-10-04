@@ -4,27 +4,30 @@ import argparse
 import os
 from pathlib import Path
 
-import proof_generation.pattern as nf
-import proof_generation.proof as p
 from mm_transfer.converter.converter import MetamathConverter
 from mm_transfer.converter.representation import AxiomWithAntecedents
 from mm_transfer.metamath.parser import load_database
+from proof_generation.basic_interpreter import ExecutionPhase
+from proof_generation.pattern import Implication, MetaVar, Pattern
+from proof_generation.proof import ProofExp
+from proof_generation.proved import Proved
+from proof_generation.stateful_interpreter import StatefulInterpreter
 
 
-def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) -> None:
-    assert isinstance(proofexp.interpreter, p.StatefulInterpreter)
+def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp) -> None:
+    assert isinstance(proofexp.interpreter, StatefulInterpreter)
     interpreter = lambda: proofexp.interpreter
     stack = lambda: proofexp.interpreter.stack
 
-    def get_delta(metavars: tuple[str, ...]) -> dict[int, nf.Pattern]:
-        delta: dict[int, nf.Pattern] = {}
+    def get_delta(metavars: tuple[str, ...]) -> dict[int, Pattern]:
+        delta: dict[int, Pattern] = {}
 
         nargs = len(metavars)
         i = 0
         for metavar_label in metavars:
             metavar = converter.resolve_metavar(metavar_label)
             pat = stack()[-(nargs + 1) + i]
-            assert isinstance(pat, nf.Pattern)
+            assert isinstance(pat, Pattern)
             delta[metavar.name] = pat
             i += 1
 
@@ -33,15 +36,15 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
     def do_mp() -> None:
         left = stack()[-2]
         right = stack()[-1]
-        assert isinstance(left, p.Proved)
-        assert isinstance(right, p.Proved)
+        assert isinstance(left, Proved)
+        assert isinstance(right, Proved)
         interpreter().modus_ponens(left, right)
 
     # We do not support ambiguities right now
     exported_proof = converter.get_lemma_by_name(target).proof
 
     # lemma |-> memory id in MM
-    mm_memory: list[nf.Pattern | p.Proved] = []
+    mm_memory: list[Pattern | Proved] = []
     # MM encoding offset
     memory_offset = len(exported_proof.labels)  # TODO: Add EH later
 
@@ -67,16 +70,16 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             if lemma_label == 'app-is-pattern':
                 left = stack()[-2]
                 right = stack()[-1]
-                assert isinstance(left, nf.Pattern)
-                assert isinstance(right, nf.Pattern)
+                assert isinstance(left, Pattern)
+                assert isinstance(right, Pattern)
                 interpreter().app(left, right)
                 continue
 
             if lemma_label == 'imp-is-pattern':
                 left = stack()[-2]
                 right = stack()[-1]
-                assert isinstance(left, nf.Pattern)
-                assert isinstance(right, nf.Pattern)
+                assert isinstance(left, Pattern)
+                assert isinstance(right, Pattern)
                 interpreter().implies(left, right)
                 continue
 
@@ -87,16 +90,16 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             # Instantiate it with instantiations given by MM (as MM does this implicitly)
             if len(pat_constructor_axiom.metavars) > 0:
                 pat = stack()[-1]
-                assert isinstance(pat, nf.Pattern)
+                assert isinstance(pat, Pattern)
                 interpreter().instantiate_notation(pat, get_delta(converter.get_metavars_in_order(lemma_label)))
 
         # Lemma is one of these `metavar-is-pattern` functions
         elif lemma_label in converter._fp_label_to_pattern and isinstance(
-            converter.get_floating_pattern_by_name(lemma_label)[0], nf.MetaVar
+            converter.get_floating_pattern_by_name(lemma_label)[0], MetaVar
         ):
             # TODO: phi0-is-pattern should be in pattern constructors
             pat = converter.get_floating_pattern_by_name(lemma_label)[0]
-            assert isinstance(pat, nf.MetaVar)
+            assert isinstance(pat, MetaVar)
             interpreter().metavar(pat.name)
 
         # Lemma is in Gamma
@@ -120,7 +123,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             # We need to instantiate the axiom depending on what we are given on stack
             if len(axiom.metavars) > 0:
                 pat = stack()[-1]
-                assert isinstance(pat, p.Proved)
+                assert isinstance(pat, Proved)
                 interpreter().instantiate(pat, get_delta(converter.get_metavars_in_order(lemma_label)))
 
             # Now we need to get rid of the antecedents
@@ -136,8 +139,8 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 prop1 = interpreter().prop1()
                 phi0 = stack()[-3]
                 phi1 = stack()[-2]
-                assert isinstance(phi0, nf.Pattern)
-                assert isinstance(phi1, nf.Pattern)
+                assert isinstance(phi0, Pattern)
+                assert isinstance(phi1, Pattern)
                 interpreter().instantiate(
                     prop1,
                     {0: phi0, 1: phi1},
@@ -147,9 +150,9 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
                 phi0 = stack()[-4]
                 phi1 = stack()[-3]
                 phi2 = stack()[-2]
-                assert isinstance(phi0, nf.Pattern)
-                assert isinstance(phi1, nf.Pattern)
-                assert isinstance(phi2, nf.Pattern)
+                assert isinstance(phi0, Pattern)
+                assert isinstance(phi1, Pattern)
+                assert isinstance(phi2, Pattern)
                 interpreter().instantiate(
                     prop2,
                     {
@@ -172,19 +175,19 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: p.ProofExp) 
             raise NotImplementedError(f'The proof label {lemma_label} is not recognized as an implemented instruction')
 
     pat = stack()[-1]
-    assert isinstance(pat, p.Proved)
-    assert pat == p.Proved(converter.get_lemma_by_name(target).pattern)
+    assert isinstance(pat, Proved)
+    assert pat == Proved(converter.get_lemma_by_name(target).pattern)
     interpreter().publish_proof(pat)
 
 
 # TODO: This is unsound and should be replaced with a different handling
-def convert_to_implication(antecedents: tuple[nf.Pattern, ...], conclusion: nf.Pattern) -> nf.Pattern:
+def convert_to_implication(antecedents: tuple[Pattern, ...], conclusion: Pattern) -> Pattern:
     (ant, *ants) = antecedents
 
     if ants:
-        return nf.Implication(ant, convert_to_implication(tuple(ants), conclusion))
+        return Implication(ant, convert_to_implication(tuple(ants), conclusion))
 
-    return nf.Implication(ant, conclusion)
+    return Implication(ant, conclusion)
 
 
 def main() -> None:
@@ -226,17 +229,17 @@ def main() -> None:
 
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
-    class TranslatedProofSkeleton(p.ProofExp):
+    class TranslatedProofSkeleton(ProofExp):
         @staticmethod
-        def axioms() -> list[p.Pattern]:
+        def axioms() -> list[Pattern]:
             return extracted_axioms
 
         @staticmethod
-        def claims() -> list[p.Pattern]:
+        def claims() -> list[Pattern]:
             return extracted_claims
 
         def execute_proofs_phase(self) -> None:
-            assert self.interpreter.phase == p.ExecutionPhase.Proof
+            assert self.interpreter.phase == ExecutionPhase.Proof
             exec_proof(converter, args.target, self)
 
     module = os.path.splitext(os.path.basename(args.input))[0]

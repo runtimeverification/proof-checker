@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from mypy_extensions import VarArg
 
-import proof_generation.pattern as nf
 from mm_transfer.converter.representation import (
     Axiom,
     AxiomWithAntecedents,
@@ -30,6 +29,8 @@ from mm_transfer.metamath.ast import (
     Term,
     VariableStatement,
 )
+from proof_generation.pattern import Application as ApplicationPattern
+from proof_generation.pattern import ESubst, EVar, Exists, Implication, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -58,7 +59,7 @@ class MetamathConverter:
         self._scope: GlobalScope = GlobalScope()
         self._declared_constants: set[str] = set()
         self._declared_variables: dict[str, Metavariable] = {}
-        self._symbols: VarDict = VarDict(None, nf.Symbol)
+        self._symbols: VarDict = VarDict(None, Symbol)
         self._domain_values: set[str] = set()
         self._axioms: dict[str, list[Axiom]] = {}
         self._pattern_constructors: set[str] = set()
@@ -68,7 +69,7 @@ class MetamathConverter:
         self._ignored_lemmas: list[ProvableStatement] = []
         self._missing_declarations: set[str] = set()
         self._floating_patterns: list[str] = []
-        self._fp_label_to_pattern: dict[str, tuple[nf.Pattern, ...]] = {}
+        self._fp_label_to_pattern: dict[str, tuple[Pattern, ...]] = {}
 
         # Add special cases that formalized in the new format differently
         self._add_builtin_notations()
@@ -152,28 +153,28 @@ class MetamathConverter:
         metavars = axiom.metavars
         return set(metavars)
 
-    def resolve(self, name: str) -> nf.Pattern:
+    def resolve(self, name: str) -> Pattern:
         return self._resolve(self._scope, name)
 
-    def resolve_metavar(self, name: str) -> nf.MetaVar:
+    def resolve_metavar(self, name: str) -> MetaVar:
         assert self._scope.is_metavar(name)
         res = self._scope.resolve(name)
-        assert isinstance(res, nf.MetaVar)
+        assert isinstance(res, MetaVar)
         return res
 
-    def get_floating_pattern_by_name(self, label: str) -> tuple[nf.Pattern, ...]:
+    def get_floating_pattern_by_name(self, label: str) -> tuple[Pattern, ...]:
         assert label in self._fp_label_to_pattern, f'Unknown floating pattern label: {label}'
         return self._fp_label_to_pattern[label]
 
-    def get_metavar_name_by_label(self, label: str) -> nf.Pattern:
+    def get_metavar_name_by_label(self, label: str) -> Pattern:
         # TODO: Keep it still for the backward compatibility
         pattern = self.get_floating_pattern_by_name(label)[0]
-        assert isinstance(pattern, nf.MetaVar)
+        assert isinstance(pattern, MetaVar)
         return pattern
 
     def _add_symbol(self, var: Metavariable | str) -> None:
         if var not in self._symbols:
-            self._symbols[var] = nf.Symbol(len(self._symbols))
+            self._symbols[var] = Symbol(len(self._symbols))
 
     def _is_symbol(self, name: str) -> bool:
         return name in self._symbols
@@ -680,11 +681,11 @@ class MetamathConverter:
             scopes = (scope,)
         return scopes
 
-    def _to_pattern(self, scope: NotationScope, term: Term) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
-        def resolve_as_notation(name: str, subterms: tuple[Term, ...]) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+    def _to_pattern(self, scope: NotationScope, term: Term) -> Callable[[VarArg(Pattern)], Pattern]:
+        def resolve_as_notation(name: str, subterms: tuple[Term, ...]) -> Callable[[VarArg(Pattern)], Pattern]:
             converted_args = tuple(self._to_pattern(scope, arg) for arg in subterms)
 
-            def resolve_notation(*args: nf.Pattern) -> nf.Pattern:
+            def resolve_notation(*args: Pattern) -> Pattern:
                 real_args = [arg(*args) for arg in converted_args]
                 notation = scope.resolve_notation(name, *real_args)
                 return notation(*real_args)
@@ -692,11 +693,11 @@ class MetamathConverter:
             return resolve_notation
 
         def resolve_as_app(
-            left: Callable[[VarArg(nf.Pattern)], nf.Pattern], right: Callable[[VarArg(nf.Pattern)], nf.Pattern]
-        ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+            left: Callable[[VarArg(Pattern)], Pattern], right: Callable[[VarArg(Pattern)], Pattern]
+        ) -> Callable[[VarArg(Pattern)], Pattern]:
             app = scope.resolve_notation('\\app')
 
-            def symbol_application(*args: nf.Pattern) -> nf.Pattern:
+            def symbol_application(*args: Pattern) -> Pattern:
                 real_args = (left(*args), right(*args))
                 return app(*real_args)
 
@@ -758,30 +759,30 @@ class MetamathConverter:
         application = Notation(
             '\\app',
             ('ph0', 'ph1'),
-            lambda *args: isinstance(args[0], nf.Pattern) and isinstance(args[1], nf.Pattern),
-            lambda *args: nf.Application(args[0], args[1]),
+            lambda *args: isinstance(args[0], Pattern) and isinstance(args[1], Pattern),
+            lambda *args: ApplicationPattern(args[0], args[1]),
         )
         self._scope.add_notation(application)
         imp = Notation(
             '\\imp',
             ('ph0', 'ph1'),
-            lambda *args: isinstance(args[0], nf.Pattern) and isinstance(args[1], nf.Pattern),
-            lambda *args: nf.Implication(args[0], args[1]),
+            lambda *args: isinstance(args[0], Pattern) and isinstance(args[1], Pattern),
+            lambda *args: Implication(args[0], args[1]),
         )
         self._scope.add_notation(imp)
         exists = Notation(
             '\\exists',
             ('x', 'ph1'),
-            lambda *args: isinstance(args[0], nf.EVar) and isinstance(args[0], nf.Pattern),
-            lambda *args: nf.Exists(args[0], args[1]),
+            lambda *args: isinstance(args[0], EVar) and isinstance(args[0], Pattern),
+            lambda *args: Exists(args[0], args[1]),
         )
         self._scope.add_notation(exists)
         self._scope.add_notation(
             Notation(
                 '\\mu',
                 ('X', 'ph1'),
-                lambda *args: isinstance(args[0], nf.SVar) and isinstance(args[0], nf.Pattern),
-                lambda *args: nf.Mu(args[0], args[1]),
+                lambda *args: isinstance(args[0], SVar) and isinstance(args[0], Pattern),
+                lambda *args: Mu(args[0], args[1]),
             )
         )
 
@@ -803,7 +804,7 @@ class MetamathConverter:
 
     def _add_trivial_axiom(self, label: str, name: str) -> None:
         if label not in self._axioms:
-            patterns: tuple[nf.Pattern, ...]
+            patterns: tuple[Pattern, ...]
             if self._scope.is_ambiguous(name):
                 p1 = self._scope._element_vars[name]
                 p2 = self._scope._set_vars[name]
@@ -866,28 +867,28 @@ class MetamathConverter:
         self, scope: Scope, statements: tuple[EssentialStatement | DisjointStatement, ...]
     ) -> None:
         def new_metavariable(
-            metavar: nf.MetaVar,
-            e_fresh: tuple[nf.EVar, ...] = (),
-            s_fresh: tuple[nf.SVar, ...] = (),
-            positive: tuple[nf.SVar, ...] = (),
-            negative: tuple[nf.SVar, ...] = (),
-            app_ctx_holes: tuple[nf.EVar, ...] = (),
-        ) -> nf.MetaVar:
+            metavar: MetaVar,
+            e_fresh: tuple[EVar, ...] = (),
+            s_fresh: tuple[SVar, ...] = (),
+            positive: tuple[SVar, ...] = (),
+            negative: tuple[SVar, ...] = (),
+            app_ctx_holes: tuple[EVar, ...] = (),
+        ) -> MetaVar:
             name = metavar.name
             e_fresh = metavar.e_fresh + e_fresh
             s_fresh = metavar.s_fresh + s_fresh
             positive = metavar.positive + positive
             negative = metavar.negative + negative
             app_ctx_holes = metavar.app_ctx_holes + app_ctx_holes
-            return nf.MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+            return MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
         def add_fresh_mc(metavar_name: str, var_name: str) -> None:
             var = scope.resolve(var_name)
             metavar = scope.resolve(metavar_name)
-            assert isinstance(metavar, nf.MetaVar)
-            if isinstance(var, nf.EVar):
+            assert isinstance(metavar, MetaVar)
+            if isinstance(var, EVar):
                 new_var = new_metavariable(metavar, e_fresh=(var,))
-            elif isinstance(var, nf.SVar):
+            elif isinstance(var, SVar):
                 new_var = new_metavariable(metavar, s_fresh=(var,))
             else:
                 raise NotImplementedError
@@ -914,16 +915,16 @@ class MetamathConverter:
                             metavar_name = statement.terms[2].name
                             var = scope.resolve(var_name)
                             metavar = scope.resolve(metavar_name)
-                            assert isinstance(metavar, nf.MetaVar)
+                            assert isinstance(metavar, MetaVar)
 
                             if statement.terms[0].symbol == '#ApplicationContext':
-                                assert isinstance(var, nf.EVar)
+                                assert isinstance(var, EVar)
                                 new_var = new_metavariable(metavar, app_ctx_holes=(var,))
                             elif statement.terms[0].symbol == '#Positive':
-                                assert isinstance(var, nf.SVar)
+                                assert isinstance(var, SVar)
                                 new_var = new_metavariable(metavar, positive=(var,))
                             elif statement.terms[0].symbol == '#Negative':
-                                assert isinstance(var, nf.SVar)
+                                assert isinstance(var, SVar)
                                 new_var = new_metavariable(metavar, negative=(var,))
                             else:
                                 raise NotImplementedError(f'Unsupported symbol {statement.terms[0].symbol}')
@@ -938,12 +939,12 @@ class MetamathConverter:
                 metavar_name = statement.metavariables[1].name
 
                 resolved_var = scope.resolve(var_name)
-                assert isinstance(resolved_var, nf.EVar | nf.SVar)
+                assert isinstance(resolved_var, EVar | SVar)
                 resolved_metavar = scope.resolve(metavar_name)
 
-                if isinstance(resolved_metavar, nf.MetaVar):
+                if isinstance(resolved_metavar, MetaVar):
                     add_fresh_mc(metavar_name, var_name)
-                elif isinstance(resolved_metavar, nf.EVar | nf.SVar):
+                elif isinstance(resolved_metavar, EVar | SVar):
                     # We just need to check their identifier without touching the scope
                     assert resolved_metavar.name != resolved_var.name
                 else:
@@ -978,19 +979,19 @@ class MetamathConverter:
 
                     def get_subst_lambda(
                         notation_scope: NotationScope, meta_args: tuple[Metavariable, ...]
-                    ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+                    ) -> Callable[[VarArg(Pattern)], Pattern]:
                         converted_args = tuple(self._to_pattern(notation_scope, arg) for arg in meta_args)
 
-                        def notation_lambda(*fargs: nf.Pattern) -> nf.Pattern:
+                        def notation_lambda(*fargs: Pattern) -> Pattern:
                             assert len(converted_args) == 3
                             pattern, plug, var = tuple(arg(*fargs) for arg in converted_args)
-                            assert isinstance(pattern, nf.MetaVar | nf.ESubst | nf.SSubst)
-                            assert isinstance(plug, nf.Pattern)
-                            assert isinstance(var, nf.EVar | nf.SVar)
-                            if isinstance(var, nf.EVar):
-                                return nf.ESubst(pattern, var, plug)
-                            elif isinstance(var, nf.SVar):
-                                return nf.SSubst(pattern, var, plug)
+                            assert isinstance(pattern, MetaVar | ESubst | SSubst)
+                            assert isinstance(plug, Pattern)
+                            assert isinstance(var, EVar | SVar)
+                            if isinstance(var, EVar):
+                                return ESubst(pattern, var, plug)
+                            elif isinstance(var, SVar):
+                                return SSubst(pattern, var, plug)
                             else:
                                 raise NotImplementedError
 
@@ -1048,7 +1049,7 @@ class MetamathConverter:
         )
         return lemma
 
-    def _resolve(self, scope: Scope, name: str) -> nf.Pattern:
+    def _resolve(self, scope: Scope, name: str) -> Pattern:
         if self._is_symbol(name):
             return self._symbols[name]
         elif name in self._declared_constants:
@@ -1059,13 +1060,11 @@ class MetamathConverter:
         else:
             return scope.resolve(name)
 
-    def _resolve_as_callable(
-        self, notation_scope: NotationScope, name: str
-    ) -> Callable[[VarArg(nf.Pattern)], nf.Pattern]:
+    def _resolve_as_callable(self, notation_scope: NotationScope, name: str) -> Callable[[VarArg(Pattern)], Pattern]:
         position = notation_scope.is_arg(name)
         if position is not None:
 
-            def match_arg(*args: nf.Pattern) -> nf.Pattern:
+            def match_arg(*args: Pattern) -> Pattern:
                 assert len(args) > position
                 return args[position]
 
@@ -1074,12 +1073,12 @@ class MetamathConverter:
             var = self._resolve(notation_scope, name)
             return lambda *args: var
 
-    def _get_arguments_type_check(self, notation_scope: NotationScope) -> Callable[[VarArg(nf.Pattern)], bool]:
-        def arguments_type_check(*args: nf.Pattern) -> bool:
+    def _get_arguments_type_check(self, notation_scope: NotationScope) -> Callable[[VarArg(Pattern)], bool]:
+        def arguments_type_check(*args: Pattern) -> bool:
             for index, name in enumerate(notation_scope.arguments):
                 real_arg = args[index]
                 expected_type = type(self._resolve(notation_scope, name))
-                if expected_type is nf.MetaVar and isinstance(real_arg, nf.Pattern):
+                if expected_type is MetaVar and isinstance(real_arg, Pattern):
                     continue
                 elif isinstance(real_arg, expected_type):
                     continue
