@@ -10,6 +10,11 @@ from dataclasses import dataclass
 if TYPE_CHECKING:
     from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
 
+phi0 = MetaVar(0)
+phi1 = MetaVar(1)
+phi2 = MetaVar(2)
+phi0_implies_phi0 = Implication(phi0, phi0)
+
 
 @dataclass(frozen=True, eq=False)
 class Bot(Notation):
@@ -25,15 +30,10 @@ class Bot(Notation):
         return {}
 
     def __str__(self) -> str:
-        return f'U+22A5'
+        return f'\u22A5 '
 
 
 bot = Bot()
-
-phi0 = MetaVar(0)
-phi1 = MetaVar(1)
-phi2 = MetaVar(2)
-phi0_implies_phi0 = Implication(phi0, phi0)
 
 
 @dataclass(frozen=True, eq=False)
@@ -56,9 +56,7 @@ class Negation(Notation):
 
 
 def neg(p: Pattern) -> Pattern:
-    neg = Negation(p)
-    return neg
-    assert False, neg.conclusion()
+    return Negation(p)
 
 
 class Propositional(ProofExp):
@@ -72,16 +70,15 @@ class Propositional(ProofExp):
     @staticmethod
     def claims() -> list[Pattern]:
         phi0 = MetaVar(0)
-        bot = Mu(SVar(0), SVar(0))
         top = Implication(bot, bot)
         neg_phi0 = Implication(phi0, bot)
         return [
             Implication(phi0, phi0),  # Reflexivity
             top,  # Top
             Implication(bot, phi0),  # Bot_elim
-            Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
+            Implication(neg(neg(phi0)), phi0),  # Contradiction
             Implication(neg(phi0), Implication(phi0, phi1)),  # Absurd
-            Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Peirce_bot
+            Implication(Implication(neg(phi0), phi0), phi0),  # Peirce_bot
         ]
 
     def proof_expressions(self) -> list[ProvedExpression]:

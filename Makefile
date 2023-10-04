@@ -142,6 +142,13 @@ test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
 test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
+TRANSLATED_PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-translated,${TRANSLATED_PROOFS})
+proofs/translated/%.ml-proof.verify-translated: .build/proofs/translated/%/%.ml-proof
+	$(CARGO) run --release --bin checker .build/translated-proofs/$*/$*.ml-gamma .build/translated-proofs/$*/$*.ml-claim .build/translated-proofs/$*/$*.ml-proof
+
+verify-translated: clean-translated-proofs ${TRANSLATED_PROOF_VERIFY_BUILD_TARGETS}
+.PHONY: verify-translated
+
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
 proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
 	$(CARGO) run --release --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
