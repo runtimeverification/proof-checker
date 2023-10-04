@@ -31,11 +31,11 @@ class Negation(Notation):
     def definition() -> Pattern:
         return Implication(MetaVar(0), bot)
 
-    def delta(self) -> dict[int, Pattern]:
+    def arguments(self) -> dict[int, Pattern]:
         return {0: self.pat}
 
     def __str__(self) -> str:
-        return f'~({self.pat})'
+        return f'~({str(self.pat)})'
 
 
 def neg(p: Pattern) -> Pattern:
@@ -52,7 +52,7 @@ class Top(Notation):
     def definition() -> Pattern:
         return neg(bot)
 
-    def delta(self) -> dict[int, Pattern]:
+    def arguments(self) -> dict[int, Pattern]:
         return {}
 
     def __str__(self) -> str:

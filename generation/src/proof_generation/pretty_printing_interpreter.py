@@ -175,9 +175,6 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Publish')
 
     def pretty_print_pattern(self, p: Pattern) -> str:
-        if isinstance(p, Notation):
-            return f'{str(p)}'
-
         # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
         # like implication while keeping notations
         match p:
@@ -193,6 +190,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
+
         return str(p)
 
     def print_stack(self) -> None:

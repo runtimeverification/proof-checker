@@ -10,8 +10,8 @@ clean-translated-proofs:
 	rm -rf .build/proofs/translated
 
 update-snapshots:
-	cp $(wildcard .build/proofs/*.ml*) proofs
-	cp $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+	cp -u $(wildcard .build/proofs/*.*) proofs
+	cp -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs
 

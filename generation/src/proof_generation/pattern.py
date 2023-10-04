@@ -221,17 +221,15 @@ class Notation(Pattern):
     def definition(self) -> Pattern:
         raise NotImplementedError("This notation has no definition.")
 
-    def delta(self) -> dict[int, Pattern]:
+    def arguments(self) -> dict[int, Pattern]:
         raise NotImplementedError("This notation needs to define a way to collect inputs.")
 
     def __eq__(self, o: object) -> bool:
         return self.conclusion() == o
 
     def conclusion(self) -> Pattern:
-        return self.definition().instantiate(self.delta())
+        return self.definition().instantiate(self.arguments())
 
-    # By applying any one of pattern transformations, we're leaving the realm of notation
-    # as there can be no direct reference to the original notation
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self.conclusion().instantiate(delta)
 
@@ -241,9 +239,8 @@ class Notation(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self.conclusion().apply_ssubst(svar_id, plug)
 
-    # Each subclass can implement its own __str__
     def __str__(self) -> str:
-        return f'{self.label()} {str(self.delta())}'
+        return f'{self.label()} {str(self.arguments())}'
 
 
 @dataclass(frozen=True, eq=False)
@@ -256,7 +253,7 @@ class Bot(Notation):
     def definition() -> Pattern:
         return Mu(SVar(0), SVar(0))
 
-    def delta(self) -> dict[int, Pattern]:
+    def arguments(self) -> dict[int, Pattern]:
         return {}
 
     def __str__(self) -> str:

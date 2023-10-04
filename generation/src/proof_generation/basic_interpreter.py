@@ -68,6 +68,11 @@ class BasicInterpreter:
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(SVar(var), subpattern)
 
+    def add_notation(self, notation: Pattern) -> Pattern:
+        if isinstance(notation, Notation):
+            self.pattern(notation.conclusion())
+        return notation
+
     def pattern(self, p: Pattern) -> Pattern:
         match p:
             case EVar(name):
@@ -95,8 +100,7 @@ class BasicInterpreter:
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
         if isinstance(p, Notation):
-            self.pattern(p.conclusion())
-            return p
+            return self.add_notation(p)
 
         raise NotImplementedError(f'{type(p)}')
 

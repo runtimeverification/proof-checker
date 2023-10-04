@@ -73,97 +73,97 @@ Mu 0
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (phi0 -> phi0)
 MetaVar 0
 	Stack:
 	0: phi0
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (phi0 -> phi0)
 MetaVar 0
 	Stack:
 	0: phi0
 	1: (phi0 -> phi0)
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (phi0 -> phi0)
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	1: phi0
 	2: (phi0 -> phi0)
-	3: (μ X0 . X0)
+	3: ⊥ 
 	4: (phi0 -> phi0)
 Instantiate 1, 2
 	Stack:
 	0: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (phi0 -> phi0)
 MetaVar 0
 	Stack:
 	0: phi0
 	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (phi0 -> phi0)
 MetaVar 0
 	Stack:
 	0: phi0
 	1: phi0
 	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
-	3: (μ X0 . X0)
+	3: ⊥ 
 	4: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi0)
 	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (phi0 -> phi0)
 Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
 	1: (phi0 -> phi0)
 	2: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
-	3: (μ X0 . X0)
+	3: ⊥ 
 	4: (phi0 -> phi0)
 Instantiate 1
 	Stack:
 	0: (phi0 -> ((phi0 -> phi0) -> phi0))
 	1: ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (phi0 -> phi0)
 ModusPonens
 	Stack:
 	0: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (phi0 -> phi0)
 MetaVar 0
 	Stack:
 	0: phi0
 	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (phi0 -> phi0)
 Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
 	1: phi0
 	2: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
-	3: (μ X0 . X0)
+	3: ⊥ 
 	4: (phi0 -> phi0)
 Instantiate 1
 	Stack:
 	0: (phi0 -> (phi0 -> phi0))
 	1: ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0))
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (phi0 -> phi0)
 ModusPonens
 	Stack:
 	0: (phi0 -> phi0)
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (phi0 -> phi0)
 Instantiate 0
 	Stack:
@@ -183,62 +183,62 @@ Mu 0
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (⊥  -> ⊥ )
 	3: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
 Mu 0
 	Stack:
 	0: (μ X0 . X0)
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> (μ X0 . X0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (⊥  -> ⊥ )
 	3: (phi0 -> phi0)
 SVar 0
 	Stack:
 	0: X0
-	1: (phi0 -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(phi0)
+	2: ⊥ 
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
 Mu 0
 	Stack:
 	0: (μ X0 . X0)
-	1: (phi0 -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(phi0)
+	2: ⊥ 
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (~(phi0) -> (μ X0 . X0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (⊥  -> ⊥ )
 	3: (phi0 -> phi0)
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (~(phi0) -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(~(phi0))
+	2: ⊥ 
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	1: phi0
-	2: (~(phi0) -> (μ X0 . X0))
-	3: (μ X0 . X0)
+	2: ~(~(phi0))
+	3: ⊥ 
 	4: (⊥  -> ⊥ )
 	5: (phi0 -> phi0)
 Instantiate 0, 1, 2
@@ -275,14 +275,14 @@ Implication
 SVar 0
 	Stack:
 	0: X0
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
 Mu 0
 	Stack:
 	0: (μ X0 . X0)
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
@@ -295,7 +295,7 @@ Implication
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (~(phi0) -> (μ X0 . X0))
+	1: ~(~(phi0))
 	2: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
@@ -322,7 +322,7 @@ Mu 0
 Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (~(~(phi0)) -> phi0)
 	3: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	4: (⊥  -> ⊥ )
@@ -342,7 +342,7 @@ MetaVar 0
 	4: (phi0 -> phi0)
 Prop3
 	Stack:
-	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	0: (((phi0 -> ⊥ ) -> ⊥ ) -> phi0)
 	1: phi0
 	2: ((~(~(phi0)) -> phi0) -> (⊥  -> (~(~(phi0)) -> phi0)))
 	3: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
@@ -381,7 +381,7 @@ Mu 0
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
@@ -389,7 +389,7 @@ SVar 0
 	Stack:
 	0: X0
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	4: (⊥  -> ⊥ )
 	5: (phi0 -> phi0)
@@ -397,22 +397,22 @@ Mu 0
 	Stack:
 	0: (μ X0 . X0)
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	4: (⊥  -> ⊥ )
 	5: (phi0 -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> (μ X0 . X0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	3: (⊥  -> ⊥ )
 	4: (phi0 -> phi0)
 Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
-	1: (phi0 -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(phi0)
+	2: ⊥ 
 	3: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	4: (⊥  -> ⊥ )
 	5: (phi0 -> phi0)
@@ -436,7 +436,7 @@ MetaVar 0
 	3: (phi0 -> phi0)
 Prop3
 	Stack:
-	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	0: (((phi0 -> ⊥ ) -> ⊥ ) -> phi0)
 	1: phi0
 	2: (⊥  -> phi0)
 	3: (⊥  -> ⊥ )
@@ -474,7 +474,7 @@ Mu 0
 MetaVar 1
 	Stack:
 	0: phi1
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: phi0
 	3: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
 	4: (⊥  -> phi0)
@@ -484,7 +484,7 @@ Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	1: phi1
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: phi0
 	4: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
 	5: (⊥  -> phi0)
@@ -516,7 +516,7 @@ Mu 0
 MetaVar 1
 	Stack:
 	0: phi1
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
 	3: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
 	4: (⊥  -> phi0)
@@ -589,7 +589,7 @@ Mu 0
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: phi1
 	3: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	4: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -601,7 +601,7 @@ SVar 0
 	Stack:
 	0: X0
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	5: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -613,7 +613,7 @@ Mu 0
 	Stack:
 	0: (μ X0 . X0)
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	5: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -624,7 +624,7 @@ Mu 0
 Implication
 	Stack:
 	0: (phi0 -> (μ X0 . X0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: phi1
 	3: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	4: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -635,8 +635,8 @@ Implication
 SVar 0
 	Stack:
 	0: X0
-	1: (phi0 -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(phi0)
+	2: ⊥ 
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	5: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -647,8 +647,8 @@ SVar 0
 Mu 0
 	Stack:
 	0: (μ X0 . X0)
-	1: (phi0 -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(phi0)
+	2: ⊥ 
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	5: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -659,7 +659,7 @@ Mu 0
 Implication
 	Stack:
 	0: (~(phi0) -> (μ X0 . X0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: phi1
 	3: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	4: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -670,8 +670,8 @@ Implication
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (~(phi0) -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(~(phi0))
+	2: ⊥ 
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	5: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -683,8 +683,8 @@ Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
 	1: phi0
-	2: (~(phi0) -> (μ X0 . X0))
-	3: (μ X0 . X0)
+	2: ~(~(phi0))
+	3: ⊥ 
 	4: phi1
 	5: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
 	6: ((phi0 -> (⊥  -> phi1)) -> ((phi0 -> ⊥ ) -> (phi0 -> phi1)))
@@ -751,7 +751,7 @@ Implication
 SVar 0
 	Stack:
 	0: X0
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -763,7 +763,7 @@ SVar 0
 Mu 0
 	Stack:
 	0: (μ X0 . X0)
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -786,7 +786,7 @@ Implication
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (~(phi0) -> (μ X0 . X0))
+	1: ~(~(phi0))
 	2: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -833,7 +833,7 @@ Mu 0
 Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (~(~(phi0)) -> phi0)
 	3: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
 	4: phi1
@@ -868,7 +868,7 @@ MetaVar 0
 	9: (phi0 -> phi0)
 Prop3
 	Stack:
-	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	0: (((phi0 -> ⊥ ) -> ⊥ ) -> phi0)
 	1: phi0
 	2: ((~(~(phi0)) -> phi0) -> (⊥  -> (~(~(phi0)) -> phi0)))
 	3: ((⊥  -> (~(~(phi0)) -> phi0)) -> ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0)))
@@ -937,7 +937,7 @@ Mu 0
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -950,7 +950,7 @@ SVar 0
 	Stack:
 	0: X0
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	4: phi1
 	5: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -963,7 +963,7 @@ Mu 0
 	Stack:
 	0: (μ X0 . X0)
 	1: phi0
-	2: (μ X0 . X0)
+	2: ⊥ 
 	3: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	4: phi1
 	5: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -975,7 +975,7 @@ Mu 0
 Implication
 	Stack:
 	0: (phi0 -> (μ X0 . X0))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	3: phi1
 	4: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -987,8 +987,8 @@ Implication
 Prop1
 	Stack:
 	0: (phi0 -> (phi1 -> phi0))
-	1: (phi0 -> (μ X0 . X0))
-	2: (μ X0 . X0)
+	1: ~(phi0)
+	2: ⊥ 
 	3: ((⊥  -> ~(~(phi0))) -> (⊥  -> phi0))
 	4: phi1
 	5: ((⊥  -> phi1) -> (phi0 -> (⊥  -> phi1)))
@@ -1371,7 +1371,7 @@ MetaVar 0
 	7: (phi0 -> phi0)
 Prop3
 	Stack:
-	0: (((phi0 -> (μ X0 . X0)) -> (μ X0 . X0)) -> phi0)
+	0: (((phi0 -> ⊥ ) -> ⊥ ) -> phi0)
 	1: phi0
 	2: ((((phi0 -> ⊥ ) -> ⊥ ) -> phi0) -> (((phi0 -> ⊥ ) -> phi0) -> (((phi0 -> ⊥ ) -> ⊥ ) -> phi0)))
 	3: ((((phi0 -> ⊥ ) -> phi0) -> (((phi0 -> ⊥ ) -> ⊥ ) -> phi0)) -> ((((phi0 -> ⊥ ) -> phi0) -> ((phi0 -> ⊥ ) -> ⊥ )) -> (((phi0 -> ⊥ ) -> phi0) -> phi0)))
@@ -2497,7 +2497,7 @@ Mu 0
 Prop2
 	Stack:
 	0: ((phi0 -> (phi1 -> phi2)) -> ((phi0 -> phi1) -> (phi0 -> phi2)))
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: phi0
 	3: (phi0 -> ⊥ )
 	4: ((((phi0 -> ⊥ ) -> (phi0 -> ⊥ )) -> (((phi0 -> ⊥ ) -> phi0) -> ((phi0 -> ⊥ ) -> ⊥ ))) -> (((phi0 -> ⊥ ) -> phi0) -> (((phi0 -> ⊥ ) -> (phi0 -> ⊥ )) -> (((phi0 -> ⊥ ) -> phi0) -> ((phi0 -> ⊥ ) -> ⊥ )))))

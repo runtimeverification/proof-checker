@@ -15,7 +15,7 @@ Implication
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 Implication
 	Stack:
 	0: (~(phi0) -> phi0)
@@ -48,18 +48,18 @@ Implication
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: ((~(phi0) -> phi0) -> phi0)
 MetaVar 1
 	Stack:
 	0: phi1
 	1: phi0
-	2: (phi0 -> (μ X0 . X0))
+	2: ~(phi0)
 	3: ((~(phi0) -> phi0) -> phi0)
 Implication
 	Stack:
 	0: (phi0 -> phi1)
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: ((~(phi0) -> phi0) -> phi0)
 Implication
 	Stack:
@@ -91,13 +91,13 @@ Implication
 SVar 0
 	Stack:
 	0: X0
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: (~(phi0) -> (phi0 -> phi1))
 	3: ((~(phi0) -> phi0) -> phi0)
 Mu 0
 	Stack:
 	0: (μ X0 . X0)
-	1: (phi0 -> (μ X0 . X0))
+	1: ~(phi0)
 	2: (~(phi0) -> (phi0 -> phi1))
 	3: ((~(phi0) -> phi0) -> phi0)
 Implication
@@ -108,7 +108,7 @@ Implication
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (~(phi0) -> (μ X0 . X0))
+	1: ~(~(phi0))
 	2: (~(phi0) -> (phi0 -> phi1))
 	3: ((~(phi0) -> phi0) -> phi0)
 Implication
@@ -132,7 +132,7 @@ Mu 0
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (μ X0 . X0)
+	1: ⊥ 
 	2: (~(~(phi0)) -> phi0)
 	3: (~(phi0) -> (phi0 -> phi1))
 	4: ((~(phi0) -> phi0) -> phi0)
@@ -175,7 +175,7 @@ Mu 0
 	5: ((~(phi0) -> phi0) -> phi0)
 Implication
 	Stack:
-	0: (⊥  -> ⊥ )
+	0: ((μ X0 . X0) -> (μ X0 . X0))
 	1: (⊥  -> phi0)
 	2: (~(~(phi0)) -> phi0)
 	3: (~(phi0) -> (phi0 -> phi1))
@@ -184,7 +184,7 @@ Publish
 MetaVar 0
 	Stack:
 	0: phi0
-	1: (⊥  -> ⊥ )
+	1: ⊤
 	2: (⊥  -> phi0)
 	3: (~(~(phi0)) -> phi0)
 	4: (~(phi0) -> (phi0 -> phi1))
@@ -193,7 +193,7 @@ MetaVar 0
 	Stack:
 	0: phi0
 	1: phi0
-	2: (⊥  -> ⊥ )
+	2: ⊤
 	3: (⊥  -> phi0)
 	4: (~(~(phi0)) -> phi0)
 	5: (~(phi0) -> (phi0 -> phi1))
@@ -201,7 +201,7 @@ MetaVar 0
 Implication
 	Stack:
 	0: (phi0 -> phi0)
-	1: (⊥  -> ⊥ )
+	1: ⊤
 	2: (⊥  -> phi0)
 	3: (~(~(phi0)) -> phi0)
 	4: (~(phi0) -> (phi0 -> phi1))
