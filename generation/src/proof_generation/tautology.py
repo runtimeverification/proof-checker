@@ -277,11 +277,9 @@ class Tautology(Propositional):
     # (as opposed to, say, `old term -> Top``)
     def to_conj(self, pat: Pattern) -> Tuple[ConjTerm, Proved, Proved]:
         if pat == bot:
-            bot_imp_bot = self.imp_refl(bot)
-            return ConjBool(False), bot_imp_bot, Proved()
+            return ConjBool(False), self.top_intro(), Proved()
         if pat == top:
-            top_imp_top = self.imp_refl(top)
-            return ConjBool(True), top_imp_top, Proved()
+            return ConjBool(True), self.top_intro(), Proved()
         match pat:
             case MetaVar(id):
                 phi_imp_phi = self.imp_refl(pat)
