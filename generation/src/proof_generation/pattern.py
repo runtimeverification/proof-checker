@@ -244,3 +244,23 @@ class Notation(Pattern):
     # Each subclass can implement its own __str__
     def __str__(self) -> str:
         return f'{self.label()} {str(self.delta())}'
+
+
+@dataclass(frozen=True, eq=False)
+class Bot(Notation):
+    @staticmethod
+    def label() -> str:
+        return "bot"
+
+    @staticmethod
+    def definition() -> Pattern:
+        return Mu(SVar(0), SVar(0))
+
+    def delta(self) -> dict[int, Pattern]:
+        return {}
+
+    def __str__(self) -> str:
+        return f'\u22A5 '
+
+
+bot = Bot()

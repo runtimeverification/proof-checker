@@ -4,7 +4,7 @@ import sys
 from typing import TYPE_CHECKING
 
 from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
-from proof_generation.pattern import Notation
+from proof_generation.pattern import Notation, bot
 from dataclasses import dataclass
 
 if TYPE_CHECKING:
@@ -14,26 +14,6 @@ phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 phi0_implies_phi0 = Implication(phi0, phi0)
-
-
-@dataclass(frozen=True, eq=False)
-class Bot(Notation):
-    @staticmethod
-    def label() -> str:
-        return "bot"
-
-    @staticmethod
-    def definition() -> Pattern:
-        return Mu(SVar(0), SVar(0))
-
-    def delta(self) -> dict[int, Pattern]:
-        return {}
-
-    def __str__(self) -> str:
-        return f'\u22A5 '
-
-
-bot = Bot()
 
 
 @dataclass(frozen=True, eq=False)

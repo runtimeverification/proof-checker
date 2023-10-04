@@ -19,7 +19,8 @@ from proof_generation.pattern import (
     SSubst,
     SVar,
     Symbol,
-    Notation
+    Notation,
+    bot
 )
 
 
@@ -151,7 +152,6 @@ class BasicInterpreter:
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
-        bot: Pattern = Mu(SVar(0), SVar(0))
         return Proved(Implication(Implication(Implication(phi0, bot), bot), phi0))
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
