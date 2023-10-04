@@ -148,7 +148,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(', '.join(map(str, delta.keys())))
 
     @pretty()
-    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
+    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
