@@ -12,6 +12,9 @@ Mu 0
 Implication
 	Stack:
 	0: (phi0 -> (μ X0 . X0))
+// Notation "not"
+	Stack:
+	0: ~(phi0)
 MetaVar 0
 	Stack:
 	0: ~(phi0)
@@ -45,6 +48,10 @@ Implication
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (phi0 -> (μ X0 . X0))
+// Notation "not"
+	Stack:
+	0: ((~(phi0) -> phi0) -> phi0)
+	1: ~(phi0)
 MetaVar 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
@@ -88,6 +95,11 @@ Implication
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (phi0 -> (μ X0 . X0))
+// Notation "not"
+	Stack:
+	0: ((~(phi0) -> phi0) -> phi0)
+	1: (~(phi0) -> (phi0 -> phi1))
+	2: ~(phi0)
 SVar 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
@@ -105,6 +117,11 @@ Implication
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(phi0) -> (μ X0 . X0))
+// Notation "not"
+	Stack:
+	0: ((~(phi0) -> phi0) -> phi0)
+	1: (~(phi0) -> (phi0 -> phi1))
+	2: ~(~(phi0))
 MetaVar 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
@@ -129,6 +146,12 @@ Mu 0
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
 	3: (μ X0 . X0)
+// Notation "bot"
+	Stack:
+	0: ((~(phi0) -> phi0) -> phi0)
+	1: (~(phi0) -> (phi0 -> phi1))
+	2: (~(~(phi0)) -> phi0)
+	3: ⊥ 
 MetaVar 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
@@ -180,6 +203,13 @@ Implication
 	2: (~(~(phi0)) -> phi0)
 	3: (⊥  -> phi0)
 	4: ((μ X0 . X0) -> (μ X0 . X0))
+// Notation "top"
+	Stack:
+	0: ((~(phi0) -> phi0) -> phi0)
+	1: (~(phi0) -> (phi0 -> phi1))
+	2: (~(~(phi0)) -> phi0)
+	3: (⊥  -> phi0)
+	4: ⊤
 Publish
 MetaVar 0
 	Stack:
