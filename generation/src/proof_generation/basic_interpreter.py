@@ -3,7 +3,20 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol, Notation, bot
+from proof_generation.pattern import (
+    Application,
+    ESubst,
+    EVar,
+    Exists,
+    Implication,
+    MetaVar,
+    Mu,
+    Notation,
+    SSubst,
+    SVar,
+    Symbol,
+    bot,
+)
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:

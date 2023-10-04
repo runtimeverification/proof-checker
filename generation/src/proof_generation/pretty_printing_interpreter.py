@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
-from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, SSubst, Notation
+from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, SSubst
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
