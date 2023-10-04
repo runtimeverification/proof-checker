@@ -208,12 +208,10 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
 
 class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
-    def save(self, id: str, term: Pattern | Proved) -> None:
-        id = str(len(self.memory))
-        ret = super().save(id, term)
-        return ret
+    def add_notation(self, notation: Pattern) -> Pattern:
+        return super(PrettyPrintingInterpreter, self).add_notation(notation)
 
-    def load(self, id: str, term: Pattern | Proved) -> None:
-        id = str(self.memory.index(term))
-        ret = super().load(id, term)
-        return ret
+    def pretty_print_pattern(self, p: Pattern) -> str:
+        if isinstance(p, Notation):
+            return self.pretty_print_pattern(p.conclusion())
+        return super().pretty_print_pattern(p)
