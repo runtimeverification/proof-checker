@@ -3,12 +3,14 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
-from proof_generation.pattern import Notation, bot
-from dataclasses import dataclass
+from proof_generation.pattern import Implication, MetaVar, Mu, SVar
+from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
+    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.pattern import Pattern
+    from proof_generation.proof import PatternExpression, ProvedExpression
+    from proof_generation.proved import Proved
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)

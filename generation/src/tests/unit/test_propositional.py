@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from proof_generation.proof import BasicInterpreter, ExecutionPhase, Implication, Proved, StatefulInterpreter, Symbol
+from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
+from proof_generation.pattern import Implication, Symbol
 from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1
 from proof_generation.proofs.small_theory import SmallTheory
+from proof_generation.proved import Proved
+from proof_generation.stateful_interpreter import StatefulInterpreter
 
 
 def test_prove_transitivity() -> None:
