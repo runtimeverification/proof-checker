@@ -195,9 +195,10 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     def print_stack(self) -> None:
         self.out.write('\tStack:\n')
-        for i, item in enumerate(reversed(self.stack)):
+        for i, item in enumerate(self.stack):
             if isinstance(item, Proved):
-                item = item.conclusion
+                self.out.write(f'\t{i}: \u22A2 {self.pretty_print_pattern(item.conclusion)}\n')
+                continue
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 
 
