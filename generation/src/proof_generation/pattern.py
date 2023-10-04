@@ -213,21 +213,22 @@ class SSubst(Pattern):
 
 @dataclass(frozen=True)
 class Notation(Pattern):
-    delta: list[Pattern]
-
     @staticmethod
-    def label(self) -> Pattern:
+    def label(self) -> str:
         raise NotImplementedError("This notation has no label.")
 
     @staticmethod
     def definition(self) -> Pattern:
         raise NotImplementedError("This notation has no definition.")
 
+    def delta(self) -> dict[int, Pattern]:
+        raise NotImplementedError("This notation needs to define a way to collect inputs.")
+
     def __eq__(self, o: object) -> bool:
         return self.conclusion() == o
 
     def conclusion(self) -> Pattern:
-        return self.definition().instantiate(dict(self.delta))
+        return self.definition().instantiate(self.delta())
 
     # By applying any one of pattern transformations, we're leaving the realm of notation
     # as there can be no direct reference to the original notation
@@ -242,4 +243,4 @@ class Notation(Pattern):
 
     # Each subclass can implement its own __str__
     def __str__(self) -> str:
-        return f'{self.label()} {str(delta)}'
+        return f'{self.label()} {str(self.delta())}'

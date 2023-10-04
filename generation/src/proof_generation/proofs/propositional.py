@@ -5,32 +5,60 @@ from typing import TYPE_CHECKING
 
 from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
 from proof_generation.pattern import Notation
+from dataclasses import dataclass
 
 if TYPE_CHECKING:
     from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
 
-bot = Mu(SVar(0), SVar(0))
+
+@dataclass(frozen=True, eq=False)
+class Bot(Notation):
+    @staticmethod
+    def label() -> str:
+        return "bot"
+
+    @staticmethod
+    def definition() -> Pattern:
+        return Mu(SVar(0), SVar(0))
+
+    def delta(self) -> dict[int, Pattern]:
+        return {}
+
+    def __str__(self) -> str:
+        return f'U+22A5'
+
+
+bot = Bot()
+
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 phi0_implies_phi0 = Implication(phi0, phi0)
 
 
+@dataclass(frozen=True, eq=False)
 class Negation(Notation):
+    pat: Pattern
+
     @staticmethod
-    def label() -> Pattern:
+    def label() -> str:
         return "not"
 
     @staticmethod
     def definition() -> Pattern:
         return Implication(MetaVar(0), bot)
 
+    def delta(self) -> dict[int, Pattern]:
+        return {0: self.pat}
+
     def __str__(self) -> str:
-        return f'~({self.delta[0]})'
+        return f'~({self.pat})'
 
 
 def neg(p: Pattern) -> Pattern:
-    return Negation({0: p})
+    neg = Negation(p)
+    return neg
+    assert False, neg.conclusion()
 
 
 class Propositional(ProofExp):

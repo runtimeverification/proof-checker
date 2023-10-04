@@ -11,6 +11,7 @@ clean-translated-proofs:
 
 update-snapshots:
 	cp -rT .build/proofs proofs
+	cp .build/translated-proofs/**/* proofs/translated
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs
 
