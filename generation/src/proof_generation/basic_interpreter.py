@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol, Notation
+from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol, Notation, bot
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -121,7 +121,6 @@ class BasicInterpreter:
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
-        bot: Pattern = Mu(SVar(0), SVar(0))
         return Proved(Implication(Implication(Implication(phi0, bot), bot), phi0))
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
