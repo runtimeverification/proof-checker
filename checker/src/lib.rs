@@ -289,33 +289,13 @@ impl Pattern {
                 app_ctx_holes,
                 ..
             } => {
-                for hole in app_ctx_holes {
-                    if e_fresh.contains(hole) {
-                        return false;
-                    }
-                }
-
-                return true;
+                return !app_ctx_holes
+                    .into_iter()
+                    .any(|hole| e_fresh.contains(hole))
             }
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
-            Pattern::ESubst {
-                pattern, evar_id, ..
-            } => {
-                if pattern.e_fresh(*evar_id) {
-                    return false;
-                }
-
-                true
-            }
-            Pattern::SSubst {
-                pattern, svar_id, ..
-            } => {
-                if pattern.s_fresh(*svar_id) {
-                    return false;
-                }
-
-                true
-            }
+            Pattern::ESubst { pattern, evar_id, .. } => !pattern.e_fresh(*evar_id),
+            Pattern::SSubst { pattern, svar_id, .. } => !pattern.s_fresh(*svar_id),
             _ => {
                 // TODO: If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
