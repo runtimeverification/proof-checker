@@ -422,7 +422,7 @@ fn bot() -> Rc<Pattern> {
 
 #[inline]
 fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
-    implies(pat, Rc::clone(&bot()))
+    implies(pat, bot())
 }
 
 #[allow(dead_code)]
@@ -729,14 +729,14 @@ fn execute_instructions<'a>(
             implies(Rc::clone(&phi1), Rc::clone(&phi2)),
         ),
         implies(
-            implies(Rc::clone(&phi0), Rc::clone(&phi1)),
-            implies(Rc::clone(&phi0), Rc::clone(&phi2)),
+            implies(Rc::clone(&phi0), phi1),
+            implies(Rc::clone(&phi0), phi2),
         ),
     );
     let prop3 = implies(not(not(Rc::clone(&phi0))), Rc::clone(&phi0));
     let quantifier = implies(
         esubst(Rc::clone(&phi0), 0, evar(1)),
-        exists(0, Rc::clone(&phi0)),
+        exists(0, phi0),
     );
 
     let existence = exists(0, evar(0));
@@ -853,7 +853,7 @@ fn execute_instructions<'a>(
                     _ => panic!("Cannot apply ESubst on concrete term!"),
                 }
 
-                let esubst_pat = esubst(Rc::clone(&pattern), evar_id, Rc::clone(&plug));
+                let esubst_pat = esubst(Rc::clone(&pattern), evar_id, plug);
                 if esubst_pat.well_formed() {
                     // The substitution is redundant, we don't apply it.
                     stack.push(Term::Pattern(pattern))
@@ -875,7 +875,7 @@ fn execute_instructions<'a>(
                     _ => panic!("Cannot apply SSubst on concrete term!"),
                 }
 
-                let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, Rc::clone(&plug));
+                let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, plug);
                 if !ssubst_pat.well_formed() {
                     // The substitution is redundant, we don't apply it.
                     stack.push(Term::Pattern(pattern))
