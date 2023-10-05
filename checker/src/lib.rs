@@ -688,15 +688,10 @@ pub enum ExecutionPhase {
 fn read_u8_vec<'a>(iterator: &mut InstrIterator) -> Vec<u8> {
     let len = (*iterator.next().expect("Expected length for array")) as usize;
 
-    let mut vec: Vec<u8> = Vec::with_capacity(len);
-    for _ in 0..len {
-        vec.push(
-            *iterator
-                .next()
-                .expect("Expected another constraint of given type"),
-        );
-    }
-    return vec;
+    iterator
+        .take(len)
+        .cloned()
+        .collect::<Vec<u8>>()
 }
 
 fn execute_instructions<'a>(
