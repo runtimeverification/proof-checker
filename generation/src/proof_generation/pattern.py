@@ -257,7 +257,7 @@ class Bot(Notation):
         return {}
 
     def __str__(self) -> str:
-        return '\u22A5 '
+        return '\u22A5'
 
 
 bot = Bot()

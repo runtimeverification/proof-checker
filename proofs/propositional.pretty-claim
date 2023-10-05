@@ -151,41 +151,41 @@ Mu 0
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: ⊥ 
+	3: ⊥
 MetaVar 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: ⊥ 
+	3: ⊥
 	4: phi0
 Implication
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 Publish
 SVar 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: X0
 Mu 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: (μ X0 . X0)
 SVar 0
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: (μ X0 . X0)
 	5: X0
 Mu 0
@@ -193,7 +193,7 @@ Mu 0
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: (μ X0 . X0)
 	5: (μ X0 . X0)
 Implication
@@ -201,14 +201,14 @@ Implication
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: ((μ X0 . X0) -> (μ X0 . X0))
 // Notation top
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: ⊤
 Publish
 MetaVar 0
@@ -216,7 +216,7 @@ MetaVar 0
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: ⊤
 	5: phi0
 MetaVar 0
@@ -224,7 +224,7 @@ MetaVar 0
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: ⊤
 	5: phi0
 	6: phi0
@@ -233,7 +233,7 @@ Implication
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
-	3: (⊥  -> phi0)
+	3: (⊥ -> phi0)
 	4: ⊤
 	5: (phi0 -> phi0)
 Publish
