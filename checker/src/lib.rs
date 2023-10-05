@@ -925,15 +925,14 @@ fn execute_instructions<'a>(
                 let mut plugs: Vec<Rc<Pattern>> = Vec::with_capacity(n);
 
                 let metaterm = pop_stack(stack);
-                for _ in 0..n {
-                    ids.push(
-                        *iterator
-                            .next()
-                            .expect("Insufficient parameters for Instantiate instruction")
-                            as Id,
-                    );
-                    plugs.push(pop_stack_pattern(stack));
-                }
+                
+                iterator
+                    .take(n)
+                    .for_each(|arg| { 
+                        ids.push(*arg as Id); 
+                        plugs.push(pop_stack_pattern(stack)) 
+                    });
+                
                 match metaterm {
                     Term::Pattern(mut p) => {
                         instantiate_in_place(&mut p, &ids, &plugs);
