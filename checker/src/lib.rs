@@ -515,37 +515,29 @@ fn instantiate_internal(
             ..
         } => {
             if let Some(pos) = vars.iter().position(|&x| x == *id) {
-                for evar in e_fresh {
-                    if !plugs[pos].e_fresh(*evar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a freshness constraint: EVar {}",
-                            id, evar
-                        );
-                    }
+                if let Some(evar) = e_fresh.into_iter().find(|&evar| !plugs[pos].e_fresh(*evar)) {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a freshness constraint: EVar {}",
+                        id, evar
+                    );
                 }
-                for svar in s_fresh {
-                    if !plugs[pos].s_fresh(*svar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
-                            id, svar
-                        );
-                    }
+                if let Some(svar) = s_fresh.into_iter().find(|&svar| !plugs[pos].s_fresh(*svar)) {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
+                        id, svar
+                    );
                 }
-                for svar in positive {
-                    if !plugs[pos].positive(*svar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a positivity constraint: SVar {}",
-                            id, svar
-                        );
-                    }
+                if let Some(svar) = positive.into_iter().find(|&svar| !plugs[pos].positive(*svar)) {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a positivity constraint: SVar {}",
+                        id, svar
+                    );
                 }
-                for svar in negative {
-                    if !plugs[pos].negative(*svar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a negativity constraint: SVar {}",
-                            id, svar
-                        );
-                    }
+                if let Some(svar) = negative.into_iter().find(|&svar| !plugs[pos].negative(*svar)) {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a negativity constraint: SVar {}",
+                        id, svar
+                    );
                 }
 
                 if pos >= plugs.len() {
