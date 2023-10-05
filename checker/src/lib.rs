@@ -660,10 +660,16 @@ pub enum ExecutionPhase {
 fn read_u8_vec<'a>(iterator: &mut InstrIterator) -> Vec<u8> {
     let len = (*iterator.next().expect("Expected length for array")) as usize;
 
-    iterator
-        .take(len)
-        .cloned()
-        .collect::<Vec<u8>>()
+    let take = iterator
+                        .take(len)
+                        .cloned()
+                        .collect::<Vec<u8>>();
+
+    if take.len() != len {
+        panic!("Iterator length did not match quoted len");
+    } 
+
+    take
 }
 
 fn execute_instructions<'a>(
