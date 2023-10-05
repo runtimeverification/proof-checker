@@ -230,12 +230,21 @@ class Notation(Pattern):
     def conclusion(self) -> Pattern:
         return self.definition().instantiate(self.arguments())
 
+    # We assume all metavars in notations are instantiated for
+    # So this is correct, as this can only change "internals" of the instantiations
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return self.conclusion().instantiate(delta)
+        args: list[Pattern] = []
 
+        for arg in self.arguments().values():
+            args.append(arg.instantiate(delta))
+
+        return type(self)(*args)
+
+    # TODO: Keep notations (without dropping them)
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         return self.conclusion().apply_esubst(evar_id, plug)
 
+    # TODO: Keep notations (without dropping them)
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self.conclusion().apply_ssubst(svar_id, plug)
 
