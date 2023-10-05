@@ -643,12 +643,8 @@ fn instantiate_internal(
 }
 
 fn instantiate_in_place(p: &mut Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) {
-    let ret = instantiate_internal(p, vars, plugs);
-    match ret {
-        Some(_) => {
-            *p = ret.unwrap();
-        }
-        None => (),
+    if let Some(ret) = instantiate_internal(p, vars, plugs) {
+        *p = ret
     }
 }
 
