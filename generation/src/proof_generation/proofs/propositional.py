@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implication, MetaVar, Notation, bot
+from proof_generation.pattern import Implication, MetaVar, Notation, Inst, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -19,47 +19,14 @@ phi2 = MetaVar(2)
 phi0_implies_phi0 = Implication(phi0, phi0)
 
 
-@dataclass(frozen=True, eq=False)
-class Negation(Notation):
-    pat: Pattern
-
-    @staticmethod
-    def label() -> str:
-        return 'not'
-
-    @staticmethod
-    def definition() -> Pattern:
-        return Implication(MetaVar(0), bot)
-
-    def arguments(self) -> dict[int, Pattern]:
-        return {0: self.pat}
-
-    def __str__(self) -> str:
-        return f'~({str(self.pat)})'
+negation = Notation('not', Implication(MetaVar(0), bot), lambda args: f'~({str(args[0])})')
 
 
 def neg(p: Pattern) -> Pattern:
-    return Negation(p)
+    return Inst(negation, p)
 
 
-@dataclass(frozen=True, eq=False)
-class Top(Notation):
-    @staticmethod
-    def label() -> str:
-        return 'top'
-
-    @staticmethod
-    def definition() -> Pattern:
-        return neg(bot)
-
-    def arguments(self) -> dict[int, Pattern]:
-        return {}
-
-    def __str__(self) -> str:
-        return '\u22A4'
-
-
-top = Top()
+top = Inst(Notation('top', neg(bot), lambda _args: '\u22A4'))
 
 
 class Propositional(ProofExp):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
-from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, SSubst
+from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, Inst, SSubst
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
@@ -123,8 +123,8 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     @pretty()
     def add_notation(self, notation: Pattern) -> None:
-        if isinstance(notation, Notation):
-            self.out.write(f'// Notation {notation.label()}')
+        if isinstance(notation, Inst):
+            self.out.write(f'// Notation {notation.notation.label}')
 
     @pretty()
     def prop1(self) -> None:
@@ -212,6 +212,6 @@ class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
         return super(PrettyPrintingInterpreter, self).add_notation(notation)
 
     def pretty_print_pattern(self, p: Pattern) -> str:
-        if isinstance(p, Notation):
+        if isinstance(p, Inst):
             return self.pretty_print_pattern(p.conclusion())
         return super().pretty_print_pattern(p)

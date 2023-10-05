@@ -212,14 +212,22 @@ class SSubst(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation(Pattern):
-    @staticmethod
-    def label() -> str:
-        raise NotImplementedError('This notation has no label.')
+class Notation:
+    label: str
+    definition: Pattern
+    to_str: Callable[list[Pattern], str]
 
-    @staticmethod
-    def definition() -> Pattern:
-        raise NotImplementedError('This notation has no definition.')
+
+@dataclass(init=False)
+class Inst(Pattern):
+    notation: Notation
+    arguments: dict[Pattern]
+
+    def __init__(self, notation: Notation, *args):
+        self.notation = notation
+        self.arguments = {}
+        for i, arg in enumerate(args):
+            self.arguments[i] = arg
 
     def arguments(self) -> dict[int, Pattern]:
         raise NotImplementedError('This notation needs to define a way to collect inputs.')
@@ -228,36 +236,21 @@ class Notation(Pattern):
         return self.conclusion() == o
 
     def conclusion(self) -> Pattern:
-        return self.definition().instantiate(self.arguments())
+        return self.notation.definition.instantiate(self.arguments)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return self.conclusion().instantiate(delta)
+        return Inst(Notation(self.notation.label, self.conclusion(), self.notation.to_str), delta)
 
+    # TODO: This is incorrect
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_esubst(evar_id, plug)
+        return Inst(Notation(self.notation.label, self.conclusion().apply_esubst(evar_id, plug), self.notation.to_str), self.arguments)
 
+    # TODO: This is incorrect
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_ssubst(svar_id, plug)
+        return Inst(Notation(self.notation.label, self.conclusion().apply_ssubst(svar_id, plug), self.notation.to_str), self.arguments)
 
     def __str__(self) -> str:
-        return f'{self.label()} {str(self.arguments())}'
+        return self.notation.to_str(list(self.arguments))
 
 
-@dataclass(frozen=True, eq=False)
-class Bot(Notation):
-    @staticmethod
-    def label() -> str:
-        return 'bot'
-
-    @staticmethod
-    def definition() -> Pattern:
-        return Mu(SVar(0), SVar(0))
-
-    def arguments(self) -> dict[int, Pattern]:
-        return {}
-
-    def __str__(self) -> str:
-        return '\u22A5'
-
-
-bot = Bot()
+bot = Inst(Notation("bot", Mu(SVar(0), SVar(0)), lambda _args: '\u22A5'))
