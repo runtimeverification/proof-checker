@@ -3,8 +3,8 @@ Symbol 0
 	0: σ0
 Symbol 2
 	Stack:
-	0: σ2
-	1: σ0
+	0: σ0
+	1: σ2
 Implication
 	Stack:
 	0: (σ0 -> σ2)

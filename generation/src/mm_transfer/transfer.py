@@ -91,7 +91,7 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp) ->
             if len(pat_constructor_axiom.metavars) > 0:
                 pat = stack()[-1]
                 assert isinstance(pat, Pattern)
-                interpreter().instantiate_notation(pat, get_delta(converter.get_metavars_in_order(lemma_label)))
+                interpreter().instantiate_pattern(pat, get_delta(converter.get_metavars_in_order(lemma_label)))
 
         # Lemma is one of these `metavar-is-pattern` functions
         elif lemma_label in converter._fp_label_to_pattern and isinstance(

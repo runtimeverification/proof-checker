@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
-from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, SSubst
+from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, SSubst
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
@@ -122,6 +122,11 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(f'SSubst id={svar_id}')
 
     @pretty()
+    def add_notation(self, notation: Pattern) -> None:
+        if isinstance(notation, Notation):
+            self.out.write(f'// Notation {notation.label()}')
+
+    @pretty()
     def prop1(self) -> None:
         self.out.write('Prop1')
 
@@ -143,7 +148,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(', '.join(map(str, delta.keys())))
 
     @pretty()
-    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
+    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
@@ -175,9 +180,6 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('Publish')
 
     def pretty_print_pattern(self, p: Pattern) -> str:
-        if p in self.notation:
-            return self.notation[p]
-
         # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
         # like implication while keeping notations
         match p:
@@ -193,23 +195,23 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
+
         return str(p)
 
     def print_stack(self) -> None:
         self.out.write('\tStack:\n')
-        for i, item in enumerate(reversed(self.stack)):
+        for i, item in enumerate(self.stack):
             if isinstance(item, Proved):
-                item = item.conclusion
+                self.out.write(f'\t{i}: \u22A2 {self.pretty_print_pattern(item.conclusion)}\n')
+                continue
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 
 
 class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
-    def save(self, id: str, term: Pattern | Proved) -> None:
-        id = str(len(self.memory))
-        ret = super().save(id, term)
-        return ret
+    def add_notation(self, notation: Pattern) -> Pattern:
+        return super(PrettyPrintingInterpreter, self).add_notation(notation)
 
-    def load(self, id: str, term: Pattern | Proved) -> None:
-        id = str(self.memory.index(term))
-        ret = super().load(id, term)
-        return ret
+    def pretty_print_pattern(self, p: Pattern) -> str:
+        if isinstance(p, Notation):
+            return self.pretty_print_pattern(p.conclusion())
+        return super().pretty_print_pattern(p)
