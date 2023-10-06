@@ -36,12 +36,19 @@ install-kup:
 	fi
 
 k-version-output := $(shell make -C generation k-version)
-install-k:
-	kup install k --version v$(k-version-output)
+install-k-kup:
+	@if ! command -v kompile &> /dev/null; then \
+		echo "K is not installed, installing..."; \
+		kup install k --version v$(k-version-output); \
+	else \
+		echo "K is already installed, skipping installation."; \
+	fi	
 
-build: build-checker build-risc0 generation-install install-kup install-k
+build: build-checker build-risc0 generation-install
 
-.PHONY: build-checker build-risc0 generation-install install-kup install-k build
+install-k: install-kup install-k-kup
+
+.PHONY: build-checker build-risc0 generation-install install-kup install-k install-k-kup build
 
 # Syntax and formatting checks
 # ============================

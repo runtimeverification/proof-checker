@@ -20,7 +20,9 @@ For installing Rust, you need to install Cargo, the Rust package manager. You ca
 
 For managing Python dependencies, we use [poetry](https://python-poetry.org/). You can install it by following the instructions [here](https://python-poetry.org/docs/#installation).
 
-The rest can be installed with `make build` command.
+Everything except the K framework can be installed with `make build` command.
+
+Install the K framework with `make install-k`.
 
 Usage 
 =============
