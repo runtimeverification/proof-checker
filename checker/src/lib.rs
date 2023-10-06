@@ -665,10 +665,7 @@ fn read_u8_vec<'a>(iterator: &mut InstrIterator) -> Vec<u8> {
                         .cloned()
                         .collect::<Vec<u8>>();
 
-    if take.len() != len {
-        panic!("Iterator length did not match quoted len");
-    } 
-
+    assert!(take.len() == len, "Iterator length did not match quoted len");
     take
 }
 
