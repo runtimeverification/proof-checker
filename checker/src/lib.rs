@@ -355,18 +355,18 @@ fn metavar_s_fresh(var_id: Id, fresh: Id, positive: IdList, negative: IdList) ->
     });
 }
 
-#[inline]
+#[inline(always)]
 fn exists(var: Id, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Exists { var, subpattern });
 }
 
 // Does not do any well-formedness checks!!!!!
-#[inline]
+#[inline(always)]
 fn mu(var: Id, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Mu { var, subpattern });
 }
 
-#[inline]
+#[inline(always)]
 fn esubst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::ESubst {
         pattern,
@@ -375,7 +375,7 @@ fn esubst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     });
 }
 
-#[inline]
+#[inline(always)]
 fn ssubst(pattern: Rc<Pattern>, svar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::SSubst {
         pattern,
@@ -384,23 +384,23 @@ fn ssubst(pattern: Rc<Pattern>, svar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     });
 }
 
-#[inline]
+#[inline(always)]
 fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Implication { left, right });
 }
 
-#[inline]
+#[inline(always)]
 fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Application { left, right });
 }
 
 // Notation
-#[inline]
+#[inline(always)]
 fn bot() -> Rc<Pattern> {
     mu(0, svar(0))
 }
 
-#[inline]
+#[inline(always)]
 fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
     implies(pat, bot())
 }
