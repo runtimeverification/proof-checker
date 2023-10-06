@@ -3,7 +3,20 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.pattern import (
+    Application,
+    ESubst,
+    EVar,
+    Exists,
+    Implication,
+    MetaVar,
+    Mu,
+    Notation,
+    SSubst,
+    SVar,
+    Symbol,
+    bot,
+)
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -68,6 +81,11 @@ class BasicInterpreter:
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(SVar(var), subpattern)
 
+    def add_notation(self, notation: Pattern) -> Pattern:
+        if isinstance(notation, Notation):
+            self.pattern(notation.conclusion())
+        return notation
+
     def pattern(self, p: Pattern) -> Pattern:
         match p:
             case EVar(name):
@@ -94,6 +112,9 @@ class BasicInterpreter:
 
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
+        if isinstance(p, Notation):
+            return self.add_notation(p)
+
         raise NotImplementedError(f'{type(p)}')
 
     def patterns(self, ps: tuple[Pattern, ...]) -> tuple[Pattern, ...]:
@@ -117,7 +138,6 @@ class BasicInterpreter:
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
-        bot: Pattern = Mu(SVar(0), SVar(0))
         return Proved(Implication(Implication(Implication(phi0, bot), bot), phi0))
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
@@ -129,7 +149,7 @@ class BasicInterpreter:
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return Proved(proved.conclusion.instantiate(delta))
 
-    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return pattern.instantiate(delta)
 
     def pop(self, term: Pattern | Proved) -> None:

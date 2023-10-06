@@ -98,8 +98,8 @@ class ProofExp:
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return self.interpreter.instantiate(proved, delta)
 
-    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        return self.interpreter.instantiate_notation(pattern, delta)
+    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        return self.interpreter.instantiate_pattern(pattern, delta)
 
     def load_notation(self, id: str) -> Pattern | None:
         if id not in self.notation:
