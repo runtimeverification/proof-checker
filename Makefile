@@ -30,7 +30,7 @@ generation-install:
 install-kup:
 	@if ! command -v kup &> /dev/null; then \
 		echo "kup is not installed, installing..."; \
-		curl https://get.knit.kframework.org/ | bash; \
+		curl https://kframework.org/install | bash; \
 	else \
 		echo "kup is already installed, skipping installation."; \
 	fi
