@@ -18,7 +18,7 @@ Apart from Rust and Python, you will likely need to:
 
 For installing Rust, you need to install Cargo, the Rust package manager. You can do this by following the instructions [here](https://www.rust-lang.org/tools/install).
 
-For managint Python dependencies, we use [poetry](https://python-poetry.org/). You can install it by following the instructions [here](https://python-poetry.org/docs/#installation).
+For managing Python dependencies, we use [poetry](https://python-poetry.org/). You can install it by following the instructions [here](https://python-poetry.org/docs/#installation).
 
 The rest can be installed with `make build` command.
 
