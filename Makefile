@@ -15,6 +15,41 @@ update-snapshots:
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs
 
+# Installation and setup
+# ======================
+
+build-checker:
+	cargo build --manifest-path=checker/Cargo.toml
+
+build-risc0:
+	cargo build --manifest-path=risc0/Cargo.toml
+
+generation-install:
+	make -C generation poetry-install
+
+install-kup:
+	@if ! command -v kup &> /dev/null; then \
+		echo "kup is not installed, installing..."; \
+		curl https://kframework.org/install | bash; \
+	else \
+		echo "kup is already installed, skipping installation."; \
+	fi
+
+k-version-output := $(shell make -C generation k-version)
+install-k-kup:
+	@if ! command -v kompile &> /dev/null; then \
+		echo "K is not installed, installing..."; \
+		kup install k --version v$(k-version-output); \
+	else \
+		echo "K is already installed, skipping installation."; \
+	fi	
+
+build: build-checker build-risc0 generation-install
+
+install-k: install-kup install-k-kup
+
+.PHONY: build-checker build-risc0 generation-install install-kup install-k install-k-kup build
+
 # Syntax and formatting checks
 # ============================
 
