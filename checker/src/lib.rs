@@ -288,14 +288,14 @@ impl Pattern {
                 e_fresh,
                 app_ctx_holes,
                 ..
-            } => {
-                return !app_ctx_holes
-                    .into_iter()
-                    .any(|hole| e_fresh.contains(hole))
-            }
+            } => return !app_ctx_holes.into_iter().any(|hole| e_fresh.contains(hole)),
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
-            Pattern::ESubst { pattern, evar_id, .. } => !pattern.e_fresh(*evar_id),
-            Pattern::SSubst { pattern, svar_id, .. } => !pattern.s_fresh(*svar_id),
+            Pattern::ESubst {
+                pattern, evar_id, ..
+            } => !pattern.e_fresh(*evar_id),
+            Pattern::SSubst {
+                pattern, svar_id, ..
+            } => !pattern.s_fresh(*svar_id),
             _ => {
                 // TODO: If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
@@ -507,13 +507,19 @@ fn instantiate_internal(
                         id, svar
                     );
                 }
-                if let Some(svar) = positive.into_iter().find(|&svar| !plugs[pos].positive(*svar)) {
+                if let Some(svar) = positive
+                    .into_iter()
+                    .find(|&svar| !plugs[pos].positive(*svar))
+                {
                     panic!(
                         "Instantiation of MetaVar {} breaks a positivity constraint: SVar {}",
                         id, svar
                     );
                 }
-                if let Some(svar) = negative.into_iter().find(|&svar| !plugs[pos].negative(*svar)) {
+                if let Some(svar) = negative
+                    .into_iter()
+                    .find(|&svar| !plugs[pos].negative(*svar))
+                {
                     panic!(
                         "Instantiation of MetaVar {} breaks a negativity constraint: SVar {}",
                         id, svar
@@ -660,12 +666,12 @@ pub enum ExecutionPhase {
 fn read_u8_vec<'a>(iterator: &mut InstrIterator) -> Vec<u8> {
     let len = (*iterator.next().expect("Expected length for array")) as usize;
 
-    let take = iterator
-                        .take(len)
-                        .cloned()
-                        .collect::<Vec<u8>>();
+    let take = iterator.take(len).cloned().collect::<Vec<u8>>();
 
-    assert!(take.len() == len, "Iterator length did not match quoted len");
+    assert!(
+        take.len() == len,
+        "Iterator length did not match quoted len"
+    );
     take
 }
 
@@ -700,10 +706,7 @@ fn execute_instructions<'a>(
         ),
     );
     let prop3 = implies(not(not(Rc::clone(&phi0))), Rc::clone(&phi0));
-    let quantifier = implies(
-        esubst(Rc::clone(&phi0), 0, evar(1)),
-        exists(0, phi0),
-    );
+    let quantifier = implies(esubst(Rc::clone(&phi0), 0, evar(1)), exists(0, phi0));
 
     let existence = exists(0, evar(0));
 
@@ -928,14 +931,12 @@ fn execute_instructions<'a>(
                 let mut plugs: Vec<Rc<Pattern>> = Vec::with_capacity(n);
 
                 let metaterm = pop_stack(stack);
-                
-                iterator
-                    .take(n)
-                    .for_each(|arg| { 
-                        ids.push(*arg as Id); 
-                        plugs.push(pop_stack_pattern(stack)) 
-                    });
-                
+
+                iterator.take(n).for_each(|arg| {
+                    ids.push(*arg as Id);
+                    plugs.push(pop_stack_pattern(stack))
+                });
+
                 match metaterm {
                     Term::Pattern(mut p) => {
                         instantiate_in_place(&mut p, &ids, &plugs);
