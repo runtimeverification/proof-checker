@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pyk.kllvm.load  # noqa: F401
+
 from rewrite.llvm_proof_hint import LLVMRewriteTrace
 
 
