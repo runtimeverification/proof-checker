@@ -33,6 +33,9 @@ pub enum Instruction {
     Save, Load,
     // Journal Manipulation,
     Publish,
+    // Derived Rules
+    PublishConditional,
+    StrongModusPonens,
     // Metavar with no constraints
     CleanMetaVar = (9 + 128)
 }
@@ -1015,6 +1018,21 @@ fn execute_instructions<'a>(
                     }
                 }
             },
+            Instruction::PublishConditional => match phase {
+                ExecutionPhase::Gamma => {
+                    let n = *iterator
+                        .next()
+                        .expect("Insufficient parameters for StrongImplication instruction")
+                        as usize;
+
+                    let mut antecedents: Vec<Rc<Pattern>> = Vec::with_capacity(n);
+                    for _ in 0..n {
+                        antecedents.push(pop_stack_pattern(stack))
+                    }
+                    memory.push(Entry::Proved(pop_stack_pattern(stack)))
+                },
+                _ => panic!("StrongImplication can only be used in the Gamma phase.")
+            }
             _ => {
                 unimplemented!("Instruction: {}", instr_u32)
             }

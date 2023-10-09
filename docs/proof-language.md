@@ -780,6 +780,9 @@ Otherwise, execution aborts, and verification fails.
     and push an implication/application to the stack
     with appropriate arguments.
 
+`StrongImplication <n:u8>`
+:   Consume n + 1 patterns from the stack and add a strong implication to the stack
+
 `Exists <var_id:u8>`/`Mu <var_id:u8>`
 :   Consume a pattern from the stack, and push the corresponding pattern to the stack, if well-formed.
 
@@ -805,6 +808,9 @@ Otherwise, execution aborts, and verification fails.
 
 `ModusPonens`/`Generalization`/`Frame`/`Substitution`/`KnasterTarski`
 :   Consume one or two `Proof` terms off the stack and push the new proof term.
+
+`Strong ModusPonens`
+:   Consume a `StrongImplication` and a `Proof` term sharing antecedents, and push the conclusion.
 
 ### Memory manipulation:
 
