@@ -101,24 +101,11 @@ class ProofExp:
     def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return self.interpreter.instantiate_pattern(pattern, delta)
 
-    def load_notation(self, id: str) -> Pattern | None:
-        if id not in self.notation:
-            return None
-        ret = self.notation[id]
-        self.interpreter.load(id, ret)
-        return ret
-
     def load_axiom(self, axiom_term: Pattern) -> Proved:
         assert axiom_term in self.axioms()
         axiom = Proved(axiom_term)
         self.interpreter.load(f'Axiom {str(axiom)}', axiom)
         return axiom
-
-    def save_notation(self, id: str, pattern: Pattern) -> Pattern:
-        assert id not in self.notation
-        self.notation[id] = pattern
-        self.interpreter.save(id, pattern)
-        return pattern
 
     def save_pattern(self, id: str, pattern: Pattern) -> Pattern:
         self.interpreter.save(id, pattern)

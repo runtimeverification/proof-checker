@@ -21,21 +21,14 @@ phi0_implies_phi0 = Implication(phi0, phi0)
 
 @dataclass(frozen=True, eq=False)
 class Negation(Notation):
-    pat: Pattern
-
-    @staticmethod
-    def label() -> str:
-        return 'not'
+    phi0: Pattern
 
     @staticmethod
     def definition() -> Pattern:
         return Implication(MetaVar(0), bot)
 
-    def arguments(self) -> dict[int, Pattern]:
-        return {0: self.pat}
-
     def __str__(self) -> str:
-        return f'~({str(self.pat)})'
+        return f'~({str(self.phi0)})'
 
 
 def neg(p: Pattern) -> Pattern:
@@ -45,15 +38,8 @@ def neg(p: Pattern) -> Pattern:
 @dataclass(frozen=True, eq=False)
 class Top(Notation):
     @staticmethod
-    def label() -> str:
-        return 'top'
-
-    @staticmethod
     def definition() -> Pattern:
         return neg(bot)
-
-    def arguments(self) -> dict[int, Pattern]:
-        return {}
 
     def __str__(self) -> str:
         return '\u22A4'

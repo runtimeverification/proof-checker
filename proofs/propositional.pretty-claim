@@ -9,14 +9,14 @@ Mu 0
 	Stack:
 	0: phi0
 	1: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: phi0
 	1: ⊥
 Implication
 	Stack:
 	0: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ~(phi0)
 MetaVar 0
@@ -48,7 +48,7 @@ Mu 0
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: phi0
 	2: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: phi0
@@ -57,7 +57,7 @@ Implication
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: ~(phi0)
@@ -99,7 +99,7 @@ Mu 0
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: phi0
 	3: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -110,7 +110,7 @@ Implication
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -127,7 +127,7 @@ Mu 0
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: ~(phi0)
 	3: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -138,7 +138,7 @@ Implication
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(phi0) -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -167,7 +167,7 @@ Mu 0
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
 	3: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -201,7 +201,7 @@ Mu 0
 	2: (~(~(phi0)) -> phi0)
 	3: (⊥ -> phi0)
 	4: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -224,7 +224,7 @@ Mu 0
 	3: (⊥ -> phi0)
 	4: ⊥
 	5: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -239,14 +239,14 @@ Implication
 	2: (~(~(phi0)) -> phi0)
 	3: (⊥ -> phi0)
 	4: (⊥ -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: (~(~(phi0)) -> phi0)
 	3: (⊥ -> phi0)
 	4: ~(⊥)
-// Notation top
+// Notation 'Top'
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
