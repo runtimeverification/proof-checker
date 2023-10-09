@@ -224,7 +224,7 @@ class Notation(Pattern):
     def arguments(self) -> dict[int, Pattern]:
         ret: dict[int, Pattern] = {}
 
-        for i, arg in enumerate(self.__dict__.values()):
+        for i, arg in enumerate(vars(self)):
             assert isinstance(arg, Pattern)
             ret[i] = arg
 
