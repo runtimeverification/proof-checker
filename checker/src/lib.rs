@@ -34,8 +34,8 @@ pub enum Instruction {
     // Journal Manipulation,
     Publish,
     // Derived Rules
-    PublishConditional,
-    StrongModusPonens,
+    PublishDerivedRule,
+    ApplyDerivedRule,
     // Metavar with no constraints
     CleanMetaVar = (9 + 128)
 }
@@ -338,6 +338,7 @@ pub enum Term {
 pub enum Entry {
     Pattern(Rc<Pattern>),
     Proved(Rc<Pattern>),
+    DerivedRule(Vec<Rc<Pattern>>, Rc<Pattern>)
 }
 
 /// Pattern construction utilities
@@ -999,6 +1000,7 @@ fn execute_instructions<'a>(
                 match &memory[index as usize] {
                     Entry::Pattern(p) => stack.push(Term::Pattern(p.clone())),
                     Entry::Proved(p) => stack.push(Term::Proved(p.clone())),
+                    Entry::DerivedRule(..) => panic!("Loading of derived rules is forbidden")
                 }
             }
             Instruction::Publish => match phase {
@@ -1018,7 +1020,7 @@ fn execute_instructions<'a>(
                     }
                 }
             },
-            Instruction::PublishConditional => match phase {
+            Instruction::PublishDerivedRule=> match phase {
                 ExecutionPhase::Gamma => {
                     let n = *iterator
                         .next()
@@ -1032,6 +1034,22 @@ fn execute_instructions<'a>(
                     memory.push(Entry::Proved(pop_stack_pattern(stack)))
                 },
                 _ => panic!("StrongImplication can only be used in the Gamma phase.")
+            }
+            Instruction::ApplyDerivedRule => {
+                let index = *iterator
+                .next()
+                .expect("Insufficient parameters for ApplyDerivedRule instruction");
+
+                let premise1 = &memory[index as usize];
+                match premise1 {
+                    Entry::DerivedRule(assumptions, conclusion) => {
+
+                        stack.push(Term::Proved(Rc::clone(&conclusion)))
+                    }
+                    _ => panic!("Given memory slot does not contain a derived rule.")
+                }
+
+                let premise2 = pop_stack_proved(stack);
             }
             _ => {
                 unimplemented!("Instruction: {}", instr_u32)
