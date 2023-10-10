@@ -24,14 +24,8 @@ Everything except the K framework can be installed with `make build` command.
 
 Install the K framework with `make install-k`.
 
-Usage
+Basic commands
 =============
-
-You will need to activate the project's `poetry` environment:
-```
-poetry install
-poetry shell
-```
 
 To generate proofs from scratch and verify them using the (non-zk) checker, run:
 ```
@@ -40,12 +34,16 @@ make verify-generated
 
 To translate proofs from scratch and verify them using the (non-zk) checker, run:
 ```
-make verify-mm-conv
+make verify-translated
 ```
+
+These two commands bypass regression testing.
+In effect, one can use this to verify their changes proof-check without needing
+to update the respective snapshots in `proofs`.
 
 To run the zk checker on pre-translated proofs, run:
 ```
-make zk-mm-conv
+make test-translated-zk
 ```
 
 To run all tests, run `make`.
@@ -61,19 +59,29 @@ You may also use specific targets to run a subset of tests:
         they are what we expect (given by snapshots in `proofs`).
         To generate and check a single proof, we may run `make proofs/<name>.ml-proof.gen`.
     -   `test-proof-translate`: Generate proofs from translating MM proofs, and check that
-        they are what we expect (given by snapshots in `translated-proofs`).
-        To generate and check a single proof, we may run `make translated-proofs/<name>.ml-proof.gen`.
-    -   `test-proof-verify`: Run the verifier against both `proofs` and `translated-proofs`. An individual
-        proof may be checked by running `make proofs/<name>.ml-proof.verify` (or `make translated-proofs/<name>.ml-proof.verify`)
--   `test-zk`: Same as `test-proof-verify` against `proofs` (not `translated-proofs`), but also generate a ZK cerificate.
+        they are what we expect (given by snapshots in `proofs/translated`).
+        To generate and check a single proof, we may run `make proofs/translated/<name>.ml-proof.gen`.
+    -   `test-proof-verify`: Run the verifier against both `proofs` and `proofs/translated`. An individual
+        proof may be checked by running `make proofs/<name>.ml-proof.verify` (or `make proofs/translated/<name>.ml-proof.verify`)
+-   `test-zk`: Same as `test-proof-verify` against `proofs` (not `proofs/translated`), but also generate a ZK cerificate.
     An individual proof may be checked by running
     `make proofs/<name>.ml-proof.zk`
 
 You can inspect the [Makefile](Makefile) to explore more granular commands. For example, examining `test-proof-verify` reveals that you can use
 
-`cargo run --release --bin checker <ML-THEORY> <ML-CLAIM> <ML-PROOF>`
+`cargo run --release --bin checker <ML-GAMMA> <ML-CLAIM> <ML-PROOF>`
 
 to run the checker on arbitrary proofs/claims.
+
+For running translation from Metamath, one needs to `cd` the `generation` folder, activate Poetry
+```
+poetry install
+poetry shell
+```
+and then run
+```
+python -m src.mm_transfer.transfer {MM_FILE} {OUTPUT_FOLDER} {LEMMA_NAME}
+```
 
 Profiling
 =========
@@ -92,3 +100,4 @@ You should now be able to run `make profile`. This should produce several flameg
 Currently we only profile normal execution of the checker (as opposed to `Risc0` execution). Furthermore, because normal execution on the existing proofs is too fast to lend itself to meaningful profiling, the `profiler.rs` binary actually runs the checker `100 000` times for each proof.
 
 **Warning**: `flamegraph`'s default sampling frequency (`-F 997`) can lead to huge `perf.data` files when you run it on longer executions. For example, running it on our host binary can output several GBs. If you want to profile long executions, consider reducing the sampling frequency accordingly.
+
