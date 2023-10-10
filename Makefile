@@ -122,16 +122,14 @@ PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
 proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
 	cargo build --release --bin profiler
 	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
-	cp flamegraph.svg $*.svg
-	rm flamegraph.svg
+	mv flamegraph.svg $*.svg
 	rm perf.data
 
 PROFILING_TRANSLATED_TARGETS=$(addsuffix .profile,${TRANSLATED_PROOFS})
 translated-proofs/%.ml-proof.profile: .build/translated-proofs/%.ml-gamma .build/translated-proofs/%.ml-claim .build/translated-proofs/%.ml-proof
 	cargo build --release --bin profiler
 	flamegraph -- .build/target/release/profiler .build/translated-proofs/$*.ml-gamma .build/translated-proofs/$*.ml-claim .build/translated-proofs/$*.ml-proof
-	cp flamegraph.svg $*.svg
-	rm flamegraph.svg
+	mv flamegraph.svg $*.svg
 	rm perf.data
 
 profile: ${PROFILING_TARGETS} ${PROFILING_TRANSLATED_TARGETS}
