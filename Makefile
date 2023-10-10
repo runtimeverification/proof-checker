@@ -203,9 +203,9 @@ proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .bu
 	rm perf.data
 
 PROFILING_TRANSLATED_TARGETS=$(addsuffix .profile,${TRANSLATED_PROOFS})
-translated-proofs/%.ml-proof.profile: .build/translated-proofs/%.ml-gamma .build/translated-proofs/%.ml-claim .build/translated-proofs/%.ml-proof
+proofs/translated/%.ml-proof.profile: .build/proofs/translated/%.ml-gamma .build/proofs/translated/%.ml-claim .build/proofs/translated/%.ml-proof
 	cargo build --release --bin profiler
-	flamegraph -- .build/target/release/profiler .build/translated-proofs/$*.ml-gamma .build/translated-proofs/$*.ml-claim .build/translated-proofs/$*.ml-proof
+	flamegraph -- .build/target/release/profiler .build/proofs/translated/$*.ml-gamma .build/proofs/translated/$*.ml-claim .build/proofs/translated/$*.ml-proof
 	mv flamegraph.svg $*.svg
 	rm perf.data
 
