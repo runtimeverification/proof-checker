@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.instruction import Instruction
-from proof_generation.proof import ExecutionPhase, Pattern, Proved
+from proof_generation.pattern import Pattern
+from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
-    from proof_generation.proof import PrettyPrintingInterpreter
+    from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 
 
 class DeserializingException(Exception):
@@ -121,7 +123,7 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
             if isinstance(target, Proved):
                 interpreter.instantiate(target, delta)
             elif isinstance(target, Pattern):
-                interpreter.instantiate_notation(target, delta)
+                interpreter.instantiate_pattern(target, delta)
             else:
                 raise DeserializingException(f'Cannot instantiate term {target}.')
 

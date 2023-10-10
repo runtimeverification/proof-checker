@@ -3,11 +3,13 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import Implication, Symbol
+from proof_generation.pattern import Implication, Symbol
 from proof_generation.proofs.propositional import Propositional
 
 if TYPE_CHECKING:
-    from proof_generation.proof import Pattern, Proved, ProvedExpression
+    from proof_generation.pattern import Pattern
+    from proof_generation.proof import ProvedExpression
+    from proof_generation.proved import Proved
 
 
 class SmallTheory(Propositional):
@@ -25,31 +27,11 @@ class SmallTheory(Propositional):
     def proof_expressions(self) -> list[ProvedExpression]:
         return [self.sym0_implies_sym2_proof]
 
-    def sym0(self) -> Pattern:
-        if ret := self.load_notation('sym0'):
-            return ret
-        return self.save_notation('sym0', self.symbol(0))
-
-    def sym1(self) -> Pattern:
-        if ret := self.load_notation('sym1'):
-            return ret
-        return self.save_notation('sym1', self.symbol(1))
-
-    def sym2(self) -> Pattern:
-        if ret := self.load_notation('sym2'):
-            return ret
-        return self.save_notation('sym2', self.symbol(2))
-
     def sym0_implies_sym1(self) -> Proved:
         return self.load_axiom(self.axioms()[0])
 
     def sym1_implies_sym2(self) -> Proved:
         return self.load_axiom(self.axioms()[1])
-
-    def sym0_implies_sym2(self) -> Pattern:
-        if ret := self.load_notation('sym0_implies_sym2'):
-            return ret
-        return self.save_notation('sym0_implies_smy2', self.implies(self.sym0(), self.sym2()))
 
     def sym0_implies_sym2_proof(self) -> Proved:
         return super().imp_transitivity(self.sym0_implies_sym1, self.sym1_implies_sym2)

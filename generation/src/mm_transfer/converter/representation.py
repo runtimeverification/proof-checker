@@ -8,17 +8,17 @@ from mypy_extensions import VarArg
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    import proof_generation.pattern as nf
+    from proof_generation.pattern import Pattern
 
 
 @dataclass(frozen=True)
 class Notation:
     name: str
     args: tuple[str, ...]
-    type_check: Callable[[VarArg(nf.Pattern)], bool]
-    callable: Callable[[VarArg(nf.Pattern)], nf.Pattern]
+    type_check: Callable[[VarArg(Pattern)], bool]
+    callable: Callable[[VarArg(Pattern)], Pattern]
 
-    def __call__(self, *args: nf.Pattern) -> nf.Pattern:
+    def __call__(self, *args: Pattern) -> Pattern:
         assert self.type_check(*args), f'Invalid arguments for {self.name}'
         return self.callable(*args)
 
@@ -27,8 +27,8 @@ class Notation:
 class Axiom:
     name: str
     args: tuple[str, ...]
-    type_check: Callable[[VarArg(nf.Pattern)], bool]
-    pattern: nf.Pattern
+    type_check: Callable[[VarArg(Pattern)], bool]
+    pattern: Pattern
     metavars: tuple[str, ...]
 
 
@@ -36,10 +36,10 @@ class Axiom:
 class AxiomWithAntecedents(Axiom):
     name: str
     args: tuple[str, ...]
-    type_check: Callable[[VarArg(nf.Pattern)], bool]
-    pattern: nf.Pattern
+    type_check: Callable[[VarArg(Pattern)], bool]
+    pattern: Pattern
     metavars: tuple[str, ...]
-    antecedents: tuple[nf.Pattern, ...]
+    antecedents: tuple[Pattern, ...]
 
 
 @dataclass(frozen=True)

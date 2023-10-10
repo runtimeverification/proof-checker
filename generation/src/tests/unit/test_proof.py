@@ -5,24 +5,15 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from proof_generation.basic_interpreter import ExecutionPhase
+from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.proof import (
-    Application,
-    Claim,
-    EVar,
-    ExecutionPhase,
-    Exists,
-    Implication,
-    MetaVar,
-    Mu,
-    NotationlessPrettyPrinter,
-    PrettyPrintingInterpreter,
-    SerializingInterpreter,
-    StatefulInterpreter,
-    SVar,
-)
+from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu, SVar
+from proof_generation.pretty_printing_interpreter import NotationlessPrettyPrinter, PrettyPrintingInterpreter
 from proof_generation.proofs.propositional import Propositional
+from proof_generation.serializing_interpreter import SerializingInterpreter
+from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern
@@ -83,21 +74,6 @@ def uncons_metavar_instrs(id: int) -> list[int]:
     return [Instruction.CleanMetaVar, id]
 
 
-def test_serialize_phi_implies_phi() -> None:
-    out = BytesIO()
-    prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[], out=out))
-    prop.phi0_implies_phi0()
-    # fmt: off
-    assert bytes(out.getbuffer()) == bytes([
-        *uncons_metavar_instrs(0),
-        Instruction.Save,
-        Instruction.Load, 0,
-        Instruction.Implication,        # Stack: phi0 -> phi0
-        Instruction.Save,
-    ])
-    # fmt: on
-
-
 def test_prove_imp_reflexivity() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)
@@ -139,7 +115,7 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).__getattribute__(target)()
+    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).__getattribute__(target)()
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 
@@ -158,9 +134,7 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, claims=[], axioms=[], out=out_ser)).interpreter.pattern(
-        target
-    )
+    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).interpreter.pattern(target)
     out_ser_deser = StringIO()
     deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
 

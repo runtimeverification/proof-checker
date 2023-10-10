@@ -209,3 +209,63 @@ class SSubst(Pattern):
 
     def __str__(self) -> str:
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
+
+
+@dataclass(frozen=True)
+class Notation(Pattern):
+    @classmethod
+    def label(cls) -> str:
+        return f'{cls.__name__!r}'
+
+    @staticmethod
+    def definition() -> Pattern:
+        raise NotImplementedError('This notation has no definition.')
+
+    def arguments(self) -> dict[int, Pattern]:
+        ret: dict[int, Pattern] = {}
+
+        for i, arg in enumerate(vars(self).values()):
+            assert isinstance(arg, Pattern)
+            ret[i] = arg
+
+        return ret
+
+    def __eq__(self, o: object) -> bool:
+        return self.conclusion() == o
+
+    def conclusion(self) -> Pattern:
+        return self.definition().instantiate(self.arguments())
+
+    # We assume all metavars in notations are instantiated for
+    # So this is correct, as this can only change "internals" of the instantiations
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        args: list[Pattern] = []
+
+        for arg in self.arguments().values():
+            args.append(arg.instantiate(delta))
+
+        return type(self)(*args)
+
+    # TODO: Keep notations (without dropping them)
+    def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
+        return self.conclusion().apply_esubst(evar_id, plug)
+
+    # TODO: Keep notations (without dropping them)
+    def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        return self.conclusion().apply_ssubst(svar_id, plug)
+
+    def __str__(self) -> str:
+        return f'{self.label()} {str(self.arguments())}'
+
+
+@dataclass(frozen=True, eq=False)
+class Bot(Notation):
+    @staticmethod
+    def definition() -> Pattern:
+        return Mu(SVar(0), SVar(0))
+
+    def __str__(self) -> str:
+        return '\u22A5'
+
+
+bot = Bot()

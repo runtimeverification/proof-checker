@@ -1,22 +1,51 @@
 from __future__ import annotations
 
 import sys
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.proof import Implication, MetaVar, Mu, ProofExp, SVar
+from proof_generation.pattern import Implication, MetaVar, Notation, bot
+from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.proof import BasicInterpreter, Pattern, PatternExpression, Proved, ProvedExpression
+    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.pattern import Pattern
+    from proof_generation.proof import ProvedExpression
+    from proof_generation.proved import Proved
 
-bot = Mu(SVar(0), SVar(0))
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 phi0_implies_phi0 = Implication(phi0, phi0)
 
 
+@dataclass(frozen=True, eq=False)
+class Negation(Notation):
+    phi0: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return Implication(MetaVar(0), bot)
+
+    def __str__(self) -> str:
+        return f'~({str(self.phi0)})'
+
+
 def neg(p: Pattern) -> Pattern:
-    return Implication(p, bot)
+    return Negation(p)
+
+
+@dataclass(frozen=True, eq=False)
+class Top(Notation):
+    @staticmethod
+    def definition() -> Pattern:
+        return neg(bot)
+
+    def __str__(self) -> str:
+        return '\u22A4'
+
+
+top = Top()
 
 
 class Propositional(ProofExp):
@@ -30,16 +59,13 @@ class Propositional(ProofExp):
     @staticmethod
     def claims() -> list[Pattern]:
         phi0 = MetaVar(0)
-        bot = Mu(SVar(0), SVar(0))
-        top = Implication(bot, bot)
-        neg_phi0 = Implication(phi0, bot)
         return [
             Implication(phi0, phi0),  # Reflexivity
             top,  # Top
             Implication(bot, phi0),  # Bot_elim
-            Implication(Implication(neg_phi0, bot), phi0),  # Contradiction
+            Implication(neg(neg(phi0)), phi0),  # Contradiction
             Implication(neg(phi0), Implication(phi0, phi1)),  # Absurd
-            Implication(Implication(Implication(phi0, bot), phi0), phi0),  # Peirce_bot
+            Implication(Implication(neg(phi0), phi0), phi0),  # Peirce_bot
         ]
 
     def proof_expressions(self) -> list[ProvedExpression]:
@@ -51,65 +77,6 @@ class Propositional(ProofExp):
             self.absurd,
             self.peirce_bot,
         ]
-
-    # Notation
-    # ========
-
-    def phi0(self) -> Pattern:
-        if ret := self.load_notation('phi0'):
-            return ret
-        return self.save_notation('phi0', self.metavar(0))
-
-    def phi0_implies_phi0(self) -> Pattern:
-        if ret := self.load_notation('phi0-implies-phi0'):
-            return ret
-        return self.save_notation('phi0-implies-phi0', self.implies(self.phi0(), self.phi0()))
-
-    def bot(self) -> Pattern:
-        if ret := self.load_notation('bot'):
-            return ret
-        return self.save_notation('bot', self.mu(0, self.svar(0)))
-
-    def neg_notation(self) -> Pattern:
-        if ret := self.load_notation('neg'):
-            return ret
-        return self.save_notation('neg', self.implies(self.phi0(), self.bot()))
-
-    def neg(self, p: PatternExpression) -> Pattern:
-        return self.instantiate_notation(self.neg_notation(), {0: p()})
-
-    def top(self) -> Pattern:
-        if ret := self.load_notation('top'):
-            return ret
-        return self.save_notation('top', self.neg(self.bot))
-
-    def neg_phi0(self) -> Pattern:
-        if ret := self.load_notation('neg-phi0'):
-            return ret
-        return self.save_notation('neg-phi0', self.neg(self.phi0))
-
-    def bot_implies_phi0(self) -> Pattern:
-        if ret := self.load_notation('bot-implies-phi0'):
-            return ret
-        return self.save_notation('bot-implies-phi0', self.implies(self.bot(), self.phi0()))
-
-    def contradiction_claim(self) -> Pattern:
-        if ret := self.load_notation('contradiction'):
-            return ret
-        return self.save_notation(
-            'contradiction',
-            # (neg phi0 -> bot) -> phi0
-            self.implies(self.implies(self.neg_phi0(), self.bot()), self.phi0()),
-        )
-
-    def peirce_bot_phi0(self) -> Pattern:
-        if ret := self.load_notation('peirce-bot'):
-            return ret
-        return self.save_notation(
-            'peirce-bot',
-            # (((ph0 -> bot) -> ph0) -> ph0)
-            self.implies(self.implies(self.implies(self.phi0(), self.bot()), self.phi0()), self.phi0()),
-        )
 
     # Proofs
     # ======
