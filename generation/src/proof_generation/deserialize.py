@@ -123,7 +123,7 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
             if isinstance(target, Proved):
                 interpreter.instantiate(target, delta)
             elif isinstance(target, Pattern):
-                interpreter.instantiate_notation(target, delta)
+                interpreter.instantiate_pattern(target, delta)
             else:
                 raise DeserializingException(f'Cannot instantiate term {target}.')
 

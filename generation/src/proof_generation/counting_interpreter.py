@@ -200,8 +200,8 @@ class CountingInterpreter(StatefulInterpreter):
         self._collect_patterns(ret.conclusion)
         return ret
 
-    def instantiate_notation(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        ret = super().instantiate_notation(pattern, delta)
+    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+        ret = super().instantiate_pattern(pattern, delta)
         self._collect_patterns(ret)
         return ret
 
