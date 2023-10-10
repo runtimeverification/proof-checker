@@ -70,7 +70,7 @@ Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
@@ -184,7 +184,7 @@ Mu 0
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -209,7 +209,7 @@ Mu 0
 	2: ⊥
 	3: phi0
 	4: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -222,7 +222,7 @@ Implication
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -242,7 +242,7 @@ Mu 0
 	2: ⊥
 	3: ~(phi0)
 	4: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -255,7 +255,7 @@ Implication
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: (~(phi0) -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -301,7 +301,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: phi0
 	4: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -314,7 +314,7 @@ Implication
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -334,7 +334,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: ~(phi0)
 	4: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -347,7 +347,7 @@ Implication
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: (~(phi0) -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -380,7 +380,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: (~(~(phi0)) -> phi0)
 	4: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -446,7 +446,7 @@ Mu 0
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0))
 	3: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -475,7 +475,7 @@ Mu 0
 	3: ⊥
 	4: phi0
 	5: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -490,7 +490,7 @@ Implication
 	2: ⊢ ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0))
 	3: ⊥
 	4: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -560,7 +560,7 @@ Mu 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: phi0
 	5: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -610,7 +610,7 @@ Mu 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
 	5: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -691,7 +691,7 @@ Mu 0
 	5: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	6: phi1
 	7: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -736,7 +736,7 @@ Mu 0
 	7: ⊥
 	8: phi0
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -759,7 +759,7 @@ Implication
 	6: phi1
 	7: ⊥
 	8: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -794,7 +794,7 @@ Mu 0
 	7: ⊥
 	8: ~(phi0)
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -817,7 +817,7 @@ Implication
 	6: phi1
 	7: ⊥
 	8: (~(phi0) -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -898,7 +898,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: phi0
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -921,7 +921,7 @@ Implication
 	6: phi1
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -956,7 +956,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: ~(phi0)
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -979,7 +979,7 @@ Implication
 	6: phi1
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: (~(phi0) -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1037,7 +1037,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: (~(~(phi0)) -> phi0)
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1153,7 +1153,7 @@ Mu 0
 	6: phi1
 	7: ⊢ ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0))
 	8: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1202,7 +1202,7 @@ Mu 0
 	8: ⊥
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1227,7 +1227,7 @@ Implication
 	7: ⊢ ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0))
 	8: ⊥
 	9: (phi0 -> ⊥)
-// Notation not
+// Notation 'Negation'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1324,7 +1324,7 @@ Mu 0
 	4: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	5: phi0
 	6: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1387,7 +1387,7 @@ Mu 0
 	5: ((phi0 -> ⊥) -> phi0)
 	6: phi0
 	7: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1426,7 +1426,7 @@ Mu 0
 	5: ((phi0 -> ⊥) -> phi0)
 	6: (phi0 -> ⊥)
 	7: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1503,7 +1503,7 @@ Mu 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> ⊥) -> phi0)) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0)))
 	6: phi0
 	7: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1542,7 +1542,7 @@ Mu 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> ⊥) -> phi0)) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0)))
 	6: (phi0 -> ⊥)
 	7: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1612,7 +1612,7 @@ Mu 0
 	6: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	7: phi0
 	8: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1751,7 +1751,7 @@ Mu 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0))
 	6: phi0
 	7: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1821,7 +1821,7 @@ Mu 0
 	6: ((phi0 -> ⊥) -> phi0)
 	7: phi0
 	8: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1898,7 +1898,7 @@ Mu 0
 	7: ((phi0 -> ⊥) -> phi0)
 	8: phi0
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1945,7 +1945,7 @@ Mu 0
 	7: ((phi0 -> ⊥) -> phi0)
 	8: (phi0 -> ⊥)
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2021,7 +2021,7 @@ Mu 0
 	6: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> phi0)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))))
 	7: phi0
 	8: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2098,7 +2098,7 @@ Mu 0
 	7: ((phi0 -> ⊥) -> phi0)
 	8: phi0
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2159,7 +2159,7 @@ Mu 0
 	8: (phi0 -> ⊥)
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2233,7 +2233,7 @@ Mu 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2324,7 +2324,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: phi0
 	11: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2379,7 +2379,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: (phi0 -> ⊥)
 	11: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2476,7 +2476,7 @@ Mu 0
 	7: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))))
 	8: phi0
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2537,7 +2537,7 @@ Mu 0
 	8: (phi0 -> ⊥)
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2611,7 +2611,7 @@ Mu 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2702,7 +2702,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: phi0
 	11: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2757,7 +2757,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: (phi0 -> ⊥)
 	11: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2845,7 +2845,7 @@ Mu 0
 	8: (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2957,7 +2957,7 @@ Mu 0
 	8: ⊢ ((((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))))
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3023,7 +3023,7 @@ Mu 0
 	9: (phi0 -> ⊥)
 	10: phi0
 	11: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3120,7 +3120,7 @@ Mu 0
 	7: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))))
 	8: phi0
 	9: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3181,7 +3181,7 @@ Mu 0
 	8: (phi0 -> ⊥)
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3255,7 +3255,7 @@ Mu 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3367,7 +3367,7 @@ Mu 0
 	8: ⊢ (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))))
 	9: phi0
 	10: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3689,7 +3689,7 @@ Mu 0
 	6: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> phi0)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))
 	7: phi0
 	8: (μ X0 . X0)
-// Notation bot
+// Notation 'Bot'
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)

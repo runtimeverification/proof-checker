@@ -19,6 +19,12 @@ build:
 poetry-install:
 	$(POETRY) install
 
+# Print the K version required by pyk
+
+k-version:
+	@echo $(shell $(POETRY_RUN) python3 -c "import pyk; print(pyk.K_VERSION)")
+
+.PHONY: k-version
 
 # Tests
 

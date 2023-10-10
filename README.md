@@ -16,6 +16,14 @@ Apart from Rust and Python, you will likely need to:
 
 `sudo apt-get install colordiff`
 
+For installing Rust, you need to install Cargo, the Rust package manager. You can do this by following the instructions [here](https://www.rust-lang.org/tools/install).
+
+For managing Python dependencies, we use [poetry](https://python-poetry.org/). You can install it by following the instructions [here](https://python-poetry.org/docs/#installation).
+
+Everything except the K framework can be installed with `make build` command.
+
+Install the K framework with `make install-k`.
+
 Usage 
 =============
 
