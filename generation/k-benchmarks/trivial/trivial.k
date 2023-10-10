@@ -1,7 +1,6 @@
 module TRIVIAL-SYNTAX
 
-    syntax Foo ::= "a" | "b"
-    syntax Bar ::= f(Foo) | g(Foo)
+    syntax Nat ::= "0" | s(Nat)
 
 endmodule
 
@@ -9,7 +8,6 @@ module TRIVIAL
 
     imports TRIVIAL-SYNTAX
 
-    rule f(F:Foo) => g(F)
-    rule g(F:Foo) => F
+    rule [decrement] : s(N:Nat) => N
 
 endmodule
