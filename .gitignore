@@ -4,3 +4,5 @@
 # User directory for temp files
 /tmp/
 
+# zkLLVM output directory
+/zkllvm/output/
