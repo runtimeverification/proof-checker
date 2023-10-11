@@ -1,6 +1,6 @@
 module SINGLE-REWRITE-SYNTAX
 
-  syntax Term ::= A() | B()
+  syntax Foo ::= FooA() | FooB()
 
 endmodule
 
@@ -8,6 +8,6 @@ module SINGLE-REWRITE
 
   imports SINGLE-REWRITE-SYNTAX
 
-  rule A() => B()
+  rule FooA() => FooB()
 
 endmodule
