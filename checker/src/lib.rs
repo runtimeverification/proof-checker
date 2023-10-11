@@ -288,34 +288,14 @@ impl Pattern {
                 e_fresh,
                 app_ctx_holes,
                 ..
-            } => {
-                for hole in app_ctx_holes {
-                    if e_fresh.contains(hole) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
+            } => return !app_ctx_holes.into_iter().any(|hole| e_fresh.contains(hole)),
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
             Pattern::ESubst {
                 pattern, evar_id, ..
-            } => {
-                if pattern.e_fresh(*evar_id) {
-                    return false;
-                }
-
-                true
-            }
+            } => !pattern.e_fresh(*evar_id),
             Pattern::SSubst {
                 pattern, svar_id, ..
-            } => {
-                if pattern.s_fresh(*svar_id) {
-                    return false;
-                }
-
-                true
-            }
+            } => !pattern.s_fresh(*svar_id),
             _ => {
                 // TODO: If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
@@ -375,18 +355,18 @@ fn metavar_s_fresh(var_id: Id, fresh: Id, positive: IdList, negative: IdList) ->
     });
 }
 
-#[inline]
+#[inline(always)]
 fn exists(var: Id, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Exists { var, subpattern });
 }
 
 // Does not do any well-formedness checks!!!!!
-#[inline]
+#[inline(always)]
 fn mu(var: Id, subpattern: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Mu { var, subpattern });
 }
 
-#[inline]
+#[inline(always)]
 fn esubst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::ESubst {
         pattern,
@@ -395,7 +375,7 @@ fn esubst(pattern: Rc<Pattern>, evar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     });
 }
 
-#[inline]
+#[inline(always)]
 fn ssubst(pattern: Rc<Pattern>, svar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::SSubst {
         pattern,
@@ -404,25 +384,25 @@ fn ssubst(pattern: Rc<Pattern>, svar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
     });
 }
 
-#[inline]
+#[inline(always)]
 fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Implication { left, right });
 }
 
-#[inline]
+#[inline(always)]
 fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
     return Rc::new(Pattern::Application { left, right });
 }
 
 // Notation
-#[inline]
+#[inline(always)]
 fn bot() -> Rc<Pattern> {
     mu(0, svar(0))
 }
 
-#[inline]
+#[inline(always)]
 fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
-    implies(pat, Rc::clone(&bot()))
+    implies(pat, bot())
 }
 
 #[allow(dead_code)]
@@ -515,37 +495,35 @@ fn instantiate_internal(
             ..
         } => {
             if let Some(pos) = vars.iter().position(|&x| x == *id) {
-                for evar in e_fresh {
-                    if !plugs[pos].e_fresh(*evar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a freshness constraint: EVar {}",
-                            id, evar
-                        );
-                    }
+                if let Some(evar) = e_fresh.into_iter().find(|&evar| !plugs[pos].e_fresh(*evar)) {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a freshness constraint: EVar {}",
+                        id, evar
+                    );
                 }
-                for svar in s_fresh {
-                    if !plugs[pos].s_fresh(*svar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
-                            id, svar
-                        );
-                    }
+                if let Some(svar) = s_fresh.into_iter().find(|&svar| !plugs[pos].s_fresh(*svar)) {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
+                        id, svar
+                    );
                 }
-                for svar in positive {
-                    if !plugs[pos].positive(*svar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a positivity constraint: SVar {}",
-                            id, svar
-                        );
-                    }
+                if let Some(svar) = positive
+                    .into_iter()
+                    .find(|&svar| !plugs[pos].positive(*svar))
+                {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a positivity constraint: SVar {}",
+                        id, svar
+                    );
                 }
-                for svar in negative {
-                    if !plugs[pos].negative(*svar) {
-                        panic!(
-                            "Instantiation of MetaVar {} breaks a negativity constraint: SVar {}",
-                            id, svar
-                        );
-                    }
+                if let Some(svar) = negative
+                    .into_iter()
+                    .find(|&svar| !plugs[pos].negative(*svar))
+                {
+                    panic!(
+                        "Instantiation of MetaVar {} breaks a negativity constraint: SVar {}",
+                        id, svar
+                    );
                 }
 
                 if pos >= plugs.len() {
@@ -643,12 +621,8 @@ fn instantiate_internal(
 }
 
 fn instantiate_in_place(p: &mut Rc<Pattern>, vars: &[Id], plugs: &[Rc<Pattern>]) {
-    let ret = instantiate_internal(p, vars, plugs);
-    match ret {
-        Some(_) => {
-            *p = ret.unwrap();
-        }
-        None => (),
+    if let Some(ret) = instantiate_internal(p, vars, plugs) {
+        *p = ret
     }
 }
 
@@ -729,15 +703,12 @@ fn execute_instructions<'a>(
             implies(Rc::clone(&phi1), Rc::clone(&phi2)),
         ),
         implies(
-            implies(Rc::clone(&phi0), Rc::clone(&phi1)),
-            implies(Rc::clone(&phi0), Rc::clone(&phi2)),
+            implies(Rc::clone(&phi0), phi1),
+            implies(Rc::clone(&phi0), phi2),
         ),
     );
     let prop3 = implies(not(not(Rc::clone(&phi0))), Rc::clone(&phi0));
-    let quantifier = implies(
-        esubst(Rc::clone(&phi0), 0, evar(1)),
-        exists(0, Rc::clone(&phi0)),
-    );
+    let quantifier = implies(esubst(Rc::clone(&phi0), 0, evar(1)), exists(0, phi0));
 
     let existence = exists(0, evar(0));
 
@@ -853,7 +824,7 @@ fn execute_instructions<'a>(
                     _ => panic!("Cannot apply ESubst on concrete term!"),
                 }
 
-                let esubst_pat = esubst(Rc::clone(&pattern), evar_id, Rc::clone(&plug));
+                let esubst_pat = esubst(Rc::clone(&pattern), evar_id, plug);
                 if esubst_pat.well_formed() {
                     // The substitution is redundant, we don't apply it.
                     stack.push(Term::Pattern(pattern))
@@ -875,7 +846,7 @@ fn execute_instructions<'a>(
                     _ => panic!("Cannot apply SSubst on concrete term!"),
                 }
 
-                let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, Rc::clone(&plug));
+                let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, plug);
                 if !ssubst_pat.well_formed() {
                     // The substitution is redundant, we don't apply it.
                     stack.push(Term::Pattern(pattern))
@@ -962,15 +933,12 @@ fn execute_instructions<'a>(
                 let mut plugs: Vec<Rc<Pattern>> = Vec::with_capacity(n);
 
                 let metaterm = pop_stack(stack);
-                for _ in 0..n {
-                    ids.push(
-                        *iterator
-                            .next()
-                            .expect("Insufficient parameters for Instantiate instruction")
-                            as Id,
-                    );
-                    plugs.push(pop_stack_pattern(stack));
-                }
+
+                iterator.take(n).for_each(|arg| {
+                    ids.push(*arg as Id);
+                    plugs.push(pop_stack_pattern(stack))
+                });
+
                 match metaterm {
                     Term::Pattern(mut p) => {
                         instantiate_in_place(&mut p, &ids, &plugs);
