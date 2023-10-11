@@ -46,12 +46,13 @@ The following commands will build the Proof-Checker:
 ```
 
 We also have a temporary bash script that builds the Proof-Checker:
-First you need to set the environmen variable `ZKLLVM_ROOT`:
+First you need to set the environment variable `ZKLLVM_ROOT`:
 ```bash
 echo 'export ZKLLVM_ROOT=/path/to/zkllvm' >> ~/.zshrc
 source ~/.zshrc
+```
 
 Then you can build the Proof-Checker:
-```
+```bash
 ./build.sh src/main.cpp inputs/example.inp
 ```
