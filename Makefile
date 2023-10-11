@@ -42,7 +42,7 @@ install-k-kup:
 		kup install k --version v$(k-version-output); \
 	else \
 		echo "K is already installed, skipping installation."; \
-	fi	
+	fi
 
 build: build-checker build-risc0 generation-install
 
@@ -170,7 +170,7 @@ proofs/%.ml-proof.verify: proofs/%.ml-proof
 
 TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .verify,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.verify: proofs/translated/%.ml-proof
-	$(CARGO) run --bin checker proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
+	$(CARGO) run --release --bin checker proofs/translated/$*.ml-gamma proofs/translated/$*.ml-claim $<
 
 test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 .PHONY: test-proof-verify-translated
@@ -199,11 +199,17 @@ PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
 proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
 	$(CARGO)  build --release --bin profiler
 	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
-	cp flamegraph.svg $*.svg
-	rm flamegraph.svg
+	mv flamegraph.svg $*.svg
 	rm perf.data
 
-profile: ${PROFILING_TARGETS}
+PROFILING_TRANSLATED_TARGETS=$(addsuffix .profile,${TRANSLATED_PROOFS})
+proofs/translated/%.ml-proof.profile: .build/proofs/translated/%.ml-proof
+	$(CARGO) build --release --bin profiler
+	flamegraph -- .build/target/release/profiler .build/proofs/translated/$*/$*.ml-gamma .build/proofs/translated/$*/$*.ml-claim .build/proofs/translated/$*/$*.ml-proof
+	mv flamegraph.svg $*.svg
+	rm perf.data
+
+profile: ${PROFILING_TARGETS} ${PROFILING_TRANSLATED_TARGETS}
 
 # Risc0
 # -----
