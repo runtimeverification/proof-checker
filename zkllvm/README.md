@@ -45,7 +45,8 @@ The following commands will build the Proof-Checker:
 # TODO: Add instructions for building the Proof-Checker with CMake
 ```
 
-We also have a temporary bash script that builds the Proof-Checker:
+### We also have a temporary bash script that builds the Proof-Checker:
+
 First you need to set the environment variable `ZKLLVM_ROOT`:
 ```bash
 echo 'export ZKLLVM_ROOT=/path/to/zkllvm' >> ~/.zshrc
