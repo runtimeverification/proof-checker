@@ -112,12 +112,11 @@ class Tautology(Propositional):
         return False
 
     def get_imp(self, pat: Pattern) -> Tuple[Pattern, Pattern]:
-        assert isinstance(pat, Implication)
+        assert isinstance(pat, Implication), "Expected an implication but got: " + str(pat) + "\n"
         return pat.left, pat.right
 
     def get_neg(self, pat: Pattern) -> Pattern:
-        assert isinstance(pat, Implication)
-        assert pat.right == bot
+        assert (isinstance(pat, Implication) and pat.right == bot), "Expected a negation but got: " + str(pat) + "\n"
         return pat.left
 
     # p -> p
@@ -202,9 +201,9 @@ class Tautology(Propositional):
     def helper1(self, p_pf: Proved, qr_pf: Proved) -> Proved:
         p = p_pf.conclusion
         q, r = self.get_imp(qr_pf.conclusion)
-        return self.imp_transitivity(
-            lambda: self.mpcom(p_pf, q),
-            lambda: qr_pf
+        return self.imp_trans_i(
+            self.mpcom(p_pf, q),
+            qr_pf
         )
     
     #     p -> q
@@ -214,7 +213,7 @@ class Tautology(Propositional):
         pq_conc = pq.conclusion
         assert isinstance(pq_conc, Implication)
         q = pq_conc.right
-        return self.imp_transitivity(
+        return self.imp_trans_i(
             pq,
             self.dynamic_inst(self.prop1, {0:q, 1:r})
         )
@@ -264,9 +263,9 @@ class Tautology(Propositional):
     # ------------------
     #   (q -> r) -> p
     def absurd3(self, npq: Proved, nr: Proved) -> Proved:
-        np, q = self.get_imp(npq)
+        np, q = self.get_imp(npq.conclusion)
         p = self.get_neg(np)
-        r = self.get_neg(nr)
+        r = self.get_neg(nr.conclusion)
         #TODO
         return Proved(self.interpreter, Implication(
             Implication(q, r),
@@ -279,7 +278,7 @@ class Tautology(Propositional):
     def absurd4(self, pnq: Proved, r: Pattern) -> Proved:
         pnq_conc = pnq.conclusion
         assert isinstance(pnq_conc, Implication)
-        return self.imp_transitivity(
+        return self.imp_trans_i(
             self.dni(self.get_neg(pnq_conc.right)),
             self.absurd2(pnq, r)
         )
@@ -297,9 +296,9 @@ class Tautology(Propositional):
     # -----------
     #  ~(p -> q)
     def and_not_r_intro(self, p: Proved, nq: Proved) -> Proved:
-        q = self.get_neg(nq)
+        q = self.get_neg(nq.conclusion)
         #TODO
-        return Proved(self.interpreter, neg(Implication(p, q)))
+        return Proved(self.interpreter, neg(Implication(p.conclusion, q)))
 
 
     # (a -> b)    (c -> d)
@@ -320,7 +319,7 @@ class Tautology(Propositional):
     def imim_nnr(self, h1: Proved, h2: Proved) -> Proved:
         a, _ = self.get_imp(h1.conclusion)
         _, d = self.get_imp(h2.conclusion)
-        return self.imp_transitivity(
+        return self.imp_trans_i(
             self.imim(h1, h2),
             self.modus_ponens(
                 self.imp_trans(neg(neg(a)), a, d),
@@ -334,7 +333,7 @@ class Tautology(Propositional):
     def imim_nnl(self, h1: Proved, h2: Proved) -> Proved:
         _, b = self.get_imp(h1.conclusion)
         c, _ = self.get_imp(h2.conclusion)
-        return self.imp_transitivity(
+        return self.imp_trans_i(
             self.modus_ponens(
                 self.imp_trans(b, neg(neg(b)), c),
                 self.dni(b)
@@ -477,6 +476,19 @@ class Tautology(Propositional):
             return True
         return False
 
+    def conj_to_poattern(self, term: ConjTerm) -> Pattern:
+        if isinstance(term, ConjBool):
+            pat = bot
+        elif isinstance(term, ConjVar):
+            pat = MetaVar(term.id)
+        elif isinstance(term, ConjOr):
+            pat = ml_or(self.conj_to_poattern(term.left), self.conj_to_poattern(term.right))
+        elif isinstance(term, ConjAnd):
+            pat = ml_and(self.conj_to_poattern(term.left), self.conj_to_poattern(term.right))
+        if term.negated:
+            pat = neg(pat)
+        return pat
+
     # Assumes the input is a propositional formula and transforms it to one
     # made up of only ORs, negations and variables
     # Output is:
@@ -556,15 +568,15 @@ class Tautology(Propositional):
                 pf2 = self.imim_and(term_l_pf2, term_r_pf2)
                 if term.right.negated:
                     a1, b1 = self.get_imp(self.get_neg(pf1.conclusion.left))
-                    pf1 = self.imp_transitivity(
-                        lambda: self.con3_i(self.dne_r(a1, b1)),
-                        lambda: pf1
+                    pf1 = self.imp_trans_i(
+                        self.con3_i(self.dne_r(a1, b1)),
+                        pf1
                     )
                     a2, nnb2 = self.get_imp(self.get_neg(pf2.conclusion.right))
                     b2 = self.get_neg(self.get_neg(nnb2))
-                    pf2 = self.imp_transitivity(
-                        lambda: pf2,
-                        lambda: self.con3_i(self.dni_r(a2, b2))
+                    pf2 = self.imp_trans_i(
+                        pf2,
+                        self.con3_i(self.dni_r(a2, b2))
                     )
                 return ConjAnd(term_l, term_r), pf1, pf2 
             else:
