@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implication, MetaVar, Notation, bot, get_imp, is_bot, is_imp, unwrap, unwrap2
 from proof_generation.proof import ProofExp
@@ -64,7 +64,7 @@ def ml_or(l: Pattern, r: Pattern) -> Pattern:
     return Or(l, r)
 
 
-def is_neg(pat: Pattern) -> Optional[Pattern]:
+def is_neg(pat: Pattern) -> Pattern | None:
     if isinstance(pat, Negation):
         return pat.phi0
     if isinstance(pat, Notation):
@@ -94,7 +94,7 @@ def get_top(pat: Pattern) -> None:
     assert is_top(pat), 'Expected Top but instead got: ' + str(pat) + '\n'
 
 
-def is_or(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
+def is_or(pat: Pattern) -> tuple[Pattern, Pattern] | None:
     if isinstance(pat, Or):
         return pat.left, pat.right
     if isinstance(pat, Notation):
@@ -106,7 +106,7 @@ def is_or(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
     return None
 
 
-def get_or(pat: Pattern) -> Tuple[Pattern, Pattern]:
+def get_or(pat: Pattern) -> tuple[Pattern, Pattern]:
     return unwrap2(is_or(pat), 'Expected an Or but got: ' + str(pat) + '\n')
 
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 
 class Pattern:
@@ -305,17 +304,17 @@ class Bot(Notation):
 bot = Bot()
 
 
-def unwrap(x: Optional[Pattern], error_msg: str) -> Pattern:
+def unwrap(x: Pattern | None, error_msg: str) -> Pattern:
     assert x, error_msg
     return x
 
 
-def unwrap2(x: Optional[Tuple[Pattern, Pattern]], error_msg: str) -> Tuple[Pattern, Pattern]:
+def unwrap2(x: tuple[Pattern, Pattern] | None, error_msg: str) -> tuple[Pattern, Pattern]:
     assert x, error_msg
     return x
 
 
-def is_imp(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
+def is_imp(pat: Pattern) -> tuple[Pattern, Pattern] | None:
     if isinstance(pat, Implication):
         return pat.left, pat.right
     if isinstance(pat, Notation):
@@ -323,7 +322,7 @@ def is_imp(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
     return None
 
 
-def get_imp(pat: Pattern) -> Tuple[Pattern, Pattern]:
+def get_imp(pat: Pattern) -> tuple[Pattern, Pattern]:
     return unwrap2(is_imp(pat), 'Expected an implication but got: ' + str(pat) + '\n')
 
 
