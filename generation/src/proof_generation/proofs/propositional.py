@@ -187,9 +187,7 @@ class Propositional(ProofExp):
     # --------
     # p -> q
     def imp_provable(self, p: Pattern, q_pf: Proved) -> Proved:
-        return self.modus_ponens(
-            self.dynamic_inst(self.prop1, {0: q_pf.conclusion, 1: p}),
-            q_pf)
+        return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q_pf.conclusion, 1: p}), q_pf)
 
     #    p
     # ------
@@ -214,7 +212,7 @@ class Propositional(ProofExp):
                 # (a -> (b -> c)) -> ((a -> b) -> (a -> c))
                 self.dynamic_inst(self.prop2, {0: a, 1: b, 2: c}),
                 #  a -> (b -> c)
-                self.imp_provable(a, phi1_imp_phi2)
+                self.imp_provable(a, phi1_imp_phi2),
             ),
             phi0_imp_phi1,
         )
@@ -233,7 +231,7 @@ class Propositional(ProofExp):
                 # (bot -> (neg neg p -> p)) -> ((bot -> neg neg p) -> (bot -> p))
                 self.dynamic_inst(self.prop2, {0: bot, 1: neg_neg_p, 2: p}),
                 #  bot -> (neg neg p -> p)
-                self.imp_provable(bot, self.dynamic_inst(self.prop3, {0: p}))
+                self.imp_provable(bot, self.dynamic_inst(self.prop3, {0: p})),
             ),
             # (bot -> (neg neg p))
             self.dynamic_inst(self.prop1, {0: bot, 1: neg(p)}),
