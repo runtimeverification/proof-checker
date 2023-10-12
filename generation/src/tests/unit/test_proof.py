@@ -74,12 +74,12 @@ def uncons_metavar_instrs(id: int) -> list[int]:
     return [Instruction.CleanMetaVar, id]
 
 
-def test_prove_imp_reflexivity() -> None:
+def test_prove_imp_refl() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implication(phi0, phi0)
     prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out))
-    proved = prop.publish_proof(prop.imp_reflexivity())
+    proved = prop.publish_proof(prop.imp_refl())
     assert proved.conclusion == phi0_implies_phi0
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
