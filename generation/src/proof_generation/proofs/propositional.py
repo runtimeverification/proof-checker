@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional, Tuple
 
-from proof_generation.pattern import Implication, MetaVar, Notation, Bot, bot
+from proof_generation.pattern import Bot, Implication, MetaVar, Notation, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ class Negation(Notation):
 
     @staticmethod
     def definition() -> Pattern:
-        return Implication(MetaVar(0), bot)
+        return Implication(phi0, bot)
 
     def __str__(self) -> str:
         return f'~({str(self.phi0)})'
@@ -55,10 +55,11 @@ class Or(Notation):
 
     @staticmethod
     def definition() -> Pattern:
-        return Implication(neg(MetaVar(0)), MetaVar(1))
+        return Implication(neg(phi0), phi1)
 
     def __str__(self) -> str:
-        return f'({str(self.left)}) \/ ({str(self.right)})'
+        return f'({str(self.left)}) \\/ ({str(self.right)})'
+
 
 def ml_or(l: Pattern, r: Pattern) -> Pattern:
     return Or(l, r)
@@ -74,8 +75,10 @@ def is_imp(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
         return pat.left, pat.right
     return None
 
+
 def get_imp(pat: Pattern) -> Tuple[Pattern, Pattern]:
-    return unwrap(is_imp(pat), "Expected an implication but got: " + str(pat) + "\n")
+    return unwrap(is_imp(pat), 'Expected an implication but got: ' + str(pat) + '\n')
+
 
 def is_bot(pat: Pattern) -> bool:
     if pat == bot.conclusion():
@@ -86,8 +89,10 @@ def is_bot(pat: Pattern) -> bool:
         return is_bot(pat.conclusion())
     return False
 
+
 def get_bot(pat: Pattern):
-    assert is_bot(pat), "Expected Bot but instead got: " + str(pat) + "\n"
+    assert is_bot(pat), 'Expected Bot but instead got: ' + str(pat) + '\n'
+
 
 def is_neg(pat: Pattern) -> Optional[Pattern]:
     if is_imp(pat) and is_bot(pat.right):
@@ -98,8 +103,10 @@ def is_neg(pat: Pattern) -> Optional[Pattern]:
         return is_neg(pat.conclusion())
     return None
 
+
 def get_neg(pat: Pattern) -> Pattern:
-    return unwrap(is_neg(pat), "Expected a negation but got: " + str(pat) + "\n")
+    return unwrap(is_neg(pat), 'Expected a negation but got: ' + str(pat) + '\n')
+
 
 def is_top(pat: Pattern) -> bool:
     if is_imp(pat):
@@ -110,8 +117,10 @@ def is_top(pat: Pattern) -> bool:
         return is_top(pat.conclusion())
     return False
 
+
 def get_top(pat: Pattern):
-    assert is_top(pat), "Expected Top but instead got: " + str(pat) + "\n"
+    assert is_top(pat), 'Expected Top but instead got: ' + str(pat) + '\n'
+
 
 def is_or(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
     if is_imp(pat):
@@ -124,8 +133,10 @@ def is_or(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
         return is_or(pat.conclusion())
     return None
 
+
 def get_or(pat: Pattern) -> Tuple[Pattern, Pattern]:
-    return unwrap(is_or(pat), "Expected an Or but got: " + str(pat) + "\n")
+    return unwrap(is_or(pat), 'Expected an Or but got: ' + str(pat) + '\n')
+
 
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
@@ -137,7 +148,6 @@ class Propositional(ProofExp):
 
     @staticmethod
     def claims() -> list[Pattern]:
-        phi0 = MetaVar(0)
         return [
             Implication(phi0, phi0),  # Reflexivity
             top,  # Top
@@ -161,7 +171,7 @@ class Propositional(ProofExp):
     # ======
 
     # phi0 -> phi0
-    def imp_refl(self, p: Pattern = MetaVar(0)) -> Proved:
+    def imp_refl(self, p: Pattern = phi0) -> Proved:
         # fmt: off
         return self.dynamic_inst(
             self.modus_ponens(
@@ -200,7 +210,7 @@ class Propositional(ProofExp):
         return self.imp_refl(bot)
 
     # bot -> p
-    def bot_elim(self, p: Pattern = MetaVar(0)) -> Proved:
+    def bot_elim(self, p: Pattern = phi0) -> Proved:
         neg_neg_p = neg(neg(p))
 
         return self.modus_ponens(
@@ -225,16 +235,13 @@ class Propositional(ProofExp):
         return self.prop3()
 
     # (neg a) -> a -> b
-    def absurd(self, a: Pattern = MetaVar(0), b: Pattern = MetaVar(1)) -> Proved:
+    def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
         bot_to_b = Implication(bot, b)
 
         return self.modus_ponens(
             self.dynamic_inst(self.prop2, {0: a, 1: bot, 2: b}),
             # a -> bot -> b
-            self.modus_ponens(
-                self.dynamic_inst(self.prop1, {0: bot_to_b, 1: a}),
-                self.bot_elim(b)
-            ),
+            self.modus_ponens(self.dynamic_inst(self.prop1, {0: bot_to_b, 1: a}), self.bot_elim(b)),
         )
 
     # (((ph0 -> bot) -> ph0) -> ph0)
@@ -329,9 +336,7 @@ class Propositional(ProofExp):
                     },
                 ),
                 # ((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> phi0)
-                self.imp_refl(
-                    Implication(phi0, bot)
-                ),
+                self.imp_refl(Implication(phi0, bot)),
             )
 
         return self.modus_ponens(
