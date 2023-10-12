@@ -276,7 +276,7 @@ def make_up_notation(name: str, symbol: Symbol, arity: int) -> type[Notation]:
     metavars = [MetaVar(i) for i in range(arity)]
     metavar_names = [f'phi{i}' for i in range(arity)]
 
-    def chained_application(pattern: Pattern, args: list[Pattern]) -> Pattern:
+    def chained_application(pattern: Pattern, args: list[MetaVar]) -> Pattern:
         """Simplify generating chains of applications for symbols with several args."""
         if len(args) == 0:
             return pattern
@@ -292,13 +292,14 @@ def make_up_notation(name: str, symbol: Symbol, arity: int) -> type[Notation]:
         __annotations__ = {name: Symbol}
         __slots__ = metavar_names
 
-        def __init__(self, *args):
+        def __init__(self, *args: Pattern):
             if len(args) != arity:
                 raise TypeError(f'{name} takes {arity} positional arguments but {len(args)} were given')
             for i, arg in enumerate(args):
                 setattr(self, metavar_names[i], arg)
 
-        def definition(self) -> Pattern:
+        @staticmethod
+        def definition() -> Pattern:
             return chained_application(symbol, metavars)
 
         def __str__(self) -> str:

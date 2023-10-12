@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import pyk.kore.syntax as kore
 
 import proof_generation.pattern as nf
 import proof_generation.proofs.propositional as prop
-
-if TYPE_CHECKING:
-    pass
 
 
 class ExecutionProofGen:
@@ -65,18 +60,20 @@ class ExecutionProofGen:
         match pattern:
             case kore.Rewrites(_, left, right):
                 # TODO: Sort is ignored for now.
-                left = self._convert_pattern(left)
-                right = self._convert_pattern(right)
-                return nf.Implication(left, right)
+                left_rw_pattern = self._convert_pattern(left)
+                right_rw_pattern = self._convert_pattern(right)
+                return nf.Implication(left_rw_pattern, right_rw_pattern)
             case kore.And(sort, left, right):
-                and_symbol: nf.Pattern = self._resolve_symbol(pattern)
+                and_symbol: nf.Symbol = self._resolve_symbol(pattern)
                 sort_symbol: nf.Pattern = self._resolve_symbol(sort)
-                left_pattern: nf.Pattern = self._convert_pattern(left)
-                right_pattern: nf.Pattern = self._convert_pattern(right)
+                left_and_pattern: nf.Pattern = self._convert_pattern(left)
+                right_and_pattern: nf.Pattern = self._convert_pattern(right)
 
-                return self._resolve_notation('kore-And', and_symbol, [sort_symbol, left_pattern, right_pattern])
+                return self._resolve_notation(
+                    'kore-And', and_symbol, [sort_symbol, left_and_pattern, right_and_pattern]
+                )
             case kore.App(symbol, sorts, args):
-                symbol_pattern: nf.Pattern = self._resolve_symbol(symbol)
+                symbol_pattern: nf.Symbol = self._resolve_symbol(symbol)
                 sorts_pattern: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
                 args_pattern: list[nf.Pattern] = [self._convert_pattern(arg) for arg in args]
 
@@ -103,9 +100,9 @@ class ExecutionProofGen:
         elif type(pattern) in self.CONST_SYMBOLS:
             return nf.Symbol(name=self.CONST_SYMBOLS.index(type(pattern)), pretty_name=f'KORE_{type(pattern).__name__}')
         elif isinstance(pattern, kore.Symbol):
-            if pattern.symbol not in self._symbols:
-                self._symbols[pattern.symbol] = nf.Symbol(name=len(self._symbols), pretty_name=pattern.symbol)
-            return self._symbols[pattern.symbol]
+            if pattern.name not in self._symbols:
+                self._symbols[pattern.name] = nf.Symbol(name=len(self._symbols), pretty_name=pattern.name)
+            return self._symbols[pattern.name]
         else:
             raise NotImplementedError(f'Pattern {pattern} is not supported')
 

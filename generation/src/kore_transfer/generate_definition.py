@@ -22,7 +22,7 @@ def get_kompiled_definition(output_dir: Path) -> Definition:
     return KompiledKore(output_dir).definition
 
 
-def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir=False) -> Path:
+def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = False) -> Path:
     """Kompile given K definition and return path to the kompiled directory."""
 
     path = Path(output_dir)
@@ -49,7 +49,9 @@ def get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: in
     return parsed.pattern()
 
 
-def main(k_file: str, module_name: str, program_file: str, output_dir: str, step=0, reuse_kompiled_dir=False) -> None:
+def main(
+    k_file: str, module_name: str, program_file: str, output_dir: str, step: int = 0, reuse_kompiled_dir: bool = False
+) -> None:
     print(f'Kompiling target {k_file} to {output_dir}')
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
