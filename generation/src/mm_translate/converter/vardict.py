@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import UserDict
 from typing import Any
 
-from mm_transfer.metamath.ast import Metavariable
+from mm_translate.metamath.ast import Metavariable
 
 
 class VarDict(UserDict):
