@@ -96,8 +96,11 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-proof-gen test-proof-translate test-proof-verify
-.PHONY: test-system test-proof-gen test-proof-verify test-zk
+test-system: test-integration test-proof-gen test-proof-translate test-proof-verify
+.PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
+
+test-integration:
+	make -C generation test-integration
 
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
