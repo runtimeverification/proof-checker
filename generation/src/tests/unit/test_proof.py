@@ -9,7 +9,7 @@ from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu, SVar
+from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu
 from proof_generation.pretty_printing_interpreter import NotationlessPrettyPrinter, PrettyPrintingInterpreter
 from proof_generation.proofs.propositional import Propositional
 from proof_generation.serializing_interpreter import SerializingInterpreter

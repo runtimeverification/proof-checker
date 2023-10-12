@@ -188,9 +188,9 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
             case Application(left, right):
                 return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
             case Exists(var, subpattern):
-                return f'(\u2203 {str(var)} . {self.pretty_print_pattern(subpattern)})'
+                return f'(\u2203 x{var} . {self.pretty_print_pattern(subpattern)})'
             case Mu(var, subpattern):
-                return f'(\u03BC {self.pretty_print_pattern(var)} . {self.pretty_print_pattern(p.subpattern)})'
+                return f'(\u03BC X{var} . {self.pretty_print_pattern(p.subpattern)})'
             case ESubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):

@@ -99,9 +99,9 @@ class BasicInterpreter:
             case Application(left, right):
                 return self.app(self.pattern(left), self.pattern(right))
             case Exists(var, subpattern):
-                return self.exists(var.name, self.pattern(subpattern))
+                return self.exists(var, self.pattern(subpattern))
             case Mu(var, subpattern):
-                return self.mu(var.name, self.pattern(subpattern))
+                return self.mu(var, self.pattern(subpattern))
             case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
                 # TODO: The results should be passed to self.metavar
                 self.patterns(e_fresh)

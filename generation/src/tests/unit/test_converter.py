@@ -195,9 +195,9 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     # \exists x ( \and ( \in-sort x ph0 ) ph1 )
     def sorted_exists(x: Pattern, p: Pattern, q: Pattern) -> Pattern:
         assert isinstance(x, EVar)
-        return Exists(x, and_(in_sort(x, p), q))
+        return Exists(x.name, and_(in_sort(x, p), q))
 
-    expected = sorted_Exists(0, MetaVar(10), MetaVar(11))
+    expected = sorted_exists(EVar(0), MetaVar(10), MetaVar(11))
     converted = scope.resolve_notation('\\sorted-exists')(EVar(10), MetaVar(10), MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 
@@ -308,7 +308,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
         app_ctx_holes=ph1.app_ctx_holes,
     )
     antecedents = [Implication(ph0, ph1_mc)]
-    pattern = Implication(Exists(x, ph0), ph1_mc)
+    pattern = Implication(Exists(x.name, ph0), ph1_mc)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
     assert isinstance(converted, AxiomWithAntecedents)
