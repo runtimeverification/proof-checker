@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
-from mm_transfer.metamath.ast import (
+from mm_translate.metamath.ast import (
     Application,
     AxiomaticStatement,
     Block,
@@ -19,13 +19,13 @@ from mm_transfer.metamath.ast import (
     StructuredStatement,
     VariableStatement,
 )
-from mm_transfer.metamath.parser import load_database
+from mm_translate.metamath.parser import load_database
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
     from typing import TypeGuard
 
-    from mm_transfer.metamath.ast import Statement, Term, Terms
+    from mm_translate.metamath.ast import Statement, Term, Terms
 
 
 def get_constants(terms: Terms) -> set[str]:
