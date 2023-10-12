@@ -1,6 +1,6 @@
 import os
 
-from mm_transfer.metamath.ast import (
+from mm_translate.metamath.ast import (
     AxiomaticStatement,
     Block,
     ConstantStatement,
@@ -8,7 +8,7 @@ from mm_transfer.metamath.ast import (
     ProvableStatement,
     VariableStatement,
 )
-from mm_transfer.metamath.parser import load_database
+from mm_translate.metamath.parser import load_database
 
 BENCHMARK_LOCATION = 'mm-benchmarks'
 
