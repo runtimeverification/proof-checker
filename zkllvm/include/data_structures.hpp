@@ -1,60 +1,91 @@
-#include <cstdlib>
 #include <cassert>
+#include <cstdlib>
+#include <iostream>
 
-struct Node {
-    int data;
-    Node *next;
+template <typename T> struct Node {
+  T data;
+  Node *next;
 
-    static Node *create(const int &value) {
-        Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node *)));
-        newNode->data = value;
-        newNode->next = nullptr;
-        return newNode;
-    }
+  static Node *create(const T &value) {
+    Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
+    newNode->data = value;
+    newNode->next = nullptr;
+    return newNode;
+  }
 };
 
-
-class LinkedList {
+template <typename T> class LinkedList {
 public:
-    Node *head = nullptr;
+  Node<T> *head = nullptr;
 
-    LinkedList() : head(nullptr) {}
+  LinkedList() : head(nullptr) {}
 
-    ~LinkedList() {
-        Node *curr = head;
-        while (curr) {
-            Node *next = curr->next;
-            std::free(curr);
-            curr = next;
-        }
+  ~LinkedList() {
+    Node<T> *curr = head;
+    while (curr) {
+      Node<T> *next = curr->next;
+      std::free(curr);
+      curr = next;
+    }
+  }
+
+  void insert_front(const T &value) {
+    Node<T> *newNode = Node<T>::create(value);
+
+    // If the list is empty, set the new node as the head
+    if (head == nullptr) {
+      newNode->next = nullptr;
+      head = newNode;
+    } else {
+      // Otherwise, update the links
+      newNode->next = head;
+      head = newNode;
+    }
+  }
+
+  void delete_front() {
+    if (!head) {
+      return;
     }
 
-    static LinkedList *create() {
-        return static_cast<LinkedList *>(std::malloc(sizeof(LinkedList *)));
+    Node<T> *next = head->next;
+    std::free(head);
+    head = next;
+  }
+
+  static LinkedList *create() {
+    auto newList = static_cast<LinkedList *>(std::malloc(sizeof(LinkedList)));
+    newList->head = nullptr;
+    return newList;
+  }
+
+  static LinkedList *create(const T &value) {
+    LinkedList *list = create();
+    list->insert_front(value);
+    return list;
+  }
+
+  bool contains(const T &value) {
+    Node<T> *curr = head;
+    while (curr) {
+      if (curr->data == value) {
+        return true;
+      }
+      curr = curr->next;
     }
-
-    void insert_front(const int &value) {
-        Node *newNode = Node::create(value);
-        newNode->data = value;
-
-        // If the list is empty, set the new node as the head
-        if (!head) {
-            newNode->next = nullptr;
-            head = newNode;
-        } else {
-            // Otherwise, update the links
-            newNode->next = head;
-            head = newNode;
-        }
+    return false;
+  }
+#ifdef DEBUG
+  void print() {
+    if (!head) {
+      std::cout << "[]";
+      return;
     }
-
-    void delete_front() {
-        if (!head) {
-            return;
-        }
-
-        Node *next = head->next;
-        std::free(head);
-        head = next;
+    Node<T> *curr = head;
+    while (curr) {
+      std::cout << (int)curr->data << " ";
+      curr = curr->next;
     }
+  }
+#endif
 };
