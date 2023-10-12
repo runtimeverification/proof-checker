@@ -142,19 +142,15 @@ class Propositional(ProofExp):
     # Proofs
     # ======
 
-    # phi0 -> phi0
+    # p -> p
     def imp_refl(self, p: Pattern = phi0) -> Proved:
-        phi0_implies_phi0 = Implication(phi0, phi0)
+        pp = Implication(p, p)
         # fmt: off
-        return self.dynamic_inst(
-            lambda: self.modus_ponens(
-                self.modus_ponens(
-                    self.dynamic_inst(self.prop2, {1: phi0_implies_phi0, 2: phi0}),
-                    self.dynamic_inst(self.prop1, {1: phi0_implies_phi0})
-                ),
-                self.dynamic_inst(self.prop1, {1: phi0}),
-            ),
-            {0: p})
+        return self.modus_ponens(
+            self.modus_ponens(
+                self.dynamic_inst(self.prop2, {0: p, 1: pp, 2: p}),
+                self.dynamic_inst(self.prop1, {0: p, 1: pp})),
+            self.dynamic_inst(self.prop1, {0: p, 1: p}))
 
     #    q
     # --------

@@ -83,22 +83,25 @@ def test_prove_imp_refl() -> None:
     assert proved.conclusion == phi0_implies_phi0
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
-        *uncons_metavar_instrs(0),          # Stack: ph0
-        *uncons_metavar_instrs(0),          # Stack: ph0, ph0
-        Instruction.Implication,            # Stack: ph0 -> ph0
-        *uncons_metavar_instrs(0),          # Stack: ph0 -> ph0; ph0
-        Instruction.Prop2,                  # Stack: ph0 -> ph0; ph0; prop2
-        Instruction.Instantiate, 2, 2, 1,   # Stack: p1=[(ph0 -> ((ph0 -> ph0) -> ph0)) -> ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))]
-        *uncons_metavar_instrs(0),          # Stack: p1; ph0;
-        *uncons_metavar_instrs(0),          # Stack: p1; ph0; ph0;
-        Instruction.Implication,            # Stack: p1 ; ph0 -> ph0;
-        Instruction.Prop1,                  # Stack: p1 ; ph0 -> ph0; prop1
-        Instruction.Instantiate, 1, 1,      # Stack: p1 ; [p2: (ph0 -> ((ph0 -> ph0) -> ph0)) ]
-        Instruction.ModusPonens,            # Stack: [p3: ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))
-        *uncons_metavar_instrs(0),          # Stack: p3 ; ph0;
-        Instruction.Prop1,                  # Stack: p3; ph0; prop1
-        Instruction.Instantiate, 1, 1,      # Stack: p3; ph0 -> (ph0 -> ph0)
-        Instruction.ModusPonens,            # Stack: phi0 -> phi0
+        *uncons_metavar_instrs(0),             # Stack: ph0
+        *uncons_metavar_instrs(0),             # Stack: ph0, ph0
+        *uncons_metavar_instrs(0),             # Stack: ph0, ph0, ph0
+        Instruction.Implication,               # Stack: ph0, ph0 -> ph0
+        *uncons_metavar_instrs(0),             # Stack: ph0, ph0 -> ph0; ph0
+        Instruction.Prop2,                     # Stack: ph0, ph0 -> ph0; ph0; prop2
+        Instruction.Instantiate, 3, 2, 1, 0,   # Stack: p1=[(ph0 -> ((ph0 -> ph0) -> ph0)) -> ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))]
+        *uncons_metavar_instrs(0),             # Stack: p1; ph0;
+        *uncons_metavar_instrs(0),             # Stack: p1; ph0; ph0;
+        *uncons_metavar_instrs(0),             # Stack: p1; ph0; ph0; ph0;
+        Instruction.Implication,               # Stack: p1; ph0; ph0 -> ph0;
+        Instruction.Prop1,                     # Stack: p1; ph0; ph0 -> ph0; prop1
+        Instruction.Instantiate, 2, 1, 0,      # Stack: p1; [p2: (ph0 -> ((ph0 -> ph0) -> ph0)) ]
+        Instruction.ModusPonens,               # Stack: [p3: ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))
+        *uncons_metavar_instrs(0),             # Stack: p3; ph0;
+        *uncons_metavar_instrs(0),             # Stack: p3; ph0; ph0;
+        Instruction.Prop1,                     # Stack: p3; ph0; ph0; prop1
+        Instruction.Instantiate, 2, 1, 0,      # Stack: p3; ph0 -> (ph0 -> ph0)
+        Instruction.ModusPonens,               # Stack: phi0 -> phi0
         Instruction.Publish,
     ])
     # fmt: on
