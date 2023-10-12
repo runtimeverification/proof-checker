@@ -32,7 +32,7 @@ pub fn main() {
 
     begin = env::get_cycle_count();
 
-    verify(&*gamma_buffer, &*claims_buffer, &*proof_buffer);
+    verify(gamma_buffer, claims_buffer, proof_buffer);
 
     end = env::get_cycle_count();
 
@@ -42,4 +42,11 @@ pub fn main() {
     // count_2: cycles spent throughout
     env::commit(&(env::get_cycle_count()));
 
+    // output gamma length
+    env::commit(&gamma_buffer.len());
+    // output gamma
+    env::commit_slice(gamma_buffer.as_slice());
+
+    // output claims
+    env::commit_slice(&claims_buffer.as_slice())
 }

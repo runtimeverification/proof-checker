@@ -57,19 +57,16 @@ fn main() {
     let size_of_usize = std::mem::size_of::<usize>();
 
     // Create an array for holding deserialized counts
-    let mut counts: [usize; 3] = [0; 3];
-
-    // Iterate over usize chunks of the journal, deserializing and saving values
-    for (i, chunk) in receipt.journal.chunks(size_of_usize).enumerate() {
-        counts[i] = from_slice(&chunk.to_vec()).unwrap();
-    }
+    let io_cycles: usize = from_slice(&receipt.journal[0..size_of_usize]).unwrap();
+    let checking_cycles: usize = from_slice(&receipt.journal[size_of_usize..2*size_of_usize]).unwrap();
+    let total_cycles: usize = from_slice(&receipt.journal[2*size_of_usize..3*size_of_usize]).unwrap();
 
     // print out cycle counts
-    println!("Reading files: {} cycles", counts[0]);
-    println!("Verifying the theorem: {} cycles", counts[1]);
+    println!("Reading files: {} cycles", io_cycles);
+    println!("Verifying the theorem: {} cycles", checking_cycles);
     println!(
         "Overall (environment setup, reading files, and verification): {} cycles!",
-        counts[2]
+        total_cycles
     );
 
     // Optional: Verify receipt to confirm that recipients will also be able to
@@ -80,4 +77,9 @@ fn main() {
         "Running execution + ZK certficate generation + verification took {} s",
         now.elapsed().as_secs()
     );
+
+    let gamma_length: usize = from_slice(&receipt.journal[3*size_of_usize..4*size_of_usize]).unwrap();
+    let gamma = &receipt.journal[4*size_of_usize..(4*size_of_usize + gamma_length)];
+    let claims = &receipt.journal[(4*size_of_usize + gamma_length)..];
+    println!("There exists a proof of {:?} |- {:?}.", gamma, claims);
 }
