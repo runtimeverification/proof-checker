@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
-phi0_implies_phi0 = Implication(phi0, phi0)
 
 
 @dataclass(frozen=True, eq=False)
@@ -172,6 +171,7 @@ class Propositional(ProofExp):
 
     # phi0 -> phi0
     def imp_refl(self, p: Pattern = phi0) -> Proved:
+        phi0_implies_phi0 = Implication(phi0, phi0)
         # fmt: off
         return self.dynamic_inst(
             self.modus_ponens(
