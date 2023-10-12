@@ -147,7 +147,7 @@ class Propositional(ProofExp):
         phi0_implies_phi0 = Implication(phi0, phi0)
         # fmt: off
         return self.dynamic_inst(
-            self.modus_ponens(
+            lambda: self.modus_ponens(
                 self.modus_ponens(
                     self.dynamic_inst(self.prop2, {1: phi0_implies_phi0, 2: phi0}),
                     self.dynamic_inst(self.prop1, {1: phi0_implies_phi0})
@@ -166,11 +166,11 @@ class Propositional(ProofExp):
     # ------
     # T -> p
     def top_imp(self, p_pf: Proved) -> Proved:
-        self.imp_provable(top, p_pf)
+        return self.imp_provable(top, p_pf)
 
     # p -> T
     def imp_top(self, p: Pattern) -> Proved:
-        self.imp_provable(p, self.top_intro())
+        return self.imp_provable(p, self.top_intro())
 
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
     def imp_transitivity(self, phi0_imp_phi1: Proved, phi1_imp_phi2: Proved) -> Proved:

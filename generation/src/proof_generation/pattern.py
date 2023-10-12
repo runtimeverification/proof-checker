@@ -35,8 +35,7 @@ class Pattern:
             case Mu(id, p1), Mu(id2, p2):
                 return id == id2 and p1 == p2
             # TODO: ESubst, SSubst
-            case _, _:
-                return False
+        return False
 
 
 @dataclass(frozen=True)
@@ -258,7 +257,7 @@ class Notation(Pattern):
     def __eq__(self, o: object) -> bool:
         assert isinstance(o, Pattern)
         if isinstance(o, Notation):
-            if o.label() == self.label:
+            if type(o).label() == type(self).label():
                 vars_o = vars(o)
                 vars_self_it = vars(self).items()
                 for s, p in vars_self_it:
@@ -306,7 +305,7 @@ class Bot(Notation):
 bot = Bot()
 
 
-def unwrap(x, error_msg):
+def unwrap(x, error_msg: str):
     assert x, error_msg
     return x
 

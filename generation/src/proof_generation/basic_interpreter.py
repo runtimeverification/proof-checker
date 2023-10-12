@@ -144,8 +144,8 @@ class BasicInterpreter:
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion
         l, r = get_imp(left_conclusion)
-        assert l == right.conclusion, str(left_conclusion.left) + ' != ' + str(right.conclusion)
-        return Proved(left_conclusion.right)
+        assert l == right.conclusion, str(l) + ' != ' + str(right.conclusion)
+        return Proved(r)
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return Proved(proved.conclusion.instantiate(delta))
