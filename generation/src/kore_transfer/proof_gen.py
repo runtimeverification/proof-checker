@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 import pyk.kore.syntax as kore
+
 import proof_generation.pattern as nf
 import proof_generation.proofs.propositional as prop
 
@@ -9,13 +11,8 @@ if TYPE_CHECKING:
     pass
 
 
-class ExecutionProofGen():
-
-    CONST_SYMBOLS: tuple[type[kore.Pattern], ...] = (
-        kore.And,
-        kore.Top,
-        kore.EVar
-    )
+class ExecutionProofGen:
+    CONST_SYMBOLS: tuple[type[kore.Pattern], ...] = (kore.And, kore.Top, kore.EVar)
 
     def __init__(self, kore_definition: kore.Definition, module_name: str) -> None:
         self._definition = kore_definition
@@ -37,7 +34,6 @@ class ExecutionProofGen():
         """Take a single rewrite step and emit a proof for it."""
         # emit a proof for taking a single step
         # returns the final pattern
-        pass
 
     def convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
         """Convert the given pattern to the pattern in the new format."""

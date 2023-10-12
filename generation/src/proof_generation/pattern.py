@@ -55,6 +55,7 @@ class SVar(Pattern):
 @dataclass(frozen=True)
 class Symbol(Pattern):
     name: int
+    pretty_name: str | None = None
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -66,7 +67,10 @@ class Symbol(Pattern):
         return self
 
     def __str__(self) -> str:
-        return f'\u03c3{str(self.name)}'
+        if self.pretty_name is None:
+            return f'\u03c3{str(self.name)}'
+        else:
+            return f'{self.pretty_name}_{str(self.name)}'
 
 
 @dataclass(frozen=True)
@@ -266,6 +270,42 @@ class Bot(Notation):
 
     def __str__(self) -> str:
         return '\u22A5'
+
+
+def make_up_notation(name: str, symbol: Symbol, arity: int) -> type[Notation]:
+    metavars = [MetaVar(i) for i in range(arity)]
+    metavar_names = [f'phi{i}' for i in range(arity)]
+
+    def chained_application(pattern: Pattern, args: list[Pattern]) -> Pattern:
+        """Simplify generating chains of applications for symbols with several args."""
+        if len(args) == 0:
+            return pattern
+        else:
+            current_callable = pattern
+            arguments_left = args
+            while len(arguments_left) > 0:
+                next_one, *arguments_left = arguments_left
+                current_callable = Application(current_callable, next_one)
+            return current_callable
+
+    class FakeNotation(Notation):
+        __annotations__ = {name: Symbol}
+        __slots__ = metavar_names
+
+        def __init__(self, *args):
+            if len(args) != arity:
+                raise TypeError(f'{name} takes {arity} positional arguments but {len(args)} were given')
+            for i, arg in enumerate(args):
+                setattr(self, metavar_names[i], arg)
+
+        def definition(self) -> Pattern:
+            return chained_application(symbol, metavars)
+
+        def __str__(self) -> str:
+            return f'{symbol.pretty_name}({", ".join(str(getattr(self, name)) for name in metavar_names)})'
+
+    FakeNotation.__name__ = name
+    return FakeNotation
 
 
 bot = Bot()
