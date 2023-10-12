@@ -197,7 +197,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
         assert isinstance(x, EVar)
         return Exists(x, and_(in_sort(x, p), q))
 
-    expected = sorted_exists(EVar(10), MetaVar(10), MetaVar(11))
+    expected = sorted_Exists(0, MetaVar(10), MetaVar(11))
     converted = scope.resolve_notation('\\sorted-exists')(EVar(10), MetaVar(10), MetaVar(11))
     assert expected == converted, pattern_mismatch(expected, converted)
 

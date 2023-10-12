@@ -70,7 +70,7 @@ class BasicInterpreter:
         return Application(left, right)
 
     def exists(self, var: int, subpattern: Pattern) -> Pattern:
-        return Exists(EVar(var), subpattern)
+        return Exists(var, subpattern)
 
     def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         return ESubst(pattern, EVar(evar_id), plug)
@@ -79,7 +79,7 @@ class BasicInterpreter:
         return SSubst(pattern, SVar(svar_id), plug)
 
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
-        return Mu(SVar(var), subpattern)
+        return Mu(var, subpattern)
 
     def add_notation(self, notation: Pattern) -> Pattern:
         if isinstance(notation, Notation):
