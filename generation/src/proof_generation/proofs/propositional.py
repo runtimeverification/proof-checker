@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional, Tuple
 
-from proof_generation.pattern import Implication, MetaVar, Notation, bot, get_imp, is_bot, is_imp, unwrap
+from proof_generation.pattern import Implication, MetaVar, Notation, bot, get_imp, is_bot, is_imp, unwrap, unwrap2
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -107,7 +107,7 @@ def is_or(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
 
 
 def get_or(pat: Pattern) -> Tuple[Pattern, Pattern]:
-    return unwrap(is_or(pat), 'Expected an Or but got: ' + str(pat) + '\n')
+    return unwrap2(is_or(pat), 'Expected an Or but got: ' + str(pat) + '\n')
 
 
 class Propositional(ProofExp):

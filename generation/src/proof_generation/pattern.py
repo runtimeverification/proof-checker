@@ -305,7 +305,12 @@ class Bot(Notation):
 bot = Bot()
 
 
-def unwrap(x, error_msg: str):
+def unwrap(x: Optional[Pattern], error_msg: str) -> Pattern:
+    assert x, error_msg
+    return x
+
+
+def unwrap2(x: Optional[Tuple[Pattern, Pattern]], error_msg: str) -> Tuple[Pattern, Pattern]:
     assert x, error_msg
     return x
 
@@ -319,7 +324,7 @@ def is_imp(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
 
 
 def get_imp(pat: Pattern) -> Tuple[Pattern, Pattern]:
-    return unwrap(is_imp(pat), 'Expected an implication but got: ' + str(pat) + '\n')
+    return unwrap2(is_imp(pat), 'Expected an implication but got: ' + str(pat) + '\n')
 
 
 def is_bot(pat: Pattern) -> bool:
