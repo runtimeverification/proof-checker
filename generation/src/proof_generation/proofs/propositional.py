@@ -183,6 +183,24 @@ class Propositional(ProofExp):
             ),
             {0: p})
 
+    #    q
+    # --------
+    # p -> q
+    def imp_provable(self, p: Pattern, q_pf: Proved) -> Proved:
+        return self.modus_ponens(
+            self.dynamic_inst(self.prop1, {0: q_pf.conclusion, 1: p}),
+            q_pf)
+
+    #    p
+    # ------
+    # T -> p
+    def top_imp(self, p_pf: Proved) -> Proved:
+        self.imp_provable(top, p_pf)
+
+    # p -> T
+    def imp_top(self, p: Pattern) -> Proved:
+        self.imp_provable(p, self.top_intro())
+
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
     def imp_transitivity(self, phi0_imp_phi1: Proved, phi1_imp_phi2: Proved) -> Proved:
         # TODO: Consider if the extra loads caused by these calls are problematic
@@ -196,11 +214,7 @@ class Propositional(ProofExp):
                 # (a -> (b -> c)) -> ((a -> b) -> (a -> c))
                 self.dynamic_inst(self.prop2, {0: a, 1: b, 2: c}),
                 #  a -> (b -> c)
-                self.modus_ponens(
-                    # (b -> c) -> (a -> (b -> c))
-                    self.dynamic_inst(self.prop1, {0: phi1_imp_phi2.conclusion, 1: a}),
-                    phi1_imp_phi2,
-                ),
+                self.imp_provable(a, phi1_imp_phi2)
             ),
             phi0_imp_phi1,
         )
@@ -218,13 +232,8 @@ class Propositional(ProofExp):
             self.modus_ponens(
                 # (bot -> (neg neg p -> p)) -> ((bot -> neg neg p) -> (bot -> p))
                 self.dynamic_inst(self.prop2, {0: bot, 1: neg_neg_p, 2: p}),
-                # (bot -> (neg neg p -> p))
-                self.modus_ponens(
-                    # (neg neg p -> p) -> (bot -> (neg neg p -> p))
-                    self.dynamic_inst(self.prop1, {0: Implication(neg_neg_p, p), 1: bot}),
-                    # (neg neg p -> p)
-                    self.dynamic_inst(self.prop3, {0: p}),
-                ),
+                #  bot -> (neg neg p -> p)
+                self.imp_provable(bot, self.dynamic_inst(self.prop3, {0: p}))
             ),
             # (bot -> (neg neg p))
             self.dynamic_inst(self.prop1, {0: bot, 1: neg(p)}),
