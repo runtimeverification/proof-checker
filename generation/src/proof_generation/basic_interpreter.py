@@ -16,6 +16,7 @@ from proof_generation.pattern import (
     SVar,
     Symbol,
     bot,
+    get_imp,
 )
 from proof_generation.proved import Proved
 
@@ -142,8 +143,8 @@ class BasicInterpreter:
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion
-        assert isinstance(left_conclusion, Implication)
-        assert left_conclusion.left == right.conclusion, (left_conclusion.left, right.conclusion)
+        l, r = get_imp(left_conclusion)
+        assert l == right.conclusion, str(left_conclusion.left) + ' != ' + str(right.conclusion)
         return Proved(left_conclusion.right)
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:

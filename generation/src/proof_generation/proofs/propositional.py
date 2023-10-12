@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional, Tuple
 
-from proof_generation.pattern import Bot, Implication, MetaVar, Notation, bot
+from proof_generation.pattern import Implication, MetaVar, Notation, bot, get_imp, is_bot, is_imp, unwrap
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -64,42 +64,15 @@ def ml_or(l: Pattern, r: Pattern) -> Pattern:
     return Or(l, r)
 
 
-def unwrap(x, error_msg):
-    assert x, error_msg
-    return x
-
-
-def is_imp(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
-    if isinstance(pat, Implication):
-        return pat.left, pat.right
-    return None
-
-
-def get_imp(pat: Pattern) -> Tuple[Pattern, Pattern]:
-    return unwrap(is_imp(pat), 'Expected an implication but got: ' + str(pat) + '\n')
-
-
-def is_bot(pat: Pattern) -> bool:
-    if pat == bot.conclusion():
-        return True
-    if isinstance(pat, Bot):
-        return True
-    if isinstance(pat, Notation):
-        return is_bot(pat.conclusion())
-    return False
-
-
-def get_bot(pat: Pattern):
-    assert is_bot(pat), 'Expected Bot but instead got: ' + str(pat) + '\n'
-
-
 def is_neg(pat: Pattern) -> Optional[Pattern]:
-    if is_imp(pat) and is_bot(pat.right):
-        return pat.left
     if isinstance(pat, Negation):
         return pat.phi0
     if isinstance(pat, Notation):
         return is_neg(pat.conclusion())
+    if pat_imp := is_imp(pat):
+        if is_bot(pat_imp[1]):
+            return pat_imp[0]
+        return None
     return None
 
 
@@ -108,28 +81,28 @@ def get_neg(pat: Pattern) -> Pattern:
 
 
 def is_top(pat: Pattern) -> bool:
-    if is_imp(pat):
-        return is_bot(pat.left) and is_bot(pat.right)
     if isinstance(pat, Top):
         return True
     if isinstance(pat, Notation):
         return is_top(pat.conclusion())
+    if pat_imp := is_imp(pat):
+        return is_bot(pat_imp[0]) and is_bot(pat_imp[1])
     return False
 
 
-def get_top(pat: Pattern):
+def get_top(pat: Pattern) -> None:
     assert is_top(pat), 'Expected Top but instead got: ' + str(pat) + '\n'
 
 
 def is_or(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
-    if is_imp(pat):
-        if l := is_neg(pat.left):
-            return l, pat.right
-        return None
     if isinstance(pat, Or):
         return pat.left, pat.right
     if isinstance(pat, Notation):
         return is_or(pat.conclusion())
+    if pat_imp := is_imp(pat):
+        if l := is_neg(pat_imp[0]):
+            return l, pat_imp[1]
+        return None
     return None
 
 

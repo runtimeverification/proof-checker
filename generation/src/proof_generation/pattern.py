@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Optional, Tuple
 
 
 class Pattern:
@@ -12,6 +13,30 @@ class Pattern:
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         raise NotImplementedError
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, Notation):
+            return self == o.conclusion()
+        match self, o:
+            case EVar(id), EVar(id2):
+                return id == id2
+            case SVar(id), SVar(id2):
+                return id == id2
+            case Symbol(id), Symbol(id2):
+                return id == id2
+            case MetaVar(id), MetaVar(id2):
+                return id == id2
+            case Implication(l1, r1), Implication(l2, r2):
+                return l1 == l2 and r1 == r2
+            case Application(l1, r1), Application(l2, r2):
+                return l1 == l2 and r1 == r2
+            case Exists(id, p1), Exists(id2, p2):
+                return id == id2 and p1 == p2
+            case Mu(id, p1), Mu(id2, p2):
+                return id == id2 and p1 == p2
+            # TODO: ESubst, SSubst
+            case _, _:
+                return False
 
 
 @dataclass(frozen=True)
@@ -231,6 +256,16 @@ class Notation(Pattern):
         return ret
 
     def __eq__(self, o: object) -> bool:
+        assert isinstance(o, Pattern)
+        if isinstance(o, Notation):
+            if o.label() == self.label:
+                vars_o = vars(o)
+                vars_self_it = vars(self).items()
+                for s, p in vars_self_it:
+                    if not (vars_o[s] == p):
+                        return False
+                return True
+            return self == o.conclusion()
         return self.conclusion() == o
 
     def conclusion(self) -> Pattern:
@@ -269,3 +304,34 @@ class Bot(Notation):
 
 
 bot = Bot()
+
+
+def unwrap(x, error_msg):
+    assert x, error_msg
+    return x
+
+
+def is_imp(pat: Pattern) -> Optional[Tuple[Pattern, Pattern]]:
+    if isinstance(pat, Implication):
+        return pat.left, pat.right
+    if isinstance(pat, Notation):
+        return is_imp(pat.conclusion())
+    return None
+
+
+def get_imp(pat: Pattern) -> Tuple[Pattern, Pattern]:
+    return unwrap(is_imp(pat), 'Expected an implication but got: ' + str(pat) + '\n')
+
+
+def is_bot(pat: Pattern) -> bool:
+    if isinstance(pat, Bot):
+        return True
+    if isinstance(pat, Notation):
+        return is_bot(pat.conclusion())
+    if pat == bot.conclusion():
+        return True
+    return False
+
+
+def get_bot(pat: Pattern) -> None:
+    assert is_bot(pat), 'Expected Bot but instead got: ' + str(pat) + '\n'
