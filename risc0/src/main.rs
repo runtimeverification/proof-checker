@@ -58,8 +58,10 @@ fn main() {
 
     // Create an array for holding deserialized counts
     let io_cycles: usize = from_slice(&receipt.journal[0..size_of_usize]).unwrap();
-    let checking_cycles: usize = from_slice(&receipt.journal[size_of_usize..2*size_of_usize]).unwrap();
-    let total_cycles: usize = from_slice(&receipt.journal[2*size_of_usize..3*size_of_usize]).unwrap();
+    let checking_cycles: usize =
+        from_slice(&receipt.journal[size_of_usize..2 * size_of_usize]).unwrap();
+    let total_cycles: usize =
+        from_slice(&receipt.journal[2 * size_of_usize..3 * size_of_usize]).unwrap();
 
     // print out cycle counts
     println!("Reading files: {} cycles", io_cycles);
@@ -78,8 +80,9 @@ fn main() {
         now.elapsed().as_secs()
     );
 
-    let gamma_length: usize = from_slice(&receipt.journal[3*size_of_usize..4*size_of_usize]).unwrap();
-    let gamma = &receipt.journal[4*size_of_usize..(4*size_of_usize + gamma_length)];
-    let claims = &receipt.journal[(4*size_of_usize + gamma_length)..];
+    let gamma_length: usize =
+        from_slice(&receipt.journal[3 * size_of_usize..4 * size_of_usize]).unwrap();
+    let gamma = &receipt.journal[4 * size_of_usize..(4 * size_of_usize + gamma_length)];
+    let claims = &receipt.journal[(4 * size_of_usize + gamma_length)..];
     println!("There exists a proof of {:?} |- {:?}.", gamma, claims);
 }
