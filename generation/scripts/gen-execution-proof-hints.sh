@@ -57,52 +57,52 @@ if ! command -v kompile &>/dev/null || ! command -v kparse &>/dev/null || ! comm
   exit 1
 fi
 
-# Get the definition's name (without the .k extension)
-DEF_NAME="${DEF%.*}"
+# Create a temporary directory for the kompiled semantics
+temp_kompiled_dir=$(mktemp -d)
 
-# Check if the K definition was already kompiled (in the current directory)
-if [ ! -d "${DEF_NAME}-kompiled" ]; then
-  echo "Compiling $DEF..."
-  if kompile "$DEF"; then
-    echo "Compilation successful."
-  else
-    echo "Error: Compilation of $DEF failed."
-    exit 1
-  fi
+# Kompile the K definition
+echo "Compiling $DEF..."
+if kompile --backend llvm --output-definition "$temp_kompiled_dir" "$DEF"; then
+  echo "Compilation successful."
 else
-  echo "Directory ${DEF_NAME}-kompiled already exists. Skipping compilation."
+  echo "Error: Compilation of $DEF failed."
+  rm -Rf "$temp_kompiled_dir"
+  exit 1
 fi
 
-tempFile=$(mktemp)
+# Create a temporary file for intermediate results
+temp_file=$(mktemp)
 
 # Parse the program into kore
-if ! kparse "$PGM" --definition "${DEF_NAME}-kompiled" > "$tempFile"; then
+if ! kparse "$PGM" --definition "$temp_kompiled_dir" > "$temp_file"; then
   echo "Error: kparse command failed."
-  rm -f "$tempFile"
+  rm -f "$temp_file"
+  rm -Rf "$temp_kompiled_dir"
   exit 1
 else
   echo "Input program parsed successfully."
 fi
 
 # Construct the initial configuration's kore term
-if ! llvm-krun -c PGM "$tempFile" KItem korefile --directory "${DEF_NAME}-kompiled" --dry-run -nm -o "$tempFile"; then
+if ! llvm-krun -c PGM "$temp_file" KItem korefile --directory "$temp_kompiled_dir" --dry-run -nm -o "$temp_file"; then
   echo "Error: llvm-krun command failed."
-  rm -f "$tempFile"
+  rm -f "$temp_file"
+  rm -Rf "$temp_kompiled_dir"
   exit 1
 else
   echo "Input configuration kore term genereated successfully."
 fi
 
 # Execute the interpreter and generate proof hints
-if ! "${DEF_NAME}-kompiled/interpreter" "$tempFile" -1 "$OUT" --proof-output; then
+if ! ${temp_kompiled_dir}/interpreter "$temp_file" -1 "$OUT" --proof-output; then
   echo "Error: Interpreter command failed."
-  rm -f "$tempFile"
+  rm -f "$temp_file"
+  rm -Rf "$temp_kompiled_dir"
   exit 1
 else
   echo "Proof hints generated successfully."
 fi
 
-# Clean up the temporary file
-rm -f "$tempFile"
-
-
+# Clean up the temporary files/directories
+rm -f "$temp_file"
+rm -Rf "$temp_kompiled_dir"
