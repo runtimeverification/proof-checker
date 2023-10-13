@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 class Pattern:
@@ -55,7 +55,7 @@ class SVar(Pattern):
 @dataclass(frozen=True)
 class Symbol(Pattern):
     name: int
-    pretty_name: str | None = None
+    pretty_name: str = field(default='', compare=False)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self

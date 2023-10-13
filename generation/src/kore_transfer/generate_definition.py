@@ -14,6 +14,8 @@ from kore_transfer.proof_gen import ExecutionProofGen
 if TYPE_CHECKING:
     from pyk.kore.syntax import Definition, Pattern
 
+    from proof_generation.proof import ProofExp
+
 
 def get_kompiled_definition(output_dir: Path) -> Definition:
     """Parse the definition.kore file and return corresponding object."""
@@ -49,17 +51,37 @@ def get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: in
     return parsed.pattern()
 
 
+def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, module: str) -> None:
+    """Generate the proof files."""
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True)
+    proof_gen.main(['', 'binary', 'gamma', str(output_dir / f'{module}.ml-gamma')])
+    proof_gen.main(['', 'binary', 'claim', str(output_dir / f'{module}.ml-claim')])
+    proof_gen.main(['', 'binary', 'proof', str(output_dir / f'{module}.ml-proof')])
+
+
 def main(
-    k_file: str, module_name: str, program_file: str, output_dir: str, step: int = 0, reuse_kompiled_dir: bool = False
+    k_file: str,
+    module_name: str,
+    program_file: str,
+    output_dir: str,
+    proof_dir: str,
+    step: int = 0,
+    reuse_kompiled_dir: bool = False,
 ) -> None:
     print(f'Kompiling target {k_file} to {output_dir}')
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
-    configuration_pattern = get_confguration_for_depth(kompiled_dir, Path(program_file), step)
+    configuration_for_step = get_confguration_for_depth(kompiled_dir, Path(program_file), step)
+    configuration_for_next_step = get_confguration_for_depth(kompiled_dir, Path(program_file), step + 1)
 
     print('Begin converting ... ')
     converter = ExecutionProofGen(kore_definition, module_name)
-    converter.take_rewrite_step(configuration_pattern)
+    converter.prove_rewrite_step(configuration_for_step, configuration_for_next_step)
+    proof_gen_class = converter.compose_proofs()
+
+    print('Begin generating proof files ... ')
+    generate_proof_file(proof_gen_class, Path(proof_dir), module_name)
 
     print('Done!')
 
@@ -72,6 +94,7 @@ if __name__ == '__main__':
     argparser.add_argument('output_dir', type=str, help='Path to the output directory')
     argparser.add_argument('--depth', type=int, default=0, help='Execution steps from the beginning')
     argparser.add_argument('--reuse', action='store_true', help='Reuse the existing kompiled directory')
+    argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
 
     args = argparser.parse_args()
-    main(args.kfile, args.module, args.program, args.output_dir, args.depth, args.reuse)
+    main(args.kfile, args.module, args.program, args.output_dir, args.proof_dir, args.depth, args.reuse)
