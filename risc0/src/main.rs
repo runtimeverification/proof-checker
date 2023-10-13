@@ -1,6 +1,6 @@
 use zk_host::methods::{GUEST_ELF, GUEST_ID};
 
-use risc0_zkvm::{default_executor_from_elf, serde::from_slice, ExecutorEnv};
+use risc0_zkvm::{default_executor_from_elf, serde::from_slice,  ExecutorEnv};
 
 use std::fs::File;
 use std::io::BufReader;
@@ -50,6 +50,14 @@ fn main() {
     // Prove the session to produce a receipt.
     let receipt = session.prove().unwrap();
 
+    // Small fetcher that returns the next chunk of given size from receipt
+    let mut current_index: usize = 0;
+    let mut next_chunk = |size: usize| -> &[u8] {
+        let ret = &receipt.journal[current_index..current_index + size];
+        current_index += size;
+        return ret
+    };
+
     // TODO: Implement code for transmitting or serializing the receipt for
     // other parties to verify here
 
@@ -57,11 +65,11 @@ fn main() {
     let size_of_usize = std::mem::size_of::<usize>();
 
     // Create an array for holding deserialized counts
-    let io_cycles: usize = from_slice(&receipt.journal[0..size_of_usize]).unwrap();
+    let io_cycles: usize = from_slice(next_chunk(size_of_usize)).unwrap();
     let checking_cycles: usize =
-        from_slice(&receipt.journal[size_of_usize..2 * size_of_usize]).unwrap();
+        from_slice(next_chunk(size_of_usize)).unwrap();
     let total_cycles: usize =
-        from_slice(&receipt.journal[2 * size_of_usize..3 * size_of_usize]).unwrap();
+        from_slice(next_chunk(size_of_usize)).unwrap();
 
     // print out cycle counts
     println!("Reading files: {} cycles", io_cycles);
@@ -81,8 +89,8 @@ fn main() {
     );
 
     let gamma_length: usize =
-        from_slice(&receipt.journal[3 * size_of_usize..4 * size_of_usize]).unwrap();
-    let gamma = &receipt.journal[4 * size_of_usize..(4 * size_of_usize + gamma_length)];
-    let claims = &receipt.journal[(4 * size_of_usize + gamma_length)..];
+        from_slice(next_chunk(size_of_usize)).unwrap();
+    let gamma = next_chunk(gamma_length);
+    let claims = &receipt.journal[current_index..];
     println!("There exists a proof of {:?} |- {:?}.", gamma, claims);
 }
