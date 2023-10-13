@@ -197,7 +197,11 @@ proofs/translated/%.ml-proof.verify: proofs/translated/%.ml-proof
 test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 .PHONY: test-proof-verify-translated
 
-test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
+KTRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .kverify,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kverify: proofs/generated-from-k/%.ml-proof
+	$(CARGO) run --release --bin checker proofs/generated-from-k/$*.ml-gamma proofs/generated-from-k/$*.ml-claim $<
+
+test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS} ${KTRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
 TRANSLATED_PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-translated,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.verify-translated: .build/proofs/translated/%.ml-proof
