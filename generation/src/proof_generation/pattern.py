@@ -217,12 +217,10 @@ class SSubst(Pattern):
 
 @dataclass(frozen=True)
 class Notation(Pattern):
-    @classmethod
-    def label(cls) -> str:
-        return f'{cls.__name__!r}'
+    def label(self) -> str:
+        return f'{type(self).__name__!r}'
 
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         raise NotImplementedError('This notation has no definition.')
 
     def arguments(self) -> dict[int, Pattern]:
@@ -259,7 +257,47 @@ class Notation(Pattern):
         return self.conclusion().apply_ssubst(svar_id, plug)
 
     def __str__(self) -> str:
-        return f'{self.label()} {str(self.arguments())}'
+        pretty_args = ', '.join(str(arg) for arg in self.arguments().values())
+        return f'{self.label()} ({pretty_args})'
+
+
+@dataclass(frozen=True, eq=False)
+class FakeNotation(Notation):
+    symbol: Symbol
+    pattern_arguments: tuple[Pattern, ...]
+
+    def label(self) -> str:
+        return f'FakeNotation[{str(self.symbol)}]'
+
+    def definition(self) -> Pattern:
+        if len(self.pattern_arguments) == 0:
+            return self.symbol
+        else:
+            current_callable: Pattern = self.symbol
+            metavars = [MetaVar(i) for i in range(len(self.pattern_arguments))]
+            arguments_left = metavars
+            while len(arguments_left) > 0:
+                next_one, *arguments_left = arguments_left
+                current_callable = Application(current_callable, next_one)
+            return current_callable
+
+    def arguments(self) -> dict[int, Pattern]:
+        ret: dict[int, Pattern] = {}
+
+        for i, arg in enumerate(self.pattern_arguments):
+            ret[i] = arg
+
+        return ret
+
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        args: list[Pattern] = []
+
+        for arg in self.arguments().values():
+            new_pattern = arg.instantiate(delta)
+            assert isinstance(new_pattern, Pattern)
+            args.append(new_pattern)
+
+        return FakeNotation(self.symbol, tuple(args))
 
 
 @dataclass(frozen=True, eq=False)
@@ -270,43 +308,6 @@ class Bot(Notation):
 
     def __str__(self) -> str:
         return '\u22A5'
-
-
-def make_up_notation(name: str, symbol: Symbol, arity: int) -> type[Notation]:
-    metavars = [MetaVar(i) for i in range(arity)]
-    metavar_names = [f'phi{i}' for i in range(arity)]
-
-    def chained_application(pattern: Pattern, args: list[MetaVar]) -> Pattern:
-        """Simplify generating chains of applications for symbols with several args."""
-        if len(args) == 0:
-            return pattern
-        else:
-            current_callable = pattern
-            arguments_left = args
-            while len(arguments_left) > 0:
-                next_one, *arguments_left = arguments_left
-                current_callable = Application(current_callable, next_one)
-            return current_callable
-
-    class FakeNotation(Notation):
-        __annotations__ = {name: Symbol}
-        __slots__ = metavar_names
-
-        def __init__(self, *args: Pattern):
-            if len(args) != arity:
-                raise TypeError(f'{name} takes {arity} positional arguments but {len(args)} were given')
-            for i, arg in enumerate(args):
-                setattr(self, metavar_names[i], arg)
-
-        @staticmethod
-        def definition() -> Pattern:
-            return chained_application(symbol, metavars)
-
-        def __str__(self) -> str:
-            return f'{symbol.pretty_name}({", ".join(str(getattr(self, name)) for name in metavar_names)})'
-
-    FakeNotation.__name__ = name
-    return FakeNotation
 
 
 bot = Bot()
