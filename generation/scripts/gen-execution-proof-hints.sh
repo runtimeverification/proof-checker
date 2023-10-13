@@ -11,7 +11,6 @@
 set -e
 set -o pipefail
 set -u
-#set -x
 
 PHGEN=$(basename "$0")
 
@@ -24,6 +23,15 @@ Kompile <K-DEFINITION> and generate proof hints for the concrete execution of
 <PROGRAM> and save them to <OUTPUT>. All argument are mandatory.
 HERE
 }
+
+remove_files() {
+  local files=("$@")
+
+  for file in "${files[@]}"; do
+    rm -r "$file"
+  done
+}
+
 
 # Check if the script is invoked with the --help (or -h) flag
 if [ "$#" -eq 1 ]; then
@@ -57,8 +65,12 @@ if ! command -v kompile &>/dev/null || ! command -v kparse &>/dev/null || ! comm
   exit 1
 fi
 
+# Keep track of temp files/dirs created
+all_temps=()
+
 # Create a temporary directory for the kompiled semantics
 temp_kompiled_dir=$(mktemp -d)
+all_temps+=(${temp_kompiled_dir})
 
 # Kompile the K definition
 echo "Compiling $DEF..."
@@ -66,18 +78,18 @@ if kompile --backend llvm --output-definition "$temp_kompiled_dir" "$DEF"; then
   echo "Compilation successful."
 else
   echo "Error: Compilation of $DEF failed."
-  rm -Rf "$temp_kompiled_dir"
+  remove_files "${all_temps[@]}"
   exit 1
 fi
 
 # Create a temporary file for intermediate results
 temp_file=$(mktemp)
+all_temps+=(${temp_file})
 
 # Parse the program into kore
 if ! kparse "$PGM" --definition "$temp_kompiled_dir" > "$temp_file"; then
   echo "Error: kparse command failed."
-  rm -f "$temp_file"
-  rm -Rf "$temp_kompiled_dir"
+  remove_files "${all_temps[@]}"
   exit 1
 else
   echo "Input program parsed successfully."
@@ -86,8 +98,7 @@ fi
 # Construct the initial configuration's kore term
 if ! llvm-krun -c PGM "$temp_file" KItem korefile --directory "$temp_kompiled_dir" --dry-run -nm -o "$temp_file"; then
   echo "Error: llvm-krun command failed."
-  rm -f "$temp_file"
-  rm -Rf "$temp_kompiled_dir"
+  remove_files "${all_temps[@]}"
   exit 1
 else
   echo "Input configuration kore term genereated successfully."
@@ -96,13 +107,11 @@ fi
 # Execute the interpreter and generate proof hints
 if ! ${temp_kompiled_dir}/interpreter "$temp_file" -1 "$OUT" --proof-output; then
   echo "Error: Interpreter command failed."
-  rm -f "$temp_file"
-  rm -Rf "$temp_kompiled_dir"
+  remove_files "${all_temps[@]}"
   exit 1
 else
   echo "Proof hints generated successfully."
 fi
 
 # Clean up the temporary files/directories
-rm -f "$temp_file"
-rm -Rf "$temp_kompiled_dir"
+remove_files "${all_temps[@]}"

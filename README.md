@@ -119,5 +119,5 @@ An example invocation of the script is shown below:
    generation/proof-hints/foo-a.single-rewrite.hints
 ```
 
-Note that the script assumes an installed, recent-enough version of K that is
-capable of producing proof hints.
+Note that the script assumes that the project is compiled, with a recent-enough
+version of K that was installed by `make install-k`.
