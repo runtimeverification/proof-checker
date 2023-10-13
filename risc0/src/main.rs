@@ -50,9 +50,9 @@ fn main() {
     // Prove the session to produce a receipt.
     let receipt = session.prove().unwrap();
 
-    // Small fetcher that returns the next chunk of given size from receipt
+    // Small fetcher that returns the next chunk of given size from journal
     let mut current_index: usize = 0;
-    let mut next_chunk = |size: usize| -> &[u8] {
+    let mut next_journal_chunk = |size: usize| -> &[u8] {
         let ret = &receipt.journal[current_index..current_index + size];
         current_index += size;
         return ret;
@@ -65,9 +65,9 @@ fn main() {
     let size_of_usize = std::mem::size_of::<usize>();
 
     // Create an array for holding deserialized counts
-    let io_cycles: usize = from_slice(next_chunk(size_of_usize)).unwrap();
-    let checking_cycles: usize = from_slice(next_chunk(size_of_usize)).unwrap();
-    let total_cycles: usize = from_slice(next_chunk(size_of_usize)).unwrap();
+    let io_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
+    let checking_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
+    let total_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
 
     // print out cycle counts
     println!("Reading files: {} cycles", io_cycles);
@@ -86,7 +86,7 @@ fn main() {
         now.elapsed().as_secs()
     );
 
-    let gamma_length: usize = from_slice(next_chunk(size_of_usize)).unwrap();
+    let gamma_length: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
     let gamma = next_chunk(gamma_length);
     let claims = &receipt.journal[current_index..];
     println!("There exists a proof of {:?} |- {:?}.", gamma, claims);
