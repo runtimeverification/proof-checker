@@ -106,6 +106,7 @@ test-integration:
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
 TRANSLATED_PROOFS=$(wildcard proofs/translated/*.ml-proof)
+TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*.ml-proof)
 
 
 # Proof conversion checking
@@ -122,6 +123,23 @@ proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
 	${BIN_DIFF} "proofs/translated/$*.ml-proof" ".build/proofs/translated/$*/$*.ml-proof"
 
 test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
+
+# Checking proof generation for K
+# -------------------------------
+
+.build/proofs/generated-from-k/%.ml-proof: FORCE
+	@mkdir -p $(dir $@)
+	poetry -C generation run python -m "kore_transfer.generate_definition" generation/k-benchmarks/single-rewrite/$*.k generation/k-benchmarks/single-rewrite/foo-a.$* .build/kompiled-definitions  --depth 0 --proof-dir .build/proofs/generated-from-k/
+
+KPROOF_TRANSLATION_TARGETS=$(addsuffix .ktranslate,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.ktranslate: .build/proofs/generated-from-k/%.ml-proof
+	${BIN_DIFF} "proofs/generated-from-k/$*.ml-gamma" ".build/proofs/generated-from-k/$*.ml-gamma"
+	${BIN_DIFF} "proofs/generated-from-k/$*.ml-claim" ".build/proofs/generated-from-k/$*.ml-claim"
+	${BIN_DIFF} "proofs/generated-from-k/$*.ml-proof" ".build/proofs/generated-from-k/$*.ml-proof"
+
+test-proof-ktranslate: ${KPROOF_TRANSLATION_TARGETS}
+
+.PHONY: test-proof-ktranslate
 
 
 # Proof generation
