@@ -100,6 +100,7 @@ test-system: test-integration test-proof-gen test-proof-translate test-proof-ver
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
 test-integration:
+	make -C generation generate-hints
 	make -C generation test-integration
 
 PROOFS_FILES := $(wildcard proofs/*)

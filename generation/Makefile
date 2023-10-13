@@ -26,6 +26,36 @@ k-version:
 
 .PHONY: k-version
 
+# Generate Proof hints
+
+# Target only this specific subset of programs that are currently supported:
+PROOF_HINTS=proof-hints/peano/mul_3_5.peano.hints \
+			proof-hints/single-rewrite/foo-a.single-rewrite.hints \
+			proof-hints/trivial/0_rewrites.trivial.hints \
+			proof-hints/trivial/1_rewrite.trivial.hints \
+			proof-hints/trivial/2_rewrites.trivial.hints
+
+# Eventually, we want to support all input programs using something like the following:
+# ALL_K_FILES=$(wildcard k-benchmarks/*/*)
+# K_DEFS=$(wildcard k-benchmarks/*/*.k)
+# INPUT_PROGRAMS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
+# PROOF_HINTS=$(addsuffix .hints, $(patsubst k-benchmarks%,proof-hints%,${INPUT_PROGRAMS}))
+
+proof-hints/%.hints: k-benchmarks/%
+	mkdir -p proof-hints/$(dir $*)
+	./scripts/gen-execution-proof-hints.sh \
+		k-benchmarks/$(dir $*)$(patsubst %/,%, $(dir $*)).k \
+		k-benchmarks/$* \
+		proof-hints/$*.hints
+
+generate-hints: $(PROOF_HINTS)
+
+clean-hints:
+	rm -f $(PROOF_HINTS)
+
+.PHONY: generate-hints clean-hints
+
+
 # Tests
 
 TEST_ARGS :=
