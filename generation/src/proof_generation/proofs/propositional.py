@@ -4,11 +4,11 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import Implication, MetaVar, Notation, bot, get_imp, is_bot, is_imp, unwrap, unwrap2
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProvedExpression
     from proof_generation.proved import Proved
@@ -139,6 +139,15 @@ class Propositional(ProofExp):
             self.peirce_bot,
         ]
 
+    # TODO This function should not exist anymore once we
+    # have support for Lemmas in the binary format
+    def get_conc(self, p: ProvedExpression) -> Pattern:
+        i = self.interpreter
+        self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
+        conc = p().conclusion
+        self.interpreter = i
+        return conc
+
     # Proofs
     # ======
 
@@ -155,24 +164,14 @@ class Propositional(ProofExp):
     #    q
     # --------
     # p -> q
-    def imp_provable(self, p: Pattern, q_pf: Proved) -> Proved:
-        return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q_pf.conclusion, 1: p}), q_pf)
-
-    #    p
-    # ------
-    # T -> p
-    def top_imp(self, p_pf: Proved) -> Proved:
-        return self.imp_provable(top, p_pf)
-
-    # p -> T
-    def imp_top(self, p: Pattern) -> Proved:
-        return self.imp_provable(p, self.top_intro())
+    def imp_provable(self, p: Pattern, q_pf: ProvedExpression) -> Proved:
+        q = self.get_conc(q_pf)
+        return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
 
     # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
-    def imp_transitivity(self, phi0_imp_phi1: Proved, phi1_imp_phi2: Proved) -> Proved:
-        # TODO: Consider if the extra loads caused by these calls are problematic
-        a, b = get_imp(phi0_imp_phi1.conclusion)
-        b2, c = get_imp(phi1_imp_phi2.conclusion)
+    def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
+        a, b = get_imp(self.get_conc(phi0_imp_phi1))
+        b2, c = get_imp(self.get_conc(phi1_imp_phi2))
         assert b == b2
 
         return self.modus_ponens(
@@ -183,7 +182,7 @@ class Propositional(ProofExp):
                 #  a -> (b -> c)
                 self.imp_provable(a, phi1_imp_phi2),
             ),
-            phi0_imp_phi1,
+            phi0_imp_phi1(),
         )
 
     # top
@@ -200,11 +199,21 @@ class Propositional(ProofExp):
                 # (bot -> (neg neg p -> p)) -> ((bot -> neg neg p) -> (bot -> p))
                 self.dynamic_inst(self.prop2, {0: bot, 1: neg_neg_p, 2: p}),
                 #  bot -> (neg neg p -> p)
-                self.imp_provable(bot, self.dynamic_inst(self.prop3, {0: p})),
+                self.imp_provable(bot, lambda: self.dynamic_inst(self.prop3, {0: p})),
             ),
             # (bot -> (neg neg p))
             self.dynamic_inst(self.prop1, {0: bot, 1: neg(p)}),
         )
+
+    #    p
+    # ------
+    # T -> p
+    def top_imp(self, p_pf: ProvedExpression) -> Proved:
+        return self.imp_provable(top, p_pf)
+
+    # p -> T
+    def imp_top(self, p: Pattern) -> Proved:
+        return self.imp_provable(p, self.top_intro)
 
     # (neg phi0 -> bot) -> phi0
     def contradiction_proof(self) -> Proved:

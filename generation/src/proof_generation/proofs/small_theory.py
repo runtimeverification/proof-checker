@@ -34,7 +34,7 @@ class SmallTheory(Propositional):
         return self.load_axiom(self.axioms()[1])
 
     def sym0_implies_sym2_proof(self) -> Proved:
-        return super().imp_transitivity(self.sym0_implies_sym1(), self.sym1_implies_sym2())
+        return super().imp_transitivity(self.sym0_implies_sym1, self.sym1_implies_sym2)
 
 
 if __name__ == '__main__':

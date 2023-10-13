@@ -10,8 +10,8 @@ from proof_generation.stateful_interpreter import StatefulInterpreter
 
 def test_prove_transitivity() -> None:
     prop = Propositional(BasicInterpreter(phase=ExecutionPhase.Proof))
-    phi0_implies_phi1 = Proved(Implication(Symbol(0), Symbol(1)))
-    phi1_implies_phi2 = Proved(Implication(Symbol(1), Symbol(2)))
+    phi0_implies_phi1 = lambda: Proved(Implication(Symbol(0), Symbol(1)))
+    phi1_implies_phi2 = lambda: Proved(Implication(Symbol(1), Symbol(2)))
     assert prop.imp_transitivity(phi0_implies_phi1, phi1_implies_phi2).conclusion == Implication(Symbol(0), Symbol(2))
 
 
