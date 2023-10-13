@@ -55,7 +55,7 @@ class SVar(Pattern):
 @dataclass(frozen=True)
 class Symbol(Pattern):
     name: int
-    pretty_name: str = field(default='', compare=False)
+    pretty_name: str | None = field(default=None, compare=False)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
