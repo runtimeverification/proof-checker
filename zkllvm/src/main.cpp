@@ -281,32 +281,6 @@ struct Pattern {
 
   static Pattern *symbol(Id id) { return newPattern(Instruction::Symbol, id); }
 
-  static Pattern *implication(Pattern *left, Pattern *right) {
-    auto pattern = newPattern(Instruction::Implication, 0);
-    pattern->left = left;
-    pattern->right = right;
-    return pattern;
-  }
-
-  static Pattern *application(Pattern *left, Pattern *right) {
-    auto pattern = newPattern(Instruction::Application, 0);
-    pattern->left = left;
-    pattern->right = right;
-    return pattern;
-  }
-
-  static Pattern *exists(Id var, Pattern *subpattern) {
-    auto pattern = newPattern(Instruction::Exists, var);
-    pattern->subpattern = subpattern;
-    return pattern;
-  }
-
-  static Pattern *mu(Id var, Pattern *subpattern) {
-    auto pattern = newPattern(Instruction::Mu, var);
-    pattern->subpattern = subpattern;
-    return pattern;
-  }
-
   static Pattern *metavar_unconstrained(Id id) {
     auto pattern = newPattern(Instruction::MetaVar, id);
     pattern->e_fresh = IdList::create();
@@ -329,6 +303,18 @@ struct Pattern {
     return pattern;
   }
 
+  static Pattern *exists(Id var, Pattern *subpattern) {
+    auto pattern = newPattern(Instruction::Exists, var);
+    pattern->subpattern = subpattern;
+    return pattern;
+  }
+
+  static Pattern *mu(Id var, Pattern *subpattern) {
+    auto pattern = newPattern(Instruction::Mu, var);
+    pattern->subpattern = subpattern;
+    return pattern;
+  }
+
   static Pattern *esubst(Pattern *pattern, int evar_id, Pattern *plug) {
     auto evarPattern = newPattern(Instruction::ESubst, evar_id);
     evarPattern->subpattern = pattern;
@@ -341,6 +327,20 @@ struct Pattern {
     svarPattern->subpattern = pattern;
     svarPattern->plug = plug;
     return svarPattern;
+  }
+
+  static Pattern *implies(Pattern *left, Pattern *right) {
+    auto pattern = newPattern(Instruction::Implication, 0);
+    pattern->left = left;
+    pattern->right = right;
+    return pattern;
+  }
+
+  static Pattern *app(Pattern *left, Pattern *right) {
+    auto pattern = newPattern(Instruction::Application, 0);
+    pattern->left = left;
+    pattern->right = right;
+    return pattern;
   }
 
   // Destructor to manually release memory
@@ -461,14 +461,14 @@ int test_efresh(int a, int b) {
   assert(!right->pattern_e_fresh(a));
 
   auto implication =
-      Pattern::implication(Pattern::copy(left), Pattern::copy(right));
+      Pattern::implies(Pattern::copy(left), Pattern::copy(right));
   assert(!implication->pattern_e_fresh(a));
 
   auto mvar =
       Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
   assert(!mvar->pattern_e_fresh(a));
 
-  auto metaapp = Pattern::application(Pattern::copy(left), Pattern::copy(mvar));
+  auto metaapp = Pattern::app(Pattern::copy(left), Pattern::copy(mvar));
   assert(!metaapp->pattern_e_fresh(b));
 
   auto esubst = Pattern::esubst(Pattern::copy(right), a, Pattern::copy(left));
@@ -523,7 +523,5 @@ int test_efresh(int a, int b) {
 }
 
 #if DEBUG
-int main() {
-  return foo(1, 2);
-}
+int main() { return foo(1, 2); }
 #endif
