@@ -48,5 +48,5 @@ pub fn main() {
     env::commit_slice(gamma_buffer.as_slice());
 
     // output claims
-    env::commit_slice(&claims_buffer.as_slice())
+    env::commit_slice(claims_buffer.as_slice())
 }
