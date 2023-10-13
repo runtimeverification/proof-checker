@@ -11,7 +11,7 @@ if [[ -z "${ZKLLVM_ROOT}" ]]; then
   exit 1
 fi
 
-set -x
+#set -x
 
 FILE=$(basename "${1}")
 FILEPATH=$(dirname "$(realpath "${1}")")
@@ -87,5 +87,6 @@ ${CLANG_EXE} -target assigner -D__ZKLLVM__ \
 
 ${LLVM_LINK} "${LLVM_OUT}" "${OUTPUT_CLANG}" -o "${OUTPUT_LLVM_LINK_1}"
 ${LLVM_LINK} "${LLVM_OUT}" "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.${LLVM_EXT}" -o "${OUTPUT_LLVM_LINK_2}"
-${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --check
+echo "Circuit Function output: "
+${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output --check
 ${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}"
