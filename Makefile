@@ -96,7 +96,7 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-integration test-proof-gen test-proof-translate test-proof-verify
+test-system: test-integration test-proof-gen test-proof-translate test-proof-ktranslate test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
 test-integration:
