@@ -138,26 +138,11 @@ class ExecutionProofGen:
                 return self._resolve_notation(
                     'kore-And', and_symbol, [sort_symbol, left_and_pattern, right_and_pattern]
                 )
-            case kore.App(symbol, _, args):
+            case kore.App(symbol, sorts, args):
                 symbol_pattern: nf.Symbol = self._resolve_symbol(symbol)
                 args_pattern: list[nf.Pattern] = [self._convert_pattern(arg) for arg in args]
-
-                # TODO: We need to work with Fake notations, but for now it doesn't work
-                # sorts_pattern: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
-                # return self._resolve_notation(symbol, symbol_pattern, [*sorts_pattern, *args_pattern])
-                def chained_application(pattern: nf.Pattern, args: list[nf.Pattern]) -> nf.Pattern:
-                    """Simplify generating chains of applications for symbols with several args."""
-                    if len(args) == 0:
-                        return pattern
-                    else:
-                        current_callable = pattern
-                        arguments_left = args
-                        while len(arguments_left) > 0:
-                            next_one, *arguments_left = arguments_left
-                            current_callable = nf.Application(current_callable, next_one)
-                        return current_callable
-
-                return chained_application(symbol_pattern, args_pattern)
+                sorts_pattern: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
+                return self._resolve_notation(symbol, symbol_pattern, [*sorts_pattern, *args_pattern])
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return self._resolve_evar(pattern)
@@ -192,10 +177,10 @@ class ExecutionProofGen:
 
     def _resolve_notation(self, name: str, symbol: nf.Symbol, arguments: list[nf.Pattern]) -> nf.Pattern:
         """Resolve the notation or make up one."""
-        if name not in self._notations:
-            new_notation = nf.make_up_notation(name, symbol, len(arguments))
-            self._notations[name] = new_notation
-        return self._notations[name](*arguments)
+        if name in self._notations:
+            return self._notations[name](*arguments)
+        else:
+            return nf.FakeNotation(symbol, tuple(arguments))
 
     def _resolve_evar(self, evar: kore.EVar) -> nf.EVar:
         """Resolve the evar in the given pattern."""
