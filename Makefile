@@ -124,6 +124,18 @@ proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
 
 test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
+# Regenerate proofs from K
+# -------------------------
+
+KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
+	poetry -C generation run python -m "kore_transfer.generate_definition" generation/k-benchmarks/single-rewrite/$*.k generation/k-benchmarks/single-rewrite/foo-a.$* .build/kompiled-definitions  --depth 0 --proof-dir proofs/generated-from-k/
+
+update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
+
+.PHONY: update-k-proofs
+
+
 # Checking proof generation for K
 # -------------------------------
 
