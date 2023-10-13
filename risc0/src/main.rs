@@ -87,7 +87,7 @@ fn main() {
     );
 
     let gamma_length: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
-    let gamma = next_chunk(gamma_length);
+    let gamma = next_journal_chunk(gamma_length);
     let claims = &receipt.journal[current_index..];
     println!("There exists a proof of {:?} |- {:?}.", gamma, claims);
 }
