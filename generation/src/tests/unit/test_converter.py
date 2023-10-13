@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from mm_transfer.converter.converter import MetamathConverter
-from mm_transfer.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
-from mm_transfer.metamath.ast import AxiomaticStatement, Block, ConstantStatement, FloatingStatement
-from mm_transfer.metamath.parser import load_database
+from mm_translate.converter.converter import MetamathConverter
+from mm_translate.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
+from mm_translate.metamath.ast import AxiomaticStatement, Block, ConstantStatement, FloatingStatement
+from mm_translate.metamath.parser import load_database
 from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, SVar, Symbol
 
 if TYPE_CHECKING:
-    from mm_transfer.metamath.ast import Database
+    from mm_translate.metamath.ast import Database
     from proof_generation.pattern import Pattern
 
 BENCHMARK_LOCATION = 'mm-benchmarks'
@@ -195,7 +195,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     # \exists x ( \and ( \in-sort x ph0 ) ph1 )
     def sorted_exists(x: Pattern, p: Pattern, q: Pattern) -> Pattern:
         assert isinstance(x, EVar)
-        return Exists(x, and_(in_sort(x, p), q))
+        return Exists(x.name, and_(in_sort(x, p), q))
 
     expected = sorted_exists(EVar(10), MetaVar(10), MetaVar(11))
     converted = scope.resolve_notation('\\sorted-exists')(EVar(10), MetaVar(10), MetaVar(11))
@@ -308,7 +308,7 @@ def test_axioms_with_mc(parsed_lemma_database: Database) -> None:
         app_ctx_holes=ph1.app_ctx_holes,
     )
     antecedents = [Implication(ph0, ph1_mc)]
-    pattern = Implication(Exists(x, ph0), ph1_mc)
+    pattern = Implication(Exists(x.name, ph0), ph1_mc)
     assert name in converter._axioms and len(converter._axioms[name]) == 1
     converted = converter._axioms[name][0]
     assert isinstance(converted, AxiomWithAntecedents)

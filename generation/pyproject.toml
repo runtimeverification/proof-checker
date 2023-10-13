@@ -3,7 +3,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-metamath-extract-slice = "mm_transfer.metamath_extract_slice:main"
+metamath-extract-slice = "mm_translate.metamath_extract_slice:main"
 
 
 [tool.poetry]

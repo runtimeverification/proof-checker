@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from mm_transfer.converter.converter import MetamathConverter
-from mm_transfer.converter.representation import AxiomWithAntecedents
-from mm_transfer.metamath.parser import load_database
-from mm_transfer.transfer import convert_to_implication, exec_proof
+from mm_translate.converter.converter import MetamathConverter
+from mm_translate.converter.representation import AxiomWithAntecedents
+from mm_translate.metamath.parser import load_database
+from mm_translate.translate import convert_to_implication, exec_proof
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.pattern import Implication, MetaVar
@@ -19,7 +19,7 @@ from proof_generation.stateful_interpreter import StatefulInterpreter
 if TYPE_CHECKING:
     from pytest import FixtureRequest
 
-    from mm_transfer.metamath.parser import Database
+    from mm_translate.metamath.parser import Database
     from proof_generation.pattern import Pattern
 
 BENCHMARK_LOCATION = 'mm-benchmarks'

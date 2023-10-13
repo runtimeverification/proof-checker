@@ -4,9 +4,9 @@ import argparse
 import os
 from pathlib import Path
 
-from mm_transfer.converter.converter import MetamathConverter
-from mm_transfer.converter.representation import AxiomWithAntecedents
-from mm_transfer.metamath.parser import load_database
+from mm_translate.converter.converter import MetamathConverter
+from mm_translate.converter.representation import AxiomWithAntecedents
+from mm_translate.metamath.parser import load_database
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.pattern import Implication, MetaVar, Pattern
 from proof_generation.proof import ProofExp
