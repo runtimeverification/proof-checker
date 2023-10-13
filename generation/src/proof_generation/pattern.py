@@ -107,14 +107,14 @@ class Application(Pattern):
 
 @dataclass(frozen=True)
 class Exists(Pattern):
-    var: EVar
+    var: int
     subpattern: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        if EVar(evar_id) == self.var:
+        if evar_id == self.var:
             return self
         return Exists(self.var, self.subpattern.apply_esubst(evar_id, plug))
 
@@ -122,12 +122,12 @@ class Exists(Pattern):
         return Exists(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'(\u2203 {str(self.var)} . {str(self.subpattern)})'
+        return f'(\u2203 x{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
 class Mu(Pattern):
-    var: SVar
+    var: int
     subpattern: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
@@ -137,12 +137,12 @@ class Mu(Pattern):
         return Mu(self.var, self.subpattern.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        if SVar(svar_id) == self.var:
+        if svar_id == self.var:
             return self
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'(\u03BC {str(self.var)} . {str(self.subpattern)})'
+        return f'(\u03BC X{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -262,7 +262,7 @@ class Notation(Pattern):
 class Bot(Notation):
     @staticmethod
     def definition() -> Pattern:
-        return Mu(SVar(0), SVar(0))
+        return Mu(0, SVar(0))
 
     def __str__(self) -> str:
         return '\u22A5'

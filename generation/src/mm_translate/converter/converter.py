@@ -774,7 +774,7 @@ class MetamathConverter:
             '\\exists',
             ('x', 'ph1'),
             lambda *args: isinstance(args[0], EVar) and isinstance(args[0], Pattern),
-            lambda *args: Exists(args[0], args[1]),
+            lambda *args: Exists(args[0].name, args[1]),
         )
         self._scope.add_notation(exists)
         self._scope.add_notation(
@@ -782,7 +782,7 @@ class MetamathConverter:
                 '\\mu',
                 ('X', 'ph1'),
                 lambda *args: isinstance(args[0], SVar) and isinstance(args[0], Pattern),
-                lambda *args: Mu(args[0], args[1]),
+                lambda *args: Mu(args[0].name, args[1]),
             )
         )
 
