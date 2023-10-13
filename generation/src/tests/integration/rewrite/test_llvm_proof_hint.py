@@ -11,6 +11,6 @@ def test_parse_proof_hint() -> None:
     assert len(hint.trace) == 64
     # TODO: Strenghten these assertions.
 
-    bin_hint = Path('proof-hints/single-rewrite_proof-hints.bin').read_bytes()
+    bin_hint = Path('proof-hints/single-rewrite/foo-a.single-rewrite.hints').read_bytes()
     hint = LLVMRewriteTrace.parse(bin_hint)
     assert len(hint.trace) == 1

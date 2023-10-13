@@ -55,6 +55,7 @@ You may also use specific targets to run a subset of tests:
     -   `test-unit-cargo`: Run cargo tests. These include tests for the proof
         checker.
 -   `test-system`: Run tests for generating proofs and verifying them.
+    -   `test-integration`: Generate proof hints for `k-benchmarks` (if needed) and check that they pass the tests
     -   `test-proof-gen`: Generate proofs from the python DSL, and check that
         they are what we expect (given by snapshots in `proofs`).
         To generate and check a single proof, we may run `make proofs/<name>.ml-proof.gen`.
@@ -101,3 +102,22 @@ Currently we only profile normal execution of the checker (as opposed to `Risc0`
 
 **Warning**: `flamegraph`'s default sampling frequency (`-F 997`) can lead to huge `perf.data` files when you run it on longer executions. For example, running it on our host binary can output several GBs. If you want to profile long executions, consider reducing the sampling frequency accordingly.
 
+Generating Proof Hints
+======================
+
+We provide [this script](generation/scripts/gen-execution-proof-hints.sh) to
+generate proof hints for a concrete execution of a given program. The script
+expects as arguments: (1) a K definition, (2) a program to execute using that
+definition, and (3) the output file name where the generated proof hints are
+stored.
+
+An example invocation of the script is shown below:
+```
+./generation/scripts/gen-execution-proof-hints.sh \
+   generation/k-benchmarks/single-rewrite/single-rewrite.k \
+   generation/k-benchmarks/single-rewrite/foo-a.single-rewrite \
+   generation/proof-hints/foo-a.single-rewrite.hints
+```
+
+Note that the script assumes that the project is compiled, with a recent-enough
+version of K that was installed by `make install-k`.

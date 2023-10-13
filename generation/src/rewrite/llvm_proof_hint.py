@@ -82,14 +82,14 @@ class LLVMRewriteTraceParser:
 
         substitution: tuple[tuple[str, Pattern], ...] = ()
         for _ in range(arity):
-            variable_name = self.read_varaiable_name()
+            variable_name = self.read_variable_name()
             target = self.read_term_with_sentinel()
             substitution = substitution + ((variable_name, target),)
 
         term = self.read_guarded_term()
         return LLVMRewriteStep(ordinal, substitution, term)
 
-    def read_varaiable_name(self) -> str:
+    def read_variable_name(self) -> str:
         ret = str(self.read_until(b'\x00'))
         self.read_constant(b'\x00')
         return ret
