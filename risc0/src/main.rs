@@ -61,22 +61,6 @@ fn main() {
     // TODO: Implement code for transmitting or serializing the receipt for
     // other parties to verify here
 
-    // Get the host's size of a usize pointer
-    let size_of_usize = std::mem::size_of::<usize>();
-
-    // Create an array for holding deserialized counts
-    let io_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
-    let checking_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
-    let total_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
-
-    // print out cycle counts
-    println!("Reading files: {} cycles", io_cycles);
-    println!("Verifying the theorem: {} cycles", checking_cycles);
-    println!(
-        "Overall (environment setup, reading files, and verification): {} cycles!",
-        total_cycles
-    );
-
     // Optional: Verify receipt to confirm that recipients will also be able to
     // verify your receipt
     receipt.verify(GUEST_ID).unwrap();
@@ -85,6 +69,11 @@ fn main() {
         "Running execution + ZK certficate generation + verification took {} s",
         now.elapsed().as_secs()
     );
+
+    // Get the host's size of a usize pointer
+    let size_of_usize = std::mem::size_of::<usize>();
+    let total_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
+    println!("Total cycles {}", total_cycles);
 
     let gamma_length: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
     let gamma = next_journal_chunk(gamma_length);
