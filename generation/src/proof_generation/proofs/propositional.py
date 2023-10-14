@@ -151,8 +151,8 @@ class Propositional(ProofExp):
     # Proofs
     # ======
 
-    # p -> p
     def imp_refl(self, p: Pattern = phi0) -> Proved:
+        ''' p -> p '''
         pp = Implication(p, p)
         # fmt: off
         return self.modus_ponens(
@@ -161,15 +161,21 @@ class Propositional(ProofExp):
                 self.dynamic_inst(self.prop1, {0: p, 1: pp})),
             self.dynamic_inst(self.prop1, {0: p, 1: p}))
 
-    #    q
-    # --------
-    # p -> q
     def imp_provable(self, p: Pattern, q_pf: ProvedExpression) -> Proved:
+        '''
+            q
+        ----------
+          p -> q
+        '''
         q = self.get_conc(q_pf)
         return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
 
-    # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
     def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
+        '''
+           p -> q    q -> r
+        ----------------------
+                p -> r
+        '''
         a, b = get_imp(self.get_conc(phi0_imp_phi1))
         b2, c = get_imp(self.get_conc(phi1_imp_phi2))
         assert b == b2
@@ -185,12 +191,12 @@ class Propositional(ProofExp):
             phi0_imp_phi1(),
         )
 
-    # top
     def top_intro(self) -> Proved:
+        ''' top '''
         return self.imp_refl(bot)
 
-    # bot -> p
     def bot_elim(self, p: Pattern = phi0) -> Proved:
+        ''' bot -> p '''
         neg_neg_p = neg(neg(p))
 
         return self.modus_ponens(
@@ -205,22 +211,24 @@ class Propositional(ProofExp):
             self.dynamic_inst(self.prop1, {0: bot, 1: neg(p)}),
         )
 
-    #    p
-    # ------
-    # T -> p
     def top_imp(self, p_pf: ProvedExpression) -> Proved:
+        '''
+            p
+        ----------
+          T -> p
+        '''
         return self.imp_provable(top, p_pf)
 
-    # p -> T
     def imp_top(self, p: Pattern) -> Proved:
+        ''' p -> T '''
         return self.imp_provable(p, self.top_intro)
 
-    # (neg phi0 -> bot) -> phi0
     def contradiction_proof(self) -> Proved:
+        ''' (neg p -> bot) -> p '''
         return self.prop3()
 
-    # (neg a) -> a -> b
     def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
+        ''' (neg p) -> p -> q '''
         bot_to_b = Implication(bot, b)
 
         return self.modus_ponens(
@@ -229,8 +237,9 @@ class Propositional(ProofExp):
             self.modus_ponens(self.dynamic_inst(self.prop1, {0: bot_to_b, 1: a}), self.bot_elim(b)),
         )
 
-    # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
+        ''' (((ph0 -> bot) -> ph0) -> ph0) '''
+        
         def phi0_bot_imp_ph0() -> Pattern:
             # ((ph0 -> bot) -> ph0)
             return Implication(Implication(phi0, bot), phi0)
