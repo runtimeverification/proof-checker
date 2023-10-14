@@ -152,7 +152,7 @@ class Propositional(ProofExp):
     # ======
 
     def imp_refl(self, p: Pattern = phi0) -> Proved:
-        ''' p -> p '''
+        """p -> p"""
         pp = Implication(p, p)
         # fmt: off
         return self.modus_ponens(
@@ -162,20 +162,20 @@ class Propositional(ProofExp):
             self.dynamic_inst(self.prop1, {0: p, 1: p}))
 
     def imp_provable(self, p: Pattern, q_pf: ProvedExpression) -> Proved:
-        '''
+        """
             q
         ----------
           p -> q
-        '''
+        """
         q = self.get_conc(q_pf)
         return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
 
     def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
-        '''
+        """
            p -> q    q -> r
         ----------------------
                 p -> r
-        '''
+        """
         a, b = get_imp(self.get_conc(phi0_imp_phi1))
         b2, c = get_imp(self.get_conc(phi1_imp_phi2))
         assert b == b2
@@ -192,11 +192,11 @@ class Propositional(ProofExp):
         )
 
     def top_intro(self) -> Proved:
-        ''' top '''
+        """top"""
         return self.imp_refl(bot)
 
     def bot_elim(self, p: Pattern = phi0) -> Proved:
-        ''' bot -> p '''
+        """bot -> p"""
         neg_neg_p = neg(neg(p))
 
         return self.modus_ponens(
@@ -212,23 +212,23 @@ class Propositional(ProofExp):
         )
 
     def top_imp(self, p_pf: ProvedExpression) -> Proved:
-        '''
+        """
             p
         ----------
           T -> p
-        '''
+        """
         return self.imp_provable(top, p_pf)
 
     def imp_top(self, p: Pattern) -> Proved:
-        ''' p -> T '''
+        """p -> T"""
         return self.imp_provable(p, self.top_intro)
 
     def contradiction_proof(self) -> Proved:
-        ''' (neg p -> bot) -> p '''
+        """(neg p -> bot) -> p"""
         return self.prop3()
 
     def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
-        ''' (neg p) -> p -> q '''
+        """(neg p) -> p -> q"""
         bot_to_b = Implication(bot, b)
 
         return self.modus_ponens(
@@ -238,8 +238,8 @@ class Propositional(ProofExp):
         )
 
     def peirce_bot(self) -> Proved:
-        ''' (((ph0 -> bot) -> ph0) -> ph0) '''
-        
+        """(((ph0 -> bot) -> ph0) -> ph0)"""
+
         def phi0_bot_imp_ph0() -> Pattern:
             # ((ph0 -> bot) -> ph0)
             return Implication(Implication(phi0, bot), phi0)
