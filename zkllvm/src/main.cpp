@@ -263,6 +263,64 @@ struct Pattern {
     }
   }
 
+  bool pattern_s_fresh(Id svar) {
+    switch (inst) {
+    case Instruction::EVar:
+      return true;
+      break;
+    case Instruction::SVar:
+      return id != svar;
+      break;
+    case Instruction::Symbol:
+      return true;
+      break;
+    case Instruction::MetaVar:
+      return s_fresh->contains(svar);
+      break;
+    case Instruction::Implication:
+      return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
+      break;
+    case Instruction::Application:
+      return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
+      break;
+    case Instruction::Exists:
+      return subpattern->pattern_s_fresh(svar);
+      break;
+    case Instruction::Mu:
+      return (svar == id) || subpattern->pattern_s_fresh(svar);
+      break;
+    case Instruction::ESubst:
+      // Assume: substitution is well-formed => plug occurs in the result
+
+      // We can skip checking svar == evar_id, because different types
+
+      // Freshness depends on both input and plug,
+      // as evar_id != svar (note that instances of evar_id
+      // in pattern do not influence the result)
+      return subpattern->pattern_s_fresh(svar) && plug->pattern_s_fresh(svar);
+      break;
+
+    case Instruction::SSubst:
+      // Assume: substitution is well-formed => plug occurs in the result
+      if (svar == id /*svar_id*/) {
+        // Freshness depends only on plug as all the free instances
+        // of the requested variable are being substituted
+        return plug->pattern_s_fresh(svar);
+      }
+
+      return subpattern->pattern_s_fresh(svar) && plug->pattern_s_fresh(svar);
+      break;
+
+    default:
+#if DEBUG
+      throw std::runtime_error("pattern_e_fresh: not implemented: " +
+                               std::to_string((int)inst));
+#endif
+      exit(1);
+      break;
+    }
+  }
+
   enum class TermType { Pattern, Proved };
   std::tuple<TermType, Pattern *> Term(TermType type, Pattern *pattern) {
     return std::make_tuple(type, pattern);
@@ -451,7 +509,6 @@ struct Pattern {
 };
 
 int test_efresh(int a, int b) {
-  // Create EVar
   const auto evar = Pattern::evar(a);
 
   auto left = Pattern::exists(a, Pattern::copy(evar));
@@ -466,8 +523,6 @@ int test_efresh(int a, int b) {
 
   auto mvar =
       Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
-  assert(!mvar->pattern_e_fresh(a));
-
   auto metaapp = Pattern::app(Pattern::copy(left), Pattern::copy(mvar));
   assert(!metaapp->pattern_e_fresh(b));
 
@@ -509,8 +564,77 @@ int test_efresh(int a, int b) {
   return 0;
 }
 
+int test_sfresh(int a, int b) {
+  const auto svar = Pattern::svar(a);
+
+  auto left = Pattern::mu(a, Pattern::copy(svar));
+  assert(left->pattern_s_fresh(a));
+
+  auto right = Pattern::mu(b, Pattern::copy(svar));
+  assert(!right->pattern_s_fresh(a));
+
+  auto implication =
+      Pattern::implies(Pattern::copy(left), Pattern::copy(right));
+  assert(!implication->pattern_s_fresh(a));
+
+  auto mvar =
+      Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
+
+  auto metaapp = Pattern::app(Pattern::copy(left), Pattern::copy(mvar));
+  assert(!metaapp->pattern_s_fresh(a));
+
+  auto metaapp2 = Pattern::app(Pattern::copy(left), Pattern::copy(mvar));
+  assert(metaapp2->pattern_s_fresh(b));
+
+  auto esubst = Pattern::esubst(Pattern::copy(right), a, Pattern::copy(left));
+  assert(!esubst->pattern_s_fresh(a));
+
+  auto ssubst = Pattern::ssubst(Pattern::copy(right), a, Pattern::copy(left));
+  assert(ssubst->pattern_s_fresh(a));
+
+#if DEBUG
+  svar->print();
+  std::cout << std::endl;
+  left->print();
+  std::cout << std::endl;
+  right->print();
+  std::cout << std::endl;
+  implication->print();
+  std::cout << std::endl;
+  mvar->print();
+  std::cout << std::endl;
+  metaapp->print();
+  std::cout << std::endl;
+  metaapp2->print();
+  std::cout << std::endl;
+  esubst->print();
+  std::cout << std::endl;
+  ssubst->print();
+  std::cout << std::endl;
+#endif
+
+  Pattern::destroyPattern(svar);
+  Pattern::destroyPattern(left);
+  Pattern::destroyPattern(right);
+  Pattern::destroyPattern(implication);
+  Pattern::destroyPattern(mvar);
+  Pattern::destroyPattern(metaapp);
+  Pattern::destroyPattern(metaapp2);
+  Pattern::destroyPattern(esubst);
+  Pattern::destroyPattern(ssubst);
+
+  return 0;
+}
+
 [[circuit]] int foo(int a, int b) {
+#if DEBUG
+  std::cout << "Exeuting test_efresh(" << a << ", " << b << ")" << std::endl;
+#endif
   test_efresh(a, b);
+#if DEBUG
+  std::cout << "Exeuting test_sfresh(" << a << ", " << b << ")" << std::endl;
+#endif
+  test_sfresh(a, b);
 
 #if DEBUG
   //  evar->print();
