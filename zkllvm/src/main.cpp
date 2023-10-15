@@ -507,6 +507,31 @@ struct Pattern {
     return pattern;
   }
 
+  // Notation
+  // #[inline(always)]
+  // fn bot() -> Rc<Pattern> {
+  //     mu(0, svar(0))
+  // }
+
+  // #[inline(always)]
+  // fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
+  //     implies(pat, bot())
+  // }
+
+  // #[allow(dead_code)]
+  // fn forall(evar: Id, pat: Rc<Pattern>) -> Rc<Pattern> {
+  //     not(exists(evar, not(pat)))
+
+  static Pattern *bot() { return Pattern::mu(0, Pattern::svar(0)); }
+
+  static Pattern *negate(Pattern *pattern) { // C++ doesn't accepted not
+    return Pattern::implies(pattern, Pattern::bot());
+  }
+
+  static Pattern *forall(Id evar, Pattern *pattern) {
+    return Pattern::negate(Pattern::exists(evar, Pattern::negate(pattern)));
+  }
+
   // Destructor to manually release memory
   static void destroyPattern(Pattern *pattern) {
     if (pattern) {
@@ -737,7 +762,7 @@ int test_positivity() {
   auto X1 = Pattern::svar(1);
   auto X2 = Pattern::svar(2);
   auto c1 = Pattern::symbol(1);
-  // auto neg_X1 = not(Pattern::copy(X1));
+  auto neg_X1 = Pattern::negate(Pattern::copy(X1));
 
   // EVar
   auto evar1 = Pattern::evar(1);
@@ -811,7 +836,7 @@ int test_positivity() {
   assert(muX1impliesX2X1->pattern_negative(2));
   assert(muX1X2->pattern_negative(3));
 
-  // // MetaVar
+  // MetaVar
   auto metavarUncons1 = Pattern::metavar_unconstrained(1);
   assert(!metavarUncons1->pattern_positive(1));
   assert(!metavarUncons1->pattern_positive(2));
@@ -871,21 +896,23 @@ int test_positivity() {
   assert(ssubstMetaVarUnconsX1->pattern_negative(0));
   assert(ssubstMetaVarSFreshX1->pattern_negative(0));
 
-  // // Combinations
-  // assert(!neg_X1->pattern_positive(1));
-  // assert(neg_X1->pattern_positive(2));
-  // assert(neg_X1->pattern_negative(1));
-  // assert(neg_X1->pattern_negative(2));
+  // Combinations
+  assert(!neg_X1->pattern_positive(1));
+  assert(neg_X1->pattern_positive(2));
+  assert(neg_X1->pattern_negative(1));
+  assert(neg_X1->pattern_negative(2));
 
-  // auto negX1_implies_negX1 = implies(Pattern::copy(neg_X1),
-  // Pattern::copy(neg_X1)); assert(!negX1_implies_negX1->pattern_positive(1));
-  // assert(negX1_implies_negX1->pattern_positive(2));
-  // assert(!negX1_implies_negX1->pattern_negative(1));
-  // assert(negX1_implies_negX1->pattern_negative(2));
+  auto negX1_implies_negX1 =
+      Pattern::implies(Pattern::copy(neg_X1), Pattern::copy(neg_X1));
+  assert(!negX1_implies_negX1->pattern_positive(1));
+  assert(negX1_implies_negX1->pattern_positive(2));
+  assert(!negX1_implies_negX1->pattern_negative(1));
+  assert(negX1_implies_negX1->pattern_negative(2));
 
-  // auto negX1_implies_X1 = implies(Pattern::copy(neg_X1), Pattern::copy(X1));
-  // assert(negX1_implies_X1->pattern_positive(1));
-  // assert(!negX1_implies_X1->pattern_negative(1));
+  auto negX1_implies_X1 =
+      Pattern::implies(Pattern::copy(neg_X1), Pattern::copy(X1));
+  assert(negX1_implies_X1->pattern_positive(1));
+  assert(!negX1_implies_X1->pattern_negative(1));
 
 #if DEBUG
   X0->print();
@@ -895,6 +922,8 @@ int test_positivity() {
   X2->print();
   std::cout << std::endl;
   c1->print();
+  std::cout << std::endl;
+  neg_X1->print();
   std::cout << std::endl;
   evar1->print();
   std::cout << std::endl;
@@ -936,6 +965,10 @@ int test_positivity() {
   std::cout << std::endl;
   ssubstMetaVarSFreshX1->print();
   std::cout << std::endl;
+  negX1_implies_negX1->print();
+  std::cout << std::endl;
+  negX1_implies_X1->print();
+  std::cout << std::endl;
 
 #endif
 
@@ -943,6 +976,7 @@ int test_positivity() {
   Pattern::destroyPattern(X1);
   Pattern::destroyPattern(X2);
   Pattern::destroyPattern(c1);
+  Pattern::destroyPattern(neg_X1);
   Pattern::destroyPattern(evar1);
   Pattern::destroyPattern(appX1X2);
   Pattern::destroyPattern(impliesX1X2);
@@ -963,6 +997,8 @@ int test_positivity() {
   Pattern::destroyPattern(ssubstMetaVarUnconsX0);
   Pattern::destroyPattern(ssubstMetaVarUnconsX1);
   Pattern::destroyPattern(ssubstMetaVarSFreshX1);
+  Pattern::destroyPattern(negX1_implies_negX1);
+  Pattern::destroyPattern(negX1_implies_X1);
 
   return 0;
 }
