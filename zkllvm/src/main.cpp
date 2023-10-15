@@ -374,7 +374,58 @@ struct Pattern {
     }
   }
 
-  bool pattern_negative(Id svar) { return false; }
+  bool pattern_negative(Id svar) {
+    switch (inst) {
+    case Instruction::EVar:
+      return true;
+      break;
+    case Instruction::SVar:
+      return id != svar;
+      break;
+    case Instruction::Symbol:
+      return true;
+      break;
+    case Instruction::MetaVar:
+      return negative->contains(svar);
+      break;
+    case Instruction::Implication:
+      return left->pattern_positive(svar) && right->pattern_negative(svar);
+      break;
+    case Instruction::Application:
+      return left->pattern_negative(svar) && right->pattern_negative(svar);
+      break;
+    case Instruction::Exists:
+      return subpattern->pattern_s_fresh(svar);
+      break;
+    case Instruction::Mu:
+      return svar == id || subpattern->pattern_negative(svar);
+      break;
+    case Instruction::ESubst:
+      // best-effort for now, see spec
+      return subpattern->pattern_negative(svar) && plug->pattern_s_fresh(svar);
+      break;
+    case Instruction::SSubst: {
+      auto plug_negative_svar =
+          plug->pattern_s_fresh(svar) ||
+          (subpattern->pattern_positive(id) && plug->pattern_negative(svar)) ||
+          (subpattern->pattern_negative(id) && plug->pattern_positive(svar));
+
+      if (svar == id) {
+        return plug_negative_svar;
+      }
+
+      return subpattern->pattern_negative(svar) && plug_negative_svar;
+      break;
+    }
+    default:
+#if DEBUG
+      throw std::runtime_error("pattern_negative: not implemented: " +
+                               std::to_string((int)inst));
+#endif
+      exit(1);
+      break;
+    }
+  }
 
   enum class TermType { Pattern, Proved };
   std::tuple<TermType, Pattern *> Term(TermType type, Pattern *pattern) {
@@ -691,79 +742,81 @@ int test_positivity() {
   // EVar
   auto evar1 = Pattern::evar(1);
   assert(evar1->pattern_positive(1));
-  // assert(evar1->negative(1));
+  assert(evar1->pattern_negative(1));
   assert(evar1->pattern_positive(2));
-  // assert(evar1->negative(2));
+  assert(evar1->pattern_negative(2));
 
   // SVar
   assert(X1->pattern_positive(1));
-  // assert(!X1->negative(1));
+  assert(!X1->pattern_negative(1));
   assert(X1->pattern_positive(2));
-  // assert(X1->negative(2));
+  assert(X1->pattern_negative(2));
 
   // Symbol
   assert(c1->pattern_positive(1));
-  // assert(c1->negative(1));
+  assert(c1->pattern_negative(1));
   assert(c1->pattern_positive(2));
-  // assert(c1->negative(2));
+  assert(c1->pattern_negative(2));
 
   // Application
   auto appX1X2 = Pattern::app(Pattern::copy(X1), Pattern::copy(X2));
   assert(appX1X2->pattern_positive(1));
   assert(appX1X2->pattern_positive(2));
   assert(appX1X2->pattern_positive(3));
-  // assert(!appX1X2->negative(1));
-  // assert(!appX1X2->negative(2));
-  // assert(appX1X2->negative(3));
+  assert(!appX1X2->pattern_negative(1));
+  assert(!appX1X2->pattern_negative(2));
+  assert(appX1X2->pattern_negative(3));
 
   // Implication
   auto impliesX1X2 = Pattern::implies(Pattern::copy(X1), Pattern::copy(X2));
-  // assert(!impliesX1X2->pattern_positive(1));
-  // assert(impliesX1X2->pattern_positive(2));
-  // assert(impliesX1X2->pattern_positive(3));
-  // assert(impliesX1X2->negative(1));
-  // assert(!impliesX1X2->negative(2));
-  // assert(impliesX1X2->negative(3));
+  assert(!impliesX1X2->pattern_positive(1));
+  assert(impliesX1X2->pattern_positive(2));
+  assert(impliesX1X2->pattern_positive(3));
+  assert(impliesX1X2->pattern_negative(1));
+  assert(!impliesX1X2->pattern_negative(2));
+  assert(impliesX1X2->pattern_negative(3));
 
   auto impliesX1X1 = Pattern::implies(Pattern::copy(X1), Pattern::copy(X1));
-  // assert(!impliesX1X1->pattern_positive(1));
-  // assert(!impliesX1X1->negative(1));
+  assert(!impliesX1X1->pattern_positive(1));
+  assert(!impliesX1X1->pattern_negative(1));
 
   // Exists
   auto existsX1X2 = Pattern::exists(1, Pattern::copy(X2));
   assert(existsX1X2->pattern_positive(1));
   assert(existsX1X2->pattern_positive(2));
   assert(existsX1X2->pattern_positive(3));
-  // assert(existsX1X2->negative(1));
-  // assert(!existsX1X2->negative(2));
-  // assert(existsX1X2->negative(3));
+  assert(existsX1X2->pattern_negative(1));
+  assert(!existsX1X2->pattern_negative(2));
+  assert(existsX1X2->pattern_negative(3));
 
   // Mu
   auto muX1x1 = Pattern::mu(1, Pattern::copy(evar1));
   assert(muX1x1->pattern_positive(1));
   assert(muX1x1->pattern_positive(2));
-  // assert(muX1x1->negative(1));
-  // assert(muX1x1->negative(2));
+  assert(muX1x1->pattern_negative(1));
+  assert(muX1x1->pattern_negative(2));
 
   auto muX1X1 = Pattern::mu(1, Pattern::copy(X1));
   assert(muX1X1->pattern_positive(1));
-  // assert(muX1X1->negative(1));
+  assert(muX1X1->pattern_negative(1));
 
   auto muX1X2 = Pattern::mu(1, Pattern::copy(X2));
+  auto muX1impliesX2X1 =
+      Pattern::mu(1, Pattern::implies(Pattern::copy(X2), Pattern::copy(X1)));
   assert(muX1X2->pattern_positive(1));
   assert(muX1X2->pattern_positive(2));
   assert(muX1X2->pattern_positive(3));
-  // assert(muX1X2->negative(1));
-  // assert(!muX1X2->negative(2));
-  // assert(mu(1, implies(Pattern::copy(X2), Pattern::copy(X1)))->negative(2));
-  // assert(muX1X2->negative(3));
+  assert(muX1X2->pattern_negative(1));
+  assert(!muX1X2->pattern_negative(2));
+  assert(muX1impliesX2X1->pattern_negative(2));
+  assert(muX1X2->pattern_negative(3));
 
   // // MetaVar
   auto metavarUncons1 = Pattern::metavar_unconstrained(1);
   assert(!metavarUncons1->pattern_positive(1));
   assert(!metavarUncons1->pattern_positive(2));
-  // assert(!metavarUncons1->negative(1));
-  // assert(!metavarUncons1->negative(2));
+  assert(!metavarUncons1->pattern_negative(1));
+  assert(!metavarUncons1->pattern_negative(2));
 
   // Do not imply positivity from freshness
   auto metavarSFresh11__ =
@@ -774,15 +827,16 @@ int test_positivity() {
       Pattern::metavar_s_fresh(1, 1, IdList::create(1), IdList::create());
   auto metavarSFresh11_1 =
       Pattern::metavar_s_fresh(1, 1, IdList::create(), IdList::create(1));
+
   assert(!metavarSFresh11__->pattern_positive(1));
-  // assert(!metavarSFresh11__->negative(1));
+  assert(!metavarSFresh11__->pattern_negative(1));
   assert(metavarSFresh1111->pattern_positive(1));
-  // assert(metavarSFresh1111->negative(1));
+  assert(metavarSFresh1111->pattern_negative(1));
   assert(metavarSFresh111_->pattern_positive(1));
-  // assert(metavarSFresh11_1->negative(1));
+  assert(metavarSFresh11_1->pattern_negative(1));
 
   assert(!metavarSFresh11__->pattern_positive(2));
-  // assert(!metavarSFresh11__->negative(2));
+  assert(!metavarSFresh11__->pattern_negative(2));
 
   // ESubst
   auto esubstMetaVarUnconsX0 =
@@ -796,37 +850,42 @@ int test_positivity() {
   assert(!esubstMetaVarUnconsX0->pattern_positive(0));
   assert(!esubstMetaVarUnconsX1->pattern_positive(0));
   assert(!esubstMetaVarSFreshX1->pattern_positive(0));
-  // assert(!esubstMetaVarUnconsX0->negative(0));
-  // assert(!esubstMetaVarUnconsX1->negative(0));
-  // assert(!esubstMetaVarUnconsX1->negative(0));
+  assert(!esubstMetaVarUnconsX0->pattern_negative(0));
+  assert(!esubstMetaVarUnconsX1->pattern_negative(0));
+  assert(!esubstMetaVarUnconsX1->pattern_negative(0));
 
-  // // SSubst
-  // assert(!ssubst(metavar_unconstrained(0), 0,
-  // Pattern::copy(X0))->pattern_positive(0));
-  // assert(ssubst(metavar_unconstrained(0), 0,
-  // Pattern::copy(X1))->pattern_positive(0)); assert(ssubst(metavar_s_fresh(0,
-  // 1, vec![1], vec![]), 0, Pattern::copy(X1))->pattern_positive(0));
+  // SSubst
+  auto ssubstMetaVarUnconsX0 =
+      Pattern::ssubst(Pattern::metavar_unconstrained(0), 0, Pattern::copy(X0));
+  auto ssubstMetaVarUnconsX1 =
+      Pattern::ssubst(Pattern::metavar_unconstrained(0), 0, Pattern::copy(X1));
+  auto ssubstMetaVarSFreshX1 = Pattern::ssubst(
+      Pattern::metavar_s_fresh(0, 1, IdList::create(1), IdList::create()), 0,
+      Pattern::copy(X1));
 
-  // assert(!ssubst(metavar_unconstrained(0), 0,
-  // Pattern::copy(X0))->negative(0)); assert(ssubst(metavar_unconstrained(0),
-  // 0, Pattern::copy(X1))->negative(0)); assert(ssubst(metavar_s_fresh(0, 1,
-  // vec![1], vec![]), 0, Pattern::copy(X1))->negative(0));
+  assert(!ssubstMetaVarUnconsX0->pattern_positive(0));
+  assert(ssubstMetaVarUnconsX1->pattern_positive(0));
+  assert(ssubstMetaVarSFreshX1->pattern_positive(0));
+
+  assert(!ssubstMetaVarUnconsX0->pattern_negative(0));
+  assert(ssubstMetaVarUnconsX1->pattern_negative(0));
+  assert(ssubstMetaVarSFreshX1->pattern_negative(0));
 
   // // Combinations
   // assert(!neg_X1->pattern_positive(1));
   // assert(neg_X1->pattern_positive(2));
-  // assert(neg_X1->negative(1));
-  // assert(neg_X1->negative(2));
+  // assert(neg_X1->pattern_negative(1));
+  // assert(neg_X1->pattern_negative(2));
 
   // auto negX1_implies_negX1 = implies(Pattern::copy(neg_X1),
   // Pattern::copy(neg_X1)); assert(!negX1_implies_negX1->pattern_positive(1));
   // assert(negX1_implies_negX1->pattern_positive(2));
-  // assert(!negX1_implies_negX1->negative(1));
-  // assert(negX1_implies_negX1->negative(2));
+  // assert(!negX1_implies_negX1->pattern_negative(1));
+  // assert(negX1_implies_negX1->pattern_negative(2));
 
   // auto negX1_implies_X1 = implies(Pattern::copy(neg_X1), Pattern::copy(X1));
   // assert(negX1_implies_X1->pattern_positive(1));
-  // assert(!negX1_implies_X1->negative(1));
+  // assert(!negX1_implies_X1->pattern_negative(1));
 
 #if DEBUG
   X0->print();
@@ -853,6 +912,8 @@ int test_positivity() {
   std::cout << std::endl;
   muX1X2->print();
   std::cout << std::endl;
+  muX1impliesX2X1->print();
+  std::cout << std::endl;
   metavarUncons1->print();
   std::cout << std::endl;
   metavarSFresh11__->print();
@@ -869,6 +930,12 @@ int test_positivity() {
   std::cout << std::endl;
   esubstMetaVarSFreshX1->print();
   std::cout << std::endl;
+  ssubstMetaVarUnconsX0->print();
+  std::cout << std::endl;
+  ssubstMetaVarUnconsX1->print();
+  std::cout << std::endl;
+  ssubstMetaVarSFreshX1->print();
+  std::cout << std::endl;
 
 #endif
 
@@ -884,6 +951,7 @@ int test_positivity() {
   Pattern::destroyPattern(muX1x1);
   Pattern::destroyPattern(muX1X1);
   Pattern::destroyPattern(muX1X2);
+  Pattern::destroyPattern(muX1impliesX2X1);
   Pattern::destroyPattern(metavarUncons1);
   Pattern::destroyPattern(metavarSFresh11__);
   Pattern::destroyPattern(metavarSFresh1111);
@@ -892,6 +960,9 @@ int test_positivity() {
   Pattern::destroyPattern(esubstMetaVarUnconsX0);
   Pattern::destroyPattern(esubstMetaVarUnconsX1);
   Pattern::destroyPattern(esubstMetaVarSFreshX1);
+  Pattern::destroyPattern(ssubstMetaVarUnconsX0);
+  Pattern::destroyPattern(ssubstMetaVarUnconsX1);
+  Pattern::destroyPattern(ssubstMetaVarSFreshX1);
 
   return 0;
 }
