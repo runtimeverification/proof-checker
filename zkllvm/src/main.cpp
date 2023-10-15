@@ -508,20 +508,6 @@ struct Pattern {
   }
 
   // Notation
-  // #[inline(always)]
-  // fn bot() -> Rc<Pattern> {
-  //     mu(0, svar(0))
-  // }
-
-  // #[inline(always)]
-  // fn not(pat: Rc<Pattern>) -> Rc<Pattern> {
-  //     implies(pat, bot())
-  // }
-
-  // #[allow(dead_code)]
-  // fn forall(evar: Id, pat: Rc<Pattern>) -> Rc<Pattern> {
-  //     not(exists(evar, not(pat)))
-
   static Pattern *bot() { return Pattern::mu(0, Pattern::svar(0)); }
 
   static Pattern *negate(Pattern *pattern) { // C++ doesn't accepted not
@@ -1023,9 +1009,7 @@ int test_positivity() {
   //  evar->print();
   std::cout << std::endl;
 #endif
-  // Output: (A ∧ B) ∨ ¬C
-  // Note: You would need to implement a print function to display it more
-  // clearly
+
   return a + b * 3;
 }
 
