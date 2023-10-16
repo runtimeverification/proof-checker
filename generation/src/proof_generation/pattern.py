@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
 
@@ -216,10 +217,11 @@ class SSubst(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation(Pattern):
+class Notation(Pattern, ABC):
     def label(self) -> str:
         return f'{type(self).__name__!r}'
 
+    @abstractmethod
     def definition(self) -> Pattern:
         raise NotImplementedError('This notation has no definition.')
 
@@ -257,7 +259,7 @@ class Notation(Pattern):
         return self.conclusion().apply_ssubst(svar_id, plug)
 
     def __str__(self) -> str:
-        pretty_args = ', '.join(str(arg) for arg in self.arguments().values())
+        pretty_args = ', '.join(map(str, self.arguments().values()))
         return f'{self.label()} ({pretty_args})'
 
 
@@ -302,8 +304,7 @@ class FakeNotation(Notation):
 
 @dataclass(frozen=True, eq=False)
 class Bot(Notation):
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return Mu(0, SVar(0))
 
     def __str__(self) -> str:
