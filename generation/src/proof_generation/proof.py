@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
-from proof_generation.pattern import MetaVar, Pattern
+from proof_generation.pattern import Pattern
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
 from proof_generation.serializing_interpreter import MemoizingInterpreter, SerializingInterpreter
@@ -92,8 +92,7 @@ class ProofExp:
 
     def dynamic_inst(self, proved_expr: ProvedExpression, delta: dict[int, Pattern]) -> Proved:
         for idn, p in delta.items():
-            if not (isinstance(p, MetaVar) and p.name == idn):
-                delta[idn] = self.interpreter.pattern(p)
+            delta[idn] = self.interpreter.pattern(p)
         return self.interpreter.instantiate(proved_expr(), delta)
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
