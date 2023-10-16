@@ -45,19 +45,19 @@ def test_parse_proof_hint() -> None:
             assert len(hint.trace) == 1
 
             # Contents of the k cell in the initial configuration
-            p = hint.initial_config.patterns[0].args[0]  # type: ignore
-            assert p.symbol == 'kseq'
-            assert p.args[0].args[0].symbol == "LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
-            assert p.args[1].symbol == 'dotk'
+            k_cell = hint.initial_config.patterns[0].dict['args'][0]
+            assert k_cell['name'] == 'kseq'
+            assert k_cell['args'][0]['args'][0]['name'] == "LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
+            assert k_cell['args'][1]['name'] == 'dotk'
 
             # Rule applied in the single rewrite step
             assert hint.trace[0].rule_ordinal == 92
 
             # Contents of the k cell in the final configuration
-            p = hint.trace[0].post_config.patterns[0].args[0]  # type: ignore
-            assert p.symbol == 'kseq'
-            assert p.args[0].args[0].symbol == "LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
-            assert p.args[1].symbol == 'dotk'
+            k_cell = hint.trace[0].post_config.patterns[0].dict['args'][0]
+            assert k_cell['name'] == 'kseq'
+            assert k_cell['args'][0]['args'][0]['name'] == "LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
+            assert k_cell['args'][1]['name'] == 'dotk'
 
         elif hint_name == 'mul_3_5.peano':
             assert len(hint.trace) == 58
