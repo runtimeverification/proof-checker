@@ -378,7 +378,8 @@ int test_wellformedness_positive() {
   auto mux_x4 = Pattern::mu(1, Pattern::negate(Pattern::copy(svar)));
   assert(!mux_x4->pattern_well_formed());
 
-  auto phi = Pattern::metavar_s_fresh(97, 2, IdList::create(), IdList::create());
+  auto phi =
+      Pattern::metavar_s_fresh(97, 2, IdList::create(), IdList::create());
   auto mux_phi = Pattern::mu(1, Pattern::copy(phi));
   assert(!mux_phi->pattern_well_formed());
 
@@ -391,17 +392,17 @@ int test_wellformedness_positive() {
 
   // It's ok if 2 is negative, the only thing we care about is that 2 is
   // guaranteed to be positive (we can instantiate without this variable)
-  auto phi3 = Pattern::metavar_s_fresh(99, 1, IdList::create(2),
-                                       IdList::create(2));
+  auto phi3 =
+      Pattern::metavar_s_fresh(99, 1, IdList::create(2), IdList::create(2));
   auto mux_phi3 = Pattern::mu(2, Pattern::copy(phi3));
   assert(mux_phi3->pattern_well_formed());
 
-  auto phi4 = Pattern::metavar_s_fresh(100, 1, IdList::create(2),
-                                       IdList::create());
+  auto phi4 =
+      Pattern::metavar_s_fresh(100, 1, IdList::create(2), IdList::create());
   auto mux_phi4 = Pattern::mu(2, Pattern::copy(phi4));
   assert(mux_phi4->pattern_well_formed());
 
-  #if DEBUG
+#if DEBUG
   svar->print();
   std::cout << std::endl;
   mux_x->print();
@@ -428,7 +429,7 @@ int test_wellformedness_positive() {
   std::cout << std::endl;
   mux_phi4->print();
   std::cout << std::endl;
-  #endif
+#endif
 
   svar->~Pattern();
   mux_x->~Pattern();
@@ -443,6 +444,99 @@ int test_wellformedness_positive() {
   mux_phi3->~Pattern();
   phi4->~Pattern();
   mux_phi4->~Pattern();
+
+  return 0;
+}
+
+int test_instantiate() {
+  typedef LinkedList<Pattern *> Patterns;
+  auto x0 = Pattern::evar(0);
+  auto X0 = Pattern::svar(0);
+  auto c0 = Pattern::symbol(0);
+  auto x0_implies_x0 = Pattern::implies(Pattern::copy(x0), Pattern::copy(x0));
+  auto appx0x0 = Pattern::app(Pattern::copy(x0), Pattern::copy(x0));
+  auto existsx0x0 = Pattern::exists(0, Pattern::copy(x0));
+  auto muX0x0 = Pattern::mu(0, Pattern::copy(x0));
+
+  // Concrete patterns are unaffected by instantiate
+
+  IdList *vars0 = IdList::create(0);
+  IdList *vars1 = IdList::create(1);
+  Patterns *plugsX0 = Patterns::create(Pattern::copy(X0));
+  Patterns *plugsx0 = Patterns::create(Pattern::copy(x0));
+  assert(Pattern::instantiate_internal(*x0, *vars0, *plugsX0) == nullptr);
+  assert(Pattern::instantiate_internal(*x0, *vars1, *plugsX0) == nullptr);
+  assert(Pattern::instantiate_internal(*X0, *vars0, *plugsx0) == nullptr);
+  assert(Pattern::instantiate_internal(*X0, *vars1, *plugsx0) == nullptr);
+  assert(Pattern::instantiate_internal(*c0, *vars0, *plugsx0) == nullptr);
+  assert(Pattern::instantiate_internal(*c0, *vars1, *plugsx0) == nullptr);
+  assert(Pattern::instantiate_internal(*x0_implies_x0, *vars0, *plugsx0) ==
+         nullptr);
+  assert(Pattern::instantiate_internal(*x0_implies_x0, *vars1, *plugsx0) ==
+         nullptr);
+  assert(Pattern::instantiate_internal(*appx0x0, *vars0, *plugsx0) == nullptr);
+  assert(Pattern::instantiate_internal(*appx0x0, *vars1, *plugsx0) == nullptr);
+  assert(Pattern::instantiate_internal(*existsx0x0, *vars0, *plugsX0) ==
+         nullptr);
+  assert(Pattern::instantiate_internal(*existsx0x0, *vars1, *plugsX0) ==
+         nullptr);
+  assert(Pattern::instantiate_internal(*muX0x0, *vars0, *plugsx0) == nullptr);
+  assert(Pattern::instantiate_internal(*muX0x0, *vars1, *plugsx0) == nullptr);
+
+  auto phi0 = Pattern::metavar_unconstrained(0);
+  auto phi0_implies_phi0 =
+      Pattern::implies(Pattern::copy(phi0), Pattern::copy(phi0));
+//   auto appphi0phi0 = Pattern::app(Pattern::copy(phi0), Pattern::copy(phi0));
+//   auto existsx0phi0 = Pattern::exists(0, Pattern::copy(phi0));
+//   auto muX0phi0 = Pattern::mu(0, Pattern::copy(phi0));
+//   auto existsx0X0 = Pattern::exists(0, Pattern::copy(X0));
+  auto internal0 =
+      Pattern::instantiate_internal(*phi0_implies_phi0, *vars0, *plugsx0);
+ // assert(*internal0 == *x0_implies_x0);
+
+#if DEBUG
+  x0->print();
+  std::cout << std::endl;
+  X0->print();
+  std::cout << std::endl;
+  c0->print();
+  std::cout << std::endl;
+  x0_implies_x0->print();
+  std::cout << std::endl;
+  appx0x0->print();
+  std::cout << std::endl;
+  existsx0x0->print();
+  std::cout << std::endl;
+  muX0x0->print();
+  std::cout << std::endl;
+  phi0->print();
+  std::cout << std::endl;
+  phi0_implies_phi0->print();
+  std::cout << std::endl;
+  internal0->print();
+  std::cout << std::endl;
+
+#endif
+  x0->~Pattern();
+  X0->~Pattern();
+  c0->~Pattern();
+  x0_implies_x0->~Pattern();
+  appx0x0->~Pattern();
+  existsx0x0->~Pattern();
+  muX0x0->~Pattern();
+  vars0->~LinkedList();
+  free(vars0);
+  vars1->~LinkedList();
+  free(vars1);
+  Pattern::destroyPatterns(plugsX0);
+  Pattern::destroyPatterns(plugsx0);
+  phi0->~Pattern();
+  phi0_implies_phi0->~Pattern();
+//   appphi0phi0->~Pattern();
+//   existsx0phi0->~Pattern();
+//   muX0phi0->~Pattern();
+//   existsx0X0->~Pattern();
+  internal0->~Pattern();
 
   return 0;
 }

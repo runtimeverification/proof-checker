@@ -4,6 +4,8 @@
 #include <iostream>
 #include <memory>
 
+#undef EOF
+
 enum class Instruction {
   // Patterns
   EVar = 2,
@@ -43,8 +45,9 @@ enum class Instruction {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar = (9 + 128)
-
+  CleanMetaVar = (9 + 128),
+  // EOF exclusive for zkLLVM
+  EOF
 };
 
 Instruction from(int value) {
@@ -109,6 +112,8 @@ Instruction from(int value) {
     return Instruction::Publish;
   case 137:
     return Instruction::CleanMetaVar;
+  case 138:
+    return Instruction::EOF;
   default:
     exit(1); // Bad instruction!
     break;
@@ -151,6 +156,88 @@ struct Pattern {
     pattern->app_ctx_holes = nullptr;
     return pattern;
   }
+
+  bool operator==(const Pattern &rhs) {
+#if DEBUG
+    std::cout << "operator==(const &lhs, const & rhs) called" << std::endl;
+#endif
+    if (inst != rhs.inst || id != rhs.id) {
+      return false;
+    }
+    if (left == nullptr && rhs.left != nullptr ||
+        left != nullptr && rhs.left == nullptr) {
+      return false;
+    }
+    if (right == nullptr && rhs.right != nullptr ||
+        right != nullptr && rhs.right == nullptr) {
+      return false;
+    }
+    if (subpattern == nullptr && rhs.subpattern != nullptr ||
+        subpattern != nullptr && rhs.subpattern == nullptr) {
+      return false;
+    }
+    if (plug == nullptr && rhs.plug != nullptr ||
+        plug != nullptr && rhs.plug == nullptr) {
+      return false;
+    }
+    if (e_fresh == nullptr && rhs.e_fresh != nullptr ||
+        e_fresh != nullptr && rhs.e_fresh == nullptr) {
+      return false;
+    }
+    if (s_fresh == nullptr && rhs.s_fresh != nullptr ||
+        s_fresh != nullptr && rhs.s_fresh == nullptr) {
+      return false;
+    }
+    if (positive == nullptr && rhs.positive != nullptr ||
+        positive != nullptr && rhs.positive == nullptr) {
+      return false;
+    }
+    if (negative == nullptr && rhs.negative != nullptr ||
+        negative != nullptr && rhs.negative == nullptr) {
+      return false;
+    }
+    if (app_ctx_holes == nullptr && rhs.app_ctx_holes != nullptr ||
+        app_ctx_holes != nullptr && rhs.app_ctx_holes == nullptr) {
+      return false;
+    }
+    if (left != nullptr && rhs.left != nullptr && *left != *rhs.left) {
+      return false;
+    }
+    if (right != nullptr && rhs.right != nullptr && *right != *rhs.right) {
+      return false;
+    }
+    if (subpattern != nullptr && rhs.subpattern != nullptr &&
+        *subpattern != *rhs.subpattern) {
+      return false;
+    }
+    if (plug != nullptr && rhs.plug != nullptr && *plug != *rhs.plug) {
+      return false;
+    }
+    if (e_fresh != nullptr && rhs.e_fresh != nullptr &&
+        e_fresh != rhs.e_fresh) {
+      return false;
+    }
+    if (s_fresh != nullptr && rhs.s_fresh != nullptr &&
+        s_fresh != rhs.s_fresh) {
+      return false;
+    }
+    if (positive != nullptr && rhs.positive != nullptr &&
+        positive != rhs.positive) {
+      return false;
+    }
+    if (negative != nullptr && rhs.negative != nullptr &&
+        negative != rhs.negative) {
+      return false;
+    }
+    if (app_ctx_holes != nullptr && rhs.app_ctx_holes != nullptr &&
+        app_ctx_holes != rhs.app_ctx_holes) {
+      return false;
+    }
+    return true;
+  }
+
+  bool operator==(const Pattern *other) const { return true; }
+  bool operator!=(const Pattern &rhs) { return !(*this == rhs); }
 
   // Copy constructor
   static Pattern *copy(Pattern *pattern) {
@@ -546,6 +633,112 @@ struct Pattern {
     return Pattern::negate(Pattern::exists(evar, Pattern::negate(pattern)));
   }
 
+  /// Substitution utilities
+  /// ----------------------
+  static Pattern *instantiate_internal(Pattern &p, IdList &vars,
+                                       LinkedList<Pattern *> &plugs) {
+    switch (p.inst) {
+    case Instruction::EVar:
+      return nullptr;
+      break;
+    case Instruction::SVar:
+      return nullptr;
+      break;
+    case Instruction::Symbol:
+      return nullptr;
+      break;
+    case Instruction::MetaVar: {
+      Id pos = 0;
+      for (auto it : vars) {
+        if (it == p.id) {
+          for (const auto &evar : *p.e_fresh) {
+            if (!plugs[pos]->pattern_e_fresh(evar)) {
+#ifdef DEBUG
+              throw std::runtime_error("Instantiation of MetaVar " +
+                                       std::to_string(p.id) +
+                                       " breaks a freshness constraint: EVar " +
+                                       std::to_string(evar));
+#endif
+              exit(1);
+              break;
+            }
+          }
+          for (const auto &svar : *p.s_fresh) {
+            if (!plugs[pos]->pattern_s_fresh(svar)) {
+#ifdef DEBUG
+              throw std::runtime_error("Instantiation of MetaVar " +
+                                       std::to_string(p.id) +
+                                       " breaks a freshness constraint: SVar " +
+                                       std::to_string(svar));
+#endif
+              exit(1);
+              break;
+            }
+          }
+          for (const auto &svar : *p.positive) {
+            if (!plugs[pos]->pattern_positive(svar)) {
+#ifdef DEBUG
+              throw std::runtime_error(
+                  "Instantiation of MetaVar " + std::to_string(p.id) +
+                  " breaks a positivity constraint: SVar " +
+                  std::to_string(svar));
+#endif
+              exit(1);
+              break;
+            }
+          }
+          for (const auto &svar : *p.negative) {
+            if (!plugs[pos]->pattern_negative(svar)) {
+#ifdef DEBUG
+              throw std::runtime_error(
+                  "Instantiation of MetaVar " + std::to_string(p.id) +
+                  " breaks a negativity constraint: SVar " +
+                  std::to_string(svar));
+#endif
+              exit(1);
+              break;
+            }
+          }
+
+          if (pos >= plugs.size()) {
+#ifdef DEBUG
+            throw std::runtime_error(
+                "Substitution does not contain a corresponding value.");
+#endif
+            exit(1);
+            break;
+          }
+
+          return Pattern::copy(plugs[pos]);
+        }
+      }
+      return nullptr;
+      break;
+    }
+    case Instruction::Implication: {
+      Pattern *inst_left = instantiate_internal(*p.left, vars, plugs);
+      Pattern *inst_right = instantiate_internal(*p.right, vars, plugs);
+
+      if (inst_left == nullptr && inst_right == nullptr) {
+        return nullptr;
+      } else {
+        if (inst_left == nullptr) {
+          inst_left = Pattern::copy(p.left);
+        }
+        if (inst_right == nullptr) {
+          inst_right = Pattern::copy(p.right);
+        }
+        return Pattern::implies(inst_left, inst_right);
+      }
+      break;
+    }
+    default:
+      return nullptr;
+      break;
+    }
+    return nullptr;
+  }
+
   /// Proof checker
   /// =============
 
@@ -609,6 +802,16 @@ struct Pattern {
       free(app_ctx_holes);
     }
     free(this);
+  }
+
+  static void destroyPatterns(LinkedList<Pattern *> *patterns) {
+    if (!patterns->empty()) {
+      for (auto it : *patterns) {
+        destroyPattern(it);
+      }
+      patterns->~LinkedList();
+      free(patterns);
+    }
   }
 
 #if DEBUG
