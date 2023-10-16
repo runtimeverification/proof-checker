@@ -454,12 +454,14 @@ struct Pattern {
     }
   }
   enum class TermType { Pattern, Proved };
-  std::tuple<TermType, Pattern *> Term(TermType type, Pattern *pattern) {
+  typedef std::tuple<TermType, Pattern *> Term;
+  Term CreateTerm(TermType type, Pattern *pattern) {
     return std::make_tuple(type, pattern);
   }
 
   enum class EntryType { Pattern, Proved };
-  std::tuple<EntryType, Pattern *> Entry(EntryType type, Pattern *pattern) {
+  typedef std::tuple<EntryType, Pattern *> Entry;
+  Entry CreateEntry(EntryType type, Pattern *pattern) {
     return std::make_tuple(type, pattern);
   }
 
@@ -542,6 +544,34 @@ struct Pattern {
 
   static Pattern *forall(Id evar, Pattern *pattern) {
     return Pattern::negate(Pattern::exists(evar, Pattern::negate(pattern)));
+  }
+
+  /// Proof checker
+  /// =============
+
+  typedef LinkedList<Term *> Stack;
+  typedef LinkedList<Pattern *> Claims;
+  typedef LinkedList<Entry *> Memory;
+
+  /// Stack utilities
+  /// ---------------
+
+  Term *pop_stack(Stack *stack) { return stack->pop(); }
+
+  Pattern *pop_stack_pattern(Stack *stack) {
+    auto term = stack->pop();
+    if (std::get<0>(*term) != TermType::Pattern) {
+      throw std::runtime_error("Expected pattern on the stack.");
+    }
+    return std::get<1>(*term);
+  }
+
+  Pattern *pop_stack_proved(Stack *stack) {
+    auto term = stack->pop();
+    if (std::get<0>(*term) != TermType::Proved) {
+      throw std::runtime_error("Expected proved on the stack.");
+    }
+    return std::get<1>(*term);
   }
 
   // Destructor to manually release memory

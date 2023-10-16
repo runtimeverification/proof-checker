@@ -53,6 +53,13 @@ public:
     head = next;
   }
 
+  T pop() {
+    assert(head && "Insufficient stack items.");
+    T value = head->data;
+    delete_front();
+    return value;
+  }
+
   static LinkedList *create() {
     auto newList = static_cast<LinkedList *>(std::malloc(sizeof(LinkedList)));
     newList->head = nullptr;
