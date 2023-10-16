@@ -75,6 +75,27 @@ public:
     }
     return false;
   }
+
+  bool isDisjoint(LinkedList<T> *otherList) {
+    Node<T> *current1 = head;
+
+    while (current1) {
+      Node<T> *current2 = otherList->head;
+
+      while (current2) {
+        if (current1->data == current2->data) {
+          return false; // Common element found
+        }
+
+        current2 = current2->next;
+      }
+
+      current1 = current1->next;
+    }
+
+    return true; // No common elements found
+  }
+
 #ifdef DEBUG
   void print() {
     if (!head) {
@@ -89,3 +110,14 @@ public:
   }
 #endif
 };
+
+/*
+bool containsAny(const std::vector<int>& app_ctx_holes, const std::vector<int>&
+e_fresh) { for (const auto& hole : app_ctx_holes) { if
+(std::find(e_fresh.begin(), e_fresh.end(), hole) != e_fresh.end()) { return
+true;
+        }
+    }
+    return false;
+}
+*/

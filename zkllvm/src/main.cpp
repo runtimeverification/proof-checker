@@ -427,6 +427,32 @@ struct Pattern {
     }
   }
 
+  // Checks whether pattern is well-formed ASSUMING
+  // that the sub-patterns are well-formed
+  bool pattern_well_formed() {
+    switch (inst) {
+    case Instruction::MetaVar:
+      return !app_ctx_holes->isDisjoint(e_fresh);
+      break;
+    case Instruction::Mu:
+      return subpattern->pattern_positive(id);
+      break;
+    case Instruction::ESubst:
+      return !subpattern->pattern_e_fresh(id);
+      break;
+    case Instruction::SSubst:
+      return !subpattern->pattern_s_fresh(id);
+      break;
+    default:
+#if DEBUG
+      throw std::runtime_error("Well-formedness checking is unimplemented yet "
+                               "for this kind of pattern: " +
+                               std::to_string((int)inst));
+#endif
+      exit(1);
+      break;
+    }
+  }
   enum class TermType { Pattern, Proved };
   std::tuple<TermType, Pattern *> Term(TermType type, Pattern *pattern) {
     return std::make_tuple(type, pattern);
@@ -989,6 +1015,89 @@ int test_positivity() {
   return 0;
 }
 
+int test_wellformedness_positive() {
+  auto svar = Pattern::svar(1);
+  auto mux_x = Pattern::mu(1, Pattern::copy(svar));
+  assert(mux_x->pattern_well_formed());
+
+  auto mux_x2 = Pattern::mu(2, Pattern::negate(Pattern::copy(svar)));
+  assert(mux_x2->pattern_well_formed());
+
+  auto mux_x3 = Pattern::mu(2, Pattern::negate(Pattern::symbol(1)));
+  assert(mux_x3->pattern_well_formed());
+
+  auto mux_x4 = Pattern::mu(1, Pattern::negate(Pattern::copy(svar)));
+  assert(!mux_x4->pattern_well_formed());
+
+  auto phi = Pattern::metavar_s_fresh(97, 2, IdList::create(), IdList::create());
+  auto mux_phi = Pattern::mu(1, Pattern::copy(phi));
+  assert(!mux_phi->pattern_well_formed());
+
+  // Even though freshness implies positivity, we do not want to do any
+  // additional reasoning and let everything on the prover
+  auto phi2 =
+      Pattern::metavar_s_fresh(98, 1, IdList::create(), IdList::create());
+  auto mux_phi2 = Pattern::mu(1, Pattern::copy(phi2));
+  assert(!mux_phi2->pattern_well_formed());
+
+  // It's ok if 2 is negative, the only thing we care about is that 2 is
+  // guaranteed to be positive (we can instantiate without this variable)
+  auto phi3 = Pattern::metavar_s_fresh(99, 1, IdList::create(2),
+                                       IdList::create(2));
+  auto mux_phi3 = Pattern::mu(2, Pattern::copy(phi3));
+  assert(mux_phi3->pattern_well_formed());
+
+  auto phi4 = Pattern::metavar_s_fresh(100, 1, IdList::create(2),
+                                       IdList::create());
+  auto mux_phi4 = Pattern::mu(2, Pattern::copy(phi4));
+  assert(mux_phi4->pattern_well_formed());
+
+  #if DEBUG
+  svar->print();
+  std::cout << std::endl;
+  mux_x->print();
+  std::cout << std::endl;
+  mux_x2->print();
+  std::cout << std::endl;
+  mux_x3->print();
+  std::cout << std::endl;
+  mux_x4->print();
+  std::cout << std::endl;
+  phi->print();
+  std::cout << std::endl;
+  mux_phi->print();
+  std::cout << std::endl;
+  phi2->print();
+  std::cout << std::endl;
+  mux_phi2->print();
+  std::cout << std::endl;
+  phi3->print();
+  std::cout << std::endl;
+  mux_phi3->print();
+  std::cout << std::endl;
+  phi4->print();
+  std::cout << std::endl;
+  mux_phi4->print();
+  std::cout << std::endl;
+  #endif
+
+  Pattern::destroyPattern(svar);
+  Pattern::destroyPattern(mux_x);
+  Pattern::destroyPattern(mux_x2);
+  Pattern::destroyPattern(mux_x3);
+  Pattern::destroyPattern(mux_x4);
+  Pattern::destroyPattern(phi);
+  Pattern::destroyPattern(mux_phi);
+  Pattern::destroyPattern(phi2);
+  Pattern::destroyPattern(mux_phi2);
+  Pattern::destroyPattern(phi3);
+  Pattern::destroyPattern(mux_phi3);
+  Pattern::destroyPattern(phi4);
+  Pattern::destroyPattern(mux_phi4);
+
+  return 0;
+}
+
 [[circuit]] int foo(int a, int b) {
 #if DEBUG
   std::cout << "Exeuting test_efresh(" << a << ", " << b << ")" << std::endl;
@@ -1006,9 +1115,10 @@ int test_positivity() {
   test_positivity();
 
 #if DEBUG
-  //  evar->print();
   std::cout << std::endl;
+  std::cout << "Exeuting test_wellformedness_positive()" << std::endl;
 #endif
+  test_wellformedness_positive();
 
   return a + b * 3;
 }
