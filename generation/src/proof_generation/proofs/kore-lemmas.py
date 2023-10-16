@@ -4,15 +4,13 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implication, MetaVar, Notation, bot
+from proof_generation.pattern import Application, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import And, Or, Negation
+from proof_generation.proofs.propositional import And, Negation, Or
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProvedExpression
-    from proof_generation.proved import Proved
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
