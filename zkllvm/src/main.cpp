@@ -3,8 +3,8 @@
 
 #ifndef DEBUG
 typedef __attribute__((ext_vector_type(1))) int assumption_type;
-typedef __attribute__((ext_vector_type(7))) int claim_type;
-typedef __attribute__((ext_vector_type(70))) int proof_type;
+typedef __attribute__((ext_vector_type(1))) int claim_type;
+typedef __attribute__((ext_vector_type(1))) int proof_type;
 
 [[circuit]] int foo(assumption_type a, claim_type c, proof_type p) {
 

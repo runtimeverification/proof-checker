@@ -75,4 +75,4 @@ ${LLVM_LINK} -S "${OUTPUT_CLANG}" -o "${OUTPUT_LLVM_LINK_1}"
 ${LLVM_LINK} -S "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.ll" -o "${OUTPUT_LLVM_LINK_2}"
 echo "Circuit Function output: "
 ${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output --check
-${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}"
+time ${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}"
