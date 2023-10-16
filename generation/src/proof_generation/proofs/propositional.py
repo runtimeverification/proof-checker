@@ -48,6 +48,32 @@ class Top(Notation):
 top = Top()
 
 
+@dataclass(frozen=True, eq=False)
+class And(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return neg(Implication(phi0, neg(phi1)))
+
+    def __str__(self) -> str:
+        return f'({self.phi0} /\\ {self.phi1})'
+
+
+@dataclass(frozen=True, eq=False)
+class Or(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return Implication(neg(phi0), phi1)
+
+    def __str__(self) -> str:
+        return f'({self.phi0} \\/ {self.phi1})'
+
+
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
         super().__init__(interpreter)
