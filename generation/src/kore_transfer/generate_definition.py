@@ -73,7 +73,7 @@ def main(
     # First check that output directory either does not exist or can be rewritten
     output_proof_dir = Path(proof_dir)
     if output_proof_dir.exists() and not rewrite_proof_files:
-        print(f'Output directory {output_dir} already exists and rewrite is not allowed. Exiting.')
+        print(f'Output directory {output_proof_dir} already exists and rewrite is not allowed. Exiting.')
         return
 
     # Kompile sources

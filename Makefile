@@ -9,11 +9,14 @@ clean-proofs:
 clean-translated-proofs:
 	rm -rf .build/proofs/translated
 
+clean-kgenerated-proofs:
+	rm -rf .build/proofs/generated-from-k
+
 update-snapshots:
 	cp -u $(wildcard .build/proofs/*.*) proofs
 	cp -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
 
-.PHONY: clean-proofs update-snapshots clean-translated-proofs
+.PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 
 # Installation and setup
 # ======================
@@ -140,7 +143,6 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # -------------------------------
 
 .build/proofs/generated-from-k/%.ml-proof: FORCE
-	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "kore_transfer.generate_definition" generation/k-benchmarks/single-rewrite/$*.k generation/k-benchmarks/single-rewrite/foo-a.$* .build/kompiled-definitions  --depth 0 --proof-dir .build/proofs/generated-from-k/
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .ktranslate,${TRANSLATED_FROM_K})
@@ -233,7 +235,7 @@ PROOF_VERIFY_KBUILD_TARGETS=$(addsuffix .verify-kgenerated,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.verify-kgenerated: .build/proofs/generated-from-k/%.ml-proof
 	$(CARGO) run --release --bin checker .build/proofs/generated-from-k/$*.ml-gamma .build/proofs/generated-from-k/$*.ml-claim .build/proofs/generated-from-k/$*.ml-proof
 
-verify-kgenerated: clean-proofs ${PROOF_VERIFY_KBUILD_TARGETS}
+verify-kgenerated: clean-kgenerated-proofs ${PROOF_VERIFY_KBUILD_TARGETS}
 .PHONY: verify-kgenerated
 
 # Profiling
