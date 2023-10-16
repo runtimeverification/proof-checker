@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, Notation, bot, get_imp, is_bot, is_imp, unwrap, unwrap2
+from proof_generation.pattern import Bot, Implication, MetaVar, Notation, bot, unwrap_opt, unwrap_opt_2
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -29,6 +29,22 @@ class Negation(Notation):
     def __str__(self) -> str:
         return f'~({str(self.phi0)})'
 
+    @staticmethod
+    def unwrap(pat: Pattern) -> Pattern | None:
+        if isinstance(pat, Negation):
+            return pat.phi0
+        if isinstance(pat, Notation):
+            return Negation.unwrap(pat.conclusion())
+        if pat_imp := Implication.unwrap(pat):
+            if Bot.is_bot(pat_imp[1]):
+                return pat_imp[0]
+            return None
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> Pattern:
+        unwrap_opt(Negation.unwrap(pat), 'Expected Bot but instead got: ' + str(pat) + '\n')
+
 
 def neg(p: Pattern) -> Pattern:
     return Negation(p)
@@ -42,6 +58,20 @@ class Top(Notation):
 
     def __str__(self) -> str:
         return '\u22A4'
+
+    @staticmethod
+    def is_top(pat: Pattern) -> bool:
+        if isinstance(pat, Top):
+            return True
+        if isinstance(pat, Notation):
+            return Top.is_top(pat.conclusion())
+        if pat_imp := Implication.unwrap(pat):
+            return Bot.is_bot(pat_imp[0]) and Bot.is_bot(pat_imp[1])
+        return False
+
+    @staticmethod
+    def extract(pat: Pattern) -> None:
+        assert Top.is_top(pat), 'Expected Top but instead got: ' + str(pat) + '\n'
 
 
 top = Top()
@@ -59,55 +89,21 @@ class Or(Notation):
     def __str__(self) -> str:
         return f'({str(self.left)}) \\/ ({str(self.right)})'
 
-
-def ml_or(l: Pattern, r: Pattern) -> Pattern:
-    return Or(l, r)
-
-
-def is_neg(pat: Pattern) -> Pattern | None:
-    if isinstance(pat, Negation):
-        return pat.phi0
-    if isinstance(pat, Notation):
-        return is_neg(pat.conclusion())
-    if pat_imp := is_imp(pat):
-        if is_bot(pat_imp[1]):
-            return pat_imp[0]
+    @staticmethod
+    def unwrap(pat: Pattern) -> tuple[Pattern, Pattern] | None:
+        if isinstance(pat, Or):
+            return pat.left, pat.right
+        if isinstance(pat, Notation):
+            return Or.unwrap(pat.conclusion())
+        if pat_imp := Implication.unwrap(pat):
+            if l := Negation.unwrap(pat_imp[0]):
+                return l, pat_imp[1]
+            return None
         return None
-    return None
 
-
-def get_neg(pat: Pattern) -> Pattern:
-    return unwrap(is_neg(pat), 'Expected a negation but got: ' + str(pat) + '\n')
-
-
-def is_top(pat: Pattern) -> bool:
-    if isinstance(pat, Top):
-        return True
-    if isinstance(pat, Notation):
-        return is_top(pat.conclusion())
-    if pat_imp := is_imp(pat):
-        return is_bot(pat_imp[0]) and is_bot(pat_imp[1])
-    return False
-
-
-def get_top(pat: Pattern) -> None:
-    assert is_top(pat), 'Expected Top but instead got: ' + str(pat) + '\n'
-
-
-def is_or(pat: Pattern) -> tuple[Pattern, Pattern] | None:
-    if isinstance(pat, Or):
-        return pat.left, pat.right
-    if isinstance(pat, Notation):
-        return is_or(pat.conclusion())
-    if pat_imp := is_imp(pat):
-        if l := is_neg(pat_imp[0]):
-            return l, pat_imp[1]
-        return None
-    return None
-
-
-def get_or(pat: Pattern) -> tuple[Pattern, Pattern]:
-    return unwrap2(is_or(pat), 'Expected an Or but got: ' + str(pat) + '\n')
+    @staticmethod
+    def extract(pat: Pattern) -> tuple[Pattern, Pattern]:
+        return unwrap_opt_2(Or.unwrap(pat), 'Expected an Or but got: ' + str(pat) + '\n')
 
 
 class Propositional(ProofExp):
@@ -141,7 +137,7 @@ class Propositional(ProofExp):
 
     # TODO This function should not exist anymore once we
     # have support for Lemmas in the binary format
-    def get_conc(self, p: ProvedExpression) -> Pattern:
+    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern:
         i = self.interpreter
         self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
         conc = p().conclusion
@@ -167,7 +163,7 @@ class Propositional(ProofExp):
         ----------
           p -> q
         """
-        q = self.get_conc(q_pf)
+        q = self.PROVISIONAL_get_conc(q_pf)
         return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
 
     def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
@@ -176,8 +172,8 @@ class Propositional(ProofExp):
         ----------------------
                 p -> r
         """
-        a, b = get_imp(self.get_conc(phi0_imp_phi1))
-        b2, c = get_imp(self.get_conc(phi1_imp_phi2))
+        a, b = Implication.extract(self.PROVISIONAL_get_conc(phi0_imp_phi1))
+        b2, c = Implication.extract(self.PROVISIONAL_get_conc(phi1_imp_phi2))
         assert b == b2
 
         return self.modus_ponens(

@@ -16,7 +16,6 @@ from proof_generation.pattern import (
     SVar,
     Symbol,
     bot,
-    get_imp,
 )
 from proof_generation.proved import Proved
 
@@ -143,7 +142,7 @@ class BasicInterpreter:
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion
-        l, r = get_imp(left_conclusion)
+        l, r = Implication.extract(left_conclusion)
         assert l == right.conclusion, str(l) + ' != ' + str(right.conclusion)
         return Proved(r)
 

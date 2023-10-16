@@ -3,6 +3,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
+def unwrap_opt(x: Pattern | None, error_msg: str) -> Pattern:
+    assert x, error_msg
+    return x
+
+
+def unwrap_opt_2(x: tuple[Pattern, Pattern] | None, error_msg: str) -> tuple[Pattern, Pattern]:
+    assert x, error_msg
+    return x
+
+
 class Pattern:
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         raise NotImplementedError
@@ -15,25 +25,7 @@ class Pattern:
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Notation):
-            return self == o.conclusion()
-        match self, o:
-            case EVar(id), EVar(id2):
-                return id == id2
-            case SVar(id), SVar(id2):
-                return id == id2
-            case Symbol(id), Symbol(id2):
-                return id == id2
-            case MetaVar(id), MetaVar(id2):
-                return id == id2
-            case Implication(l1, r1), Implication(l2, r2):
-                return l1 == l2 and r1 == r2
-            case Application(l1, r1), Application(l2, r2):
-                return l1 == l2 and r1 == r2
-            case Exists(id, p1), Exists(id2, p2):
-                return id == id2 and p1 == p2
-            case Mu(id, p1), Mu(id2, p2):
-                return id == id2 and p1 == p2
-            # TODO: ESubst, SSubst
+            return self.__eq__(o.conclusion())
         return False
 
 
@@ -55,6 +47,12 @@ class EVar(Pattern):
     def __str__(self) -> str:
         return f'x{self.name}'
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
+
 
 @dataclass(frozen=True)
 class SVar(Pattern):
@@ -74,6 +72,12 @@ class SVar(Pattern):
     def __str__(self) -> str:
         return f'X{self.name}'
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
+
 
 @dataclass(frozen=True)
 class Symbol(Pattern):
@@ -90,6 +94,12 @@ class Symbol(Pattern):
 
     def __str__(self) -> str:
         return f'\u03c3{str(self.name)}'
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
 
 
 @dataclass(frozen=True)
@@ -109,6 +119,24 @@ class Implication(Pattern):
     def __str__(self) -> str:
         return f'({str(self.left)} -> {str(self.right)})'
 
+    @staticmethod
+    def unwrap(pat: Pattern) -> tuple[Pattern, Pattern] | None:
+        if isinstance(pat, Implication):
+            return pat.left, pat.right
+        if isinstance(pat, Notation):
+            return Implication.unwrap(pat.conclusion())
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> tuple[Pattern, Pattern]:
+        return unwrap_opt_2(Implication.unwrap(pat), 'Expected an implication but got: ' + str(pat) + '\n')
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
+
 
 @dataclass(frozen=True)
 class Application(Pattern):
@@ -126,6 +154,12 @@ class Application(Pattern):
 
     def __str__(self) -> str:
         return f'(app ({str(self.left)}) ({str(self.right)}))'
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
 
 
 @dataclass(frozen=True)
@@ -147,6 +181,12 @@ class Exists(Pattern):
     def __str__(self) -> str:
         return f'(\u2203 {str(self.var)} . {str(self.subpattern)})'
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
+
 
 @dataclass(frozen=True)
 class Mu(Pattern):
@@ -166,6 +206,12 @@ class Mu(Pattern):
 
     def __str__(self) -> str:
         return f'(\u03BC {str(self.var)} . {str(self.subpattern)})'
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
 
 
 @dataclass(frozen=True)
@@ -195,6 +241,12 @@ class MetaVar(Pattern):
     def __str__(self) -> str:
         return f'phi{self.name}'
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
+
 
 @dataclass(frozen=True)
 class ESubst(Pattern):
@@ -214,6 +266,12 @@ class ESubst(Pattern):
     def __str__(self) -> str:
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
+
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
@@ -232,6 +290,12 @@ class SSubst(Pattern):
 
     def __str__(self) -> str:
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, type(self)):
+            return vars(self) == vars(o)
+        else:
+            return super().__eq__(o)
 
 
 @dataclass(frozen=True)
@@ -255,15 +319,8 @@ class Notation(Pattern):
 
     def __eq__(self, o: object) -> bool:
         assert isinstance(o, Pattern)
-        if isinstance(o, Notation):
-            if type(o).label() == type(self).label():
-                vars_o = vars(o)
-                vars_self_it = vars(self).items()
-                for s, p in vars_self_it:
-                    if not (vars_o[s] == p):
-                        return False
-                return True
-            return self == o.conclusion()
+        if isinstance(o, Notation) and type(o) == type(self):
+            return o.arguments() == self.arguments()
         return self.conclusion() == o
 
     def conclusion(self) -> Pattern:
@@ -300,41 +357,19 @@ class Bot(Notation):
     def __str__(self) -> str:
         return '\u22A5'
 
+    @staticmethod
+    def is_bot(pat: Pattern) -> bool:
+        if isinstance(pat, Bot):
+            return True
+        if isinstance(pat, Notation):
+            return Bot.is_bot(pat.conclusion())
+        if pat == bot.conclusion():
+            return True
+        return False
+
+    @staticmethod
+    def extract(pat: Pattern) -> None:
+        assert Bot.is_bot(pat), 'Expected Bot but instead got: ' + str(pat) + '\n'
+
 
 bot = Bot()
-
-
-def unwrap(x: Pattern | None, error_msg: str) -> Pattern:
-    assert x, error_msg
-    return x
-
-
-def unwrap2(x: tuple[Pattern, Pattern] | None, error_msg: str) -> tuple[Pattern, Pattern]:
-    assert x, error_msg
-    return x
-
-
-def is_imp(pat: Pattern) -> tuple[Pattern, Pattern] | None:
-    if isinstance(pat, Implication):
-        return pat.left, pat.right
-    if isinstance(pat, Notation):
-        return is_imp(pat.conclusion())
-    return None
-
-
-def get_imp(pat: Pattern) -> tuple[Pattern, Pattern]:
-    return unwrap2(is_imp(pat), 'Expected an implication but got: ' + str(pat) + '\n')
-
-
-def is_bot(pat: Pattern) -> bool:
-    if isinstance(pat, Bot):
-        return True
-    if isinstance(pat, Notation):
-        return is_bot(pat.conclusion())
-    if pat == bot.conclusion():
-        return True
-    return False
-
-
-def get_bot(pat: Pattern) -> None:
-    assert is_bot(pat), 'Expected Bot but instead got: ' + str(pat) + '\n'
