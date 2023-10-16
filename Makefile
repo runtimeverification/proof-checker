@@ -229,6 +229,12 @@ proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
 
+PROOF_VERIFY_KBUILD_TARGETS=$(addsuffix .verify-kgenerated,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.verify-kgenerated: .build/proofs/generated-from-k/%.ml-proof
+	$(CARGO) run --release --bin checker .build/proofs/generated-from-k/$*.ml-gamma .build/proofs/generated-from-k/$*.ml-claim .build/proofs/generated-from-k/$*.ml-proof
+
+verify-kgenerated: clean-proofs ${PROOF_VERIFY_KBUILD_TARGETS}
+.PHONY: verify-kgenerated
 
 # Profiling
 # ---------
