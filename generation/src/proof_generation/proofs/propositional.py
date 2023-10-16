@@ -43,7 +43,7 @@ class Negation(Notation):
 
     @staticmethod
     def extract(pat: Pattern) -> Pattern:
-        unwrap_opt(Negation.unwrap(pat), 'Expected Bot but instead got: ' + str(pat) + '\n')
+        return unwrap_opt(Negation.unwrap(pat), 'Expected Bot but instead got: ' + str(pat) + '\n')
 
 
 def neg(p: Pattern) -> Pattern:
@@ -137,7 +137,7 @@ class Propositional(ProofExp):
 
     # TODO This function should not exist anymore once we
     # have support for Lemmas in the binary format
-    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern: # noqa: N802
+    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern:  # noqa: N802
         i = self.interpreter
         self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
         conc = p().conclusion
