@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ast import Tuple
-from typing import List, Optional
+from typing import List
 
 from proof_generation.matching import match_single
-from proof_generation.proof import Implication, MetaVar, Pattern, Proved
+from proof_generation.pattern import Pattern, Implication, MetaVar
+from proof_generation.proved import Proved
 from proof_generation.proofs.propositional import Propositional
 
 
@@ -47,19 +47,6 @@ class ConjVar(ConjTerm):
 
 
 class Tautology(Propositional):
-    def is_neg(self, pat: Pattern) -> bool:
-        if isinstance(pat, Implication):
-            return pat.right == bot
-        return False
-
-    def get_imp(self, pat: Pattern) -> Tuple[Pattern, Pattern]:
-        assert isinstance(pat, Implication), "Expected an implication but got: " + str(pat) + "\n"
-        return pat.left, pat.right
-
-    def get_neg(self, pat: Pattern) -> Pattern:
-        assert isinstance(pat, Implication) and pat.right == bot, "Expected a negation but got: " + str(pat) + "\n"
-        return pat.left
-
     # p -> p
     def imp_refl(self, p: Pattern) -> Proved:
         return self.dynamic_inst(self.imp_reflexivity, {0: p})
