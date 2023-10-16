@@ -68,7 +68,15 @@ def main(
     proof_dir: str,
     step: int = 0,
     reuse_kompiled_dir: bool = False,
+    rewrite_proof_files: bool = False,
 ) -> None:
+    # First check that output directory either does not exist or can be rewritten
+    output_proof_dir = Path(proof_dir)
+    if output_proof_dir.exists() and not rewrite_proof_files:
+        print(f'Output directory {output_dir} already exists and rewrite is not allowed. Exiting.')
+        return
+
+    # Kompile sources
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
     configuration_for_step = get_confguration_for_depth(kompiled_dir, Path(program_file), step)
@@ -85,7 +93,7 @@ def main(
     proof_gen_class = converter.compose_proofs()
 
     print('Begin generating proof files ... ')
-    generate_proof_file(proof_gen_class, Path(proof_dir), Path(k_file).stem)
+    generate_proof_file(proof_gen_class, output_proof_dir, Path(k_file).stem)
 
     print('Done!')
 
@@ -97,8 +105,9 @@ if __name__ == '__main__':
     argparser.add_argument('output_dir', type=str, help='Path to the output directory')
     argparser.add_argument('--module', type=str, help='Main K module name')
     argparser.add_argument('--depth', type=int, default=0, help='Execution steps from the beginning')
-    argparser.add_argument('--reuse', action='store_true', help='Reuse the existing kompiled directory')
+    argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
+    argparser.add_argument('--clean', action='store_true', default=False, help='Rewrite proofs if they already exist')
     argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
 
     args = argparser.parse_args()
-    main(args.kfile, args.module, args.program, args.output_dir, args.proof_dir, args.depth, args.reuse)
+    main(args.kfile, args.module, args.program, args.output_dir, args.proof_dir, args.depth, args.reuse, args.clean)

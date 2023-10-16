@@ -276,8 +276,7 @@ class FakeNotation(Notation):
             return self.symbol
         else:
             current_callable: Pattern = self.symbol
-            metavars = [MetaVar(i) for i in range(len(self.pattern_arguments))]
-            arguments_left = metavars
+            arguments_left = [MetaVar(i) for i, _ in enumerate(self.pattern_arguments)]
             while len(arguments_left) > 0:
                 next_one, *arguments_left = arguments_left
                 current_callable = Application(current_callable, next_one)
@@ -296,7 +295,6 @@ class FakeNotation(Notation):
 
         for arg in self.arguments().values():
             new_pattern = arg.instantiate(delta)
-            assert isinstance(new_pattern, Pattern)
             args.append(new_pattern)
 
         return FakeNotation(self.symbol, tuple(args))
