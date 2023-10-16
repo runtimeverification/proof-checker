@@ -137,7 +137,7 @@ class Propositional(ProofExp):
 
     # TODO This function should not exist anymore once we
     # have support for Lemmas in the binary format
-    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern:
+    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern: # noqa: N802
         i = self.interpreter
         self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
         conc = p().conclusion
