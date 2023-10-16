@@ -9,7 +9,7 @@ from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu, SVar
+from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu
 from proof_generation.pretty_printing_interpreter import NotationlessPrettyPrinter, PrettyPrintingInterpreter
 from proof_generation.proofs.propositional import Propositional
 from proof_generation.serializing_interpreter import SerializingInterpreter
@@ -39,15 +39,15 @@ def test_instantiate() -> None:
     assert Application(phi0, phi0).instantiate({0: phi1}) == Application(phi1, phi1)
     assert Application(phi0, phi1).instantiate({2: phi0_ef0}) == Application(phi0, phi1)
 
-    assert Exists(EVar(0), phi0).instantiate({0: phi1}) == Exists(EVar(0), phi1)
-    assert Exists(EVar(0), phi0).instantiate({0: phi0_ef0}) == Exists(EVar(0), phi0_ef0)
-    assert Exists(EVar(0), phi1).instantiate({1: phi0_ef0}) == Exists(EVar(0), phi0_ef0)
-    assert Exists(EVar(0), phi1).instantiate({2: phi0_ef0}) == Exists(EVar(0), phi1)
+    assert Exists(0, phi0).instantiate({0: phi1}) == Exists(0, phi1)
+    assert Exists(0, phi0).instantiate({0: phi0_ef0}) == Exists(0, phi0_ef0)
+    assert Exists(0, phi1).instantiate({1: phi0_ef0}) == Exists(0, phi0_ef0)
+    assert Exists(0, phi1).instantiate({2: phi0_ef0}) == Exists(0, phi1)
 
-    assert Mu(SVar(0), phi0).instantiate({0: phi1}) == Mu(SVar(0), phi1)
-    assert Mu(SVar(0), phi0).instantiate({0: phi0_ef0}) == Mu(SVar(0), phi0_ef0)
-    assert Mu(SVar(0), phi1).instantiate({1: phi0_ef0}) == Mu(SVar(0), phi0_ef0)
-    assert Mu(SVar(0), phi1).instantiate({2: phi0_ef0}) == Mu(SVar(0), phi1)
+    assert Mu(0, phi0).instantiate({0: phi1}) == Mu(0, phi1)
+    assert Mu(0, phi0).instantiate({0: phi0_ef0}) == Mu(0, phi0_ef0)
+    assert Mu(0, phi1).instantiate({1: phi0_ef0}) == Mu(0, phi0_ef0)
+    assert Mu(0, phi1).instantiate({2: phi0_ef0}) == Mu(0, phi1)
 
 
 def test_conclusion() -> None:

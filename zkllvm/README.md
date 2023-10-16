@@ -6,6 +6,14 @@ There is a list of dependencies that need to be installed before zkLLVM can be b
 sudo apt install build-essential libssl-dev cmake clang-12 git curl pkg-config libspdlog-dev
 ```
 
+Note that zkLLVM requires the boost lib version to be greater than 1.76.0.
+For Unix based system, we can download the source code from [boost](https://www.boost.org) website
+and run the following command under the source code directory to install it:
+```bash
+sudo ./bootstrap.sh --prefix=/usr/
+sudo ./b2 install
+```
+
 For the complete list of dependencies, please refer to the
 [zkllvm#install-dependencies](https://github.com/NilFoundation/zkllvm#install-dependencies).
 
