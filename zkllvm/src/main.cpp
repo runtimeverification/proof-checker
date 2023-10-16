@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 enum class Instruction {
   // Patterns
@@ -1098,31 +1099,43 @@ int test_wellformedness_positive() {
   return 0;
 }
 
-[[circuit]] int foo(int a, int b) {
-#if DEBUG
-  std::cout << "Exeuting test_efresh(" << a << ", " << b << ")" << std::endl;
-#endif
-  test_efresh(a, b);
-#if DEBUG
-  std::cout << std::endl;
-  std::cout << "Exeuting test_sfresh(" << a << ", " << b << ")" << std::endl;
-#endif
-  test_sfresh(a, b);
-#if DEBUG
-  std::cout << std::endl;
-  std::cout << "Exeuting test_positivity()" << std::endl;
-#endif
-  test_positivity();
+#ifndef DEBUG
+typedef __attribute__((ext_vector_type(1))) int assumption_type;
+typedef __attribute__((ext_vector_type(7))) int claim_type;
+typedef __attribute__((ext_vector_type(70))) int proof_type;
 
-#if DEBUG
-  std::cout << std::endl;
-  std::cout << "Exeuting test_wellformedness_positive()" << std::endl;
-#endif
+[[circuit]] int foo(assumption_type a, claim_type c, proof_type p) {
+
+  int x = 1;
+  int y = 2;
+  test_efresh(x, y);
+  test_sfresh(x, y);
+  test_positivity();
   test_wellformedness_positive();
 
-  return a + b * 3;
+  return c[0];
 }
+#else
+int main() {
+  int x = 1;
+  int y = 2;
 
-#if DEBUG
-int main() { return foo(1, 2); }
+  std::cout << "Exeuting test_efresh(" << x << ", " << y << ")" << std::endl;
+  test_efresh(x, y);
+  std::cout << std::endl;
+
+  std::cout << "Exeuting test_sfresh(" << x << ", " << y << ")" << std::endl;
+  test_sfresh(x, y);
+  std::cout << std::endl;
+
+  std::cout << "Exeuting test_positivity()" << std::endl;
+  test_positivity();
+  std::cout << std::endl;
+
+  std::cout << "Exeuting test_wellformedness_positive()" << std::endl;
+  test_wellformedness_positive();
+  std::cout << std::endl;
+
+  return 0;
+}
 #endif

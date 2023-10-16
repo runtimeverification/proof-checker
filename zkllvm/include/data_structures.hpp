@@ -110,14 +110,3 @@ public:
   }
 #endif
 };
-
-/*
-bool containsAny(const std::vector<int>& app_ctx_holes, const std::vector<int>&
-e_fresh) { for (const auto& hole : app_ctx_holes) { if
-(std::find(e_fresh.begin(), e_fresh.end(), hole) != e_fresh.end()) { return
-true;
-        }
-    }
-    return false;
-}
-*/
