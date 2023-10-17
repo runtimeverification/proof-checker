@@ -500,7 +500,10 @@ class Tautology(Propositional):
     def propag_neg(self, term: ConjTerm) -> tuple[ConjTerm, ProvedExpression, ProvedExpression]:
         """Assumes `term` is made up only of OR nodes and vars (+ single negations)"""
         if isinstance(term, ConjVar):
-            phi_imp_phi = lambda: self.imp_refl(MetaVar(term.id))
+            pat: Pattern = MetaVar(term.id)
+            if term.negated:
+                pat = neg(pat)
+            phi_imp_phi = lambda: self.imp_refl(pat)
             return term, phi_imp_phi, phi_imp_phi
         elif isinstance(term, ConjOr):
             if term.negated:
