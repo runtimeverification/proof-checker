@@ -137,6 +137,9 @@ class Implication(Pattern):
         else:
             return super().__eq__(o)
 
+def imp(p1: Pattern, p2: Pattern) -> Pattern:
+    return Implication(p1, p2)
+
 
 @dataclass(frozen=True)
 class Application(Pattern):
