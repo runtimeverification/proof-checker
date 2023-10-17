@@ -858,6 +858,13 @@ struct Pattern {
     return Optional<Pattern>();
   }
 
+  void instantiate_in_place(Pattern &p, IdList &vars,
+                            LinkedList<Pattern *> &plugs) {
+    if (auto ret = instantiate_internal(p, vars, plugs)) {
+      p = *ret.unwrap();
+    }
+  }
+
   /// Proof checker
   /// =============
 

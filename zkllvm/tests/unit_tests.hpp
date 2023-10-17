@@ -490,9 +490,52 @@ int test_instantiate() {
   auto existsx0phi0 = Pattern::exists(0, Pattern::copy(phi0));
   auto muX0phi0 = Pattern::mu(0, Pattern::copy(phi0));
   auto existsx0X0 = Pattern::exists(0, Pattern::copy(X0));
-  Pattern::Optional<Pattern> internal0 =
+
+  auto internal0 =
       Pattern::instantiate_internal(*phi0_implies_phi0, *vars0, *plugsx0);
+  auto internal1 =
+      Pattern::instantiate_internal(*phi0_implies_phi0, *vars1, *plugsx0);
+  auto internal2 =
+      Pattern::instantiate_internal(*appphi0phi0, *vars0, *plugsX0);
+  auto internal3 =
+      Pattern::instantiate_internal(*appphi0phi0, *vars1, *plugsX0);
+  auto internal4 =
+      Pattern::instantiate_internal(*existsx0phi0, *vars0, *plugsX0);
+  auto internal5 =
+      Pattern::instantiate_internal(*existsx0phi0, *vars1, *plugsX0);
+  auto internal6 = Pattern::instantiate_internal(*muX0phi0, *vars0, *plugsx0);
+  auto internal7 = Pattern::instantiate_internal(*muX0phi0, *vars1, *plugsx0);
+
   assert(*internal0 == *x0_implies_x0);
+  assert(*internal1 == nullptr);
+  assert(*internal2 == *appx0x0);
+  assert(*internal3 == nullptr);
+  assert(*internal4 == *existsx0x0);
+  assert(*internal5 == nullptr);
+  assert(*internal6 == *muX0x0);
+  assert(*internal7 == nullptr);
+
+  // Simultaneous instantiations
+  auto vars12 = IdList::create(1, 2);
+  auto plugsx0X0 = Patterns::create(Pattern::copy(x0), Pattern::copy(X0));
+  auto phi1 = Pattern::metavar_unconstrained(1);
+  auto muX0phi1 = Pattern::mu(0, Pattern::copy(phi1));
+  auto muX0X0 = Pattern::mu(0, Pattern::copy(X0));
+
+  // Empty substs have no effect
+   assert(*Pattern::instantiate_internal(*existsx0phi0, *vars12, *plugsx0X0) ==
+         nullptr);
+    assert(*Pattern::instantiate_internal(*muX0phi0, *vars12, *plugsx0X0) ==
+         nullptr);
+
+  // Order matters if corresponding value is not moved
+  auto vars10 = IdList::create(1, 0);
+  auto internal8 =
+      Pattern::instantiate_internal(*existsx0phi0, *vars10, *plugsx0X0);
+  auto internal9 = Pattern::instantiate_internal(*muX0phi0, *vars10, *plugsx0X0);
+
+  assert(*internal8 == *existsx0X0);
+  assert(*internal9 == *muX0X0);
 
 #if DEBUG
   x0->print();
@@ -515,6 +558,23 @@ int test_instantiate() {
   std::cout << std::endl;
   internal0.unwrap()->print();
   std::cout << std::endl;
+  internal2.unwrap()->print();
+  std::cout << std::endl;
+  internal4.unwrap()->print();
+  std::cout << std::endl;
+  internal6.unwrap()->print();
+  std::cout << std::endl;
+  phi1->print();
+  std::cout << std::endl;
+  muX0phi1->print();
+  std::cout << std::endl;
+  muX0X0->print();
+  std::cout << std::endl;
+  internal8.unwrap()->print();
+  std::cout << std::endl;
+  internal9.unwrap()->print();
+  std::cout << std::endl;
+
 
 #endif
   x0->~Pattern();
@@ -537,6 +597,19 @@ int test_instantiate() {
   muX0phi0->~Pattern();
   existsx0X0->~Pattern();
   internal0.unwrap()->~Pattern();
+  internal2.unwrap()->~Pattern();
+  internal4.unwrap()->~Pattern();
+  internal6.unwrap()->~Pattern();
+  vars12->~LinkedList();
+  free(vars12);
+  Pattern::destroyPatterns(plugsx0X0);
+  phi1->~Pattern();
+  muX0phi1->~Pattern();
+  muX0X0->~Pattern();
+  vars10->~LinkedList();
+  free(vars10);
+  internal8.unwrap()->~Pattern();
+  internal9.unwrap()->~Pattern();
 
   return 0;
 }
