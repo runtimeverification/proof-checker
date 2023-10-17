@@ -635,17 +635,51 @@ struct Pattern {
 
   /// Substitution utilities
   /// ----------------------
-  static Pattern *instantiate_internal(Pattern &p, IdList &vars,
-                                       LinkedList<Pattern *> &plugs) {
+  template <class Pattern> class Optional {
+  private:
+    Pattern *value;
+    bool hasValue;
+
+  public:
+    Optional(Pattern *value) : value(value), hasValue(true) {}
+    Optional(std::nullptr_t) : hasValue(false) {}
+    Optional() : hasValue(false) { value = nullptr; }
+    ~Optional() = default;
+
+    operator bool() const { return hasValue; }
+    Pattern operator*() const { return value; }
+
+    Pattern *operator*() {
+      if (hasValue) {
+        return value;
+      } else {
+        return nullptr;
+      }
+    }
+
+    Pattern *unwrap() {
+      if (hasValue) {
+        return value;
+      } else {
+        return nullptr;
+      }
+    }
+
+    bool has_value() { return hasValue; }
+    Pattern get_value() { return value; }
+  };
+
+  static Optional<Pattern> instantiate_internal(Pattern &p, IdList &vars,
+                                                LinkedList<Pattern *> &plugs) {
     switch (p.inst) {
     case Instruction::EVar:
-      return nullptr;
+      return Optional<Pattern>();
       break;
     case Instruction::SVar:
-      return nullptr;
+      return Optional<Pattern>();
       break;
     case Instruction::Symbol:
-      return nullptr;
+      return Optional<Pattern>();
       break;
     case Instruction::MetaVar: {
       Id pos = 0;
@@ -709,34 +743,119 @@ struct Pattern {
             break;
           }
 
-          return Pattern::copy(plugs[pos]);
+          return Optional<Pattern>(copy(plugs[pos]));
         }
       }
-      return nullptr;
+      return Optional<Pattern>();
       break;
     }
     case Instruction::Implication: {
-      Pattern *inst_left = instantiate_internal(*p.left, vars, plugs);
-      Pattern *inst_right = instantiate_internal(*p.right, vars, plugs);
+      Optional<Pattern> inst_left = instantiate_internal(*p.left, vars, plugs);
+      Optional<Pattern> inst_right =
+          instantiate_internal(*p.right, vars, plugs);
 
-      if (inst_left == nullptr && inst_right == nullptr) {
-        return nullptr;
+      if (!inst_left.has_value() && !inst_right.has_value()) {
+        return Optional<Pattern>();
       } else {
-        if (inst_left == nullptr) {
-          inst_left = Pattern::copy(p.left);
+        if (!inst_left.has_value()) {
+          inst_left = Optional<Pattern>(copy(p.left)).unwrap();
         }
-        if (inst_right == nullptr) {
-          inst_right = Pattern::copy(p.right);
+        if (!inst_right.has_value()) {
+          inst_right = Optional<Pattern>(copy(p.right)).unwrap();
         }
-        return Pattern::implies(inst_left, inst_right);
+        return Optional<Pattern>(
+            Pattern::implies(inst_left.unwrap(), inst_right.unwrap()));
+      }
+      break;
+    }
+    case Instruction::Application: {
+      Optional<Pattern> inst_left = instantiate_internal(*p.left, vars, plugs);
+      Optional<Pattern> inst_right =
+          instantiate_internal(*p.right, vars, plugs);
+
+      if (!inst_left.has_value() && !inst_right.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_left.has_value()) {
+          inst_left = Optional<Pattern>(copy(p.left));
+        }
+        if (!inst_right.has_value()) {
+          inst_right = Optional<Pattern>(copy(p.right));
+        }
+        return Optional<Pattern>(
+            Pattern::app(inst_left.unwrap(), inst_right.unwrap()));
+      }
+      break;
+    }
+    case Instruction::Exists: {
+      Optional<Pattern> inst_sub =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      if (!inst_sub.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_sub.has_value()) {
+          inst_sub = Optional<Pattern>(copy(p.subpattern));
+        }
+        return Optional<Pattern>(Pattern::exists(p.id, inst_sub.unwrap()));
+      }
+      break;
+    }
+
+    case Instruction::Mu: {
+      Optional<Pattern> inst_sub =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      if (!inst_sub.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_sub.has_value()) {
+          inst_sub = Optional<Pattern>(copy(p.subpattern));
+        }
+        return Optional<Pattern>(Pattern::mu(p.id, inst_sub.unwrap()));
+      }
+      break;
+    }
+
+    case Instruction::ESubst: {
+      Optional<Pattern> inst_pattern =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      Optional<Pattern> inst_plug = instantiate_internal(*p.plug, vars, plugs);
+      if (!inst_pattern.has_value() && !inst_plug.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_pattern.has_value()) {
+          inst_pattern = Optional<Pattern>(copy(p.subpattern));
+        }
+        if (!inst_plug.has_value()) {
+          inst_plug = Optional<Pattern>(copy(p.plug));
+        }
+        return Optional<Pattern>(
+            Pattern::esubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
+      }
+      break;
+    }
+    case Instruction::SSubst: {
+      Optional<Pattern> inst_pattern =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      Optional<Pattern> inst_plug = instantiate_internal(*p.plug, vars, plugs);
+      if (!inst_pattern.has_value() && !inst_plug.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_pattern.has_value()) {
+          inst_pattern = Optional<Pattern>(copy(p.subpattern));
+        }
+        if (!inst_plug.has_value()) {
+          inst_plug = Optional<Pattern>(copy(p.plug));
+        }
+        return Optional<Pattern>(
+            Pattern::ssubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
       }
       break;
     }
     default:
-      return nullptr;
+      return Optional<Pattern>();
       break;
     }
-    return nullptr;
+    return Optional<Pattern>();
   }
 
   /// Proof checker

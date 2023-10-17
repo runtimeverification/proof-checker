@@ -464,35 +464,35 @@ int test_instantiate() {
   IdList *vars1 = IdList::create(1);
   Patterns *plugsX0 = Patterns::create(Pattern::copy(X0));
   Patterns *plugsx0 = Patterns::create(Pattern::copy(x0));
-  assert(Pattern::instantiate_internal(*x0, *vars0, *plugsX0) == nullptr);
-  assert(Pattern::instantiate_internal(*x0, *vars1, *plugsX0) == nullptr);
-  assert(Pattern::instantiate_internal(*X0, *vars0, *plugsx0) == nullptr);
-  assert(Pattern::instantiate_internal(*X0, *vars1, *plugsx0) == nullptr);
-  assert(Pattern::instantiate_internal(*c0, *vars0, *plugsx0) == nullptr);
-  assert(Pattern::instantiate_internal(*c0, *vars1, *plugsx0) == nullptr);
-  assert(Pattern::instantiate_internal(*x0_implies_x0, *vars0, *plugsx0) ==
+  assert(*Pattern::instantiate_internal(*x0, *vars0, *plugsX0) == nullptr);
+  assert(*Pattern::instantiate_internal(*x0, *vars1, *plugsX0) == nullptr);
+  assert(*Pattern::instantiate_internal(*X0, *vars0, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*X0, *vars1, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*c0, *vars0, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*c0, *vars1, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*x0_implies_x0, *vars0, *plugsx0) ==
          nullptr);
-  assert(Pattern::instantiate_internal(*x0_implies_x0, *vars1, *plugsx0) ==
+  assert(*Pattern::instantiate_internal(*x0_implies_x0, *vars1, *plugsx0) ==
          nullptr);
-  assert(Pattern::instantiate_internal(*appx0x0, *vars0, *plugsx0) == nullptr);
-  assert(Pattern::instantiate_internal(*appx0x0, *vars1, *plugsx0) == nullptr);
-  assert(Pattern::instantiate_internal(*existsx0x0, *vars0, *plugsX0) ==
+  assert(*Pattern::instantiate_internal(*appx0x0, *vars0, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*appx0x0, *vars1, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*existsx0x0, *vars0, *plugsX0) ==
          nullptr);
-  assert(Pattern::instantiate_internal(*existsx0x0, *vars1, *plugsX0) ==
+  assert(*Pattern::instantiate_internal(*existsx0x0, *vars1, *plugsX0) ==
          nullptr);
-  assert(Pattern::instantiate_internal(*muX0x0, *vars0, *plugsx0) == nullptr);
-  assert(Pattern::instantiate_internal(*muX0x0, *vars1, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*muX0x0, *vars0, *plugsx0) == nullptr);
+  assert(*Pattern::instantiate_internal(*muX0x0, *vars1, *plugsx0) == nullptr);
 
   auto phi0 = Pattern::metavar_unconstrained(0);
-  auto phi0_implies_phi0 =
-      Pattern::implies(Pattern::copy(phi0), Pattern::copy(phi0));
-//   auto appphi0phi0 = Pattern::app(Pattern::copy(phi0), Pattern::copy(phi0));
-//   auto existsx0phi0 = Pattern::exists(0, Pattern::copy(phi0));
-//   auto muX0phi0 = Pattern::mu(0, Pattern::copy(phi0));
-//   auto existsx0X0 = Pattern::exists(0, Pattern::copy(X0));
-  auto internal0 =
+  auto phi0_implies_phi0 = Pattern::implies(Pattern::metavar_unconstrained(0),
+                                            Pattern::metavar_unconstrained(0));
+  auto appphi0phi0 = Pattern::app(Pattern::copy(phi0), Pattern::copy(phi0));
+  auto existsx0phi0 = Pattern::exists(0, Pattern::copy(phi0));
+  auto muX0phi0 = Pattern::mu(0, Pattern::copy(phi0));
+  auto existsx0X0 = Pattern::exists(0, Pattern::copy(X0));
+  Pattern::Optional<Pattern> internal0 =
       Pattern::instantiate_internal(*phi0_implies_phi0, *vars0, *plugsx0);
- // assert(*internal0 == *x0_implies_x0);
+  assert(*internal0 == *x0_implies_x0);
 
 #if DEBUG
   x0->print();
@@ -513,7 +513,7 @@ int test_instantiate() {
   std::cout << std::endl;
   phi0_implies_phi0->print();
   std::cout << std::endl;
-  internal0->print();
+  internal0.unwrap()->print();
   std::cout << std::endl;
 
 #endif
@@ -532,11 +532,11 @@ int test_instantiate() {
   Pattern::destroyPatterns(plugsx0);
   phi0->~Pattern();
   phi0_implies_phi0->~Pattern();
-//   appphi0phi0->~Pattern();
-//   existsx0phi0->~Pattern();
-//   muX0phi0->~Pattern();
-//   existsx0X0->~Pattern();
-  internal0->~Pattern();
+  appphi0phi0->~Pattern();
+  existsx0phi0->~Pattern();
+  muX0phi0->~Pattern();
+  existsx0X0->~Pattern();
+  internal0.unwrap()->~Pattern();
 
   return 0;
 }
