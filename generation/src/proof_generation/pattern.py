@@ -243,11 +243,7 @@ class Notation(Pattern, ABC):
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args: list[Pattern] = []
-
-        for arg in self.arguments().values():
-            args.append(arg.instantiate(delta))
-
+        args = self._instantiate_args(delta)
         return type(self)(*args)
 
     # TODO: Keep notations (without dropping them)
@@ -257,6 +253,14 @@ class Notation(Pattern, ABC):
     # TODO: Keep notations (without dropping them)
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self.conclusion().apply_ssubst(svar_id, plug)
+
+    def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
+        args: list[Pattern] = []
+
+        for arg in self.arguments().values():
+            args.append(arg.instantiate(delta))
+
+        return args
 
     def __str__(self) -> str:
         pretty_args = ', '.join(map(str, self.arguments().values()))
@@ -291,12 +295,7 @@ class FakeNotation(Notation):
         return ret
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args: list[Pattern] = []
-
-        for arg in self.arguments().values():
-            new_pattern = arg.instantiate(delta)
-            args.append(new_pattern)
-
+        args = self._instantiate_args(delta)
         return FakeNotation(self.symbol, tuple(args))
 
 
