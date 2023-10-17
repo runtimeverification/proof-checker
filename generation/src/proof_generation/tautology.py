@@ -73,7 +73,7 @@ def conj_to_pattern(term: ConjTerm) -> Pattern:
 
 class Tautology(Propositional):
     def imp_trans_match1(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
-        """ """
+        """Same as imp_transitivity but h1 is instantiated to match h2"""
         h1_conc = self.PROVISIONAL_get_conc(h1)
         h2_conc = self.PROVISIONAL_get_conc(h2)
         _, b = Implication.extract(h1_conc)
@@ -84,7 +84,7 @@ class Tautology(Propositional):
         return self.imp_transitivity(lambda: self.dynamic_inst(h1, actual_subst), h2)
 
     def imp_trans_match2(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
-        """ """
+        """Same as imp_transitivity but h2 is instantiated to match h1"""
         h1_conc = self.PROVISIONAL_get_conc(h1)
         h2_conc = self.PROVISIONAL_get_conc(h2)
         _, b = Implication.extract(h1_conc)
@@ -118,46 +118,62 @@ class Tautology(Propositional):
         return Proved(Implication(p, neg(neg(p))))
 
     def dni_l(self, p: Pattern, q: Pattern) -> Proved:
-        """ """
+        """(p -> q) -> (~~p -> q)"""
         return self.modus_ponens(self.imp_trans(neg(neg(p)), p, q), self.dynamic_inst(self.prop3, {0: p}))
 
     def dni_l_i(self, pq: ProvedExpression) -> Proved:
-        """ """
+        """
+            p -> q
+        --------------
+          ~~p -> q
+        """
         pq_conc = self.PROVISIONAL_get_conc(pq)
         p, q = Implication.extract(pq_conc)
         return self.modus_ponens(self.dni_l(p, q), pq())
 
     def dni_r(self, p: Pattern, q: Pattern) -> Proved:
-        """ """
+        """(p -> q) -> (p -> ~~q)"""
         return self.modus_ponens(
             self.dynamic_inst(self.prop2, {0: p, 1: q, 2: neg(neg(q))}), self.imp_provable(p, lambda: self.dni(q))
         )
 
     def dni_r_i(self, pq: ProvedExpression) -> Proved:
-        """ """
+        """
+           p -> q
+        --------------
+          p -> ~~q
+        """
         pq_conc = self.PROVISIONAL_get_conc(pq)
         p, q = Implication.extract(pq_conc)
         return self.modus_ponens(self.dni_r(p, q), pq())
 
     def dne_l(self, p: Pattern, q: Pattern) -> Proved:
-        """ """
+        """(~~p -> q) -> (p -> q)"""
         return self.modus_ponens(self.imp_trans(p, neg(neg(p)), q), self.dni(p))
 
     def dne_l_i(self, pq: ProvedExpression) -> Proved:
-        """ """
+        """
+          ~~p -> q
+        --------------
+            p -> q
+        """
         pq_conc = self.PROVISIONAL_get_conc(pq)
         p, q = Implication.extract(pq_conc)
         return self.modus_ponens(self.dne_l(p, q), pq())
 
     def dne_r(self, p: Pattern, q: Pattern) -> Proved:
-        """ """
+        """(p -> ~~q) -> (p -> q)"""
         return self.modus_ponens(
             self.dynamic_inst(self.prop2, {0: p, 1: neg(neg(q)), 2: q}),
             self.imp_provable(p, lambda: self.dynamic_inst(self.prop3, {0: q})),
         )
 
     def dne_r_i(self, pq: ProvedExpression) -> Proved:
-        """ """
+        """
+          p -> ~~q
+        --------------
+           p -> q
+        """
         pq_conc = self.PROVISIONAL_get_conc(pq)
         p, q = Implication.extract(pq_conc)
         return self.modus_ponens(self.dne_r(p, q), pq())
