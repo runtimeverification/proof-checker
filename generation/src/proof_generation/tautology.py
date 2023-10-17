@@ -585,9 +585,9 @@ class Tautology(Propositional):
         """Assumes term is in CNF form"""
         if isinstance(term, ConjVar):
             if term.negated:
-                id = -(term.id+1)
+                id = -(term.id + 1)
             else:
-                id = term.id+1
+                id = term.id + 1
             pat: Pattern = MetaVar(term.id)
             if term.negated:
                 pat = neg(pat)

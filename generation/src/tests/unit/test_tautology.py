@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from proof_generation.tautology import ConjTerm
 
 
-def assert_eq_pat(p: Pattern, q: Pattern):
+def assert_eq_pat(p: Pattern, q: Pattern) -> None:
     assert p == q, f'{str(p)}\n!=\n{str(q)}\n'
 
 
@@ -26,9 +26,9 @@ def clause_to_pattern(l: list[int]) -> Pattern:
     assert len(l) > 0
     assert l[0] != 0
     if l[0] < 0:
-        pat = neg(MetaVar(-(l[0]+1)))
+        pat = neg(MetaVar(-(l[0] + 1)))
     else:
-        pat = MetaVar(l[0]-1)
+        pat = MetaVar(l[0] - 1)
     if len(l) > 1:
         pat = Or(pat, clause_to_pattern(l[1:]))
     return pat
