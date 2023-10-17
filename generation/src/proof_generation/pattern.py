@@ -137,6 +137,7 @@ class Implication(Pattern):
         else:
             return super().__eq__(o)
 
+
 def imp(p1: Pattern, p2: Pattern) -> Pattern:
     return Implication(p1, p2)
 
@@ -361,18 +362,8 @@ class Bot(Notation):
         return '\u22A5'
 
     @staticmethod
-    def is_bot(pat: Pattern) -> bool:
-        if isinstance(pat, Bot):
-            return True
-        if isinstance(pat, Notation):
-            return Bot.is_bot(pat.conclusion())
-        if pat == bot.conclusion():
-            return True
-        return False
-
-    @staticmethod
     def extract(pat: Pattern) -> None:
-        assert Bot.is_bot(pat), 'Expected Bot but instead got: ' + str(pat) + '\n'
+        assert pat == bot, 'Expected Bot but instead got: ' + str(pat) + '\n'
 
 
 bot = Bot()

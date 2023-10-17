@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Bot, Implication, MetaVar, Notation, bot, unwrap_opt, unwrap_opt_2
+from proof_generation.pattern import Implication, MetaVar, Notation, bot, unwrap_opt, unwrap_opt_2
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -36,7 +36,7 @@ class Negation(Notation):
         if isinstance(pat, Notation):
             return Negation.unwrap(pat.conclusion())
         if pat_imp := Implication.unwrap(pat):
-            if Bot.is_bot(pat_imp[1]):
+            if pat_imp[1] == bot:
                 return pat_imp[0]
             return None
         return None
@@ -66,7 +66,7 @@ class Top(Notation):
         if isinstance(pat, Notation):
             return Top.is_top(pat.conclusion())
         if pat_imp := Implication.unwrap(pat):
-            return Bot.is_bot(pat_imp[0]) and Bot.is_bot(pat_imp[1])
+            return pat_imp[0] == bot and pat_imp[1] == bot
         return False
 
     @staticmethod
