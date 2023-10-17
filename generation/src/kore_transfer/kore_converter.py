@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from itertools import count
 
 import pyk.kore.syntax as kore
 
@@ -22,6 +23,9 @@ class KoreConverter:
         self._svars: dict[str, nf.SVar] = {}
         self._metavars: dict[str, nf.MetaVar] = {}
         self._notations: dict[str, type[nf.Notation]] = {}
+
+        self._symbol_number = count(len(self.CONST_SYMBOLS))
+        self._symbol_sort_number = count(len(self.CONST_SYMBOLS) + 100)
 
     def convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
         """Convert the given pattern to the pattern in the new format."""
@@ -67,18 +71,14 @@ class KoreConverter:
         """Resolve the symbol in the given pattern."""
         if isinstance(pattern, str):
             if pattern not in self._symbols:
-                self._symbols[pattern] = nf.Symbol(name=len(self._symbols), pretty_name=pattern)
+                self._symbols[pattern] = nf.Symbol(name=next(self._symbol_number), pretty_name=pattern)
             return self._symbols[pattern]
         elif isinstance(pattern, kore.Sort):
             if pattern.name not in self._symbols:
-                self._symbols[pattern.name] = nf.Symbol(name=len(self._symbols), pretty_name=pattern.name)
+                self._symbols[pattern.name] = nf.Symbol(name=next(self._symbol_sort_number), pretty_name=pattern.name)
             return self._symbols[pattern.name]
         elif type(pattern) in self.CONST_SYMBOLS:
             return nf.Symbol(name=self.CONST_SYMBOLS.index(type(pattern)), pretty_name=f'KORE_{type(pattern).__name__}')
-        elif isinstance(pattern, kore.Symbol):
-            if pattern.name not in self._symbols:
-                self._symbols[pattern.name] = nf.Symbol(name=len(self._symbols), pretty_name=pattern.name)
-            return self._symbols[pattern.name]
         else:
             raise NotImplementedError(f'Pattern {pattern} is not supported')
 

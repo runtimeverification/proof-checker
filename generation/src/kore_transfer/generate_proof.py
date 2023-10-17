@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 def generate_proofs(hints: Iterator[KoreHint], proof_expression: type[KoreDefinition]) -> None:
     curr_hint: KoreHint = next(hints)
     for next_hint in hints:
-        # TODO: We use the implication for now, but it should be changed to the rewrite symbol
+        # TODO: Process as `KoreRewrite` instead
         claim = nf.Implication(curr_hint.pattern, next_hint.pattern)
 
         axiom = curr_hint.relevant_axiom
