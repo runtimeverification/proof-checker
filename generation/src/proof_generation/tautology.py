@@ -4,7 +4,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from proof_generation.matching import match_single
-from proof_generation.pattern import Bot, Implication, MetaVar, Notation
+from proof_generation.pattern import Implication, MetaVar, Notation
 from proof_generation.proofs.propositional import And, Negation, Or, Propositional, Top, bot, neg, phi0, phi1, phi2
 from proof_generation.proved import Proved
 
@@ -414,7 +414,7 @@ class Tautology(Propositional):
         return Proved(Implication(And(Or(pat1, pat2), Or(pat1, pat3)), Or(pat1, And(pat2, pat3))))
 
     def is_propositional(self, pat: Pattern) -> bool:
-        if Bot.is_bot(pat):
+        if pat == bot:
             return True
         if pat_imp := Implication.unwrap(pat):
             return self.is_propositional(pat_imp[0]) and self.is_propositional(pat_imp[1])
@@ -436,7 +436,7 @@ class Tautology(Propositional):
         first proof; this proof will be a proof of `old term` or `neg(old term)`
         respectively (as opposed to, say, `old term -> Top``)
         """
-        if Bot.is_bot(pat):
+        if pat == bot:
             return ConjBool(False), self.top_intro, None
         if Top.is_top(pat):
             return ConjBool(True), self.top_intro, None

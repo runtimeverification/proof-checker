@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar
-from proof_generation.proofs.propositional import And, Or, bot, neg, phi0, phi1, phi2, top
+from proof_generation.pattern import Implication, MetaVar, bot, imp
+from proof_generation.proofs.propositional import And, Or, neg, phi0, phi1, phi2, top
 from proof_generation.tautology import ConjAnd, ConjBool, ConjOr, ConjVar, Tautology, conj_to_pattern
 
 if TYPE_CHECKING:
@@ -16,10 +16,6 @@ if TYPE_CHECKING:
 
 def assert_eq_pat(p: Pattern, q: Pattern) -> None:
     assert p == q, f'{str(p)}\n!=\n{str(q)}\n'
-
-
-def imp(p1: Pattern, p2: Pattern) -> Pattern:
-    return Implication(p1, p2)
 
 
 def clause_to_pattern(l: list[int]) -> Pattern:
