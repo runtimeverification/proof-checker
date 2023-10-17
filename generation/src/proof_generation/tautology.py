@@ -512,20 +512,21 @@ class Tautology(Propositional):
                 term_l, term_l_pf1, term_l_pf2 = self.propag_neg(term.left)
                 term_r, term_r_pf1, term_r_pf2 = self.propag_neg(term.right)
                 if not term.left.negated:
-                    term_l_pf1 = lambda: self.dni_l_i(term_l_pf1)
-                    term_l_pf2 = lambda: self.dni_r_i(term_l_pf2)
+                    term_l_pf1 = partial(self.dni_l_i, term_l_pf1)
+                    term_l_pf2 = partial(self.dni_r_i, term_l_pf2)
                 pf1 = lambda: self.imim_and(term_l_pf1, term_r_pf1)
                 pf2 = lambda: self.imim_and(term_l_pf2, term_r_pf2)
                 if term.right.negated:
                     pf1_conc = self.PROVISIONAL_get_conc(pf1)
                     pf1_l, pf1_r = Implication.extract(pf1_conc)
-                    a1, b1 = Implication.extract(Negation.extract(pf1_l))
-                    pf1 = lambda: self.imp_transitivity(lambda: self.con3_i(lambda: self.dne_r(a1, b1)), pf1)
+                    a1, nb1 = And.extract(pf1_l)
+                    b1 = Negation.extract(nb1)
+                    pf1 = partial(self.imp_transitivity, partial(self.con3_i, partial(self.dne_r, a1, b1)), pf1)
                     pf2_conc = self.PROVISIONAL_get_conc(pf2)
                     pf2_l, pf2_r = Implication.extract(pf2_conc)
-                    a2, nnb2 = Implication.extract(Negation.extract(pf2_r))
-                    b2 = Negation.extract(Negation.extract(nnb2))
-                    pf2 = lambda: self.imp_transitivity(pf2, lambda: self.con3_i(lambda: self.dni_r(a2, b2)))
+                    a2, nb2 = And.extract(pf2_r)
+                    b2 = Negation.extract(nb2)
+                    pf2 = partial(self.imp_transitivity, pf2, partial(self.con3_i, partial(self.dni_r, a2, b2)))
                 return ConjAnd(term_l, term_r), pf1, pf2
             else:
                 term_l, term_l_pf1, term_l_pf2 = self.propag_neg(term.left)
@@ -543,7 +544,10 @@ class Tautology(Propositional):
     def to_cnf(self, term: ConjTerm) -> tuple[ConjTerm, ProvedExpression, ProvedExpression]:
         """Assumes negation has been fully propagated through the term"""
         if isinstance(term, ConjVar):
-            phi_imp_phi = lambda: self.imp_refl(MetaVar(term.id))
+            pat: Pattern = MetaVar(term.id)
+            if term.negated:
+                pat = neg(pat)
+            phi_imp_phi = lambda: self.imp_refl(pat)
             return term, phi_imp_phi, phi_imp_phi
         elif isinstance(term, ConjAnd):
             term_l, term_l_pf1, term_l_pf2 = self.to_cnf(term.left)
@@ -559,18 +563,18 @@ class Tautology(Propositional):
             pf1_conc = self.PROVISIONAL_get_conc(pf1)
             Implication.extract(pf1_conc)
             if isinstance(term_l, ConjAnd):
-                pf1 = lambda: self.imp_trans_match2(pf1, self.or_distr_r)
-                pf2 = lambda: self.imp_trans_match1(self.or_distr_r_rev, pf2)
+                pf1 = partial(self.imp_trans_match2, pf1, self.or_distr_r)
+                pf2 = partial(self.imp_trans_match1, self.or_distr_r_rev, pf2)
                 new_term, pf1_, pf2_ = self.to_cnf(ConjAnd(ConjOr(term_l.left, term_r), ConjOr(term_l.right, term_r)))
-                pf1 = lambda: self.imp_transitivity(pf1, pf1_)
-                pf2 = lambda: self.imp_transitivity(pf2_, pf2)
+                pf1 = partial(self.imp_transitivity, pf1, pf1_)
+                pf2 = partial(self.imp_transitivity, pf2_, pf2)
                 return new_term, pf1, pf2
             elif isinstance(term_r, ConjAnd):
-                pf1 = lambda: self.imp_trans_match2(pf1, self.or_distr_l)
-                pf2 = lambda: self.imp_trans_match1(self.or_distr_l_rev, pf2)
+                pf1 = partial(self.imp_trans_match2, pf1, self.or_distr_l)
+                pf2 = partial(self.imp_trans_match1, self.or_distr_l_rev, pf2)
                 new_term, pf1_, pf2_ = self.to_cnf(ConjAnd(ConjOr(term_l, term_r.left), ConjOr(term_l, term_r.right)))
-                pf1 = lambda: self.imp_transitivity(pf1, pf1_)
-                pf2 = lambda: self.imp_transitivity(pf2_, pf2)
+                pf1 = partial(self.imp_transitivity, pf1, pf1_)
+                pf2 = partial(self.imp_transitivity, pf2_, pf2)
                 return new_term, pf1, pf2
             else:
                 return ConjOr(term_l, term_r), pf1, pf2
@@ -581,10 +585,13 @@ class Tautology(Propositional):
         """Assumes term is in CNF form"""
         if isinstance(term, ConjVar):
             if term.negated:
-                id = -term.id
+                id = -(term.id+1)
             else:
-                id = term.id
-            phi_imp_phi = lambda: self.imp_refl(MetaVar(term.id))
+                id = term.id+1
+            pat: Pattern = MetaVar(term.id)
+            if term.negated:
+                pat = neg(pat)
+            phi_imp_phi = lambda: self.imp_refl(pat)
             return [[id]], phi_imp_phi, phi_imp_phi
         elif isinstance(term, ConjAnd):
             term_l, term_l_pf1, term_l_pf2 = self.to_clauses(term.left)
@@ -600,23 +607,21 @@ class Tautology(Propositional):
                     shift_right = partial(
                         lambda i, shift_right: self.imp_trans_match1(
                             self.and_assoc_r,
-                            partial(
-                                lambda i, shift_right: self.imim_and_r(MetaVar(i + 3), shift_right), i, shift_right
-                            ),
+                            partial(self.imim_and_r, MetaVar(i + 3), shift_right),
                         ),
                         i,
                         shift_right,
                     )
                     shift_left = partial(
                         lambda i, shift_left: self.imp_trans_match2(
-                            partial(lambda i, shift_left: self.imim_and_r(MetaVar(i + 3), shift_left), i, shift_left),
+                            partial(self.imim_and_r, MetaVar(i + 3), shift_left),
                             self.and_assoc_l,
                         ),
                         i,
                         shift_left,
                     )
-                pf1 = lambda: self.imp_trans_match2(pf1, shift_right)
-                pf2 = lambda: self.imp_trans_match1(shift_left, pf2)
+                pf1 = partial(self.imp_trans_match2, pf1, shift_right)
+                pf2 = partial(self.imp_trans_match1, shift_left, pf2)
             return term_l + term_r, pf1, pf2
         elif isinstance(term, ConjOr):
             term_l, term_l_pf1, term_l_pf2 = self.to_clauses(term.left)
@@ -634,21 +639,21 @@ class Tautology(Propositional):
                     shift_right = partial(
                         lambda i, shift_right: self.imp_trans_match1(
                             self.or_assoc_r,
-                            partial(lambda i, shift_right: self.imim_or_r(MetaVar(i + 3), shift_right), i, shift_right),
+                            partial(self.imim_or_r, MetaVar(i + 3), shift_right),
                         ),
                         i,
                         shift_right,
                     )
                     shift_left = partial(
                         lambda i, shift_left: self.imp_trans_match2(
-                            partial(lambda i, shift_left: self.imim_or_r(MetaVar(i + 3), shift_left), i, shift_left),
+                            partial(self.imim_or_r, MetaVar(i + 3), shift_left),
                             self.or_assoc_l,
                         ),
                         i,
                         shift_left,
                     )
-                pf1 = lambda: self.imp_trans_match2(pf1, shift_right)
-                pf2 = lambda: self.imp_trans_match1(shift_left, pf2)
+                pf1 = partial(self.imp_trans_match2, pf1, shift_right)
+                pf2 = partial(self.imp_trans_match1, shift_left, pf2)
             return [term_l[0] + term_r[0]], pf1, pf2
         else:
             raise AssertionError(

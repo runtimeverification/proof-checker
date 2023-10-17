@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu, SVar, Symbol
+from proof_generation.pattern import Application, Bot, EVar, Exists, Implication, MetaVar, Mu, SVar, Symbol
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -23,6 +23,13 @@ def match_single(
             if not pattern.can_be_replaced_by(instance):
                 return None
             ret[id] = instance
+    elif Bot.is_bot(pattern) and Bot.is_bot(instance):
+        pass
+    elif (pat_imp := Implication.unwrap(pattern)) and (inst_imp := Implication.unwrap(instance)):
+        ret = match_single(pat_imp[0], inst_imp[0], ret)
+        if not ret:
+            return None
+        ret = match_single(pat_imp[1], inst_imp[1], ret)
     elif (pat_evar := EVar.unwrap(pattern)) and (inst_evar := EVar.unwrap(instance)):
         if pat_evar != inst_evar:
             return None
@@ -32,11 +39,6 @@ def match_single(
     elif (pat_sym := Symbol.unwrap(pattern)) and (inst_sym := Symbol.unwrap(instance)):
         if pat_sym != inst_sym:
             return None
-    elif (pat_imp := Implication.unwrap(pattern)) and (inst_imp := Implication.unwrap(instance)):
-        ret = match_single(pat_imp[0], inst_imp[0], ret)
-        if not ret:
-            return None
-        ret = match_single(pat_imp[1], inst_imp[1], ret)
     elif (pat_app := Application.unwrap(pattern)) and (inst_app := Application.unwrap(instance)):
         ret = match_single(pat_app[0], inst_app[0], ret)
         if not ret:
