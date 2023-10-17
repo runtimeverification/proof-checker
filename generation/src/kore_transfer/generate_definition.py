@@ -1,113 +1,195 @@
 from __future__ import annotations
 
-from argparse import ArgumentParser
-from pathlib import Path
-from typing import TYPE_CHECKING
+from collections.abc import Callable
 
-from pyk.kore.kompiled import KompiledKore
-from pyk.kore.parser import KoreParser
-from pyk.ktool.kompile import kompile
-from pyk.ktool.krun import KRunOutput, _krun
+import pyk.kore.syntax as kore
 
-from kore_transfer.proof_gen import ExecutionProofGen
+import proof_generation.pattern as nf
+import proof_generation.proof as proof
+import proof_generation.proofs.propositional as prop
 
-if TYPE_CHECKING:
-    from pyk.kore.syntax import Definition, Pattern
-
-    from proof_generation.proof import ProofExp
+ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
-def get_kompiled_definition(output_dir: Path) -> Definition:
-    """Parse the definition.kore file and return corresponding object."""
+class ExecutionProofGen:
+    CONST_SYMBOLS: tuple[type[kore.Pattern], ...] = (kore.And, kore.Top, kore.EVar)
 
-    print(f'Parsing the definition in the Kore format in {output_dir}')
-    return KompiledKore(output_dir).definition
+    def __init__(self, kore_definition: kore.Definition, module_name: str) -> None:
+        self._definition = kore_definition
+        self._module = module_name
 
+        self._symbols: dict[str, nf.Symbol] = {}
+        self._evars: dict[str, nf.EVar] = {}
+        self._svars: dict[str, nf.SVar] = {}
+        self._metavars: dict[str, nf.MetaVar] = {}
+        self._notations: dict[str, type[nf.Notation]] = {}
+        self._axioms: list[nf.Pattern] = []
+        self._claims: list[nf.Pattern] = []
+        self._proofs: list[ProofMethod] = []
 
-def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = False) -> Path:
-    """Kompile given K definition and return path to the kompiled directory."""
+        # Prepare for the gamma phase
+        # Find the relevant rule and the corresponding substitution
+        axioms_for_rules = self._find_rules_for_convertion()
+        for axiom in axioms_for_rules:
+            self._axioms.append(self._convert_axiom(axiom))
 
-    path = Path(output_dir)
-    if reuse_kompiled_dir and path.exists() and path.is_dir():
-        print(f'Using existing kompiled directory {path}')
-        return Path(path)
-    elif reuse_kompiled_dir:
-        print(f'Kompiled directory {path} does not exist. Compiling from scratch.')
+    def prove_rewrite_step(self, initial_config: kore.Pattern, next_config: kore.Pattern) -> None:
+        """Take a single rewrite step and emit a proof for it."""
+        # emit a proof for taking a single step
+        # returns the final pattern
+        conf1 = self._convert_pattern(initial_config)
+        conf2 = self._convert_pattern(next_config)
 
-    print(f'Kompiling target {k_file} to {output_dir}')
-    kompiled_dir: Path = kompile(main_file=k_file, backend='llvm', output_dir=output_dir)
-    return kompiled_dir
+        # Make claim
+        claim = nf.Implication(conf1, conf2)
+        self._claims.append(claim)
 
+        # Make proof
+        # Required axiom
+        axiom = self._axioms[0]
 
-def get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: int) -> Pattern:
-    """Generate the configuration for the given depth."""
+        # TODO: How are we supposed to figure out instantiations?
+        assert (
+            isinstance(initial_config, kore.App)
+            and isinstance(initial_config.args[0], kore.App)
+            and isinstance(initial_config.args[0].args[0], kore.App)
+        )
+        kseq_pattern = self._convert_pattern(initial_config.args[0].args[0].args[1])
+        zero_pattern = self._convert_pattern(initial_config.args[1])
 
-    # TODO: This can be also done using KAST and then using the KRun class but it soesn't seem easier to me
-    finished_process = _krun(input_file=input_file, definition_dir=definition_dir, output=KRunOutput.KORE, depth=depth)
-    # TODO: We can consider implementing a better error handling
-    assert finished_process.returncode == 0, 'KRun failed'
+        def proof_transition(proof_expr: proof.ProofExp) -> proof.Proved:
+            """Prove the transition between two configurations."""
+            proof_expr.interpreter.pattern(kseq_pattern)
+            proof_expr.interpreter.pattern(zero_pattern)
+            return proof_expr.interpreter.instantiate(proof_expr.load_axiom(axiom), {0: kseq_pattern, 1: zero_pattern})
 
-    parsed = KoreParser(finished_process.stdout)
-    return parsed.pattern()
+        self._proofs.append(proof_transition)
 
+    def compose_proofs(self) -> type[proof.ProofExp]:
+        """Compose the proofs for all steps."""
+        extracted_axioms: list[nf.Pattern] = list(self._axioms)
+        extracted_claims: list[nf.Pattern] = list(self._claims)
+        composed_proofs: list[ProofMethod] = list(self._proofs)
 
-def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: str) -> None:
-    """Generate the proof files."""
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True)
-    proof_gen.main(['', 'binary', 'gamma', str(output_dir / f'{file_name}.ml-gamma')])
-    proof_gen.main(['', 'binary', 'claim', str(output_dir / f'{file_name}.ml-claim')])
-    proof_gen.main(['', 'binary', 'proof', str(output_dir / f'{file_name}.ml-proof')])
+        class TranslatedProofSkeleton(proof.ProofExp):
+            @staticmethod
+            def axioms() -> list[nf.Pattern]:
+                return extracted_axioms
 
+            @staticmethod
+            def claims() -> list[nf.Pattern]:
+                return extracted_claims
 
-def main(
-    k_file: str,
-    module_name: str | None,
-    program_file: str,
-    output_dir: str,
-    proof_dir: str,
-    step: int = 0,
-    reuse_kompiled_dir: bool = False,
-    rewrite_proof_files: bool = False,
-) -> None:
-    # First check that output directory either does not exist or can be rewritten
-    output_proof_dir = Path(proof_dir)
-    if output_proof_dir.exists() and not rewrite_proof_files:
-        print(f'Output directory {output_proof_dir} already exists and rewrite is not allowed. Exiting.')
-        return
+            def proof_expressions(self) -> list[proof.ProvedExpression]:
+                def make_function(obj: TranslatedProofSkeleton, func: ProofMethod) -> proof.ProvedExpression:
+                    return lambda: func(obj)
 
-    # Kompile sources
-    kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
-    kore_definition = get_kompiled_definition(kompiled_dir)
-    configuration_for_step = get_confguration_for_depth(kompiled_dir, Path(program_file), step)
-    configuration_for_next_step = get_confguration_for_depth(kompiled_dir, Path(program_file), step + 1)
+                return [make_function(self, proof_func) for proof_func in composed_proofs]
 
-    # Find the module name
-    assert len(kore_definition.modules) > 0, 'Empty K definition'
-    if not module_name:
-        module_name = kore_definition.modules[-1].name
+        return TranslatedProofSkeleton
 
-    print('Begin converting ... ')
-    converter = ExecutionProofGen(kore_definition, module_name)
-    converter.prove_rewrite_step(configuration_for_step, configuration_for_next_step)
-    proof_gen_class = converter.compose_proofs()
+    def convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
+        """Convert the given pattern to the pattern in the new format."""
+        return self._convert_pattern(pattern)
 
-    print('Begin generating proof files ... ')
-    generate_proof_file(proof_gen_class, output_proof_dir, Path(k_file).stem)
+    def _find_rules_for_convertion(self) -> list[kore.Axiom]:
+        """Find axioms assotiated with certain rewriting rules from the provided module."""
+        # Find the _module in axioms in definition.modules and find all rules that contain kore.Rewrites
+        module_axioms: list[kore.Axiom] = []
+        for module in self._definition.modules:
+            if module.name == self._module:
+                # Select only patterns below that starts with kore.Rewrites
+                module_axioms = [axiom for axiom in module.axioms if isinstance(axiom.pattern, kore.Rewrites)]
+                break
+        else:
+            # module not found
+            raise ValueError(f'Module {self._module} not found in definition')
 
-    print('Done!')
+        return module_axioms
 
+    def _convert_axiom(self, axiom: kore.Axiom) -> nf.Pattern:
+        """Convert the given axiom to the axiom in the new format."""
+        # TODO: Remove this step below
+        # Preprocess the actual pattern by throwing out side conditions for now
+        pattern = axiom.pattern
+        assert isinstance(pattern, kore.Rewrites)
+        assert isinstance(pattern.left, kore.And)
+        assert isinstance(pattern.right, kore.And)
+        preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
 
-if __name__ == '__main__':
-    argparser = ArgumentParser()
-    argparser.add_argument('kfile', type=str, help='Path to the K definition file')
-    argparser.add_argument('program', type=str, help='Path to the program file')
-    argparser.add_argument('output_dir', type=str, help='Path to the output directory')
-    argparser.add_argument('--module', type=str, help='Main K module name')
-    argparser.add_argument('--depth', type=int, default=0, help='Execution steps from the beginning')
-    argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
-    argparser.add_argument('--clean', action='store_true', default=False, help='Rewrite proofs if they already exist')
-    argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
+        new_pattern = self._convert_pattern(preprocessed_pattern)
+        return new_pattern
 
-    args = argparser.parse_args()
-    main(args.kfile, args.module, args.program, args.output_dir, args.proof_dir, args.depth, args.reuse, args.clean)
+    def _convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
+        """Convert the given pattern to the pattern in the new format."""
+        # TODO: Double check everything below!
+        match pattern:
+            case kore.Rewrites(_, left, right):
+                # TODO: Sort is ignored for now.
+                left_rw_pattern = self._convert_pattern(left)
+                right_rw_pattern = self._convert_pattern(right)
+                return nf.Implication(left_rw_pattern, right_rw_pattern)
+            case kore.And(sort, left, right):
+                and_symbol: nf.Symbol = self._resolve_symbol(pattern)
+                sort_symbol: nf.Pattern = self._resolve_symbol(sort)
+                left_and_pattern: nf.Pattern = self._convert_pattern(left)
+                right_and_pattern: nf.Pattern = self._convert_pattern(right)
+
+                return self._resolve_notation(
+                    'kore-And', and_symbol, [sort_symbol, left_and_pattern, right_and_pattern]
+                )
+            case kore.App(symbol, sorts, args):
+                symbol_pattern: nf.Symbol = self._resolve_symbol(symbol)
+                args_pattern: list[nf.Pattern] = [self._convert_pattern(arg) for arg in args]
+                sorts_pattern: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
+                return self._resolve_notation(symbol, symbol_pattern, [*sorts_pattern, *args_pattern])
+            case kore.EVar(name, _):
+                # TODO: Revisit when we have sorting implemented!
+                # return self._resolve_evar(pattern)
+                return self._resolve_metavar(name)
+            case kore.Top(sort):
+                # TODO: Revisit when we have sorting implemented!
+                return prop.Top()
+            case kore.DV(_, value):
+                # TODO: Revisit when we have sorting implemented!
+                return self._resolve_symbol(value.value)
+
+        raise NotImplementedError(f'Pattern {pattern} is not supported')
+
+    def _resolve_symbol(self, pattern: kore.Pattern | kore.Sort | str) -> nf.Symbol:
+        """Resolve the symbol in the given pattern."""
+        if isinstance(pattern, str):
+            if pattern not in self._symbols:
+                self._symbols[pattern] = nf.Symbol(name=len(self._symbols), pretty_name=pattern)
+            return self._symbols[pattern]
+        elif isinstance(pattern, kore.Sort):
+            if pattern.name not in self._symbols:
+                self._symbols[pattern.name] = nf.Symbol(name=len(self._symbols), pretty_name=pattern.name)
+            return self._symbols[pattern.name]
+        elif type(pattern) in self.CONST_SYMBOLS:
+            return nf.Symbol(name=self.CONST_SYMBOLS.index(type(pattern)), pretty_name=f'KORE_{type(pattern).__name__}')
+        elif isinstance(pattern, kore.Symbol):
+            if pattern.name not in self._symbols:
+                self._symbols[pattern.name] = nf.Symbol(name=len(self._symbols), pretty_name=pattern.name)
+            return self._symbols[pattern.name]
+        else:
+            raise NotImplementedError(f'Pattern {pattern} is not supported')
+
+    def _resolve_notation(self, name: str, symbol: nf.Symbol, arguments: list[nf.Pattern]) -> nf.Pattern:
+        """Resolve the notation or make up one."""
+        if name in self._notations:
+            return self._notations[name](*arguments)
+        else:
+            return nf.FakeNotation(symbol, tuple(arguments))
+
+    def _resolve_evar(self, evar: kore.EVar) -> nf.EVar:
+        """Resolve the evar in the given pattern."""
+        if evar.name not in self._evars:
+            self._evars[evar.name] = nf.EVar(name=len(self._evars))
+        return self._evars[evar.name]
+
+    def _resolve_metavar(self, name: str) -> nf.MetaVar:
+        """Resolve the metavar in the given pattern."""
+        if name not in self._metavars:
+            self._metavars[name] = nf.MetaVar(name=len(self._metavars))
+        return self._metavars[name]
