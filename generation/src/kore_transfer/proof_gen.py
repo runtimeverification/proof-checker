@@ -5,21 +5,20 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.kore.kompiled import KompiledKore
-from pyk.kore.parser import KoreParser
 from pyk.ktool.kompile import kompile
-from pyk.ktool.krun import KRunOutput, _krun
 
-from kore_transfer.generate_definition import ExecutionProofGen
+from kore_transfer.generate_definition import compose_definition
+from kore_transfer.generate_hints import get_proof_hints
+from kore_transfer.generate_proof import generate_proofs
+from kore_transfer.kore_converter import KoreConverter
 
 if TYPE_CHECKING:
-    from pyk.kore.syntax import Definition, Pattern
+    from pyk.kore.syntax import Definition
 
     from proof_generation.proof import ProofExp
 
 
 def get_kompiled_definition(output_dir: Path) -> Definition:
-    """Parse the definition.kore file and return corresponding object."""
-
     print(f'Parsing the definition in the Kore format in {output_dir}')
     return KompiledKore(output_dir).definition
 
@@ -39,18 +38,6 @@ def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = Fa
     return kompiled_dir
 
 
-def get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: int) -> Pattern:
-    """Generate the configuration for the given depth."""
-
-    # TODO: This can be also done using KAST and then using the KRun class but it soesn't seem easier to me
-    finished_process = _krun(input_file=input_file, definition_dir=definition_dir, output=KRunOutput.KORE, depth=depth)
-    # TODO: We can consider implementing a better error handling
-    assert finished_process.returncode == 0, 'KRun failed'
-
-    parsed = KoreParser(finished_process.stdout)
-    return parsed.pattern()
-
-
 def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: str) -> None:
     """Generate the proof files."""
     if not output_dir.exists():
@@ -62,7 +49,6 @@ def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: 
 
 def main(
     k_file: str,
-    module_name: str | None,
     program_file: str,
     output_dir: str,
     proof_dir: str,
@@ -79,22 +65,19 @@ def main(
     # Kompile sources
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
-    configuration_for_step = get_confguration_for_depth(kompiled_dir, Path(program_file), step)
-    configuration_for_next_step = get_confguration_for_depth(kompiled_dir, Path(program_file), step + 1)
-
-    # Find the module name
-    assert len(kore_definition.modules) > 0, 'Empty K definition'
-    if not module_name:
-        module_name = kore_definition.modules[-1].name
 
     print('Begin converting ... ')
-    converter = ExecutionProofGen(kore_definition, module_name)
-    converter.prove_rewrite_step(configuration_for_step, configuration_for_next_step)
-    proof_gen_class = converter.compose_proofs()
+    kore_converter = KoreConverter(kore_definition)
+    proof_expression = compose_definition(kore_definition, kore_converter)
 
-    print('Begin generating proof files ... ')
-    generate_proof_file(proof_gen_class, output_proof_dir, Path(k_file).stem)
+    print('Intialize hint stream ... ')
+    # TODO: Fix with the real hints
+    hints_iterator = get_proof_hints(kompiled_dir, Path(program_file), proof_expression, kore_converter, step)
 
+    print('Begin generating proofs ... ')
+    generate_proofs(hints_iterator, proof_expression)
+
+    generate_proof_file(proof_expression, output_proof_dir, Path(k_file).stem)
     print('Done!')
 
 
@@ -103,11 +86,10 @@ if __name__ == '__main__':
     argparser.add_argument('kfile', type=str, help='Path to the K definition file')
     argparser.add_argument('program', type=str, help='Path to the program file')
     argparser.add_argument('output_dir', type=str, help='Path to the output directory')
-    argparser.add_argument('--module', type=str, help='Main K module name')
     argparser.add_argument('--depth', type=int, default=0, help='Execution steps from the beginning')
     argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
     argparser.add_argument('--clean', action='store_true', default=False, help='Rewrite proofs if they already exist')
     argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
 
     args = argparser.parse_args()
-    main(args.kfile, args.module, args.program, args.output_dir, args.proof_dir, args.depth, args.reuse, args.clean)
+    main(args.kfile, args.program, args.output_dir, args.proof_dir, args.depth, args.reuse, args.clean)
