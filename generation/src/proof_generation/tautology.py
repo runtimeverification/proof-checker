@@ -1,17 +1,24 @@
 from __future__ import annotations
 
-from typing import List
+from functools import partial
+from typing import TYPE_CHECKING, List
 
 from proof_generation.matching import match_single
-from proof_generation.pattern import Bot, Implication, MetaVar, Notation, Pattern
-from proof_generation.proof import ProvedExpression
+from proof_generation.pattern import Bot, Implication, MetaVar, Notation
 from proof_generation.proofs.propositional import And, Negation, Or, Propositional, Top, bot, neg, phi0, phi1, phi2
 from proof_generation.proved import Proved
+
+if TYPE_CHECKING:
+    from proof_generation.pattern import Pattern
+    from proof_generation.proof import ProvedExpression
 
 
 # Structure of Conjunctive Form Tree
 class ConjTerm:
     negated: bool
+
+    def __init__(self, negated: bool):
+        self.negated = negated
 
     def __str__(self) -> str:
         return str(conj_to_pattern(self))
@@ -21,36 +28,36 @@ class ConjAnd(ConjTerm):
     left: ConjTerm
     right: ConjTerm
 
-    def __init__(self, left, right):
+    def __init__(self, left: ConjTerm, right: ConjTerm):
+        super().__init__(False)
         self.left = left
         self.right = right
-        self.negated = False
 
 
 class ConjOr(ConjTerm):
     left: ConjTerm
     right: ConjTerm
 
-    def __init__(self, left, right):
+    def __init__(self, left: ConjTerm, right: ConjTerm):
+        super().__init__(False)
         self.left = left
         self.right = right
-        self.negated = False
 
 
 class ConjBool(ConjTerm):
-    def __init__(self, negated):
-        self.negated = negated
+    pass
 
 
 class ConjVar(ConjTerm):
     id: int
 
-    def __init__(self, id):
+    def __init__(self, id: int):
+        super().__init__(False)
         self.id = id
-        self.negated = False
 
 
 def conj_to_pattern(term: ConjTerm) -> Pattern:
+    pat: Pattern
     if isinstance(term, ConjBool):
         pat = bot
     elif isinstance(term, ConjVar):
@@ -73,7 +80,8 @@ class Tautology(Propositional):
         c, _ = Implication.extract(h2_conc)
         subst = match_single(b, c, {})
         assert subst is not None
-        return self.imp_transitivity(lambda: self.dynamic_inst(h1, subst), h2)
+        actual_subst: dict[int, Pattern] = subst
+        return self.imp_transitivity(lambda: self.dynamic_inst(h1, actual_subst), h2)
 
     def imp_trans_match2(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
         """ """
@@ -83,7 +91,8 @@ class Tautology(Propositional):
         c, _ = Implication.extract(h2_conc)
         subst = match_single(c, b, {})
         assert subst is not None
-        return self.imp_transitivity(h1, lambda: self.dynamic_inst(h2, subst))
+        actual_subst: dict[int, Pattern] = subst
+        return self.imp_transitivity(h1, lambda: self.dynamic_inst(h2, actual_subst))
 
     def mpcom(self, p_pf: ProvedExpression, q: Pattern) -> Proved:
         """
@@ -101,14 +110,12 @@ class Tautology(Propositional):
     def imp_trans(self, p: Pattern, q: Pattern, r: Pattern) -> Proved:
         """(p -> q) -> (q -> r) -> p -> r"""
         # TODO
-        return Proved(
-            self.interpreter, Implication(Implication(p, q), Implication(Implication(q, r), Implication(p, r)))
-        )
+        return Proved(Implication(Implication(p, q), Implication(Implication(q, r), Implication(p, r))))
 
     def dni(self, p: Pattern) -> Proved:
         """p -> ~~p"""
         # TODO
-        return Proved(self.interpreter, Implication(p, neg(neg(p))))
+        return Proved(Implication(p, neg(neg(p))))
 
     def dni_l(self, p: Pattern, q: Pattern) -> Proved:
         """ """
@@ -163,7 +170,7 @@ class Tautology(Propositional):
         """
         qr = self.PROVISIONAL_get_conc(qr_pf)
         q, r = Implication.extract(qr)
-        return self.imp_transitivity(self.mpcom(p_pf, q), qr_pf)
+        return self.imp_transitivity(lambda: self.mpcom(p_pf, q), qr_pf)
 
     def a1d(self, pq: ProvedExpression, r: Pattern) -> Proved:
         """
@@ -213,7 +220,7 @@ class Tautology(Propositional):
         p = Negation.extract(np)
         r = Negation.extract(nr_conc)
         # TODO
-        return Proved(self.interpreter, Implication(Implication(q, r), p))
+        return Proved(Implication(Implication(q, r), p))
 
     def absurd4(self, pnq_pf: ProvedExpression, r: Pattern) -> Proved:
         """
@@ -224,7 +231,7 @@ class Tautology(Propositional):
         pnq = self.PROVISIONAL_get_conc(pnq_pf)
         p, nq = Implication.extract(pnq)
         q = Negation.extract(nq)
-        return self.imp_transitivity(lambda: self.dni(q), lambda: self.absurd2(pnq, r))
+        return self.imp_transitivity(lambda: self.dni(q), lambda: self.absurd2(pnq_pf, r))
 
     def absurd_i(self, np_pf: ProvedExpression, q: Pattern) -> Proved:
         """
@@ -234,7 +241,7 @@ class Tautology(Propositional):
         """
         np = self.PROVISIONAL_get_conc(np_pf)
         p = Negation.extract(np)
-        return self.modus_ponens(self.absurd(p, q), np())
+        return self.modus_ponens(self.absurd(p, q), np_pf())
 
     def and_not_r_intro(self, p_pf: ProvedExpression, nq_pf: ProvedExpression) -> Proved:
         """
@@ -246,7 +253,7 @@ class Tautology(Propositional):
         nq = self.PROVISIONAL_get_conc(nq_pf)
         q = Negation.extract(nq)
         # TODO
-        return Proved(self.interpreter, neg(Implication(p, q)))
+        return Proved(neg(Implication(p, q)))
 
     def imim(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
         """
@@ -259,7 +266,7 @@ class Tautology(Propositional):
         a, b = Implication.extract(h1_conc)
         c, d = Implication.extract(h2_conc)
         # TODO
-        return Proved(self.interpreter, Implication(Implication(b, c), Implication(a, d)))
+        return Proved(Implication(Implication(b, c), Implication(a, d)))
 
     def imim_nnr(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
         """
@@ -294,7 +301,7 @@ class Tautology(Propositional):
         """
         (a -> b)   (c -> d)
         ---------------------
-        a \/ c -> b \/ d
+        a \\/ c -> b \\/ d
         """
         return self.imim(lambda: self.con3_i(h1), h2)
 
@@ -302,7 +309,7 @@ class Tautology(Propositional):
         """
         (a -> b)   (c -> d)
         ---------------------
-        a /\ c -> b /\ d
+        a /\\ c -> b /\\ d
         """
         return self.con3_i(lambda: self.imim(h1, lambda: self.con3_i(h2)))
 
@@ -310,85 +317,85 @@ class Tautology(Propositional):
         """
            (b -> c)
         ---------------------
-           a /\ b -> a /\ c
+           a /\\ b -> a /\\ c
         """
         h_conc = self.PROVISIONAL_get_conc(h)
         b, c = Implication.extract(h_conc)
         # TODO
-        return Proved(self.interpreter, Implication(And(pat, b), And(pat, c)))
+        return Proved(Implication(And(pat, b), And(pat, c)))
 
     def imim_and_l(self, pat: Pattern, h: ProvedExpression) -> Proved:
         """
             (a -> b)
         ---------------------
-           a /\ c -> b /\ c
+           a /\\ c -> b /\\ c
         """
         h_conc = self.PROVISIONAL_get_conc(h)
         a, b = Implication.extract(h_conc)
         # TODO
-        return Proved(self.interpreter, Implication(And(a, pat), And(b, pat)))
+        return Proved(Implication(And(a, pat), And(b, pat)))
 
     def imim_or_r(self, pat: Pattern, h: ProvedExpression) -> Proved:
         """
              (b -> c)
         ---------------------
-            a \/ b -> a \/ c
+            a \\/ b -> a \\/ c
         """
         h_conc = self.PROVISIONAL_get_conc(h)
         b, c = Implication.extract(h_conc)
         # TODO
-        return Proved(self.interpreter, Implication(Or(pat, b), Or(pat, c)))
+        return Proved(Implication(Or(pat, b), Or(pat, c)))
 
     def imim_or_l(self, pat: Pattern, h: ProvedExpression) -> Proved:
         """
               (a -> b)
         ---------------------
-           a \/ c -> b \/ c
+           a \\/ c -> b \\/ c
         """
         h_conc = self.PROVISIONAL_get_conc(h)
         a, b = Implication.extract(h_conc)
         # TODO
-        return Proved(self.interpreter, Implication(Or(a, pat), Or(b, pat)))
+        return Proved(Implication(Or(a, pat), Or(b, pat)))
 
     def and_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """(a /\ b) /\ c -> a /\ (b /\ c)"""
+        """(a /\\ b) /\\ c -> a /\\ (b /\\ c)"""
         # TODO
-        return Proved(self.interpreter, Implication(And(And(pat1, pat2), pat3), And(pat1, And(pat2, pat3))))
+        return Proved(Implication(And(And(pat1, pat2), pat3), And(pat1, And(pat2, pat3))))
 
     def and_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """a /\ (b /\ c) -> (a /\ b) /\ c"""
+        """a /\\ (b /\\ c) -> (a /\\ b) /\\ c"""
         # TODO
-        return Proved(self.interpreter, Implication(And(pat1, And(pat2, pat3)), And(And(pat1, pat2), pat3)))
+        return Proved(Implication(And(pat1, And(pat2, pat3)), And(And(pat1, pat2), pat3)))
 
     def or_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """(a \/ b) \/ c -> a \/ (b \/ c)"""
+        """(a \\/ b) \\/ c -> a \\/ (b \\/ c)"""
         # TODO
-        return Proved(self.interpreter, Implication(Or(Or(pat1, pat2), pat3), Or(pat1, Or(pat2, pat3))))
+        return Proved(Implication(Or(Or(pat1, pat2), pat3), Or(pat1, Or(pat2, pat3))))
 
     def or_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """a \/ (b \/ c) -> (a \/ b) \/ c"""
+        """a \\/ (b \\/ c) -> (a \\/ b) \\/ c"""
         # TODO
-        return Proved(self.interpreter, Implication(Or(pat1, Or(pat2, pat3)), Or(Or(pat1, pat2), pat3)))
+        return Proved(Implication(Or(pat1, Or(pat2, pat3)), Or(Or(pat1, pat2), pat3)))
 
     def or_distr_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """(a /\ b) \/ c -> (a \/ c) /\ (b \/ c)"""
+        """(a /\\ b) \\/ c -> (a \\/ c) /\\ (b \\/ c)"""
         # TODO
-        return Proved(self.interpreter, Implication(Or(And(pat1, pat2), pat3), And(Or(pat1, pat3), Or(pat2, pat3))))
+        return Proved(Implication(Or(And(pat1, pat2), pat3), And(Or(pat1, pat3), Or(pat2, pat3))))
 
     def or_distr_r_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """(a \/ c) /\ (b \/ c) -> (a /\ b) \/ c"""
+        """(a \\/ c) /\\ (b \\/ c) -> (a /\\ b) \\/ c"""
         # TODO
-        return Proved(self.interpreter, Implication(And(Or(pat1, pat3), Or(pat2, pat3)), Or(And(pat1, pat2), pat3)))
+        return Proved(Implication(And(Or(pat1, pat3), Or(pat2, pat3)), Or(And(pat1, pat2), pat3)))
 
     def or_distr_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """a \/ (b /\ c) -> (a \/ b) /\ (a \/ c)"""
+        """a \\/ (b /\\ c) -> (a \\/ b) /\\ (a \\/ c)"""
         # TODO
-        return Proved(self.interpreter, Implication(Or(pat1, And(pat2, pat3)), And(Or(pat1, pat2), Or(pat1, pat3))))
+        return Proved(Implication(Or(pat1, And(pat2, pat3)), And(Or(pat1, pat2), Or(pat1, pat3))))
 
     def or_distr_l_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
-        """(a \/ b) /\ (a \/ c) -> a \/ (b /\ c)"""
+        """(a \\/ b) /\\ (a \\/ c) -> a \\/ (b /\\ c)"""
         # TODO
-        return Proved(self.interpreter, Implication(And(Or(pat1, pat2), Or(pat1, pat3)), Or(pat1, And(pat2, pat3))))
+        return Proved(Implication(And(Or(pat1, pat2), Or(pat1, pat3)), Or(pat1, And(pat2, pat3))))
 
     def is_propositional(self, pat: Pattern) -> bool:
         if Bot.is_bot(pat):
@@ -444,30 +451,48 @@ class Tautology(Propositional):
                             return ConjBool(True), pf, None
                     if pat0_conj.negated:
                         pat0_conj.negated = False
-                        return pat0_conj, lambda: self.absurd3(pat0_r, pat1_l), lambda: self.absurd4(pat0_l, pat1)
+                        assert pat0_r is not None
+                        actual_pat0_r: ProvedExpression = pat0_r
+                        return (
+                            pat0_conj,
+                            (lambda: self.absurd3(actual_pat0_r, pat1_l)),
+                            (lambda: self.absurd4(pat0_l, pat1)),
+                        )
                     else:
                         pat0_conj.negated = True
-                        return pat0_conj, lambda: self.imim(pat0_r, pat1_l), lambda: self.absurd2(pat0_l, pat1)
+                        assert pat0_r is not None
+                        actual_pat0_r = pat0_r
+                        return (
+                            pat0_conj,
+                            (lambda: self.imim(actual_pat0_r, pat1_l)),
+                            (lambda: self.absurd2(pat0_l, pat1)),
+                        )
             pat0_conj, pat0_l, pat0_r = self.to_conj(pat0)
             if isinstance(pat0_conj, ConjBool):
                 if pat0_conj.negated:
-                    return pat1_conj, lambda: self.helper1(pat0_l, pat1_l), lambda: self.a1d(pat1_r, pat0)
+                    assert pat1_r is not None
+                    actual_pat1_r: ProvedExpression = pat1_r
+                    return pat1_conj, (lambda: self.helper1(pat0_l, pat1_l)), (lambda: self.a1d(actual_pat1_r, pat0))
                 else:
                     pf = lambda: self.absurd_i(pat0_l, pat1)
                     return ConjBool(True), pf, None
+            assert pat0_r is not None
+            actual_pat0_r = pat0_r
+            assert pat1_r is not None
+            actual_pat1_r = pat1_r
             if pat0_conj.negated:
                 pat0_conj.negated = False
                 return (
                     ConjOr(pat0_conj, pat1_conj),
-                    lambda: self.imim(pat0_r, pat1_l),
-                    lambda: self.imim(pat0_l, pat1_r),
+                    (lambda: self.imim(actual_pat0_r, pat1_l)),
+                    (lambda: self.imim(pat0_l, actual_pat1_r)),
                 )
             else:
                 pat0_conj.negated = True
                 return (
                     ConjOr(pat0_conj, pat1_conj),
-                    lambda: self.imim_nnr(pat0_r, pat1_l),
-                    lambda: self.imim_nnl(pat0_l, pat1_r),
+                    (lambda: self.imim_nnr(actual_pat0_r, pat1_l)),
+                    (lambda: self.imim_nnl(pat0_l, actual_pat1_r)),
                 )
         else:
             raise AssertionError(f'Unexpected pattern! Expected a propositional pattern but got:\n{str(pat)}\n')
@@ -504,8 +529,8 @@ class Tautology(Propositional):
                 term_r, term_r_pf1, term_r_pf2 = self.propag_neg(term.right)
                 return (
                     ConjOr(term_l, term_r),
-                    lambda: self.imim_or(term_l_pf1, term_r_pf1),
-                    lambda: self.imim_or(term_l_pf2, term_r_pf2),
+                    (lambda: self.imim_or(term_l_pf1, term_r_pf1)),
+                    (lambda: self.imim_or(term_l_pf2, term_r_pf2)),
                 )
         else:
             raise AssertionError(
@@ -547,10 +572,9 @@ class Tautology(Propositional):
             else:
                 return ConjOr(term_l, term_r), pf1, pf2
         else:
-            # TODO Add more context to this error message
             raise AssertionError(f'Unexpected pattern! Expected a term with only Or and And but got:\n{str(term)}\n')
 
-    def to_clauses(self, term: ConjTerm) -> tuple[List[List[int]], ProvedExpression, ProvedExpression]:
+    def to_clauses(self, term: ConjTerm) -> tuple[list[list[int]], ProvedExpression, ProvedExpression]:
         """Assumes term is in CNF form"""
         if isinstance(term, ConjVar):
             if term.negated:
@@ -567,14 +591,26 @@ class Tautology(Propositional):
             l = len(term_l)
             assert l > 0
             if l > 1:
-                shift_right = lambda: self.and_assoc_r()
-                shift_left = lambda: self.and_assoc_l()
+                shift_right: ProvedExpression = self.and_assoc_r
+                shift_left: ProvedExpression = self.and_assoc_l
                 for i in range(0, l - 2):
-                    shift_right = lambda: self.imp_trans_match1(
-                        self.and_assoc_r, lambda: self.imim_and_r(MetaVar(i + 3), shift_right)
+                    shift_right = partial(
+                        lambda i, shift_right: self.imp_trans_match1(
+                            self.and_assoc_r,
+                            partial(
+                                lambda i, shift_right: self.imim_and_r(MetaVar(i + 3), shift_right), i, shift_right
+                            ),
+                        ),
+                        i,
+                        shift_right,
                     )
-                    shift_left = lambda: self.imp_trans_match2(
-                        lambda: self.imim_and_r(MetaVar(i + 3), shift_left), self.and_assoc_l
+                    shift_left = partial(
+                        lambda i, shift_left: self.imp_trans_match2(
+                            partial(lambda i, shift_left: self.imim_and_r(MetaVar(i + 3), shift_left), i, shift_left),
+                            self.and_assoc_l,
+                        ),
+                        i,
+                        shift_left,
                     )
                 pf1 = lambda: self.imp_trans_match2(pf1, shift_right)
                 pf2 = lambda: self.imp_trans_match1(shift_left, pf2)
@@ -592,12 +628,26 @@ class Tautology(Propositional):
                 shift_right = self.or_assoc_r
                 shift_left = self.or_assoc_l
                 for i in range(0, l - 2):
-                    shift_right = lambda: self.imp_trans_match1(
-                        self.or_assoc_r, lambda: self.imim_or_r(MetaVar(i + 3), shift_right)
+                    shift_right = partial(
+                        lambda i, shift_right: self.imp_trans_match1(
+                            self.or_assoc_r,
+                            partial(lambda i, shift_right: self.imim_or_r(MetaVar(i + 3), shift_right), i, shift_right),
+                        ),
+                        i,
+                        shift_right,
                     )
-                    shift_left = lambda: self.imp_trans_match2(
-                        lambda: self.imim_or_r(MetaVar(i + 3), shift_left), self.or_assoc_l
+                    shift_left = partial(
+                        lambda i, shift_left: self.imp_trans_match2(
+                            partial(lambda i, shift_left: self.imim_or_r(MetaVar(i + 3), shift_left), i, shift_left),
+                            self.or_assoc_l,
+                        ),
+                        i,
+                        shift_left,
                     )
                 pf1 = lambda: self.imp_trans_match2(pf1, shift_right)
                 pf2 = lambda: self.imp_trans_match1(shift_left, pf2)
             return [term_l[0] + term_r[0]], pf1, pf2
+        else:
+            raise AssertionError(
+                f'Unexpected pattern! Expected a term with only Or, And and Negations but got:\n{str(term)}\n'
+            )

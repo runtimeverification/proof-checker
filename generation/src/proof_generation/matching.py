@@ -1,11 +1,17 @@
 from __future__ import annotations
 
-from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu, Pattern, SVar, Symbol
+from typing import TYPE_CHECKING
+
+from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu, SVar, Symbol
+
+if TYPE_CHECKING:
+    from proof_generation.pattern import Pattern
 
 
 def match_single(
     pattern: Pattern, instance: Pattern, extend: dict[int, Pattern] | None = None
 ) -> dict[int, Pattern] | None:
+    ret: dict[int, Pattern] | None
     ret = extend if extend else {}
 
     if isinstance(pattern, MetaVar):
