@@ -6,7 +6,7 @@ import pytest
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import Implication
-from proof_generation.proofs.propositional import And, Or, neg, phi0, phi1, phi2
+from proof_generation.proofs.propositional import And, Or, bot, neg, phi0, phi1, phi2
 from proof_generation.tautology import ConjBool, ConjOr, ConjVar, Tautology, conj_to_pattern
 
 if TYPE_CHECKING:
@@ -26,7 +26,13 @@ def is_conj(t: ConjTerm) -> bool:
     return False
 
 
-test_patterns = [imp(phi0, phi0), Or(imp(phi0, phi1), neg(phi2)), imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2)))]
+test_patterns = [
+    neg(imp(phi1, imp(bot, bot))),
+    imp(phi0, phi0),
+    Or(imp(phi0, phi1), neg(phi2)),
+    neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2))))),
+    neg(neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2)))))),
+]
 
 
 @pytest.mark.parametrize('p', test_patterns)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from proof_generation.matching import match_single
 from proof_generation.pattern import Bot, Implication, MetaVar, Notation
