@@ -23,8 +23,7 @@ phi0_implies_phi0 = Implication(phi0, phi0)
 class Negation(Notation):
     phi0: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return Implication(MetaVar(0), bot)
 
     def __str__(self) -> str:
@@ -37,8 +36,7 @@ def neg(p: Pattern) -> Pattern:
 
 @dataclass(frozen=True, eq=False)
 class Top(Notation):
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return neg(bot)
 
     def __str__(self) -> str:
@@ -46,6 +44,32 @@ class Top(Notation):
 
 
 top = Top()
+
+
+@dataclass(frozen=True, eq=False)
+class And(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return neg(Implication(phi0, neg(phi1)))
+
+    def __str__(self) -> str:
+        return f'({self.phi0} /\\ {self.phi1})'
+
+
+@dataclass(frozen=True, eq=False)
+class Or(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return Implication(neg(phi0), phi1)
+
+    def __str__(self) -> str:
+        return f'({self.phi0} \\/ {self.phi1})'
 
 
 class Propositional(ProofExp):

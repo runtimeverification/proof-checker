@@ -6,3 +6,9 @@
 
 # zkLLVM output directory
 /zkllvm/output/
+
+# VS Code configuration
+/.vscode/
+
+# MacOS files
+.DS_Store

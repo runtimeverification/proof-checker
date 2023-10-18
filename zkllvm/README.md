@@ -65,3 +65,20 @@ Then you can build the Proof-Checker:
 ```bash
 ./build.sh src/main.cpp inputs/example.inp
 ```
+
+### Translation from binary input to zkllvm input
+We need to translate the binary input to a JSON format that zkllvm accepts.
+The zkllvm input is an array that contains three vectors. The vectors represent assumption, claim and proof.
+Each vector will have a fixed size. The first element is the actual length.
+It is followed by the actual input that is an integer array translated from the binary input.
+The rest of the vector is padded by NO-OP instruction till the fixed size is reached.
+
+We have a python script translating the binary input:
+```bash
+python3 translator.py <path-to-assumption> <path-to-claim> <path-to-proof>
+```
+
+For example,
+```bash
+python3 translator.py ../proofs/translated/impreflex-compressed-goal.ml-gamma ../proofs/translated/impreflex-compressed-goal.ml-claim ../proofs/translated/impreflex-compressed-goal.ml-proof > inputs/impreflex-compressed-goal.inp
+```
