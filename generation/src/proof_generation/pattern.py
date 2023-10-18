@@ -3,14 +3,64 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-def unwrap_opt(x: Pattern | None, error_msg: str) -> Pattern:
-    assert x, error_msg
-    return x
+def match_single(
+    pattern: Pattern, instance: Pattern, extend: dict[int, Pattern] | None = None
+) -> dict[int, Pattern] | None:
+    ret: dict[int, Pattern] | None
+    ret = extend if extend else {}
+
+    if isinstance(pattern, MetaVar):
+        id = pattern.name
+        if id in ret:
+            if ret[id] != instance:
+                return None
+        else:
+            if not pattern.can_be_replaced_by(instance):
+                return None
+            ret[id] = instance
+    elif pattern == bot and instance == bot:
+        pass
+    elif (pat_imp := Implication.unwrap(pattern)) and (inst_imp := Implication.unwrap(instance)):
+        ret = match_single(pat_imp[0], inst_imp[0], ret)
+        if not ret:
+            return None
+        ret = match_single(pat_imp[1], inst_imp[1], ret)
+    elif (pat_evar := EVar.unwrap(pattern)) and (inst_evar := EVar.unwrap(instance)):
+        if pat_evar != inst_evar:
+            return None
+    elif (pat_svar := SVar.unwrap(pattern)) and (inst_svar := SVar.unwrap(instance)):
+        if pat_svar != inst_svar:
+            return None
+    elif (pat_sym := Symbol.unwrap(pattern)) and (inst_sym := Symbol.unwrap(instance)):
+        if pat_sym != inst_sym:
+            return None
+    elif (pat_app := Application.unwrap(pattern)) and (inst_app := Application.unwrap(instance)):
+        ret = match_single(pat_app[0], inst_app[0], ret)
+        if not ret:
+            return None
+        ret = match_single(pat_app[1], inst_app[1], ret)
+    elif (pat_ex := Exists.unwrap(pattern)) and (inst_ex := Exists.unwrap(instance)):
+        if pat_ex[0] != inst_ex[0]:
+            return None
+        ret = match_single(pat_ex[1], inst_ex[1], ret)
+    elif (pat_mu := Mu.unwrap(pattern)) and (inst_mu := Mu.unwrap(instance)):
+        if pat_mu[0] != inst_mu[0]:
+            return None
+        ret = match_single(pat_mu[1], inst_mu[1], ret)
+    # TODO Consider adding cases for ESubst/SSubst
+    else:
+        return None
+    return ret
 
 
-def unwrap_opt_2(x: tuple[Pattern, Pattern] | None, error_msg: str) -> tuple[Pattern, Pattern]:
-    assert x, error_msg
-    return x
+def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None:
+    ret: dict[int, Pattern] = {}
+    for pattern, instance in equations:
+        submatch = match_single(pattern, instance, ret)
+        if not submatch:
+            return None
+        ret = submatch
+    return ret
 
 
 class Pattern:
@@ -44,6 +94,20 @@ class EVar(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self
 
+    @staticmethod
+    def unwrap(pat: Pattern) -> int | None:
+        if isinstance(pat, EVar):
+            return pat.name
+        if isinstance(pat, Notation):
+            return EVar.unwrap(pat.conclusion())
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> int:
+        pat_unwrapped = EVar.unwrap(pat)
+        assert pat_unwrapped is not None, 'Expected an EVar but got: ' + str(pat) + '\n'
+        return pat_unwrapped
+
     def __str__(self) -> str:
         return f'x{self.name}'
 
@@ -69,6 +133,20 @@ class SVar(Pattern):
             return plug
         return self
 
+    @staticmethod
+    def unwrap(pat: Pattern) -> int | None:
+        if isinstance(pat, SVar):
+            return pat.name
+        if isinstance(pat, Notation):
+            return SVar.unwrap(pat.conclusion())
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> int:
+        pat_unwrapped = SVar.unwrap(pat)
+        assert pat_unwrapped is not None, 'Expected an SVar but got: ' + str(pat) + '\n'
+        return pat_unwrapped
+
     def __str__(self) -> str:
         return f'X{self.name}'
 
@@ -91,6 +169,20 @@ class Symbol(Pattern):
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self
+
+    @staticmethod
+    def unwrap(pat: Pattern) -> int | None:
+        if isinstance(pat, Symbol):
+            return pat.name
+        if isinstance(pat, Notation):
+            return Symbol.unwrap(pat.conclusion())
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> int:
+        pat_unwrapped = Symbol.unwrap(pat)
+        assert pat_unwrapped is not None, 'Expected a Symbol but got: ' + str(pat) + '\n'
+        return pat_unwrapped
 
     def __str__(self) -> str:
         return f'\u03c3{str(self.name)}'
@@ -129,7 +221,9 @@ class Implication(Pattern):
 
     @staticmethod
     def extract(pat: Pattern) -> tuple[Pattern, Pattern]:
-        return unwrap_opt_2(Implication.unwrap(pat), 'Expected an implication but got: ' + str(pat) + '\n')
+        pat_unwrapped = Implication.unwrap(pat)
+        assert pat_unwrapped is not None, 'Expected an Implication but got: ' + str(pat) + '\n'
+        return pat_unwrapped
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, type(self)):
@@ -155,6 +249,20 @@ class Application(Pattern):
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return Application(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
+
+    @staticmethod
+    def unwrap(pat: Pattern) -> tuple[Pattern, Pattern] | None:
+        if isinstance(pat, Application):
+            return pat.left, pat.right
+        if isinstance(pat, Notation):
+            return Application.unwrap(pat.conclusion())
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> tuple[Pattern, Pattern]:
+        pat_unwrapped = Application.unwrap(pat)
+        assert pat_unwrapped is not None, 'Expected an Application but got: ' + str(pat) + '\n'
+        return pat_unwrapped
 
     def __str__(self) -> str:
         return f'(app ({str(self.left)}) ({str(self.right)}))'
@@ -182,6 +290,20 @@ class Exists(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return Exists(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
+    @staticmethod
+    def unwrap(pat: Pattern) -> tuple[int, Pattern] | None:
+        if isinstance(pat, Exists):
+            return pat.var, pat.subpattern
+        if isinstance(pat, Notation):
+            return Exists.unwrap(pat.conclusion())
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> tuple[int, Pattern]:
+        pat_unwrapped = Exists.unwrap(pat)
+        assert pat_unwrapped is not None, 'Expected an Exists but got: ' + str(pat) + '\n'
+        return pat_unwrapped
+
     def __str__(self) -> str:
         return f'(\u2203 x{self.var} . {str(self.subpattern)})'
 
@@ -208,6 +330,20 @@ class Mu(Pattern):
             return self
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
+    @staticmethod
+    def unwrap(pat: Pattern) -> tuple[int, Pattern] | None:
+        if isinstance(pat, Mu):
+            return pat.var, pat.subpattern
+        if isinstance(pat, Notation):
+            return Mu.unwrap(pat.conclusion())
+        return None
+
+    @staticmethod
+    def extract(pat: Pattern) -> tuple[int, Pattern]:
+        pat_unwrapped = Mu.unwrap(pat)
+        assert pat_unwrapped is not None, 'Expected a Mu but got: ' + str(pat) + '\n'
+        return pat_unwrapped
+
     def __str__(self) -> str:
         return f'(\u03BC X{self.var} . {str(self.subpattern)})'
 
@@ -226,6 +362,10 @@ class MetaVar(Pattern):
     positive: tuple[SVar, ...] = ()
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
+
+    def can_be_replaced_by(self, pat: Pattern) -> bool:
+        # TODO implement this function by checking constraints
+        return True
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         if self.name in delta:
@@ -321,12 +461,6 @@ class Notation(Pattern):
 
         return ret
 
-    def __eq__(self, o: object) -> bool:
-        assert isinstance(o, Pattern)
-        if isinstance(o, Notation) and type(o) == type(self):
-            return o.arguments() == self.arguments()
-        return self.conclusion() == o
-
     def conclusion(self) -> Pattern:
         return self.definition().instantiate(self.arguments())
 
@@ -348,8 +482,31 @@ class Notation(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self.conclusion().apply_ssubst(svar_id, plug)
 
+    @classmethod
+    def unwrap(cls, pattern: Pattern) -> list[Pattern] | None:
+        assert cls is not Notation
+        assert issubclass(cls, Notation)
+        if isinstance(pattern, cls):
+            [v for _, v in sorted(pattern.arguments().items())]
+        match_result = match_single(cls.definition(), pattern)
+        if match_result is None:
+            return None
+        return [v for _, v in sorted(match_result.items())]
+
+    @classmethod
+    def extract(cls, pattern: Pattern) -> list[Pattern]:
+        ret = cls.unwrap(pattern)
+        assert ret is not None, f"Expected a {cls.label()} but got instead: {str(pattern)}\n"
+        return ret
+
     def __str__(self) -> str:
         return f'{self.label()} {str(self.arguments())}'
+
+    def __eq__(self, o: object) -> bool:
+        assert isinstance(o, Pattern)
+        if isinstance(o, Notation) and type(o) == type(self):
+            return o.arguments() == self.arguments()
+        return self.conclusion() == o
 
 
 @dataclass(frozen=True, eq=False)
@@ -360,10 +517,6 @@ class Bot(Notation):
 
     def __str__(self) -> str:
         return '\u22A5'
-
-    @staticmethod
-    def extract(pat: Pattern) -> None:
-        assert pat == bot, 'Expected Bot but instead got: ' + str(pat) + '\n'
 
 
 bot = Bot()
