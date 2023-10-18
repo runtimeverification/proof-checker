@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import ExecutionPhase
@@ -155,10 +154,11 @@ class ProofExp(ABC):
     def serialize(cls, file_path: Path) -> None:
         prover = cls(
             interpreter=SerializingInterpreter(
-                ExecutionPhase.Gamma, claims=list(map(Claim, cls.claims())),
+                ExecutionPhase.Gamma,
+                claims=list(map(Claim, cls.claims())),
                 out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
                 claim_out=open(str(file_path.with_suffix(f'.ml-claim')), 'wb'),
-                proof_out=open(str(file_path.with_suffix(f'.ml-proof')), 'wb')
+                proof_out=open(str(file_path.with_suffix(f'.ml-proof')), 'wb'),
             )
         )
         prover.execute_full()
@@ -167,10 +167,11 @@ class ProofExp(ABC):
     def prettyprint(cls, file_path: Path) -> None:
         prover = cls(
             PrettyPrintingInterpreter(
-                ExecutionPhase.Gamma, claims=list(map(Claim, cls.claims())),
+                ExecutionPhase.Gamma,
+                claims=list(map(Claim, cls.claims())),
                 out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
                 claim_out=open(str(file_path.with_suffix(f'.pretty-claim')), 'w'),
-                proof_out=open(str(file_path.with_suffix(f'.pretty-proof')), 'w')
+                proof_out=open(str(file_path.with_suffix(f'.pretty-proof')), 'w'),
             )
         )
         prover.execute_full()
@@ -194,7 +195,7 @@ class ProofExp(ABC):
                 patterns_for_memoization=counter.interpreter.finalize(),
                 out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
                 claim_out=open(str(file_path.with_suffix(f'.ml-claim')), 'wb'),
-                proof_out=open(str(file_path.with_suffix(f'.ml-proof')), 'wb')
+                proof_out=open(str(file_path.with_suffix(f'.ml-proof')), 'wb'),
             )
         )
         memoizer.execute_full()
@@ -203,9 +204,7 @@ class ProofExp(ABC):
     def main(cls, argv: list[str]) -> None:
         exe, *argv = argv
         usage = f'Usage:\n\n python3 {exe} (binary|pretty|memo) output-folder slice-name\n python3 {exe} --help\n\n'
-        examples = (
-            f'Examples:\n\npython3 {exe} binary \n# outputs ProofExp object in verifier-checkable binary format to output-folder/slice-name.ml-(gamma|claim|proof)\n\n'
-        )
+        examples = f'Examples:\n\npython3 {exe} binary \n# outputs ProofExp object in verifier-checkable binary format to output-folder/slice-name.ml-(gamma|claim|proof)\n\n'
 
         if len(argv) == 1:
             assert argv[0] == '--help', usage
