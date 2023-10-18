@@ -933,7 +933,7 @@ struct Pattern {
   static void destroyPatterns(LinkedList<Pattern *> *patterns) {
     if (!patterns->empty()) {
       for (auto it : *patterns) {
-        destroyPattern(it);
+        it->~Pattern();
       }
       patterns->~LinkedList();
       free(patterns);
