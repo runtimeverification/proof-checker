@@ -204,7 +204,7 @@ class ProofExp(ABC):
     def main(cls, argv: list[str]) -> None:
         exe, *argv = argv
         usage = f'Usage:\n\n python3 {exe} (binary|pretty|memo) output-folder slice-name\n python3 {exe} --help\n\n'
-        examples = f'Examples:\n\npython3 {exe} binary \n# outputs ProofExp object in verifier-checkable binary format to output-folder/slice-name.ml-(gamma|claim|proof)\n\n'
+        examples = f'Examples:\n\npython3 {exe} binary pi2 propositional\n# outputs the given ProofExp in verifier-checkable binary format to pi2/propositional.ml-(gamma|claim|proof)\n\n'
 
         if len(argv) == 1:
             assert argv[0] == '--help', usage
