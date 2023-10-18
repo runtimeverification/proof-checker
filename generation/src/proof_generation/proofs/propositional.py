@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, Notation, bot, unwrap_opt, unwrap_opt_2
+from proof_generation.pattern import Implication, MetaVar, Notation, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -29,22 +29,6 @@ class Negation(Notation):
     def __str__(self) -> str:
         return f'~({str(self.phi0)})'
 
-    @staticmethod
-    def unwrap(pat: Pattern) -> Pattern | None:
-        if isinstance(pat, Negation):
-            return pat.phi0
-        if isinstance(pat, Notation):
-            return Negation.unwrap(pat.conclusion())
-        if pat_imp := Implication.unwrap(pat):
-            if pat_imp[1] == bot:
-                return pat_imp[0]
-            return None
-        return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> Pattern:
-        return unwrap_opt(Negation.unwrap(pat), 'Expected Bot but instead got: ' + str(pat) + '\n')
-
 
 def neg(p: Pattern) -> Pattern:
     return Negation(p)
@@ -58,20 +42,6 @@ class Top(Notation):
 
     def __str__(self) -> str:
         return '\u22A4'
-
-    @staticmethod
-    def is_top(pat: Pattern) -> bool:
-        if isinstance(pat, Top):
-            return True
-        if isinstance(pat, Notation):
-            return Top.is_top(pat.conclusion())
-        if pat_imp := Implication.unwrap(pat):
-            return pat_imp[0] == bot and pat_imp[1] == bot
-        return False
-
-    @staticmethod
-    def extract(pat: Pattern) -> None:
-        assert Top.is_top(pat), 'Expected Top but instead got: ' + str(pat) + '\n'
 
 
 top = Top()
@@ -88,22 +58,6 @@ class Or(Notation):
 
     def __str__(self) -> str:
         return f'({str(self.left)}) \\/ ({str(self.right)})'
-
-    @staticmethod
-    def unwrap(pat: Pattern) -> tuple[Pattern, Pattern] | None:
-        if isinstance(pat, Or):
-            return pat.left, pat.right
-        if isinstance(pat, Notation):
-            return Or.unwrap(pat.conclusion())
-        if pat_imp := Implication.unwrap(pat):
-            if l := Negation.unwrap(pat_imp[0]):
-                return l, pat_imp[1]
-            return None
-        return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> tuple[Pattern, Pattern]:
-        return unwrap_opt_2(Or.unwrap(pat), 'Expected an Or but got: ' + str(pat) + '\n')
 
 
 class Propositional(ProofExp):

@@ -111,12 +111,6 @@ class EVar(Pattern):
     def __str__(self) -> str:
         return f'x{self.name}'
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
-
 
 @dataclass(frozen=True)
 class SVar(Pattern):
@@ -150,12 +144,6 @@ class SVar(Pattern):
     def __str__(self) -> str:
         return f'X{self.name}'
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
-
 
 @dataclass(frozen=True)
 class Symbol(Pattern):
@@ -186,12 +174,6 @@ class Symbol(Pattern):
 
     def __str__(self) -> str:
         return f'\u03c3{str(self.name)}'
-
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
 
 
 @dataclass(frozen=True)
@@ -224,12 +206,6 @@ class Implication(Pattern):
         pat_unwrapped = Implication.unwrap(pat)
         assert pat_unwrapped is not None, 'Expected an Implication but got: ' + str(pat) + '\n'
         return pat_unwrapped
-
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
 
 
 def imp(p1: Pattern, p2: Pattern) -> Pattern:
@@ -267,12 +243,6 @@ class Application(Pattern):
     def __str__(self) -> str:
         return f'(app ({str(self.left)}) ({str(self.right)}))'
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
-
 
 @dataclass(frozen=True)
 class Exists(Pattern):
@@ -306,12 +276,6 @@ class Exists(Pattern):
 
     def __str__(self) -> str:
         return f'(\u2203 x{self.var} . {str(self.subpattern)})'
-
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
 
 
 @dataclass(frozen=True)
@@ -347,12 +311,6 @@ class Mu(Pattern):
     def __str__(self) -> str:
         return f'(\u03BC X{self.var} . {str(self.subpattern)})'
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
-
 
 @dataclass(frozen=True)
 class MetaVar(Pattern):
@@ -385,12 +343,6 @@ class MetaVar(Pattern):
     def __str__(self) -> str:
         return f'phi{self.name}'
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
-
 
 @dataclass(frozen=True)
 class ESubst(Pattern):
@@ -410,12 +362,6 @@ class ESubst(Pattern):
     def __str__(self) -> str:
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
-
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
@@ -434,12 +380,6 @@ class SSubst(Pattern):
 
     def __str__(self) -> str:
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
-
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, type(self)):
-            return vars(self) == vars(o)
-        else:
-            return super().__eq__(o)
 
 
 @dataclass(frozen=True)
