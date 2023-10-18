@@ -230,12 +230,12 @@ def main() -> None:
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
     class TranslatedProofSkeleton(ProofExp):
-        @staticmethod
-        def axioms() -> list[Pattern]:
+        @classmethod
+        def axioms(cls) -> list[Pattern]:
             return extracted_axioms
 
-        @staticmethod
-        def claims() -> list[Pattern]:
+        @classmethod
+        def claims(cls) -> list[Pattern]:
             return extracted_claims
 
         def execute_proofs_phase(self) -> None:

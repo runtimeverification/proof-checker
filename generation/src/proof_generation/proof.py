@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
@@ -24,19 +25,21 @@ PatternExpression = Callable[[], Pattern]
 ProvedExpression = Callable[[], Proved]
 
 
-class ProofExp:
+class ProofExp(ABC):
     interpreter: BasicInterpreter
 
     def __init__(self, interpreter: BasicInterpreter) -> None:
         self.interpreter = interpreter
         self.notation: dict[str, Pattern] = {}
 
-    @staticmethod
-    def axioms() -> list[Pattern]:
+    @classmethod
+    @abstractmethod
+    def axioms(cls) -> list[Pattern]:
         raise NotImplementedError
 
-    @staticmethod
-    def claims() -> list[Pattern]:
+    @classmethod
+    @abstractmethod
+    def claims(cls) -> list[Pattern]:
         raise NotImplementedError
 
     def proof_expressions(self) -> list[ProvedExpression]:
