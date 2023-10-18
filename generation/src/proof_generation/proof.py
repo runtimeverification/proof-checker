@@ -131,18 +131,21 @@ class ProofExp(ABC):
         assert self.interpreter.phase == ExecutionPhase.Gamma
         for axiom in self.axioms():
             self.publish_axiom(self.interpreter.pattern(axiom))
+        self.check_interpreting()
         self.interpreter.into_claim_phase()
 
     def execute_claims_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self.claims()):
             self.publish_claim(self.interpreter.pattern(claim))
+        self.check_interpreting()
         self.interpreter.into_proof_phase()
 
     def execute_proofs_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Proof
         for proof_expr in self.proof_expressions():
             self.publish_proof(proof_expr())
+        self.check_interpreting()
 
     def execute_full(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Gamma
@@ -162,6 +165,12 @@ class ProofExp(ABC):
             )
         )
         prover.execute_full()
+
+    def check_interpreting(self) -> None:
+        if not self.interpreter.safe_interpreting:
+            print(f'Proof generation during {self.interpreter.phase.name} phase is potentially unsafe!')
+            for warning in self.interpreter.interpreting_warnings:
+                print(warning)
 
     @classmethod
     def prettyprint(cls, file_path: Path) -> None:
