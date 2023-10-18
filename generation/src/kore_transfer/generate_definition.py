@@ -30,6 +30,7 @@ class KoreDefinition(proof.ProofExp):
     @classmethod
     def prove_rewrite_step(cls, claim: nf.Pattern, axiom: nf.Pattern, instantiations: dict[int, nf.Pattern]) -> None:
         """Take a single rewrite step and emit a proof for it."""
+        assert len(cls.axiom_patterns) > 0, 'No axioms to prove the rewrite step'
         cls.claim_patterns.append(claim)
 
         def proof_transition(proof_expr: proof.ProofExp) -> proof.Proved:
@@ -63,6 +64,7 @@ def _convert_axioms(kore_definition: kore.Definition, converter: KoreConverter) 
             assert isinstance(pattern, kore.Rewrites)
             assert isinstance(pattern.left, kore.And)
             assert isinstance(pattern.right, kore.And)
+            # TODO: Remove side conditions for now
             preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
 
             converted_axiom = converter.convert_pattern(preprocessed_pattern)

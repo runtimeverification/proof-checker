@@ -63,6 +63,8 @@ def main(
         return
 
     # Kompile sources
+    # TODO: I would move both calls to the `compose_definition` function, but
+    # it is used by the `get_proof_hints` function as well. So let's change it later.
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
 
