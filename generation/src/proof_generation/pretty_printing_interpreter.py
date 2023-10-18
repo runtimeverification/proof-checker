@@ -23,7 +23,7 @@ class PrettyPrintingInterpreter(IOInterpreter):
         claim_out: TextIO | None = None,
         proof_out: TextIO | None = None,
     ) -> None:
-        super().__init__(phase=phase, out=out, claims=claims)
+        super().__init__(phase=phase, out=out, claims=claims, claim_out=claim_out, proof_out=proof_out)
         self._notation: dict[str, Pattern] = {}
 
     def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
