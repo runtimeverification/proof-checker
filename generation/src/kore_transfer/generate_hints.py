@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import count
 from typing import TYPE_CHECKING
 
 import pyk.kore.syntax as kore
@@ -27,7 +28,7 @@ class KoreHint:
         return self._pattern
 
     @property
-    def relevant_axiom(self) -> nf.Pattern:
+    def relevant_axiom(self) -> nf.Pattern | None:
         """Return the relevant axiom for the given hint."""
         return self._axiom
 
@@ -44,8 +45,20 @@ def get_proof_hints(
     max_step: int,
 ) -> Iterator[KoreHint]:
     """This function should return proof hinst."""
-    for step in range(max_step + 1):
+    if max_step > 0:
+        counter = iter(range(max_step + 1))
+    else:
+        # Unbounded iteration
+        counter = count(0)
+
+    last_axiom: kore.Pattern | None = None
+    for step in counter:
         configuration_for_step: kore.Pattern = _get_confguration_for_depth(kompiled_dir, program_file, step)
+        if last_axiom and configuration_for_step == last_axiom:
+            break
+        else:
+            last_axiom = configuration_for_step
+
         # TODO: Absolutely hardcoded solution until we have hints
         assert (
             isinstance(configuration_for_step, kore.App)
@@ -74,7 +87,7 @@ def _get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: i
     return parsed.pattern()
 
 
-def _choose_axiom(step: int, definition: type[KoreDefinition]):
+def _choose_axiom(step: int, definition: type[KoreDefinition]) -> nf.Pattern | None:
     if step < len(definition.axioms()):
         return definition.axioms()[step]
     else:

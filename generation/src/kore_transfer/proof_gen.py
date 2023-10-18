@@ -54,12 +54,6 @@ def main(
     reuse_kompiled_dir: bool = False,
     rewrite_proof_files: bool = False,
 ) -> None:
-    # First check that output directory either does not exist or can be rewritten
-    output_proof_dir = Path(proof_dir)
-    if output_proof_dir.exists() and not rewrite_proof_files:
-        print(f'Output directory {output_proof_dir} already exists and rewrite is not allowed. Exiting.')
-        return
-
     # Kompile sources
     # TODO: I would move both calls to the `compose_definition` function, but
     # it is used by the `get_proof_hints` function as well. So let's change it later.
@@ -77,7 +71,7 @@ def main(
     print('Begin generating proofs ... ')
     generate_proofs(hints_iterator, proof_expression)
 
-    generate_proof_file(proof_expression, output_proof_dir, Path(k_file).stem)
+    generate_proof_file(proof_expression, Path(proof_dir), Path(k_file).stem)
     print('Done!')
 
 

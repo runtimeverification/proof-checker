@@ -13,10 +13,15 @@ if TYPE_CHECKING:
 
 def generate_proofs(hints: Iterator[KoreHint], proof_expression: type[KoreDefinition]) -> None:
     curr_hint: KoreHint = next(hints)
+    claims = 0
     for next_hint in hints:
         # TODO: Process as `KoreRewrite` instead
         claim = nf.Implies(curr_hint.pattern, next_hint.pattern)
 
         axiom = curr_hint.relevant_axiom
+        assert isinstance(axiom, nf.Pattern), f'The hint should contain a pattern, got {axiom}'
         proof_expression.prove_rewrite_step(claim, axiom, curr_hint.instantiations)
         curr_hint = next_hint
+        claims += 1
+
+    print(f'Generated {claims} claims')
