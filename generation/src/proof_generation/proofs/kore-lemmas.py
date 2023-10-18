@@ -15,10 +15,11 @@ if TYPE_CHECKING:
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
-# TODO: Make sure this is handled uniformly
-kore_next_symbol = Symbol(0)
-inhabitant_symbol = Symbol(1)
 
+# TODO: Make sure this is handled uniformly
+inhabitant_symbol = Symbol(0)
+kore_next_symbol = Symbol(1)
+kore_dv_symbol = Symbol(2)
 
 @dataclass(frozen=True, eq=False)
 class KoreTop(Notation):
@@ -114,7 +115,17 @@ class KoreRewrites(Notation):
         return f'({str(self.phi0)}[{str(self.phi1)}] k=> {str(self.phi0)}[{str(self.phi2)}])'
 
 
-# Add kore-transitivity
+@dataclass(frozen=True, eq=False)
+class KoreDv(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return Application(Application(kore_dv_symbol, phi0), phi1)
+
+
+# TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     @staticmethod
     def axioms() -> list[Pattern]:
