@@ -3,9 +3,8 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
-from proof_generation.matching import match_single
-from proof_generation.pattern import Implication, MetaVar, Notation
-from proof_generation.proofs.propositional import And, Negation, Or, Propositional, Top, bot, neg, phi0, phi1, phi2
+from proof_generation.pattern import Implication, MetaVar, Notation, match_single
+from proof_generation.proofs.propositional import And, Negation, Or, Propositional, top, bot, neg, phi0, phi1, phi2
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -438,7 +437,7 @@ class Tautology(Propositional):
         """
         if pat == bot:
             return ConjBool(False), self.top_intro, None
-        if Top.is_top(pat):
+        if pat == top:
             return ConjBool(True), self.top_intro, None
         if isinstance(pat, MetaVar):
             phi_imp_phi = lambda: self.imp_refl(pat)
