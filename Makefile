@@ -99,7 +99,7 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-integration test-proof-gen test-proof-translate test-proof-ktranslate test-proof-verify
+test-system: test-integration test-proof-gen test-proof-translate test-proof-kgen test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
 test-integration:
@@ -145,15 +145,15 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 .build/proofs/generated-from-k/%.ml-proof: FORCE
 	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k generation/k-benchmarks/$*/foo-a.$* .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
-KPROOF_TRANSLATION_TARGETS=$(addsuffix .ktranslate,${TRANSLATED_FROM_K})
-proofs/generated-from-k/%.ml-proof.ktranslate: .build/proofs/generated-from-k/%.ml-proof
+KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-gamma" ".build/proofs/generated-from-k/$*.ml-gamma"
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-claim" ".build/proofs/generated-from-k/$*.ml-claim"
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-proof" ".build/proofs/generated-from-k/$*.ml-proof"
 
-test-proof-ktranslate: ${KPROOF_TRANSLATION_TARGETS}
+test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 
-.PHONY: test-proof-ktranslate
+.PHONY: test-proof-kgen
 
 
 # Proof generation
