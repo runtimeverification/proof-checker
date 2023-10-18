@@ -171,31 +171,31 @@ struct Pattern {
     if (pattern->e_fresh) {
       copy->e_fresh = IdList::create();
       for (auto it = pattern->e_fresh->head; it; it = it->next) {
-        copy->e_fresh->insert_front(it->data);
+        copy->e_fresh->push_back(it->data);
       }
     }
     if (pattern->s_fresh) {
       copy->s_fresh = IdList::create();
       for (auto it = pattern->s_fresh->head; it; it = it->next) {
-        copy->s_fresh->insert_front(it->data);
+        copy->s_fresh->push_back(it->data);
       }
     }
     if (pattern->positive) {
       copy->positive = IdList::create();
       for (auto it = pattern->positive->head; it; it = it->next) {
-        copy->positive->insert_front(it->data);
+        copy->positive->push_back(it->data);
       }
     }
     if (pattern->negative) {
       copy->negative = IdList::create();
       for (auto it = pattern->negative->head; it; it = it->next) {
-        copy->negative->insert_front(it->data);
+        copy->negative->push_back(it->data);
       }
     }
     if (pattern->app_ctx_holes) {
       copy->app_ctx_holes = IdList::create();
       for (auto it = pattern->app_ctx_holes->head; it; it = it->next) {
-        copy->app_ctx_holes->insert_front(it->data);
+        copy->app_ctx_holes->push_back(it->data);
       }
     }
     return copy;

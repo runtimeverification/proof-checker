@@ -42,6 +42,22 @@ public:
     }
   }
 
+  void push_back(const T &value) {
+    Node<T> *newNode = Node<T>::create(value);
+
+    // If the list is empty, set the new node as the head
+    if (head == nullptr) {
+      head = newNode;
+    } else {
+      // Otherwise, find the last node and update the links
+      Node<T> *curr = head;
+      while (curr->next) {
+        curr = curr->next;
+      }
+      curr->next = newNode;
+    }
+  }
+
   void delete_front() {
     if (!head) {
       return;
