@@ -24,6 +24,7 @@ class KoreConverter:
         self._metavars: dict[str, nf.MetaVar] = {}
         self._notations: dict[str, type[nf.Notation]] = {}
 
+        # TODO: This works only for 100 new symbols!
         self._symbol_number = count(len(self.CONST_SYMBOLS))
         self._symbol_sort_number = count(len(self.CONST_SYMBOLS) + 100)
 
