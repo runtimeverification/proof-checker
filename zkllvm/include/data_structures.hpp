@@ -34,7 +34,6 @@ public:
 
     // If the list is empty, set the new node as the head
     if (head == nullptr) {
-      newNode->next = nullptr;
       head = newNode;
     } else {
       // Otherwise, update the links
