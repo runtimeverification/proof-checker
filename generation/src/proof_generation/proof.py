@@ -151,38 +151,29 @@ class ProofExp(ABC):
         self.execute_claims_phase()
         self.execute_proofs_phase()
 
-    def _execute_to_file(self, file_path: Path, suffix: str) -> None:
-        assert isinstance(self.interpreter, MemoizingInterpreter | PrettyPrintingInterpreter | SerializingInterpreter), f'{self.interpreter} does not support execution to file'
-
-        # Interpreter should contain the gamma file already now
-        self.execute_gamma_phase()
-        self.interpreter.out.close()
-
-        self.interpreter.out = open(str(file_path.with_suffix(f'.{suffix}-claim')), self.interpreter.out.mode)
-        self.execute_claims_phase()
-        self.interpreter.out.close()
-
-        self.interpreter.out = open(str(file_path.with_suffix(f'.{suffix}-claim')), self.interpreter.out.mode)
-        self.execute_proofs_phase()
-        self.interpreter.out.close()
-
     @classmethod
     def serialize(cls, file_path: Path) -> None:
         prover = cls(
             interpreter=SerializingInterpreter(
-                ExecutionPhase.Gamma, out=open(file_path.with_suffix('.ml-gamma'), 'wb'), claims=list(map(Claim, cls.claims()))
+                ExecutionPhase.Gamma, claims=list(map(Claim, cls.claims())),
+                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+                claim_out=open(str(file_path.with_suffix(f'.ml-claim')), 'wb'),
+                proof_out=open(str(file_path.with_suffix(f'.ml-proof')), 'wb')
             )
         )
-        prover._execute_to_file(file_path, 'ml')
+        prover.execute_full()
 
     @classmethod
     def prettyprint(cls, file_path: Path) -> None:
         prover = cls(
             PrettyPrintingInterpreter(
-                ExecutionPhase.Gamma, out=open(file_path.with_suffix('.pretty-gamma'), 'w'), claims=list(map(Claim, cls.claims()))
+                ExecutionPhase.Gamma, claims=list(map(Claim, cls.claims())),
+                out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
+                claim_out=open(str(file_path.with_suffix(f'.pretty-claim')), 'w'),
+                proof_out=open(str(file_path.with_suffix(f'.pretty-proof')), 'w')
             )
         )
-        prover._execute_to_file(file_path, 'pretty')
+        prover.execute_full()
 
     @classmethod
     def memoize(cls, file_path: Path) -> None:
@@ -200,11 +191,13 @@ class ProofExp(ABC):
             MemoizingInterpreter(
                 ExecutionPhase.Gamma,
                 claims=list(map(Claim, cls.claims())),
-                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
                 patterns_for_memoization=counter.interpreter.finalize(),
+                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+                claim_out=open(str(file_path.with_suffix(f'.ml-claim')), 'wb'),
+                proof_out=open(str(file_path.with_suffix(f'.ml-proof')), 'wb')
             )
         )
-        memoizer._execute_to_file(file_path, 'ml')
+        memoizer.execute_full()
 
     @classmethod
     def main(cls, argv: list[str]) -> None:
