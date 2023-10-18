@@ -73,6 +73,20 @@ class Pattern:
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         raise NotImplementedError
 
+    @classmethod
+    def unwrap(cls, pattern: Pattern) -> tuple[Pattern, ...] | None:
+        if isinstance(pattern, Notation):
+            return cls.unwrap(pattern.conclusion())
+        if isinstance(pattern, cls):
+            return tuple([v for _, v in sorted(vars(pattern).items()) if isinstance(v, Pattern)])
+        return None
+
+    @classmethod
+    def extract(cls, pattern: Pattern) -> tuple[Pattern, ...]:
+        ret = cls.unwrap(pattern)
+        assert ret is not None, f"Expected a/an {cls.__name__} but got instead: {str(pattern)}\n"
+        return ret
+
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Notation):
             return self.__eq__(o.conclusion())
@@ -193,20 +207,6 @@ class Implication(Pattern):
     def __str__(self) -> str:
         return f'({str(self.left)} -> {str(self.right)})'
 
-    @staticmethod
-    def unwrap(pat: Pattern) -> tuple[Pattern, Pattern] | None:
-        if isinstance(pat, Implication):
-            return pat.left, pat.right
-        if isinstance(pat, Notation):
-            return Implication.unwrap(pat.conclusion())
-        return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> tuple[Pattern, Pattern]:
-        pat_unwrapped = Implication.unwrap(pat)
-        assert pat_unwrapped is not None, 'Expected an Implication but got: ' + str(pat) + '\n'
-        return pat_unwrapped
-
 
 def imp(p1: Pattern, p2: Pattern) -> Pattern:
     return Implication(p1, p2)
@@ -225,23 +225,6 @@ class Application(Pattern):
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return Application(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
-
-    @staticmethod
-    def unwrap(pat: Pattern) -> tuple[Pattern, Pattern] | None:
-        if isinstance(pat, Application):
-            return pat.left, pat.right
-        if isinstance(pat, Notation):
-            return Application.unwrap(pat.conclusion())
-        return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> tuple[Pattern, Pattern]:
-        pat_unwrapped = Application.unwrap(pat)
-        assert pat_unwrapped is not None, 'Expected an Application but got: ' + str(pat) + '\n'
-        return pat_unwrapped
-
-    def __str__(self) -> str:
-        return f'(app ({str(self.left)}) ({str(self.right)}))'
 
 
 @dataclass(frozen=True)
@@ -423,18 +406,18 @@ class Notation(Pattern):
         return self.conclusion().apply_ssubst(svar_id, plug)
 
     @classmethod
-    def unwrap(cls, pattern: Pattern) -> list[Pattern] | None:
+    def unwrap(cls, pattern: Pattern) -> tuple[Pattern, ...] | None:
         assert cls is not Notation
         assert issubclass(cls, Notation)
         if isinstance(pattern, cls):
-            [v for _, v in sorted(pattern.arguments().items())]
+            return tuple([v for _, v in sorted(pattern.arguments().items())])
         match_result = match_single(cls.definition(), pattern)
         if match_result is None:
             return None
-        return [v for _, v in sorted(match_result.items())]
+        return tuple([v for _, v in sorted(match_result.items())])
 
     @classmethod
-    def extract(cls, pattern: Pattern) -> list[Pattern]:
+    def extract(cls, pattern: Pattern) -> tuple[Pattern, ...]:
         ret = cls.unwrap(pattern)
         assert ret is not None, f"Expected a {cls.label()} but got instead: {str(pattern)}\n"
         return ret
