@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 
 
 class Pattern:
@@ -55,6 +56,7 @@ class SVar(Pattern):
 @dataclass(frozen=True)
 class Symbol(Pattern):
     name: int
+    pretty_name: str | None = field(default=None, compare=False)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -66,7 +68,10 @@ class Symbol(Pattern):
         return self
 
     def __str__(self) -> str:
-        return f'\u03c3{str(self.name)}'
+        if self.pretty_name is None:
+            return f'\u03c3{str(self.name)}'
+        else:
+            return f'{self.pretty_name}_{str(self.name)}'
 
 
 @dataclass(frozen=True)
@@ -212,13 +217,12 @@ class SSubst(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation(Pattern):
-    @classmethod
-    def label(cls) -> str:
-        return f'{cls.__name__!r}'
+class Notation(Pattern, ABC):
+    def label(self) -> str:
+        return f'{type(self).__name__!r}'
 
-    @staticmethod
-    def definition() -> Pattern:
+    @abstractmethod
+    def definition(self) -> Pattern:
         raise NotImplementedError('This notation has no definition.')
 
     def arguments(self) -> dict[int, Pattern]:
@@ -239,11 +243,7 @@ class Notation(Pattern):
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args: list[Pattern] = []
-
-        for arg in self.arguments().values():
-            args.append(arg.instantiate(delta))
-
+        args = self._instantiate_args(delta)
         return type(self)(*args)
 
     # TODO: Keep notations (without dropping them)
@@ -254,14 +254,54 @@ class Notation(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self.conclusion().apply_ssubst(svar_id, plug)
 
+    def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
+        args: list[Pattern] = []
+
+        for arg in self.arguments().values():
+            args.append(arg.instantiate(delta))
+
+        return args
+
     def __str__(self) -> str:
-        return f'{self.label()} {str(self.arguments())}'
+        pretty_args = ', '.join(map(str, self.arguments().values()))
+        return f'{self.label()} ({pretty_args})'
+
+
+@dataclass(frozen=True, eq=False)
+class FakeNotation(Notation):
+    symbol: Symbol
+    pattern_arguments: tuple[Pattern, ...]
+
+    def label(self) -> str:
+        return f'FakeNotation[{str(self.symbol)}]'
+
+    def definition(self) -> Pattern:
+        if len(self.pattern_arguments) == 0:
+            return self.symbol
+        else:
+            current_callable: Pattern = self.symbol
+            arguments_left = [MetaVar(i) for i, _ in enumerate(self.pattern_arguments)]
+            while len(arguments_left) > 0:
+                next_one, *arguments_left = arguments_left
+                current_callable = Application(current_callable, next_one)
+            return current_callable
+
+    def arguments(self) -> dict[int, Pattern]:
+        ret: dict[int, Pattern] = {}
+
+        for i, arg in enumerate(self.pattern_arguments):
+            ret[i] = arg
+
+        return ret
+
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        args = self._instantiate_args(delta)
+        return FakeNotation(self.symbol, tuple(args))
 
 
 @dataclass(frozen=True, eq=False)
 class Bot(Notation):
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return Mu(0, SVar(0))
 
     def __str__(self) -> str:

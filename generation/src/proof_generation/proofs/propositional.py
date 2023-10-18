@@ -23,8 +23,7 @@ phi0_implies_phi0 = Implication(phi0, phi0)
 class Negation(Notation):
     phi0: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return Implication(MetaVar(0), bot)
 
     def __str__(self) -> str:
@@ -37,8 +36,7 @@ def neg(p: Pattern) -> Pattern:
 
 @dataclass(frozen=True, eq=False)
 class Top(Notation):
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return neg(bot)
 
     def __str__(self) -> str:
