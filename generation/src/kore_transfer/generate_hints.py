@@ -16,10 +16,10 @@ if TYPE_CHECKING:
 
 
 class KoreHint:
-    def __init__(self, pattern: nf.Pattern, axiom: nf.Pattern, instantiations: tuple[nf.Pattern, ...]) -> None:
+    def __init__(self, pattern: nf.Pattern, axiom: nf.Pattern | None, instantiations: tuple[nf.Pattern, ...]) -> None:
         # TODO: Change interface according to the real hint format
         self._pattern: nf.Pattern = pattern
-        self._axiom: nf.Pattern = axiom
+        self._axiom: nf.Pattern | None = axiom
         self._instantiations: tuple[nf.Pattern, ...] = instantiations
 
     @property
@@ -57,7 +57,9 @@ def get_proof_hints(
         inst1 = kore_converter.convert_pattern(configuration_for_step.args[0].args[0].args[1])
         inst2 = kore_converter.convert_pattern(configuration_for_step.args[1])
 
-        hint = KoreHint(pattern, definition.axioms()[0], (inst1, inst2))
+        # TODO: The choice for an axiom is hardcoded and should be changed!
+        axiom = _choose_axiom(step, definition)
+        hint = KoreHint(pattern, axiom, (inst1, inst2))
         yield hint
 
 
@@ -70,3 +72,10 @@ def _get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: i
 
     parsed = KoreParser(finished_process.stdout)
     return parsed.pattern()
+
+
+def _choose_axiom(step: int, definition: type[KoreDefinition]):
+    if step < len(definition.axioms()):
+        return definition.axioms()[step]
+    else:
+        return None
