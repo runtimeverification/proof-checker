@@ -193,13 +193,11 @@ class Propositional(ProofExp):
 
     def bot_elim(self, p: Pattern = phi0) -> Proved:
         """bot -> p"""
-        neg_neg_p = neg(neg(p))
-
         return self.modus_ponens(
             # ((bot -> neg neg p) -> (bot -> p)))
             self.modus_ponens(
                 # (bot -> (neg neg p -> p)) -> ((bot -> neg neg p) -> (bot -> p))
-                self.dynamic_inst(self.prop2, {0: bot, 1: neg_neg_p, 2: p}),
+                self.dynamic_inst(self.prop2, {0: bot, 1: neg(neg(p)), 2: p}),
                 #  bot -> (neg neg p -> p)
                 self.imp_provable(bot, lambda: self.dynamic_inst(self.prop3, {0: p})),
             ),
