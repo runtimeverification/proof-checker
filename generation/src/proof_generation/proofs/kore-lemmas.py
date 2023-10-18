@@ -21,6 +21,7 @@ inhabitant_symbol = Symbol(0)
 kore_next_symbol = Symbol(1)
 kore_dv_symbol = Symbol(2)
 
+
 @dataclass(frozen=True, eq=False)
 class KoreTop(Notation):
     phi0: Pattern
