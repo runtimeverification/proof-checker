@@ -143,8 +143,8 @@ class MemoizingInterpreter(SerializingInterpreter):
         out: BinaryIO,
         claims: list[Claim] | None = None,
         patterns_for_memoization: set[Pattern] | None = None,
-        claim_out: IO[Any] | None = None,
-        proof_out: IO[Any] | None = None,
+        claim_out: BinaryIO | None = None,
+        proof_out: BinaryIO | None = None,
     ) -> None:
         super().__init__(phase, out, claims, claim_out, proof_out)
         self._patterns_for_memoization: set[Pattern]

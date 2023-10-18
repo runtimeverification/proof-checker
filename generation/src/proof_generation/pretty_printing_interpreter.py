@@ -20,6 +20,8 @@ class PrettyPrintingInterpreter(IOInterpreter):
         phase: ExecutionPhase,
         out: TextIO,
         claims: list[Claim] | None = None,
+        claim_out: TextIO | None = None,
+        proof_out: TextIO | None = None,
     ) -> None:
         super().__init__(phase=phase, out=out, claims=claims)
         self._notation: dict[str, Pattern] = {}
