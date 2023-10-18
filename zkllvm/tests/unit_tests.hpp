@@ -44,14 +44,14 @@ int test_efresh(int a, int b) {
 
 #endif
 
-  Pattern::destroyPattern(mvar);
-  Pattern::destroyPattern(implication);
-  Pattern::destroyPattern(left);
-  Pattern::destroyPattern(right);
-  Pattern::destroyPattern(evar);
-  Pattern::destroyPattern(metaapp);
-  Pattern::destroyPattern(esubst);
-  Pattern::destroyPattern(ssubst);
+ mvar->~Pattern();
+ implication->~Pattern();
+ left->~Pattern();
+ right->~Pattern();
+ evar->~Pattern();
+ metaapp->~Pattern();
+ esubst->~Pattern();
+ ssubst->~Pattern();
 
   return 0;
 }
@@ -105,15 +105,15 @@ int test_sfresh(int a, int b) {
   std::cout << std::endl;
 #endif
 
-  Pattern::destroyPattern(svar);
-  Pattern::destroyPattern(left);
-  Pattern::destroyPattern(right);
-  Pattern::destroyPattern(implication);
-  Pattern::destroyPattern(mvar);
-  Pattern::destroyPattern(metaapp);
-  Pattern::destroyPattern(metaapp2);
-  Pattern::destroyPattern(esubst);
-  Pattern::destroyPattern(ssubst);
+  svar->~Pattern();
+  left->~Pattern();
+  right->~Pattern();
+  implication->~Pattern();
+  mvar->~Pattern();
+  metaapp->~Pattern();
+  metaapp2->~Pattern();
+  esubst->~Pattern();
+  ssubst->~Pattern();
 
   return 0;
 }
@@ -333,33 +333,33 @@ int test_positivity() {
 
 #endif
 
-  Pattern::destroyPattern(X0);
-  Pattern::destroyPattern(X1);
-  Pattern::destroyPattern(X2);
-  Pattern::destroyPattern(c1);
-  Pattern::destroyPattern(neg_X1);
-  Pattern::destroyPattern(evar1);
-  Pattern::destroyPattern(appX1X2);
-  Pattern::destroyPattern(impliesX1X2);
-  Pattern::destroyPattern(impliesX1X1);
-  Pattern::destroyPattern(existsX1X2);
-  Pattern::destroyPattern(muX1x1);
-  Pattern::destroyPattern(muX1X1);
-  Pattern::destroyPattern(muX1X2);
-  Pattern::destroyPattern(muX1impliesX2X1);
-  Pattern::destroyPattern(metavarUncons1);
-  Pattern::destroyPattern(metavarSFresh11__);
-  Pattern::destroyPattern(metavarSFresh1111);
-  Pattern::destroyPattern(metavarSFresh111_);
-  Pattern::destroyPattern(metavarSFresh11_1);
-  Pattern::destroyPattern(esubstMetaVarUnconsX0);
-  Pattern::destroyPattern(esubstMetaVarUnconsX1);
-  Pattern::destroyPattern(esubstMetaVarSFreshX1);
-  Pattern::destroyPattern(ssubstMetaVarUnconsX0);
-  Pattern::destroyPattern(ssubstMetaVarUnconsX1);
-  Pattern::destroyPattern(ssubstMetaVarSFreshX1);
-  Pattern::destroyPattern(negX1_implies_negX1);
-  Pattern::destroyPattern(negX1_implies_X1);
+  X0->~Pattern();
+  X1->~Pattern();
+  X2->~Pattern();
+  c1->~Pattern();
+  neg_X1->~Pattern();
+  evar1->~Pattern();
+  appX1X2->~Pattern();
+  impliesX1X2->~Pattern();
+  impliesX1X1->~Pattern();
+  existsX1X2->~Pattern();
+  muX1x1->~Pattern();
+  muX1X1->~Pattern();
+  muX1X2->~Pattern();
+  muX1impliesX2X1->~Pattern();
+  metavarUncons1->~Pattern();
+  metavarSFresh11__->~Pattern();
+  metavarSFresh1111->~Pattern();
+  metavarSFresh111_->~Pattern();
+  metavarSFresh11_1->~Pattern();
+  esubstMetaVarUnconsX0->~Pattern();
+  esubstMetaVarUnconsX1->~Pattern();
+  esubstMetaVarSFreshX1->~Pattern();
+  ssubstMetaVarUnconsX0->~Pattern();
+  ssubstMetaVarUnconsX1->~Pattern();
+  ssubstMetaVarSFreshX1->~Pattern();
+  negX1_implies_negX1->~Pattern();
+  negX1_implies_X1->~Pattern();
 
   return 0;
 }
@@ -430,19 +430,19 @@ int test_wellformedness_positive() {
   std::cout << std::endl;
   #endif
 
-  Pattern::destroyPattern(svar);
-  Pattern::destroyPattern(mux_x);
-  Pattern::destroyPattern(mux_x2);
-  Pattern::destroyPattern(mux_x3);
-  Pattern::destroyPattern(mux_x4);
-  Pattern::destroyPattern(phi);
-  Pattern::destroyPattern(mux_phi);
-  Pattern::destroyPattern(phi2);
-  Pattern::destroyPattern(mux_phi2);
-  Pattern::destroyPattern(phi3);
-  Pattern::destroyPattern(mux_phi3);
-  Pattern::destroyPattern(phi4);
-  Pattern::destroyPattern(mux_phi4);
+  svar->~Pattern();
+  mux_x->~Pattern();
+  mux_x2->~Pattern();
+  mux_x3->~Pattern();
+  mux_x4->~Pattern();
+  phi->~Pattern();
+  mux_phi->~Pattern();
+  phi2->~Pattern();
+  mux_phi2->~Pattern();
+  phi3->~Pattern();
+  mux_phi3->~Pattern();
+  phi4->~Pattern();
+  mux_phi4->~Pattern();
 
   return 0;
 }

@@ -575,42 +575,40 @@ struct Pattern {
   }
 
   // Destructor to manually release memory
-  static void destroyPattern(Pattern *pattern) {
-    if (pattern) {
-      if (pattern->left) {
-        destroyPattern(pattern->left);
-      }
-      if (pattern->right) {
-        destroyPattern(pattern->right);
-      }
-      if (pattern->subpattern) {
-        destroyPattern(pattern->subpattern);
-      }
-      if (pattern->plug) {
-        destroyPattern(pattern->plug);
-      }
-      if (pattern->e_fresh) {
-        pattern->e_fresh->~LinkedList();
-        free(pattern->e_fresh);
-      }
-      if (pattern->s_fresh) {
-        pattern->s_fresh->~LinkedList();
-        free(pattern->s_fresh);
-      }
-      if (pattern->positive) {
-        pattern->positive->~LinkedList();
-        free(pattern->positive);
-      }
-      if (pattern->negative) {
-        pattern->negative->~LinkedList();
-        free(pattern->negative);
-      }
-      if (pattern->app_ctx_holes) {
-        pattern->app_ctx_holes->~LinkedList();
-        free(pattern->app_ctx_holes);
-      }
-      free(pattern);
+  ~Pattern() {
+    if (left) {
+      left->~Pattern();
     }
+    if (right) {
+      right->~Pattern();
+    }
+    if (subpattern) {
+      subpattern->~Pattern();
+    }
+    if (plug) {
+      plug->~Pattern();
+    }
+    if (e_fresh) {
+      e_fresh->~LinkedList();
+      free(e_fresh);
+    }
+    if (s_fresh) {
+      s_fresh->~LinkedList();
+      free(s_fresh);
+    }
+    if (positive) {
+      positive->~LinkedList();
+      free(positive);
+    }
+    if (negative) {
+      negative->~LinkedList();
+      free(negative);
+    }
+    if (app_ctx_holes) {
+      app_ctx_holes->~LinkedList();
+      free(app_ctx_holes);
+    }
+    free(this);
   }
 
 #if DEBUG
