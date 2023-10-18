@@ -16,6 +16,7 @@ from proof_generation.pattern import (
     SSubst,
     SVar,
     Symbol,
+    FakeNotation,
     bot,
 )
 from proof_generation.proved import Proved
