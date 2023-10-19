@@ -1102,6 +1102,7 @@ struct Pattern {
       case Instruction::Mu:
       case Instruction::ESubst:
       case Instruction::SSubst:
+        break;
       case Instruction::Prop1:
         stack->push(Term::newTerm(Term::Type::Proved, copy(prop1)));
         break;
@@ -1141,6 +1142,7 @@ struct Pattern {
       case Instruction::Generalization:
       case Instruction::Existence:
       case Instruction::Substitution:
+        break;
       case Instruction::Instantiate: {
         auto n = iterator.next();
         if (n == buffer->end()) {
