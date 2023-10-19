@@ -511,6 +511,18 @@ struct Pattern {
     return pattern;
   }
 
+  static Pattern *metavar(Id id, IdList *e_fresh, IdList *s_fresh,
+                          IdList *positive, IdList *negative,
+                          IdList *app_ctx_holes) {
+    auto pattern = newPattern(Instruction::MetaVar, id);
+    pattern->e_fresh = e_fresh;
+    pattern->s_fresh = s_fresh;
+    pattern->positive = positive;
+    pattern->negative = negative;
+    pattern->app_ctx_holes = app_ctx_holes;
+    return pattern;
+  }
+
   static Pattern *exists(Id var, Pattern *subpattern) {
     auto pattern = newPattern(Instruction::Exists, var);
     pattern->subpattern = subpattern;
@@ -993,15 +1005,20 @@ struct Pattern {
     return term->pattern;
   }
 
-/// Main implementation
-/// -------------------
+  /// Main implementation
+  /// -------------------
 
-enum class ExecutionPhase
-{
-  Gamma,
-  Claims,
-  Proof
-};
+  enum class ExecutionPhase { Gamma, Claims, Proof };
+
+  static LinkedList<uint8_t> *
+  read_u8_vec(LinkedList<uint8_t>::Iterator &iterator) {
+    auto size = *iterator.next();
+    auto vec = LinkedList<uint8_t>::create();
+    for (int i = 0; i < size; i++) {
+      vec->push_back(*iterator.next());
+    }
+    return vec;
+  }
 
   static void execute_instructions(LinkedList<uint8_t> *buffer, Stack *stack,
                                    Memory *memory, Claims *claims,
@@ -1051,7 +1068,35 @@ enum class ExecutionPhase
       case Instruction::EVar:
       case Instruction::SVar:
       case Instruction::Symbol:
-      case Instruction::MetaVar:
+      case Instruction::MetaVar: {
+        auto getId = iterator.next();
+        if (getId == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error("Expected id for MetaVar instruction");
+#endif
+          exit(1);
+        }
+        auto id = (Id)*getId;
+
+        auto e_fresh = read_u8_vec(iterator);
+        auto s_fresh = read_u8_vec(iterator);
+        auto positive = read_u8_vec(iterator);
+        auto negative = read_u8_vec(iterator);
+        auto app_ctx_holes = read_u8_vec(iterator);
+
+        auto metavar_pat =
+            metavar(id, e_fresh, s_fresh, positive, negative, app_ctx_holes);
+
+        if (!metavar_pat->pattern_well_formed()) {
+#if DEBUG
+          throw std::runtime_error("Constructed meta-var " +
+                                   std::to_string(id) + " is ill-formed.");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
+        break;
+      }
       case Instruction::CleanMetaVar:
       case Instruction::Implication:
       case Instruction::Application:
