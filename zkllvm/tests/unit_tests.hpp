@@ -680,33 +680,3 @@ void test_construct_phi_implies_phi() {
 
   phi0->~Pattern();
 }
-
-  Pattern::Stack *stack = Pattern::Stack::create();
-  auto memory = Pattern::Memory::create();
-  auto claims = Pattern::Claims::create();
-
-  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
-
-
-  for (auto it : *stack) {
-    it->pattern->~Pattern();
-  }
-
-  for (auto it : *memory) {
-    it->pattern->~Pattern();
-  }
-
-  for (auto it : *claims) {
-    it->~Pattern();
-  }
-
-  proof->~LinkedList();
-  free(proof);
-  stack->~LinkedList();
-  free(stack);
-  memory->~LinkedList();
-  free(memory);
-  claims->~LinkedList();
-  free(claims);
-
-}
