@@ -43,7 +43,7 @@ public:
     } else if (!head || !rhs.head) {
       return false;
     }
-    return (head->operator==(*rhs.head));
+    return (*head == *rhs.head);
   }
 
   bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }

@@ -157,9 +157,6 @@ struct Pattern {
   }
 
   bool operator==(const Pattern &rhs) const {
-#if DEBUG
-    std::cout << "operator==(const &lhs, const & rhs) called" << std::endl;
-#endif
     if (inst != rhs.inst || id != rhs.id) {
       return false;
     }
@@ -213,23 +210,23 @@ struct Pattern {
       return false;
     }
     if (e_fresh != nullptr && rhs.e_fresh != nullptr &&
-        e_fresh != rhs.e_fresh) {
+        *e_fresh != *rhs.e_fresh) {
       return false;
     }
     if (s_fresh != nullptr && rhs.s_fresh != nullptr &&
-        s_fresh != rhs.s_fresh) {
+        *s_fresh != *rhs.s_fresh) {
       return false;
     }
     if (positive != nullptr && rhs.positive != nullptr &&
-        positive != rhs.positive) {
+        *positive != *rhs.positive) {
       return false;
     }
     if (negative != nullptr && rhs.negative != nullptr &&
-        negative != rhs.negative) {
+        *negative != *rhs.negative) {
       return false;
     }
     if (app_ctx_holes != nullptr && rhs.app_ctx_holes != nullptr &&
-        app_ctx_holes != rhs.app_ctx_holes) {
+        *app_ctx_holes != *rhs.app_ctx_holes) {
       return false;
     }
     return true;
