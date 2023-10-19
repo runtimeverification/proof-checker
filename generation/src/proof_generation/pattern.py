@@ -217,7 +217,14 @@ class SSubst(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation(Pattern, ABC):
+class Notation:
+    label: str
+    definition: Pattern
+    format_str: str
+
+
+@dataclass(frozen=True)
+class NotationInstantiation(Pattern, ABC):
     def label(self) -> str:
         return f'{type(self).__name__!r}'
 
@@ -299,13 +306,5 @@ class FakeNotation(Notation):
         return FakeNotation(self.symbol, tuple(args))
 
 
-@dataclass(frozen=True, eq=False)
-class Bot(Notation):
-    def definition(self) -> Pattern:
-        return Mu(0, SVar(0))
+bot = Notation('bot', Mu(0, SVar(0)), '⊥')
 
-    def __str__(self) -> str:
-        return '⊥'
-
-
-bot = Bot()

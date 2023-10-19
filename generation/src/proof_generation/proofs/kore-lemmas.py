@@ -4,9 +4,10 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, MetaVar, Notation, Symbol
+
+from proof_generation.pattern import App, MetaVar, Notation, NotationInstantiation, Symbol
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import And, Negation, Or
+from proof_generation.proofs.propositional import and, neg, or
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -21,109 +22,15 @@ inhabitant_symbol = Symbol(0)
 kore_next_symbol = Symbol(1)
 kore_dv_symbol = Symbol(2)
 
-
-@dataclass(frozen=True, eq=False)
-class KoreTop(Notation):
-    phi0: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return App(inhabitant_symbol, phi0)
-
-    def __str__(self) -> str:
-        return f'(k⊤ {self.phi0})'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreNot(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return And(Negation(phi1), KoreTop(phi0))
-
-    def __str__(self) -> str:
-        return f'(k¬ {self.phi0})'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreAnd(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return And(phi1, phi2)
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k⋀ {str(self.phi0)}[{str(self.phi2)}])'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreOr(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return Or(phi1, phi2)
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k⋁ {str(self.phi0)}[{str(self.phi2)}])'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreNext(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return App(kore_next_symbol, phi1)
-
-    def __str__(self) -> str:
-        return f'(♦ {str(self.phi1)})'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreImplies(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return KoreOr(phi0, KoreNot(phi0, phi1), phi2)
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k-> {str(self.phi0)}[{str(self.phi2)}])'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreRewrites(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return KoreImplies(phi0, phi1, KoreNext(phi0, phi2))
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k=> {str(self.phi0)}[{str(self.phi2)}])'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreDv(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return App(App(kore_dv_symbol, phi0), phi1)
+kore_top        = Notation('kore-top',      App(inhabitant_symbol, phi0),               '(k⊤ {0})')
+kore_not        = Notation('kore-not',      and(neg(phi1), kore_top(phi0)),             '(k¬ {0})')
+kore_and        = Notation('kore-and',      and(phi1, phi2),                            '({0}[{1}] k⋀ {0}[{2}])')
+kore_or         = Notation('kore-or',       or(phi1, phi2),                             '({0}[{1}] k⋁ {0}[{2}])')
+kore_next       = Notation('kore-next',     App(kore_next_symbol, phi1),                '(♦ {str(self.phi1)})')
+kore_implies    = Notation('kore-implies',  kore_or(phi0, kore_not(phi0, phi1), phi2),  '({0}[{1}] k-> {0}[{2}])')
+kore_rewrites   = Notation('kore-rewrites', kore_implies(phi0, phi1, kore_next(phi0, phi2)),
+                           '({str(self.phi0)}[{str(self.phi1)}] k=> {str(self.phi0)}[{str(self.phi2)}])')
+kore_dv         = Notation('kore-dv',       App(App(kore_dv_symbol, phi0), phi1))
 
 
 # TODO: Add kore-transitivity
