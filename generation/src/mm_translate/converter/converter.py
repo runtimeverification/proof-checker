@@ -29,8 +29,7 @@ from mm_translate.metamath.ast import (
     Term,
     VariableStatement,
 )
-from proof_generation.pattern import Application as ApplicationPattern
-from proof_generation.pattern import ESubst, EVar, Exists, Implication, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -760,14 +759,14 @@ class MetamathConverter:
             '\\app',
             ('ph0', 'ph1'),
             lambda *args: isinstance(args[0], Pattern) and isinstance(args[1], Pattern),
-            lambda *args: ApplicationPattern(args[0], args[1]),
+            lambda *args: App(args[0], args[1]),
         )
         self._scope.add_notation(application)
         imp = Notation(
             '\\imp',
             ('ph0', 'ph1'),
             lambda *args: isinstance(args[0], Pattern) and isinstance(args[1], Pattern),
-            lambda *args: Implication(args[0], args[1]),
+            lambda *args: Implies(args[0], args[1]),
         )
         self._scope.add_notation(imp)
         exists = Notation(

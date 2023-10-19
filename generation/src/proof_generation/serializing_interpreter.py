@@ -51,12 +51,12 @@ class SerializingInterpreter(IOInterpreter):
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
         ret = super().implies(left, right)
-        self.out.write(bytes([Instruction.Implication]))
+        self.out.write(bytes([Instruction.Implies]))
         return ret
 
     def app(self, left: Pattern, right: Pattern) -> Pattern:
         ret = super().app(left, right)
-        self.out.write(bytes([Instruction.Application]))
+        self.out.write(bytes([Instruction.App]))
         return ret
 
     def exists(self, var: int, subpattern: Pattern) -> Pattern:

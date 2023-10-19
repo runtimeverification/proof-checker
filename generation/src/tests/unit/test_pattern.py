@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -23,10 +23,10 @@ if TYPE_CHECKING:
         [SVar(1), 0, EVar(0), SVar(1)],
         [Symbol(0), 0, Symbol(1), Symbol(0)],
         # Distribute over subpatterns
-        [Implication(EVar(7), Symbol(1)), 7, Symbol(0), Implication(Symbol(0), Symbol(1))],
-        [Implication(EVar(7), Symbol(1)), 6, Symbol(0), Implication(EVar(7), Symbol(1))],
-        [Application(EVar(7), Symbol(1)), 7, Symbol(0), Application(Symbol(0), Symbol(1))],
-        [Application(EVar(7), Symbol(1)), 6, Symbol(0), Application(EVar(7), Symbol(1))],
+        [Implies(EVar(7), Symbol(1)), 7, Symbol(0), Implies(Symbol(0), Symbol(1))],
+        [Implies(EVar(7), Symbol(1)), 6, Symbol(0), Implies(EVar(7), Symbol(1))],
+        [App(EVar(7), Symbol(1)), 7, Symbol(0), App(Symbol(0), Symbol(1))],
+        [App(EVar(7), Symbol(1)), 6, Symbol(0), App(EVar(7), Symbol(1))],
         # Distribute over subpatterns unless evar_id = binder
         [Exists(1, EVar(1)), 1, Symbol(2), Exists(1, EVar(1))],
         [Exists(0, EVar(1)), 1, Symbol(2), Exists(0, Symbol(2))],
@@ -94,10 +94,10 @@ def test_instantiate_esubst(
         [SVar(1), 0, EVar(0), SVar(1)],
         [Symbol(0), 0, Symbol(1), Symbol(0)],
         # Distribute over subpatterns
-        [Implication(SVar(7), Symbol(1)), 7, Symbol(0), Implication(Symbol(0), Symbol(1))],
-        [Implication(SVar(7), Symbol(1)), 6, Symbol(0), Implication(SVar(7), Symbol(1))],
-        [Application(SVar(7), Symbol(1)), 7, Symbol(0), Application(Symbol(0), Symbol(1))],
-        [Application(SVar(7), Symbol(1)), 6, Symbol(0), Application(SVar(7), Symbol(1))],
+        [Implies(SVar(7), Symbol(1)), 7, Symbol(0), Implies(Symbol(0), Symbol(1))],
+        [Implies(SVar(7), Symbol(1)), 6, Symbol(0), Implies(SVar(7), Symbol(1))],
+        [App(SVar(7), Symbol(1)), 7, Symbol(0), App(Symbol(0), Symbol(1))],
+        [App(SVar(7), Symbol(1)), 6, Symbol(0), App(SVar(7), Symbol(1))],
         # Distribute over subpatterns unless svar_id = binder
         [Exists(1, SVar(0)), 0, Symbol(2), Exists(1, Symbol(2))],
         [Exists(1, Symbol(1)), 1, Symbol(2), Exists(1, Symbol(1))],

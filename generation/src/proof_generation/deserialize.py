@@ -55,12 +55,12 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
             id = next_byte('Expected Symbol id.')
             _ = interpreter.symbol(id)
 
-        elif instruction == Instruction.Implication:
+        elif instruction == Instruction.Implies:
             right = interpreter.stack[-1]
             left = interpreter.stack[-2]
             _ = interpreter.implies(left, right)
 
-        elif instruction == Instruction.Application:
+        elif instruction == Instruction.App:
             right = interpreter.stack[-1]
             left = interpreter.stack[-2]
             _ = interpreter.app(left, right)

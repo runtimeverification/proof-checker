@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import namedtuple
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Application, Exists, Implication, Mu
+from proof_generation.pattern import App, Exists, Implies, Mu
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
@@ -207,10 +207,10 @@ class CountingInterpreter(StatefulInterpreter):
 
     def _collect_patterns(self, p: Pattern) -> None:
         children: list[Pattern] = []
-        if isinstance(p, Implication):
+        if isinstance(p, Implies):
             children.append(p.left)
             children.append(p.right)
-        elif isinstance(p, Application):
+        elif isinstance(p, App):
             children.append(p.left)
             children.append(p.right)
         elif isinstance(p, Exists):

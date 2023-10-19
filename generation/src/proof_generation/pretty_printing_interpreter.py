@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TextIO
 
 from proof_generation.io_interpreter import IOInterpreter
-from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, SSubst
+from proof_generation.pattern import App, ESubst, Exists, Implies, Mu, Notation, SSubst
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -98,11 +98,11 @@ class PrettyPrintingInterpreter(IOInterpreter):
 
     @pretty()
     def implies(self, left: Pattern, right: Pattern) -> None:
-        self.out.write('Implication')
+        self.out.write('Implies')
 
     @pretty()
     def app(self, left: Pattern, right: Pattern) -> None:
-        self.out.write('Application')
+        self.out.write('App')
 
     @pretty()
     def exists(self, var: int, subpattern: Pattern) -> None:
@@ -184,9 +184,9 @@ class PrettyPrintingInterpreter(IOInterpreter):
         # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
         # like implication while keeping notations
         match p:
-            case Implication(left, right):
+            case Implies(left, right):
                 return f'({self.pretty_print_pattern(left)} -> {self.pretty_print_pattern(right)})'
-            case Application(left, right):
+            case App(left, right):
                 return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
             case Exists(var, subpattern):
                 return f'(\u2203 x{var} . {self.pretty_print_pattern(subpattern)})'

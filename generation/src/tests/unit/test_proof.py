@@ -9,7 +9,7 @@ from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu
+from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Mu
 from proof_generation.pretty_printing_interpreter import NotationlessPrettyPrinter, PrettyPrintingInterpreter
 from proof_generation.proofs.propositional import Propositional
 from proof_generation.serializing_interpreter import SerializingInterpreter
@@ -33,11 +33,11 @@ def test_instantiate() -> None:
     assert phi0.instantiate({0: phi0_ef0}) == phi0_ef0
     assert phi0.instantiate({1: phi0_ef0}) == phi0
 
-    assert Implication(phi0, phi0).instantiate({0: phi1}) == Implication(phi1, phi1)
-    assert Implication(phi0, phi1).instantiate({2: phi0_ef0}) == Implication(phi0, phi1)
+    assert Implies(phi0, phi0).instantiate({0: phi1}) == Implies(phi1, phi1)
+    assert Implies(phi0, phi1).instantiate({2: phi0_ef0}) == Implies(phi0, phi1)
 
-    assert Application(phi0, phi0).instantiate({0: phi1}) == Application(phi1, phi1)
-    assert Application(phi0, phi1).instantiate({2: phi0_ef0}) == Application(phi0, phi1)
+    assert App(phi0, phi0).instantiate({0: phi1}) == App(phi1, phi1)
+    assert App(phi0, phi1).instantiate({2: phi0_ef0}) == App(phi0, phi1)
 
     assert Exists(0, phi0).instantiate({0: phi1}) == Exists(0, phi1)
     assert Exists(0, phi0).instantiate({0: phi0_ef0}) == Exists(0, phi0_ef0)
@@ -52,22 +52,22 @@ def test_instantiate() -> None:
 
 def test_conclusion() -> None:
     phi0 = MetaVar(0)
-    phi0_implies_phi0 = Implication(phi0, phi0)
+    phi0_implies_phi0 = Implies(phi0, phi0)
     prop = Propositional(StatefulInterpreter(phase=ExecutionPhase.Proof))
     prop.modus_ponens(
         prop.modus_ponens(
             prop.dynamic_inst(prop.prop2, {1: phi0_implies_phi0, 2: phi0}).assertc(
-                Implication(
-                    Implication(phi0, Implication(phi0_implies_phi0, phi0)),
-                    Implication(Implication(phi0, phi0_implies_phi0), Implication(phi0, phi0)),
+                Implies(
+                    Implies(phi0, Implies(phi0_implies_phi0, phi0)),
+                    Implies(Implies(phi0, phi0_implies_phi0), Implies(phi0, phi0)),
                 )
             ),
             prop.dynamic_inst(prop.prop1, {1: phi0_implies_phi0}).assertc(
-                Implication(phi0, Implication(phi0_implies_phi0, phi0))
+                Implies(phi0, Implies(phi0_implies_phi0, phi0))
             ),
-        ).assertc(Implication(Implication(phi0, phi0_implies_phi0), Implication(phi0, phi0))),
+        ).assertc(Implies(Implies(phi0, phi0_implies_phi0), Implies(phi0, phi0))),
         prop.dynamic_inst(prop.prop1, {1: phi0}),
-    ).assertc(Implication(phi0, phi0))
+    ).assertc(Implies(phi0, phi0))
 
 
 def uncons_metavar_instrs(id: int) -> list[int]:
@@ -77,7 +77,7 @@ def uncons_metavar_instrs(id: int) -> list[int]:
 def test_prove_imp_reflexivity() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)
-    phi0_implies_phi0 = Implication(phi0, phi0)
+    phi0_implies_phi0 = Implies(phi0, phi0)
     prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out))
     proved = prop.publish_proof(prop.imp_reflexivity())
     assert proved.conclusion == phi0_implies_phi0
@@ -85,13 +85,13 @@ def test_prove_imp_reflexivity() -> None:
     assert bytes(out.getbuffer()) == bytes([
         *uncons_metavar_instrs(0),          # Stack: ph0
         *uncons_metavar_instrs(0),          # Stack: ph0, ph0
-        Instruction.Implication,            # Stack: ph0 -> ph0
+        Instruction.Implies,            # Stack: ph0 -> ph0
         *uncons_metavar_instrs(0),          # Stack: ph0 -> ph0; ph0
         Instruction.Prop2,                  # Stack: ph0 -> ph0; ph0; prop2
         Instruction.Instantiate, 2, 2, 1,   # Stack: p1=[(ph0 -> ((ph0 -> ph0) -> ph0)) -> ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))]
         *uncons_metavar_instrs(0),          # Stack: p1; ph0;
         *uncons_metavar_instrs(0),          # Stack: p1; ph0; ph0;
-        Instruction.Implication,            # Stack: p1 ; ph0 -> ph0;
+        Instruction.Implies,            # Stack: p1 ; ph0 -> ph0;
         Instruction.Prop1,                  # Stack: p1 ; ph0 -> ph0; prop1
         Instruction.Instantiate, 1, 1,      # Stack: p1 ; [p2: (ph0 -> ((ph0 -> ph0) -> ph0)) ]
         Instruction.ModusPonens,            # Stack: [p3: ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))

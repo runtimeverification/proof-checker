@@ -8,7 +8,7 @@ from mm_translate.converter.converter import MetamathConverter
 from mm_translate.converter.representation import AxiomWithAntecedents
 from mm_translate.metamath.parser import load_database
 from proof_generation.basic_interpreter import ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, Pattern
+from proof_generation.pattern import Implies, MetaVar, Pattern
 from proof_generation.proof import ProofExp
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
@@ -185,9 +185,9 @@ def convert_to_implication(antecedents: tuple[Pattern, ...], conclusion: Pattern
     (ant, *ants) = antecedents
 
     if ants:
-        return Implication(ant, convert_to_implication(tuple(ants), conclusion))
+        return Implies(ant, convert_to_implication(tuple(ants), conclusion))
 
-    return Implication(ant, conclusion)
+    return Implies(ant, conclusion)
 
 
 def main() -> None:
