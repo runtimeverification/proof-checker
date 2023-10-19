@@ -48,7 +48,7 @@ public:
 
   bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }
 
-  void insert_front(const T &value) {
+  void push(const T &value) {
     Node<T> *newNode = Node<T>::create(value);
 
     // If the list is empty, set the new node as the head
@@ -102,7 +102,7 @@ public:
 
   static LinkedList *create(const T &value) {
     LinkedList *list = create();
-    list->insert_front(value);
+    list->push(value);
     return list;
   }
 
