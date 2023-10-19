@@ -37,7 +37,14 @@ public:
     }
   }
 
-  bool operator==(const LinkedList &rhs) { return head == rhs.head; }
+  bool operator==(const LinkedList &rhs) const {
+    if (!head && !rhs.head) {
+      return true;
+    } else if (!head || !rhs.head) {
+      return false;
+    }
+    return (head->operator==(*rhs.head));
+  }
 
   bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }
 
@@ -111,36 +118,29 @@ public:
   }
 
   bool isDisjoint(LinkedList<T> *otherList) {
-    Node<T> *current1 = head;
-
-    while (current1) {
-      Node<T> *current2 = otherList->head;
-
-      while (current2) {
-        if (current1->data == current2->data) {
-          return false; // Common element found
-        }
-
-        current2 = current2->next;
+    for (auto &item : *otherList) {
+      if (contains(item)) {
+        return true;
       }
-
-      current1 = current1->next;
     }
-
-    return true; // No common elements found
+    return false;
   }
 
-  T &operator[](int index) {
+  T operator[](int index) {
     Node<T> *curr = head;
-    int i = 0;
-    while (curr) {
-      if (i == index) {
-        return curr->data;
-      }
+    for (int i = 0; i < index; i++) {
       curr = curr->next;
-      i++;
+      assert(curr && "Index out of bounds.");
     }
-    assert(curr && "Index out of bounds.");
+    return curr->data;
+  }
+
+  T get(int index) {
+    Node<T> *curr = head;
+    for (int i = 0; i < index; i++) {
+      curr = curr->next;
+      assert(curr && "Index out of bounds.");
+    }
     return curr->data;
   }
 
