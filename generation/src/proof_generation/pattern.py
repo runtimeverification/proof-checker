@@ -25,13 +25,13 @@ def match_single(
         if not ret:
             return None
         ret = match_single(pat_imp[1], inst_imp[1], ret)
-    elif (pat_evar := EVar.unwrap(pattern)) and (inst_evar := EVar.unwrap(instance)):
+    elif (pat_evar := EVar.deconstruct(pattern)) and (inst_evar := EVar.deconstruct(instance)):
         if pat_evar != inst_evar:
             return None
-    elif (pat_svar := SVar.unwrap(pattern)) and (inst_svar := SVar.unwrap(instance)):
+    elif (pat_svar := SVar.deconstruct(pattern)) and (inst_svar := SVar.deconstruct(instance)):
         if pat_svar != inst_svar:
             return None
-    elif (pat_sym := Symbol.unwrap(pattern)) and (inst_sym := Symbol.unwrap(instance)):
+    elif (pat_sym := Symbol.deconstruct(pattern)) and (inst_sym := Symbol.deconstruct(instance)):
         if pat_sym != inst_sym:
             return None
     elif (pat_app := Application.unwrap(pattern)) and (inst_app := Application.unwrap(instance)):
@@ -39,11 +39,11 @@ def match_single(
         if not ret:
             return None
         ret = match_single(pat_app[1], inst_app[1], ret)
-    elif (pat_ex := Exists.unwrap(pattern)) and (inst_ex := Exists.unwrap(instance)):
+    elif (pat_ex := Exists.deconstruct(pattern)) and (inst_ex := Exists.deconstruct(instance)):
         if pat_ex[0] != inst_ex[0]:
             return None
         ret = match_single(pat_ex[1], inst_ex[1], ret)
-    elif (pat_mu := Mu.unwrap(pattern)) and (inst_mu := Mu.unwrap(instance)):
+    elif (pat_mu := Mu.deconstruct(pattern)) and (inst_mu := Mu.deconstruct(instance)):
         if pat_mu[0] != inst_mu[0]:
             return None
         ret = match_single(pat_mu[1], inst_mu[1], ret)
@@ -84,7 +84,7 @@ class Pattern:
     @classmethod
     def extract(cls, pattern: Pattern) -> tuple[Pattern, ...]:
         ret = cls.unwrap(pattern)
-        assert ret is not None, f"Expected a/an {cls.__name__} but got instead: {str(pattern)}\n"
+        assert ret is not None, f'Expected a/an {cls.__name__} but got instead: {str(pattern)}\n'
         return ret
 
     def __eq__(self, o: object) -> bool:
@@ -109,18 +109,12 @@ class EVar(Pattern):
         return self
 
     @staticmethod
-    def unwrap(pat: Pattern) -> int | None:
+    def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, EVar):
             return pat.name
         if isinstance(pat, Notation):
-            return EVar.unwrap(pat.conclusion())
+            return EVar.deconstruct(pat.conclusion())
         return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> int:
-        pat_unwrapped = EVar.unwrap(pat)
-        assert pat_unwrapped is not None, 'Expected an EVar but got: ' + str(pat) + '\n'
-        return pat_unwrapped
 
     def __str__(self) -> str:
         return f'x{self.name}'
@@ -142,18 +136,12 @@ class SVar(Pattern):
         return self
 
     @staticmethod
-    def unwrap(pat: Pattern) -> int | None:
+    def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, SVar):
             return pat.name
         if isinstance(pat, Notation):
-            return SVar.unwrap(pat.conclusion())
+            return SVar.deconstruct(pat.conclusion())
         return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> int:
-        pat_unwrapped = SVar.unwrap(pat)
-        assert pat_unwrapped is not None, 'Expected an SVar but got: ' + str(pat) + '\n'
-        return pat_unwrapped
 
     def __str__(self) -> str:
         return f'X{self.name}'
@@ -173,18 +161,12 @@ class Symbol(Pattern):
         return self
 
     @staticmethod
-    def unwrap(pat: Pattern) -> int | None:
+    def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, Symbol):
             return pat.name
         if isinstance(pat, Notation):
-            return Symbol.unwrap(pat.conclusion())
+            return Symbol.deconstruct(pat.conclusion())
         return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> int:
-        pat_unwrapped = Symbol.unwrap(pat)
-        assert pat_unwrapped is not None, 'Expected a Symbol but got: ' + str(pat) + '\n'
-        return pat_unwrapped
 
     def __str__(self) -> str:
         return f'\u03c3{str(self.name)}'
@@ -244,18 +226,12 @@ class Exists(Pattern):
         return Exists(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     @staticmethod
-    def unwrap(pat: Pattern) -> tuple[int, Pattern] | None:
+    def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
         if isinstance(pat, Exists):
             return pat.var, pat.subpattern
         if isinstance(pat, Notation):
-            return Exists.unwrap(pat.conclusion())
+            return Exists.deconstruct(pat.conclusion())
         return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> tuple[int, Pattern]:
-        pat_unwrapped = Exists.unwrap(pat)
-        assert pat_unwrapped is not None, 'Expected an Exists but got: ' + str(pat) + '\n'
-        return pat_unwrapped
 
     def __str__(self) -> str:
         return f'(\u2203 x{self.var} . {str(self.subpattern)})'
@@ -278,18 +254,12 @@ class Mu(Pattern):
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     @staticmethod
-    def unwrap(pat: Pattern) -> tuple[int, Pattern] | None:
+    def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
         if isinstance(pat, Mu):
             return pat.var, pat.subpattern
         if isinstance(pat, Notation):
-            return Mu.unwrap(pat.conclusion())
+            return Mu.deconstruct(pat.conclusion())
         return None
-
-    @staticmethod
-    def extract(pat: Pattern) -> tuple[int, Pattern]:
-        pat_unwrapped = Mu.unwrap(pat)
-        assert pat_unwrapped is not None, 'Expected a Mu but got: ' + str(pat) + '\n'
-        return pat_unwrapped
 
     def __str__(self) -> str:
         return f'(\u03BC X{self.var} . {str(self.subpattern)})'
@@ -419,7 +389,7 @@ class Notation(Pattern):
     @classmethod
     def extract(cls, pattern: Pattern) -> tuple[Pattern, ...]:
         ret = cls.unwrap(pattern)
-        assert ret is not None, f"Expected a {cls.label()} but got instead: {str(pattern)}\n"
+        assert ret is not None, f'Expected a/an {cls.label()} but got instead: {str(pattern)}\n'
         return ret
 
     def __str__(self) -> str:

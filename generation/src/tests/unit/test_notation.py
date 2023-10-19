@@ -27,6 +27,6 @@ test_pattern_pairs = [
 @pytest.mark.parametrize('pat_pair', test_pattern_pairs)
 def test_eq(pat_pair: tuple[Pattern, Pattern, bool]) -> None:
     if pat_pair[2]:
-        assert pat_pair[0] == pat_pair[1], f'{str(p)}\n!=\n{str(q)}\n'
+        assert pat_pair[0] == pat_pair[1], f'{str(pat_pair[0])}\n!=\n{str(pat_pair[1])}\n'
     else:
-        assert not (pat_pair[0] == pat_pair[1]), f'{str(p)}\n==\n{str(q)}\n'
+        assert not (pat_pair[0] == pat_pair[1]), f'{str(pat_pair[0])}\n==\n{str(pat_pair[1])}\n'
