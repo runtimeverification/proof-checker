@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "$#" -lt 2 ]]; then
-  echo "Usage ./build <program> <input> [ll/bc] (default: ll)"
+  echo "Usage ./build <program> <input> [-v/--verbose]"
   exit 1
 fi
 
@@ -11,7 +11,11 @@ if [[ -z "${ZKLLVM_ROOT}" ]]; then
   exit 1
 fi
 
-set -x
+if [[ "$#" -eq 3 ]]; then
+  if [[ "${3}" == "-v" || "${3}" == "--verbose" ]]; then
+    set -x
+  fi
+fi
 
 FILE=$(basename "${1}")
 FILEPATH=$(dirname "$(realpath "${1}")")
@@ -19,24 +23,6 @@ FILENAME=${FILE%%.*}
 OUTPUTDIR="output"
 EXT=${FILE##*.}
 INPUT=$2
-
-LLVM_EXT=
-LLVM_OUT=
-if [[ ! -d "${OUTPUTDIR}" ]]; then
-  mkdir "${OUTPUTDIR}"
-fi
-
-if [[ "$#" -eq 4 ]]; then
-  LLVM_EXT=$4
-else
-  LLVM_EXT=ll
-fi
-
-if [[ "$LLVM_EXT" == "ll" ]]; then
-  LLVM_OUT=-S
-else
-  LLVM_OUT=-c
-fi
 
 CRYPTO3_LIB_DIR="${ZKLLVM_ROOT}"/libs/crypto3
 CLANG_EXE="${ZKLLVM_ROOT}"/build/libs/circifier/llvm/bin/clang-16
@@ -46,9 +32,9 @@ ASSIGNER="${ZKLLVM_ROOT}"/build/bin/assigner/assigner
 TRANSPILER="${ZKLLVM_ROOT}"/build/bin/transpiler/transpiler
 
 # Intermediary outputs:
-OUTPUT_CLANG="${OUTPUTDIR}/${FILENAME}_${EXT}_example_no_stdlib_${FILENAME}.${EXT}.${LLVM_EXT}"
-OUTPUT_LLVM_LINK_1="${OUTPUTDIR}/${FILENAME}_${EXT}_example_no_stdlib.${LLVM_EXT}"
-OUTPUT_LLVM_LINK_2="${OUTPUTDIR}/${FILENAME}_${EXT}_example.${LLVM_EXT}"
+OUTPUT_CLANG="${OUTPUTDIR}/${FILENAME}_${EXT}_example_no_stdlib_${FILENAME}.${EXT}.ll"
+OUTPUT_LLVM_LINK_1="${OUTPUTDIR}/${FILENAME}_${EXT}_example_no_stdlib.ll"
+OUTPUT_LLVM_LINK_2="${OUTPUTDIR}/${FILENAME}_${EXT}_example.ll"
 
 # Final outputs:
 OUTPUT_CIRCUIT="${OUTPUTDIR}/circuit.crct"
@@ -83,9 +69,10 @@ ${CLANG_EXE} -target assigner -D__ZKLLVM__ \
 -I "${CRYPTO3_LIB_DIR}"/libs/zk/include \
 -I "${ZKLLVM_ROOT}"/libs/stdlib/libcpp \
 -I "${ZKLLVM_ROOT}"/libs/stdlib/libc/include \
--emit-llvm -O1 "${LLVM_OUT}" "${FILEPATH}/${FILE}" -o "${OUTPUT_CLANG}"
+-emit-llvm -O1 -S "${FILEPATH}/${FILE}" -o "${OUTPUT_CLANG}"
 
-${LLVM_LINK} "${LLVM_OUT}" "${OUTPUT_CLANG}" -o "${OUTPUT_LLVM_LINK_1}"
-${LLVM_LINK} "${LLVM_OUT}" "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.${LLVM_EXT}" -o "${OUTPUT_LLVM_LINK_2}"
-${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --check
-${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}"
+${LLVM_LINK} -S "${OUTPUT_CLANG}" -o "${OUTPUT_LLVM_LINK_1}"
+${LLVM_LINK} -S "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.ll" -o "${OUTPUT_LLVM_LINK_2}"
+echo "Circuit Function output: "
+${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output --check
+time ${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}"
