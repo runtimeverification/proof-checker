@@ -647,26 +647,12 @@ struct Pattern {
     ~Optional() = default;
 
     operator bool() const { return hasValue; }
-    Pattern operator*() const { return value; }
 
-    Pattern *operator*() {
-      if (hasValue) {
-        return value;
-      } else {
-        return nullptr;
-      }
-    }
-
-    Pattern *unwrap() {
-      if (hasValue) {
-        return value;
-      } else {
-        return nullptr;
-      }
-    }
+    // returns nullptr if hasValue is false
+    Pattern *operator*() { return value; }
+    Pattern *unwrap() { return value; }
 
     bool has_value() { return hasValue; }
-    Pattern get_value() { return value; }
   };
 
   static Optional<Pattern> instantiate_internal(Pattern &p, IdList &vars,
