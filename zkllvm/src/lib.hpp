@@ -992,4 +992,93 @@ struct Pattern {
     }
     return term->pattern;
   }
+
+/// Main implementation
+/// -------------------
+
+enum class ExecutionPhase
+{
+  Gamma,
+  Claims,
+  Proof
+};
+
+  static void execute_instructions(LinkedList<uint8_t> *buffer, Stack *stack,
+                                   Memory *memory, Claims *claims,
+                                   ExecutionPhase phase) {
+    // Get an iterator for the input buffer
+    auto iterator = buffer->begin();
+
+    // Metavars
+    // Phi0 = MetaVar(0)
+    // Phi1 = MetaVar(1)
+    // Phi2 = MetaVar(2)
+    auto phi0 = metavar_unconstrained(0);
+    auto phi1 = metavar_unconstrained(1);
+    auto phi2 = metavar_unconstrained(2);
+
+    // Axioms
+    // Prop1: phi0 => (phi1 => phi0)
+    // Prop2: (phi0 => (phi1 => phi2)) => ((phi0 => phi1) => (phi0 => phi2))
+    // Prop3: (~phi0 => phi0
+    auto prop1 = implies(copy(phi0), implies(copy(phi1), copy(phi0)));
+    auto prop2 =
+        implies(implies(copy(phi0), implies(copy(phi1), copy(phi2))),
+                implies(implies(copy(phi0), phi1), implies(copy(phi0), phi2)));
+    auto prop3 = implies(negate(negate(copy(phi0))), copy(phi0));
+
+    // Quantifier: forall x. phi0
+    auto quantifier = implies(esubst(copy(phi0), 0, evar(1)), exists(0, phi0));
+
+    // Existence: exists x. phi0
+    auto existence = exists(0, phi0);
+
+    // Iteration through the input buffer
+    while (true) {
+      int instruction;
+      if (iterator != buffer->end()) {
+        instruction = *iterator;
+        ++iterator;
+      } else {
+        break;
+      }
+
+      Instruction instr_u32 = from(instruction);
+
+      switch (instr_u32) {
+        // TODO: Add an abstraction for pushing these one-argument terms on
+        // stack?
+      case Instruction::EVar:
+      case Instruction::SVar:
+      case Instruction::Symbol:
+      case Instruction::MetaVar:
+      case Instruction::CleanMetaVar:
+      case Instruction::Implication:
+      case Instruction::Application:
+      case Instruction::Exists:
+      case Instruction::Mu:
+      case Instruction::ESubst:
+      case Instruction::SSubst:
+      case Instruction::Prop1:
+      case Instruction::Prop2:
+      case Instruction::Prop3:
+      case Instruction::ModusPonens:
+      case Instruction::Quantifier:
+      case Instruction::Generalization:
+      case Instruction::Existence:
+      case Instruction::Substitution:
+      case Instruction::Instantiate:
+      case Instruction::Pop:
+      case Instruction::Save:
+      case Instruction::Load:
+      default: {
+#if DEBUG
+        throw std::runtime_error("Unknown instruction: " +
+                                 std::to_string((int)instr_u32));
+#endif
+        exit(1);
+      }
+      }
+    }
+  }
 };
