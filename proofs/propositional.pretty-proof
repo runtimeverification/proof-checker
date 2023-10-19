@@ -5,7 +5,7 @@ MetaVar 0
 	Stack:
 	0: phi0
 	1: phi0
-Implication
+Implies
 	Stack:
 	0: (phi0 -> phi0)
 MetaVar 0
@@ -29,7 +29,7 @@ MetaVar 0
 	0: ⊢ ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 	1: phi0
 	2: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 	1: (phi0 -> phi0)
@@ -85,7 +85,7 @@ MetaVar 0
 	1: ⊥
 	2: phi0
 	3: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
@@ -121,7 +121,7 @@ MetaVar 0
 	2: ⊢ ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 	3: phi0
 	4: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
@@ -216,7 +216,7 @@ Mu 0
 	2: ⊥
 	3: phi0
 	4: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -249,7 +249,7 @@ Mu 0
 	2: ⊥
 	3: ~(phi0)
 	4: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -308,7 +308,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: phi0
 	4: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -341,7 +341,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: ~(phi0)
 	4: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -360,7 +360,7 @@ MetaVar 0
 	2: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	3: ~(~(phi0))
 	4: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -483,7 +483,7 @@ Mu 0
 	3: ⊥
 	4: phi0
 	5: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -627,7 +627,7 @@ MetaVar 1
 	4: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
 	5: ⊥
 	6: phi1
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -748,7 +748,7 @@ Mu 0
 	7: ⊥
 	8: phi0
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -806,7 +806,7 @@ Mu 0
 	7: ⊥
 	8: ~(phi0)
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -910,7 +910,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: phi0
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -968,7 +968,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: ~(phi0)
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1002,7 +1002,7 @@ MetaVar 0
 	7: ⊢ ((⊥ -> (~(~(phi0)) -> phi0)) -> ((⊥ -> ~(~(phi0))) -> (⊥ -> phi0)))
 	8: ~(~(phi0))
 	9: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1215,7 +1215,7 @@ Mu 0
 	8: ⊥
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1333,7 +1333,7 @@ Mu 0
 	4: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	5: phi0
 	6: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1350,7 +1350,7 @@ MetaVar 0
 	4: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	5: (phi0 -> ⊥)
 	6: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1397,7 +1397,7 @@ Mu 0
 	5: ((phi0 -> ⊥) -> phi0)
 	6: phi0
 	7: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1436,7 +1436,7 @@ Mu 0
 	5: ((phi0 -> ⊥) -> phi0)
 	6: (phi0 -> ⊥)
 	7: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1513,7 +1513,7 @@ Mu 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> ⊥) -> phi0)) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0)))
 	6: phi0
 	7: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1552,7 +1552,7 @@ Mu 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> ⊥) -> phi0)) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0)))
 	6: (phi0 -> ⊥)
 	7: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1571,7 +1571,7 @@ MetaVar 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> ⊥) -> phi0)) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0)))
 	6: ((phi0 -> ⊥) -> ⊥)
 	7: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1623,7 +1623,7 @@ Mu 0
 	6: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	7: phi0
 	8: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1644,7 +1644,7 @@ MetaVar 0
 	6: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	7: (phi0 -> ⊥)
 	8: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1761,7 +1761,7 @@ Mu 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0))
 	6: phi0
 	7: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1780,7 +1780,7 @@ MetaVar 0
 	5: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> phi0))
 	6: (phi0 -> ⊥)
 	7: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1832,7 +1832,7 @@ Mu 0
 	6: ((phi0 -> ⊥) -> phi0)
 	7: phi0
 	8: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1853,7 +1853,7 @@ MetaVar 0
 	6: ((phi0 -> ⊥) -> phi0)
 	7: (phi0 -> ⊥)
 	8: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1910,7 +1910,7 @@ Mu 0
 	7: ((phi0 -> ⊥) -> phi0)
 	8: phi0
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1957,7 +1957,7 @@ Mu 0
 	7: ((phi0 -> ⊥) -> phi0)
 	8: (phi0 -> ⊥)
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2032,7 +2032,7 @@ Mu 0
 	6: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> phi0)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))))
 	7: phi0
 	8: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2053,7 +2053,7 @@ MetaVar 0
 	6: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> phi0)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))))
 	7: (phi0 -> ⊥)
 	8: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2110,7 +2110,7 @@ Mu 0
 	7: ((phi0 -> ⊥) -> phi0)
 	8: phi0
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2172,7 +2172,7 @@ Mu 0
 	8: (phi0 -> ⊥)
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2184,7 +2184,7 @@ Implication
 	7: ((phi0 -> ⊥) -> phi0)
 	8: (phi0 -> ⊥)
 	9: (phi0 -> ⊥)
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2246,7 +2246,7 @@ Mu 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2271,7 +2271,7 @@ MetaVar 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: (phi0 -> ⊥)
 	10: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2338,7 +2338,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: phi0
 	11: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2393,7 +2393,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: (phi0 -> ⊥)
 	11: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2406,7 +2406,7 @@ Implication
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: ((phi0 -> ⊥) -> phi0)
 	10: ((phi0 -> ⊥) -> ⊥)
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2488,7 +2488,7 @@ Mu 0
 	7: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))))
 	8: phi0
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2550,7 +2550,7 @@ Mu 0
 	8: (phi0 -> ⊥)
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2562,7 +2562,7 @@ Implication
 	7: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))))
 	8: (phi0 -> ⊥)
 	9: (phi0 -> ⊥)
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2624,7 +2624,7 @@ Mu 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2649,7 +2649,7 @@ MetaVar 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: (phi0 -> ⊥)
 	10: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2716,7 +2716,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: phi0
 	11: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2771,7 +2771,7 @@ Mu 0
 	9: ((phi0 -> ⊥) -> phi0)
 	10: (phi0 -> ⊥)
 	11: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2784,7 +2784,7 @@ Implication
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: ((phi0 -> ⊥) -> phi0)
 	10: ((phi0 -> ⊥) -> ⊥)
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2796,7 +2796,7 @@ Implication
 	7: ⊢ ((((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))) -> ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))))
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2858,7 +2858,7 @@ Mu 0
 	8: (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2883,7 +2883,7 @@ MetaVar 0
 	8: (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))
 	9: (phi0 -> ⊥)
 	10: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2970,7 +2970,7 @@ Mu 0
 	8: ⊢ ((((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))))
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3132,7 +3132,7 @@ Mu 0
 	7: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))))
 	8: phi0
 	9: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3194,7 +3194,7 @@ Mu 0
 	8: (phi0 -> ⊥)
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3206,7 +3206,7 @@ Implication
 	7: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))) -> (((phi0 -> ⊥) -> phi0) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥))))
 	8: (phi0 -> ⊥)
 	9: (phi0 -> ⊥)
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3268,7 +3268,7 @@ Mu 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3293,7 +3293,7 @@ MetaVar 0
 	8: ((phi0 -> ⊥) -> (phi0 -> ⊥))
 	9: (phi0 -> ⊥)
 	10: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3380,7 +3380,7 @@ Mu 0
 	8: ⊢ (((phi0 -> ⊥) -> (phi0 -> ⊥)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> (phi0 -> ⊥))))
 	9: phi0
 	10: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3419,7 +3419,7 @@ MetaVar 0
 	9: (phi0 -> ⊥)
 	10: phi0
 	11: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3503,7 +3503,7 @@ MetaVar 0
 	10: ⊢ ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 	11: phi0
 	12: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3700,7 +3700,7 @@ Mu 0
 	6: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> phi0)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))
 	7: phi0
 	8: ⊥
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3721,7 +3721,7 @@ MetaVar 0
 	6: ⊢ ((((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> phi0)) -> (((phi0 -> ⊥) -> phi0) -> ((phi0 -> ⊥) -> ⊥)))
 	7: (phi0 -> ⊥)
 	8: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3754,7 +3754,7 @@ MetaVar 0
 	7: ((phi0 -> ⊥) -> phi0)
 	8: phi0
 	9: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3826,7 +3826,7 @@ MetaVar 0
 	8: ⊢ ((phi0 -> ((phi0 -> phi0) -> phi0)) -> ((phi0 -> (phi0 -> phi0)) -> (phi0 -> phi0)))
 	9: phi0
 	10: phi0
-Implication
+Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)

@@ -13,7 +13,7 @@ Mu 0
 	Stack:
 	0: phi0
 	1: ⊥
-Implication
+Implies
 	Stack:
 	0: (phi0 -> ⊥)
 // Notation 'Negation'
@@ -23,14 +23,14 @@ MetaVar 0
 	Stack:
 	0: ~(phi0)
 	1: phi0
-Implication
+Implies
 	Stack:
 	0: (~(phi0) -> phi0)
 MetaVar 0
 	Stack:
 	0: (~(phi0) -> phi0)
 	1: phi0
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 Publish
@@ -53,7 +53,7 @@ Mu 0
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: phi0
 	2: ⊥
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (phi0 -> ⊥)
@@ -72,12 +72,12 @@ MetaVar 1
 	1: ~(phi0)
 	2: phi0
 	3: phi1
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: ~(phi0)
 	2: (phi0 -> phi1)
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -105,7 +105,7 @@ Mu 0
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: phi0
 	3: ⊥
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -133,7 +133,7 @@ Mu 0
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: ~(phi0)
 	3: ⊥
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -149,7 +149,7 @@ MetaVar 0
 	1: (~(phi0) -> (phi0 -> phi1))
 	2: ~(~(phi0))
 	3: phi0
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -180,7 +180,7 @@ MetaVar 0
 	2: (~(~(phi0)) -> phi0)
 	3: ⊥
 	4: phi0
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -232,7 +232,7 @@ Mu 0
 	3: (⊥ -> phi0)
 	4: ⊥
 	5: ⊥
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))
@@ -271,7 +271,7 @@ MetaVar 0
 	4: ⊤
 	5: phi0
 	6: phi0
-Implication
+Implies
 	Stack:
 	0: ((~(phi0) -> phi0) -> phi0)
 	1: (~(phi0) -> (phi0 -> phi1))

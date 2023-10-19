@@ -61,7 +61,7 @@ Symbol 2
 	3: ⊢ ((phi1 -> (σ1 -> σ2)) -> ((phi1 -> σ1) -> (phi1 -> σ2)))
 	4: σ1
 	5: σ2
-Implication
+Implies
 	Stack:
 	0: ⊢ (σ0 -> σ1)
 	1: ⊢ (σ1 -> σ2)
