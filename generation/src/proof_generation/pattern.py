@@ -283,6 +283,9 @@ class MetaVar(Pattern):
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         if self.name in delta:
+            assert self.can_be_replaced_by(
+                delta[self.name]
+            ), f'Invalid instantiation when trying to instantiate {str(self)} with {str(delta[self.name])}\n'
             return delta[self.name]
         return self
 
@@ -388,7 +391,6 @@ class Notation(Pattern):
         if match_result is None:
             return None
         return tuple([v for _, v in sorted(match_result.items())])
-
 
     def __str__(self) -> str:
         return f'{self.label()} {str(self.arguments())}'
