@@ -726,12 +726,31 @@ int test_phi_implies_phi_impl() {
   proof->push_back((uint8_t)1);
   proof->push_back((uint8_t)1);
   // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
+  proof->push_back((uint8_t)Instruction::ModusPonens);
+  // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+  proof->push_back((uint8_t)Instruction::Load);
+  proof->push_back((uint8_t)0);
+  // Stack: p3 ; ph0;
+  proof->push_back((uint8_t)Instruction::Prop1);
+  // Stack: p3 ; ph0; prop1
+  proof->push_back((uint8_t)Instruction::Instantiate);
+  proof->push_back((uint8_t)1);
+  proof->push_back((uint8_t)1);
+  // Stack: p3 ; ph0 -> (ph0 -> ph0)
+  proof->push_back((uint8_t)Instruction::ModusPonens);
+  // Stack: ph0 -> ph0
 
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();
   auto claims = Pattern::Claims::create();
 
   execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  auto phi0 = Pattern::metavar_unconstrained(0);
+  auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Proved, Pattern::implies(phi0, phi0)));
+
+  assert(*stack == *expected_stack);
 
   for (auto it : *stack) {
     it->pattern->~Pattern();
@@ -753,6 +772,11 @@ int test_phi_implies_phi_impl() {
   free(memory);
   claims->~LinkedList();
   free(claims);
+
+  expected_stack->~LinkedList();
+  free(expected_stack);
+
+  phi0->~Pattern();
 
   return 0;
 }

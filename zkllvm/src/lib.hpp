@@ -1111,7 +1111,32 @@ struct Pattern {
       case Instruction::Prop3:
         stack->push(Term::newTerm(Term::Type::Proved, copy(prop3)));
         break;
-      case Instruction::ModusPonens:
+      case Instruction::ModusPonens: {
+        auto premise2 = pop_stack_proved(stack);
+        auto premise1 = pop_stack_proved(stack);
+
+        if (premise1->inst != Instruction::Implication) {
+#if DEBUG
+          throw std::runtime_error("Modus Ponens: expected implication on the "
+                                   "stack, got: " +
+                                   std::to_string((int)premise1->inst));
+#endif
+          exit(1);
+        }
+
+        if (premise1->left != *premise2) {
+#if DEBUG
+          throw std::runtime_error(
+              "Antecedents do not match for modus ponens.\n" +
+              std::to_string((int)premise1->left->inst) + "\n" +
+              std::to_string((int)premise2->inst));
+
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Proved, copy(premise1->right)));
+        break;
+      }
       case Instruction::Quantifier:
       case Instruction::Generalization:
       case Instruction::Existence:
