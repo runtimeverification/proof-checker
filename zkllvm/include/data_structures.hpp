@@ -8,11 +8,9 @@ template <typename T> struct Node {
 
   Node(const T &value) : data(value), next(nullptr) {}
 
-  bool operator==(const Node &rhs) {
-    return data == rhs.data && next == rhs.next;
-  }
+  bool operator==(const Node &rhs) const { return equal(*this, rhs); }
 
-  bool operator!=(const Node &rhs) { return !(*this == rhs); }
+  bool operator!=(const Node &rhs) { return !(this == rhs); }
 
   static Node *create(const T &value) {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
@@ -21,6 +19,26 @@ template <typename T> struct Node {
     return newNode;
   }
 };
+
+template <typename T> bool equal(const Node<T> &lhs, const Node<T> &rhs) {
+
+  if (!lhs.data && !rhs.data) {
+    return true;
+  } else if (!lhs.data || !rhs.data) {
+    return false;
+  }
+  return lhs.data->operator==(*rhs.data) && lhs.next == rhs.next;
+}
+
+template <> bool equal(const Node<uint8_t> &lhs, const Node<uint8_t> &rhs) {
+
+  if (!lhs.data && !rhs.data) {
+    return true;
+  } else if (!lhs.data || !rhs.data) {
+    return false;
+  }
+  return lhs.data == rhs.data && lhs.next == rhs.next;
+}
 
 template <typename T> class LinkedList {
 public:
@@ -87,6 +105,11 @@ public:
     head = next;
 
     return value;
+  }
+
+  T front() {
+    assert(head && "Insufficient stack items.");
+    return head->data;
   }
 
   static LinkedList *create() {
@@ -159,6 +182,12 @@ public:
     Iterator &operator++() {
       current = current->next;
       return *this;
+    }
+
+    Iterator next() {
+      Iterator tmp = *this;
+      ++(*this);
+      return tmp;
     }
   };
 
