@@ -10,13 +10,13 @@ from proof_generation.pattern import (
     Exists,
     FakeNotation,
     Implies,
+    FakeNotation,
     MetaVar,
     Mu,
     Notation,
     SSubst,
     SVar,
     Symbol,
-    FakeNotation,
     bot,
 )
 from proof_generation.proved import Proved
