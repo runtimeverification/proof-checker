@@ -60,6 +60,7 @@ class Or(Notation):
         return f'({str(self.left)}) \\/ ({str(self.right)})'
 
 
+
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
         super().__init__(interpreter)

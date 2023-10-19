@@ -4,7 +4,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implication, MetaVar, Notation, match_single
-from proof_generation.proofs.propositional import And, Negation, Or, Propositional, top, bot, neg, phi0, phi1, phi2
+from proof_generation.proofs.propositional import And, Negation, Or, Propositional, bot, neg, phi0, phi1, phi2, top
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
