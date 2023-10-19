@@ -44,14 +44,14 @@ int test_efresh(int a, int b) {
 
 #endif
 
- mvar->~Pattern();
- implication->~Pattern();
- left->~Pattern();
- right->~Pattern();
- evar->~Pattern();
- metaapp->~Pattern();
- esubst->~Pattern();
- ssubst->~Pattern();
+  mvar->~Pattern();
+  implication->~Pattern();
+  left->~Pattern();
+  right->~Pattern();
+  evar->~Pattern();
+  metaapp->~Pattern();
+  esubst->~Pattern();
+  ssubst->~Pattern();
 
   return 0;
 }
@@ -496,11 +496,11 @@ int test_instantiate() {
   auto internal1 =
       Pattern::instantiate_internal(*phi0_implies_phi0, *vars1, *plugsx0);
   auto internal2 =
-      Pattern::instantiate_internal(*appphi0phi0, *vars0, *plugsX0);
+      Pattern::instantiate_internal(*appphi0phi0, *vars0, *plugsx0);
   auto internal3 =
       Pattern::instantiate_internal(*appphi0phi0, *vars1, *plugsX0);
   auto internal4 =
-      Pattern::instantiate_internal(*existsx0phi0, *vars0, *plugsX0);
+      Pattern::instantiate_internal(*existsx0phi0, *vars0, *plugsx0);
   auto internal5 =
       Pattern::instantiate_internal(*existsx0phi0, *vars1, *plugsX0);
   auto internal6 = Pattern::instantiate_internal(*muX0phi0, *vars0, *plugsx0);
@@ -523,16 +523,17 @@ int test_instantiate() {
   auto muX0X0 = Pattern::mu(0, Pattern::copy(X0));
 
   // Empty substs have no effect
-   assert(*Pattern::instantiate_internal(*existsx0phi0, *vars12, *plugsx0X0) ==
+  assert(*Pattern::instantiate_internal(*existsx0phi0, *vars12, *plugsx0X0) ==
          nullptr);
-    assert(*Pattern::instantiate_internal(*muX0phi0, *vars12, *plugsx0X0) ==
+  assert(*Pattern::instantiate_internal(*muX0phi0, *vars12, *plugsx0X0) ==
          nullptr);
 
   // Order matters if corresponding value is not moved
   auto vars10 = IdList::create(1, 0);
   auto internal8 =
       Pattern::instantiate_internal(*existsx0phi0, *vars10, *plugsx0X0);
-  auto internal9 = Pattern::instantiate_internal(*muX0phi0, *vars10, *plugsx0X0);
+  auto internal9 =
+      Pattern::instantiate_internal(*muX0phi0, *vars10, *plugsx0X0);
 
   assert(*internal8 == *existsx0X0);
   assert(*internal9 == *muX0X0);
@@ -574,7 +575,6 @@ int test_instantiate() {
   std::cout << std::endl;
   internal9.unwrap()->print();
   std::cout << std::endl;
-
 
 #endif
   x0->~Pattern();

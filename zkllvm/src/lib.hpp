@@ -157,7 +157,7 @@ struct Pattern {
     return pattern;
   }
 
-  bool operator==(const Pattern &rhs) {
+  bool operator==(const Pattern &rhs) const {
 #if DEBUG
     std::cout << "operator==(const &lhs, const & rhs) called" << std::endl;
 #endif
@@ -236,7 +236,7 @@ struct Pattern {
     return true;
   }
 
-  bool operator==(const Pattern *other) const { return true; }
+  bool operator==(const Pattern *other) const { return *this == *other; }
   bool operator!=(const Pattern &rhs) { return !(*this == rhs); }
 
   // Copy constructor
