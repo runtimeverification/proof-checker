@@ -386,11 +386,6 @@ class Notation(Pattern):
             return None
         return tuple([v for _, v in sorted(match_result.items())])
 
-    @classmethod
-    def extract(cls, pattern: Pattern) -> tuple[Pattern, ...]:
-        ret = cls.unwrap(pattern)
-        assert ret is not None, f'Expected a/an {cls.label()} but got instead: {str(pattern)}\n'
-        return ret
 
     def __str__(self) -> str:
         return f'{self.label()} {str(self.arguments())}'
