@@ -60,6 +60,18 @@ class Or(Notation):
         return f'({str(self.left)}) \\/ ({str(self.right)})'
 
 
+@dataclass(frozen=True, eq=False)
+class And(Notation):
+    left: Pattern
+    right: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return neg(Implication(phi0, neg(phi1)))
+
+    def __str__(self) -> str:
+        return f'({str(self.left)}) /\\ ({str(self.right)})'
+
 
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
