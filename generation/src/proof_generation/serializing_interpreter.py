@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, BinaryIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.stateful_interpreter import StatefulInterpreter
+from proof_generation.io_interpreter import IOInterpreter
 
 if TYPE_CHECKING:
     from proof_generation.basic_interpreter import ExecutionPhase
@@ -12,16 +12,7 @@ if TYPE_CHECKING:
     from proof_generation.proved import Proved
 
 
-class SerializingInterpreter(StatefulInterpreter):
-    def __init__(
-        self,
-        phase: ExecutionPhase,
-        out: BinaryIO,
-        claims: list[Claim] | None = None,
-    ) -> None:
-        super().__init__(phase=phase, claims=claims)
-        self.out = out
-
+class SerializingInterpreter(IOInterpreter):
     def evar(self, id: int) -> Pattern:
         ret = super().evar(id)
         self.out.write(bytes([Instruction.EVar, id]))
@@ -152,8 +143,10 @@ class MemoizingInterpreter(SerializingInterpreter):
         out: BinaryIO,
         claims: list[Claim] | None = None,
         patterns_for_memoization: set[Pattern] | None = None,
+        claim_out: BinaryIO | None = None,
+        proof_out: BinaryIO | None = None,
     ) -> None:
-        super().__init__(phase, out, claims)
+        super().__init__(phase, out, claims, claim_out, proof_out)
         self._patterns_for_memoization: set[Pattern]
         if patterns_for_memoization is None:
             self._patterns_for_memoization = set()

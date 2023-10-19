@@ -115,13 +115,16 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).__getattribute__(target)()
+    interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
+    _ = Propositional(interpreter_ser).__getattribute__(target)()
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
+    interpreter_ser_deser = NotationlessPrettyPrinter(phase=phase, out=out_ser_deser)
+    deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
 
     # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
-    _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).__getattribute__(target)()
+    interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
+    _ = Propositional(interpreter_pretty).__getattribute__(target)()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
 
@@ -134,12 +137,15 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).interpreter.pattern(target)
+    interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
+    _ = Propositional(interpreter_ser).interpreter.pattern(target)
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
+    interpreter_ser_deser = NotationlessPrettyPrinter(phase=phase, out=out_ser_deser)
+    deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
 
     # Prettyprint the claim directly, but omit notation
     out_pretty = StringIO()
-    _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).interpreter.pattern(target)
+    interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
+    _ = Propositional(interpreter_pretty).interpreter.pattern(target)
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()

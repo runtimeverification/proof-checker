@@ -244,9 +244,9 @@ def main() -> None:
 
     module = os.path.splitext(os.path.basename(args.input))[0]
 
-    TranslatedProofSkeleton.main(['', 'memo', 'gamma', str(output_dir / f'{module}.ml-gamma')])
-    TranslatedProofSkeleton.main(['', 'memo', 'claim', str(output_dir / f'{module}.ml-claim')])
-    TranslatedProofSkeleton.main(['', 'memo', 'proof', str(output_dir / f'{module}.ml-proof')])
+    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
+    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
+    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
 
 
 if __name__ == '__main__':

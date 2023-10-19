@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
+from proof_generation.io_interpreter import IOInterpreter
 from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, SSubst
 from proof_generation.proved import Proved
-from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -14,15 +14,16 @@ if TYPE_CHECKING:
     from proof_generation.pattern import EVar, MetaVar, Pattern, SVar
 
 
-class PrettyPrintingInterpreter(StatefulInterpreter):
+class PrettyPrintingInterpreter(IOInterpreter):
     def __init__(
         self,
         phase: ExecutionPhase,
         out: TextIO,
         claims: list[Claim] | None = None,
+        claim_out: TextIO | None = None,
+        proof_out: TextIO | None = None,
     ) -> None:
-        super().__init__(phase=phase, claims=claims)
-        self.out = out
+        super().__init__(phase=phase, out=out, claims=claims, claim_out=claim_out, proof_out=proof_out)
         self._notation: dict[str, Pattern] = {}
 
     def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
