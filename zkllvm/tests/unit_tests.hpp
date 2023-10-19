@@ -641,6 +641,45 @@ void test_construct_phi_implies_phi() {
   proof->push_back((uint8_t)Instruction::Save);
   proof->push_back((uint8_t)Instruction::Load);
   proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)Instruction::Implication);
+
+  Pattern::Stack *stack = Pattern::Stack::create();
+  auto memory = Pattern::Memory::create();
+  auto claims = Pattern::Claims::create();
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  auto phi0 = Pattern::metavar_unconstrained(0);
+  auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Pattern, Pattern::implies(phi0, phi0)));
+  assert(*stack == *expected_stack);
+
+  for (auto it : *stack) {
+    it->pattern->~Pattern();
+  }
+
+  for (auto it : *memory) {
+    it->pattern->~Pattern();
+  }
+
+  for (auto it : *claims) {
+    it->~Pattern();
+  }
+
+  proof->~LinkedList();
+  free(proof);
+  stack->~LinkedList();
+  free(stack);
+  memory->~LinkedList();
+  free(memory);
+  claims->~LinkedList();
+  free(claims);
+
+  expected_stack->~LinkedList();
+  free(expected_stack);
+
+  phi0->~Pattern();
+}
 
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();

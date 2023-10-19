@@ -981,9 +981,9 @@ struct Pattern {
   /// Stack utilities
   /// ---------------
 
-  Term *pop_stack(Stack *stack) { return stack->pop(); }
+  static Term *pop_stack(Stack *stack) { return stack->pop(); }
 
-  Pattern *pop_stack_pattern(Stack *stack) {
+  static Pattern *pop_stack_pattern(Stack *stack) {
     auto term = pop_stack(stack);
     if (term->type != Term::Type::Pattern) {
 #if DEBUG
@@ -994,7 +994,7 @@ struct Pattern {
     return term->pattern;
   }
 
-  Pattern *pop_stack_proved(Stack *stack) {
+  static Pattern *pop_stack_proved(Stack *stack) {
     auto term = pop_stack(stack);
     if (term->type != Term::Type::Proved) {
 #if DEBUG
@@ -1098,7 +1098,13 @@ struct Pattern {
         break;
       }
       case Instruction::CleanMetaVar:
-      case Instruction::Implication:
+        break;
+      case Instruction::Implication: {
+        auto right = pop_stack_pattern(stack);
+        auto left = pop_stack_pattern(stack);
+        stack->push(Term::newTerm(Term::Type::Pattern, implies(left, right)));
+        break;
+      }
       case Instruction::Application:
       case Instruction::Exists:
       case Instruction::Mu:
