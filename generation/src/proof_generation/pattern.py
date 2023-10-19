@@ -69,7 +69,7 @@ class Symbol(Pattern):
 
     def __str__(self) -> str:
         if self.pretty_name is None:
-            return f'\u03c3{str(self.name)}'
+            return f'σ{str(self.name)}'
         else:
             return f'{self.pretty_name}_{str(self.name)}'
 
@@ -127,7 +127,7 @@ class Exists(Pattern):
         return Exists(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'(\u2203 x{self.var} . {str(self.subpattern)})'
+        return f'(∃ x{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -147,7 +147,7 @@ class Mu(Pattern):
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'(\u03BC X{self.var} . {str(self.subpattern)})'
+        return f'(μ X{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -305,7 +305,7 @@ class Bot(Notation):
         return Mu(0, SVar(0))
 
     def __str__(self) -> str:
-        return '\u22A5'
+        return '⊥'
 
 
 bot = Bot()
