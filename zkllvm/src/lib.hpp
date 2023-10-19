@@ -666,6 +666,7 @@ struct Pattern {
 
           return Optional<Pattern>(copy(plugs[pos]));
         }
+        pos++;
       }
       return Optional<Pattern>();
     }
