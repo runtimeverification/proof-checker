@@ -39,7 +39,7 @@ class KoreConverter:
                 # TODO: Sort is ignored for now.
                 left_rw_pattern = self._convert_pattern(left)
                 right_rw_pattern = self._convert_pattern(right)
-                return nf.Implication(left_rw_pattern, right_rw_pattern)
+                return nf.Implies(left_rw_pattern, right_rw_pattern)
             case kore.And(sort, left, right):
                 and_symbol: nf.Symbol = self._resolve_symbol(pattern)
                 sort_symbol: nf.Pattern = self._resolve_symbol(sort)

@@ -5,7 +5,7 @@ Symbol 1
 	Stack:
 	0: σ0
 	1: σ1
-Implication
+Implies
 	Stack:
 	0: (σ0 -> σ1)
 Publish
@@ -18,7 +18,7 @@ Symbol 2
 	0: (σ0 -> σ1)
 	1: σ1
 	2: σ2
-Implication
+Implies
 	Stack:
 	0: (σ0 -> σ1)
 	1: (σ1 -> σ2)
