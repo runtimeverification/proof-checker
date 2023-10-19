@@ -694,14 +694,14 @@ struct Pattern {
 #endif
 
   // Notation
-  static Pattern *bot() { return Pattern::mu(0, Pattern::svar(0)); }
+  static Pattern *bot() { return mu(0, svar(0)); }
 
   static Pattern *negate(Pattern *pattern) { // C++ doesn't accepted not
-    return Pattern::implies(pattern, Pattern::bot());
+    return implies(pattern, bot());
   }
 
   static Pattern *forall(Id evar, Pattern *pattern) {
-    return Pattern::negate(Pattern::exists(evar, Pattern::negate(pattern)));
+    return negate(exists(evar, negate(pattern)));
   }
 
   /// Substitution utilities
@@ -811,7 +811,7 @@ struct Pattern {
           inst_right = Optional<Pattern>(copy(p.right)).unwrap();
         }
         return Optional<Pattern>(
-            Pattern::implies(inst_left.unwrap(), inst_right.unwrap()));
+            implies(inst_left.unwrap(), inst_right.unwrap()));
       }
     }
     case Instruction::Application: {
@@ -828,8 +828,7 @@ struct Pattern {
         if (!inst_right.has_value()) {
           inst_right = Optional<Pattern>(copy(p.right));
         }
-        return Optional<Pattern>(
-            Pattern::app(inst_left.unwrap(), inst_right.unwrap()));
+        return Optional<Pattern>(app(inst_left.unwrap(), inst_right.unwrap()));
       }
     }
     case Instruction::Exists: {
@@ -841,7 +840,7 @@ struct Pattern {
         if (!inst_sub.has_value()) {
           inst_sub = Optional<Pattern>(copy(p.subpattern));
         }
-        return Optional<Pattern>(Pattern::exists(p.id, inst_sub.unwrap()));
+        return Optional<Pattern>(exists(p.id, inst_sub.unwrap()));
       }
     }
     case Instruction::Mu: {
@@ -853,7 +852,7 @@ struct Pattern {
         if (!inst_sub.has_value()) {
           inst_sub = Optional<Pattern>(copy(p.subpattern));
         }
-        return Optional<Pattern>(Pattern::mu(p.id, inst_sub.unwrap()));
+        return Optional<Pattern>(mu(p.id, inst_sub.unwrap()));
       }
     }
     case Instruction::ESubst: {
@@ -870,7 +869,7 @@ struct Pattern {
           inst_plug = Optional<Pattern>(copy(p.plug));
         }
         return Optional<Pattern>(
-            Pattern::esubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
+            esubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
       }
     }
     case Instruction::SSubst: {
@@ -887,7 +886,7 @@ struct Pattern {
           inst_plug = Optional<Pattern>(copy(p.plug));
         }
         return Optional<Pattern>(
-            Pattern::ssubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
+            ssubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
       }
     }
     default:
