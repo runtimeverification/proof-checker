@@ -6,7 +6,7 @@
 
 #undef EOF
 
-enum class Instruction {
+enum class Instruction : uint8_t {
   // Patterns
   EVar = 2,
   SVar,
@@ -45,12 +45,12 @@ enum class Instruction {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar = (9 + 128),
+  CleanMetaVar = (uint8_t)(8 + 128),
   // EOF exclusive for zkLLVM
-  EOF
+  NO_OP
 };
 
-Instruction from(int value) {
+Instruction from(uint8_t value) {
   switch (value) {
   case 2:
     return Instruction::EVar;
@@ -110,16 +110,16 @@ Instruction from(int value) {
     return Instruction::Load;
   case 30:
     return Instruction::Publish;
-  case 137:
+  case 135:
     return Instruction::CleanMetaVar;
-  case 138:
-    return Instruction::EOF;
+  case 136:
+    return Instruction::NO_OP;
   default:
     exit(1); // Bad instruction!
   }
 }
 
-using Id = int8_t;
+using Id = uint8_t;
 using IdList = LinkedList<Id>;
 
 struct Pattern {
