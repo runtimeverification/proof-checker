@@ -27,7 +27,7 @@ class Negation(Notation):
         return Implies(MetaVar(0), bot)
 
     def __str__(self) -> str:
-        return f'~({str(self.phi0)})'
+        return f'¬({str(self.phi0)})'
 
 
 def neg(p: Pattern) -> Pattern:
@@ -40,7 +40,7 @@ class Top(Notation):
         return neg(bot)
 
     def __str__(self) -> str:
-        return '\u22A4'
+        return '⊤'
 
 
 top = Top()
@@ -56,7 +56,7 @@ class And(Notation):
         return neg(Implies(phi0, neg(phi1)))
 
     def __str__(self) -> str:
-        return f'({self.phi0} /\\ {self.phi1})'
+        return f'({self.phi0} ⋀ {self.phi1})'
 
 
 @dataclass(frozen=True, eq=False)

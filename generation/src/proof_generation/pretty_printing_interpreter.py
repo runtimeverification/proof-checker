@@ -189,9 +189,9 @@ class PrettyPrintingInterpreter(IOInterpreter):
             case App(left, right):
                 return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
             case Exists(var, subpattern):
-                return f'(\u2203 x{var} . {self.pretty_print_pattern(subpattern)})'
+                return f'(∃ x{var} . {self.pretty_print_pattern(subpattern)})'
             case Mu(var, subpattern):
-                return f'(\u03BC X{var} . {self.pretty_print_pattern(p.subpattern)})'
+                return f'(μ X{var} . {self.pretty_print_pattern(p.subpattern)})'
             case ESubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
@@ -203,7 +203,7 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write('\tStack:\n')
         for i, item in enumerate(self.stack):
             if isinstance(item, Proved):
-                self.out.write(f'\t{i}: \u22A2 {self.pretty_print_pattern(item.conclusion)}\n')
+                self.out.write(f'\t{i}: ⊢ {self.pretty_print_pattern(item.conclusion)}\n')
                 continue
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 

@@ -31,7 +31,7 @@ class KoreTop(Notation):
         return App(inhabitant_symbol, phi0)
 
     def __str__(self) -> str:
-        return f'(k\u22A4 {self.phi0})'
+        return f'(k⊤ {self.phi0})'
 
 
 @dataclass(frozen=True, eq=False)
@@ -44,7 +44,7 @@ class KoreNot(Notation):
         return And(Negation(phi1), KoreTop(phi0))
 
     def __str__(self) -> str:
-        return f'(k\u22A4 {self.phi0})'
+        return f'(k¬ {self.phi0})'
 
 
 @dataclass(frozen=True, eq=False)
@@ -58,7 +58,7 @@ class KoreAnd(Notation):
         return And(phi1, phi2)
 
     def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k/\\ {str(self.phi0)}[{str(self.phi2)}])'
+        return f'({str(self.phi0)}[{str(self.phi1)}] k⋀ {str(self.phi0)}[{str(self.phi2)}])'
 
 
 @dataclass(frozen=True, eq=False)
@@ -72,7 +72,7 @@ class KoreOr(Notation):
         return Or(phi1, phi2)
 
     def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k\\/ {str(self.phi0)}[{str(self.phi2)}])'
+        return f'({str(self.phi0)}[{str(self.phi1)}] k⋁ {str(self.phi0)}[{str(self.phi2)}])'
 
 
 @dataclass(frozen=True, eq=False)
@@ -85,7 +85,7 @@ class KoreNext(Notation):
         return App(kore_next_symbol, phi1)
 
     def __str__(self) -> str:
-        return f'(\u2666 {str(self.phi1)})'
+        return f'(♦ {str(self.phi1)})'
 
 
 @dataclass(frozen=True, eq=False)
