@@ -1114,8 +1114,46 @@ struct Pattern {
       case Instruction::Substitution:
       case Instruction::Instantiate:
       case Instruction::Pop:
-      case Instruction::Save:
-      case Instruction::Load:
+        break;
+      case Instruction::Save: {
+        auto term = stack->front();
+        if (term->type == Term::Type::Pattern) {
+          memory->push_back(
+              Entry::newEntry(Entry::Type::Pattern, copy(term->pattern)));
+        } else if (term->type == Term::Type::Proved) {
+          memory->push_back(
+              Entry::newEntry(Entry::Type::Proved, copy(term->pattern)));
+        } else {
+#if DEBUG
+          throw std::runtime_error("Save needs an entry on the stack");
+#endif
+          exit(1);
+        }
+        break;
+      }
+      case Instruction::Load: {
+        auto index = iterator.next();
+        if (index == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Insufficient parameters for Load instruction");
+#endif
+          exit(1);
+        }
+        Entry *entry = memory->get(*index);
+        if (entry->type == Entry::Type::Pattern) {
+          stack->push(Term::newTerm(Term::Type::Pattern, copy(entry->pattern)));
+        } else if (entry->type == Entry::Type::Proved) {
+          stack->push(Term::newTerm(Term::Type::Proved, copy(entry->pattern)));
+        } else {
+#if DEBUG
+          throw std::runtime_error("Load needs an entry in memory");
+#endif
+          exit(1);
+        }
+        break;
+      }
+      case Instruction::Publish:
       default: {
 #if DEBUG
         throw std::runtime_error("Unknown instruction: " +

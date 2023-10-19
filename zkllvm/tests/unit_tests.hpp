@@ -638,6 +638,9 @@ void test_construct_phi_implies_phi() {
   proof->push_back((uint8_t)0);
   proof->push_back((uint8_t)0);
   proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)Instruction::Save);
+  proof->push_back((uint8_t)Instruction::Load);
+  proof->push_back((uint8_t)0);
 
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();
