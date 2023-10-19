@@ -116,7 +116,6 @@ Instruction from(int value) {
     return Instruction::EOF;
   default:
     exit(1); // Bad instruction!
-    break;
   }
 }
 
@@ -292,28 +291,18 @@ struct Pattern {
     switch (inst) {
     case Instruction::EVar:
       return evar != id;
-      break;
     case Instruction::SVar:
-      return true;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return e_fresh->contains(evar);
-      break;
     case Instruction::Implication:
-      return left->pattern_e_fresh(evar) && right->pattern_e_fresh(evar);
-      break;
     case Instruction::Application:
       return left->pattern_e_fresh(evar) && right->pattern_e_fresh(evar);
-      break;
     case Instruction::Exists:
       return (evar == id) || subpattern->pattern_e_fresh(evar);
-      break;
     case Instruction::Mu:
       return subpattern->pattern_e_fresh(evar);
-      break;
     case Instruction::ESubst:
       // Assume: substitution is well-formed => plug occurs in the result
 
@@ -327,7 +316,6 @@ struct Pattern {
       // as evar != evar_id (note that instances of evar_id
       // in pattern do not influence the result)
       return subpattern->pattern_e_fresh(evar) && plug->pattern_e_fresh(evar);
-      break;
 
     case Instruction::SSubst:
       // Assume: substitution is well-formed => plug occurs in the result
@@ -338,7 +326,6 @@ struct Pattern {
       // as svar_id != evar (note that instances of evar_id
       // in pattern do not influence the result)
       return subpattern->pattern_e_fresh(evar) && plug->pattern_e_fresh(evar);
-      break;
 
     default:
 #if DEBUG
@@ -346,7 +333,6 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
@@ -354,28 +340,19 @@ struct Pattern {
     switch (inst) {
     case Instruction::EVar:
       return true;
-      break;
     case Instruction::SVar:
       return id != svar;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return s_fresh->contains(svar);
-      break;
     case Instruction::Implication:
-      return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
-      break;
     case Instruction::Application:
       return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
-      break;
     case Instruction::Exists:
       return subpattern->pattern_s_fresh(svar);
-      break;
     case Instruction::Mu:
       return (svar == id) || subpattern->pattern_s_fresh(svar);
-      break;
     case Instruction::ESubst:
       // Assume: substitution is well-formed => plug occurs in the result
 
@@ -385,7 +362,6 @@ struct Pattern {
       // as evar_id != svar (note that instances of evar_id
       // in pattern do not influence the result)
       return subpattern->pattern_s_fresh(svar) && plug->pattern_s_fresh(svar);
-      break;
 
     case Instruction::SSubst:
       // Assume: substitution is well-formed => plug occurs in the result
@@ -396,7 +372,6 @@ struct Pattern {
       }
 
       return subpattern->pattern_s_fresh(svar) && plug->pattern_s_fresh(svar);
-      break;
 
     default:
 #if DEBUG
@@ -404,40 +379,28 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
   bool pattern_positive(Id svar) {
     switch (inst) {
     case Instruction::EVar:
-      return true;
-      break;
     case Instruction::SVar:
-      return true;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return positive->contains(svar);
-      break;
     case Instruction::Implication:
       return left->pattern_negative(svar) && right->pattern_positive(svar);
-      break;
     case Instruction::Application:
       return left->pattern_positive(svar) && right->pattern_positive(svar);
-      break;
     case Instruction::Exists:
       return subpattern->pattern_positive(svar);
-      break;
     case Instruction::Mu:
       return svar == id || subpattern->pattern_positive(svar);
-      break;
     case Instruction::ESubst:
       // best-effort for now, see spec
       return subpattern->pattern_positive(svar) && plug->pattern_s_fresh(svar);
-      break;
     case Instruction::SSubst: {
       auto plug_positive_svar =
           plug->pattern_s_fresh(svar) ||
@@ -449,7 +412,6 @@ struct Pattern {
       }
 
       return subpattern->pattern_positive(svar) && plug_positive_svar;
-      break;
     }
     default:
 #if DEBUG
@@ -457,7 +419,6 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
@@ -465,32 +426,23 @@ struct Pattern {
     switch (inst) {
     case Instruction::EVar:
       return true;
-      break;
     case Instruction::SVar:
       return id != svar;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return negative->contains(svar);
-      break;
     case Instruction::Implication:
       return left->pattern_positive(svar) && right->pattern_negative(svar);
-      break;
     case Instruction::Application:
       return left->pattern_negative(svar) && right->pattern_negative(svar);
-      break;
     case Instruction::Exists:
       return subpattern->pattern_s_fresh(svar);
-      break;
     case Instruction::Mu:
       return svar == id || subpattern->pattern_negative(svar);
-      break;
     case Instruction::ESubst:
       // best-effort for now, see spec
       return subpattern->pattern_negative(svar) && plug->pattern_s_fresh(svar);
-      break;
     case Instruction::SSubst: {
       auto plug_negative_svar =
           plug->pattern_s_fresh(svar) ||
@@ -502,7 +454,6 @@ struct Pattern {
       }
 
       return subpattern->pattern_negative(svar) && plug_negative_svar;
-      break;
     }
     default:
 #if DEBUG
@@ -510,7 +461,6 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
@@ -520,16 +470,12 @@ struct Pattern {
     switch (inst) {
     case Instruction::MetaVar:
       return !app_ctx_holes->isDisjoint(e_fresh);
-      break;
     case Instruction::Mu:
       return subpattern->pattern_positive(id);
-      break;
     case Instruction::ESubst:
       return !subpattern->pattern_e_fresh(id);
-      break;
     case Instruction::SSubst:
       return !subpattern->pattern_s_fresh(id);
-      break;
     default:
 #if DEBUG
       throw std::runtime_error("Well-formedness checking is unimplemented yet "
@@ -537,7 +483,6 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
   enum class TermType { Pattern, Proved };
@@ -659,14 +604,9 @@ struct Pattern {
                                                 LinkedList<Pattern *> &plugs) {
     switch (p.inst) {
     case Instruction::EVar:
-      return Optional<Pattern>();
-      break;
     case Instruction::SVar:
-      return Optional<Pattern>();
-      break;
     case Instruction::Symbol:
       return Optional<Pattern>();
-      break;
     case Instruction::MetaVar: {
       Id pos = 0;
       for (auto it : vars) {
@@ -680,7 +620,6 @@ struct Pattern {
                                        std::to_string(evar));
 #endif
               exit(1);
-              break;
             }
           }
           for (const auto &svar : *p.s_fresh) {
@@ -692,7 +631,6 @@ struct Pattern {
                                        std::to_string(svar));
 #endif
               exit(1);
-              break;
             }
           }
           for (const auto &svar : *p.positive) {
@@ -704,7 +642,6 @@ struct Pattern {
                   std::to_string(svar));
 #endif
               exit(1);
-              break;
             }
           }
           for (const auto &svar : *p.negative) {
@@ -716,7 +653,6 @@ struct Pattern {
                   std::to_string(svar));
 #endif
               exit(1);
-              break;
             }
           }
 
@@ -726,14 +662,12 @@ struct Pattern {
                 "Substitution does not contain a corresponding value.");
 #endif
             exit(1);
-            break;
           }
 
           return Optional<Pattern>(copy(plugs[pos]));
         }
       }
       return Optional<Pattern>();
-      break;
     }
     case Instruction::Implication: {
       Optional<Pattern> inst_left = instantiate_internal(*p.left, vars, plugs);
@@ -752,7 +686,6 @@ struct Pattern {
         return Optional<Pattern>(
             Pattern::implies(inst_left.unwrap(), inst_right.unwrap()));
       }
-      break;
     }
     case Instruction::Application: {
       Optional<Pattern> inst_left = instantiate_internal(*p.left, vars, plugs);
@@ -771,7 +704,6 @@ struct Pattern {
         return Optional<Pattern>(
             Pattern::app(inst_left.unwrap(), inst_right.unwrap()));
       }
-      break;
     }
     case Instruction::Exists: {
       Optional<Pattern> inst_sub =
@@ -784,9 +716,7 @@ struct Pattern {
         }
         return Optional<Pattern>(Pattern::exists(p.id, inst_sub.unwrap()));
       }
-      break;
     }
-
     case Instruction::Mu: {
       Optional<Pattern> inst_sub =
           instantiate_internal(*p.subpattern, vars, plugs);
@@ -798,9 +728,7 @@ struct Pattern {
         }
         return Optional<Pattern>(Pattern::mu(p.id, inst_sub.unwrap()));
       }
-      break;
     }
-
     case Instruction::ESubst: {
       Optional<Pattern> inst_pattern =
           instantiate_internal(*p.subpattern, vars, plugs);
@@ -817,7 +745,6 @@ struct Pattern {
         return Optional<Pattern>(
             Pattern::esubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
       }
-      break;
     }
     case Instruction::SSubst: {
       Optional<Pattern> inst_pattern =
@@ -835,13 +762,10 @@ struct Pattern {
         return Optional<Pattern>(
             Pattern::ssubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
       }
-      break;
     }
     default:
       return Optional<Pattern>();
-      break;
     }
-    return Optional<Pattern>();
   }
 
   void instantiate_in_place(Pattern &p, IdList &vars,
