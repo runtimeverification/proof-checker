@@ -99,12 +99,6 @@ public:
     return list;
   }
 
-  static LinkedList *create(const T &value, const T &value2) {
-    LinkedList *list = create(value);
-    list->insert_front(value2);
-    return list;
-  }
-
   bool contains(const T &value) {
     Node<T> *curr = head;
     while (curr) {
