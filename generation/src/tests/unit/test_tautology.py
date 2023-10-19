@@ -5,9 +5,17 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, bot, imp
-from proof_generation.proofs.propositional import And, Or, neg, phi0, phi1, phi2, top
-from proof_generation.tautology import ConjAnd, ConjBool, ConjOr, ConjVar, Tautology, conj_to_pattern
+from proof_generation.pattern import Implication, bot, imp
+from proof_generation.proofs.propositional import And, Equiv, Or, neg, phi0, phi1, phi2, top
+from proof_generation.tautology import (
+    ConjAnd,
+    ConjBool,
+    ConjOr,
+    ConjVar,
+    Tautology,
+    clause_list_to_pattern,
+    conj_to_pattern,
+)
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -16,26 +24,6 @@ if TYPE_CHECKING:
 
 def assert_eq_pat(p: Pattern, q: Pattern) -> None:
     assert p == q, f'{str(p)}\n!=\n{str(q)}\n'
-
-
-def clause_to_pattern(l: list[int]) -> Pattern:
-    assert len(l) > 0
-    assert l[0] != 0
-    if l[0] < 0:
-        pat = neg(MetaVar(-(l[0] + 1)))
-    else:
-        pat = MetaVar(l[0] - 1)
-    if len(l) > 1:
-        pat = Or(pat, clause_to_pattern(l[1:]))
-    return pat
-
-
-def clause_list_to_pattern(l: list[list[int]]) -> Pattern:
-    assert len(l) > 0
-    pat = clause_to_pattern(l[0])
-    if len(l) > 1:
-        pat = And(pat, clause_list_to_pattern(l[1:]))
-    return pat
 
 
 def is_conj(t: ConjTerm) -> bool:
@@ -150,3 +138,20 @@ def test_tautology_prover(p: Pattern) -> None:
     assert_eq_pat(l1_cl, res3)
     assert_eq_pat(r1_cl, res4)
     print(f'Proved\n{str(res3)}\n<->\n{str(res4)}\n\n')
+
+
+@pytest.mark.parametrize('i', range(5))
+def test_move_to_front(i: int) -> None:
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+
+    pf = taut.or_move_to_front(i, i + 1)
+    conc = pf.conclusion
+    c1, c2 = Equiv.extract(conc)
+
+    print(f'Proved {str(c1)} <-> {str(c2)} \n\n')
+
+    pf2 = taut.or_move_to_front(i, 100)
+    conc2 = pf2.conclusion
+    c12, c22 = Equiv.extract(conc2)
+
+    print(f'Proved {str(c12)} <-> {str(c22)} \n\n')

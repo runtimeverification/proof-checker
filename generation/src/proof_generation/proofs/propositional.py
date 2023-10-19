@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, Notation, bot
+from proof_generation.pattern import Implication, MetaVar, Notation, bot, imp
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -71,6 +71,19 @@ class And(Notation):
 
     def __str__(self) -> str:
         return f'({str(self.left)}) /\\ ({str(self.right)})'
+
+
+@dataclass(frozen=True, eq=False)
+class Equiv(Notation):
+    left: Pattern
+    right: Pattern
+
+    @staticmethod
+    def definition() -> Pattern:
+        return And(imp(phi0, phi1), imp(phi1, phi0))
+
+    def __str__(self) -> str:
+        return f'({str(self.left)}) <-> ({str(self.right)})'
 
 
 class Propositional(ProofExp):

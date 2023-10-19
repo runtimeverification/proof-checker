@@ -4,10 +4,24 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implication, MetaVar, Notation, match_single
-from proof_generation.proofs.propositional import And, Negation, Or, Propositional, bot, neg, phi0, phi1, phi2, top
+from proof_generation.proofs.propositional import (
+    And,
+    Equiv,
+    Negation,
+    Or,
+    Propositional,
+    bot,
+    neg,
+    phi0,
+    phi1,
+    phi2,
+    top,
+)
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProvedExpression
 
@@ -67,6 +81,26 @@ def conj_to_pattern(term: ConjTerm) -> Pattern:
         pat = And(conj_to_pattern(term.left), conj_to_pattern(term.right))
     if term.negated:
         pat = neg(pat)
+    return pat
+
+
+def clause_to_pattern(l: list[int]) -> Pattern:
+    assert len(l) > 0
+    assert l[0] != 0
+    if l[0] < 0:
+        pat = neg(MetaVar(-(l[0] + 1)))
+    else:
+        pat = MetaVar(l[0] - 1)
+    if len(l) > 1:
+        pat = Or(pat, clause_to_pattern(l[1:]))
+    return pat
+
+
+def clause_list_to_pattern(l: list[list[int]]) -> Pattern:
+    assert len(l) > 0
+    pat = clause_to_pattern(l[0])
+    if len(l) > 1:
+        pat = And(pat, clause_list_to_pattern(l[1:]))
     return pat
 
 
@@ -412,6 +446,115 @@ class Tautology(Propositional):
         # TODO
         return Proved(Implication(And(Or(pat1, pat2), Or(pat1, pat3)), Or(pat1, And(pat2, pat3))))
 
+    def and_assoc(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
+        """a /\\ (b /\\ c) <-> (a /\\ b) /\\ c"""
+        return self.and_intro(
+            (lambda: self.and_assoc_l(pat1, pat2, pat3)), (lambda: self.and_assoc_r(pat1, pat2, pat3))
+        )
+
+    def or_assoc(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
+        """a \\/ (b \\/ c) <-> (a \\/ b) \\/ c"""
+        return self.and_intro((lambda: self.or_assoc_l(pat1, pat2, pat3)), (lambda: self.or_assoc_r(pat1, pat2, pat3)))
+
+    def and_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
+        """p /\\ q <-> q /\\ p"""
+        # TODO
+        return Proved(Equiv(And(p, q), And(q, p)))
+
+    def or_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
+        """p \\/ q <-> q \\/ p"""
+        # TODO
+        return Proved(Equiv(Or(p, q), Or(q, p)))
+
+    def and_intro(self, p_pf: ProvedExpression, q_pf: ProvedExpression) -> Proved:
+        """
+            p   q
+        ------------
+           p /\\ q
+        """
+        p = self.PROVISIONAL_get_conc(p_pf)
+        q = self.PROVISIONAL_get_conc(q_pf)
+        # TODO
+        return Proved(And(p, q))
+
+    def and_l(self, pq_pf: ProvedExpression) -> Proved:
+        p, _ = And.extract(self.PROVISIONAL_get_conc(pq_pf))
+        """
+           p /\\ q
+        ------------
+              p
+        """
+        # TODO
+        return Proved(p)
+
+    def and_r(self, pq_pf: ProvedExpression) -> Proved:
+        _, q = And.extract(self.PROVISIONAL_get_conc(pq_pf))
+        """
+           p /\\ q
+        ------------
+              q
+        """
+        # TODO
+        return Proved(q)
+
+    def equiv_refl(self, p: Pattern = phi0) -> Proved:
+        """p <-> p"""
+        pf = lambda: self.imp_refl(p)
+        return self.and_intro(pf, pf)
+
+    def equiv_sym(self, pf: ProvedExpression) -> Proved:
+        """
+          p <-> q
+        -----------
+          q <-> p
+        """
+        return self.and_intro(lambda: self.and_r(pf), lambda: self.and_l(pf))
+
+    def equiv_transitivity(self, pq_pf: ProvedExpression, qr_pf: ProvedExpression) -> Proved:
+        """
+           p <-> q    q <-> r
+        ----------------------
+                p <-> r
+        """
+        return self.and_intro(
+            lambda: self.imp_transitivity(lambda: self.and_l(pq_pf), lambda: self.and_l(qr_pf)),
+            lambda: self.imp_transitivity(lambda: self.and_r(qr_pf), lambda: self.and_r(pq_pf)),
+        )
+
+    def equiv_trans_match1(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
+        """Same as equiv_transitivity but h1 is instantiated to match h2"""
+        h1_conc = self.PROVISIONAL_get_conc(h1)
+        h2_conc = self.PROVISIONAL_get_conc(h2)
+        _, b = Equiv.extract(h1_conc)
+        c, _ = Equiv.extract(h2_conc)
+        subst = match_single(b, c, {})
+        assert subst is not None
+        actual_subst: dict[int, Pattern] = subst
+        return self.equiv_transitivity(lambda: self.dynamic_inst(h1, actual_subst), h2)
+
+    def equiv_trans_match2(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
+        """Same as equiv_transitivity but h2 is instantiated to match h1"""
+        h1_conc = self.PROVISIONAL_get_conc(h1)
+        h2_conc = self.PROVISIONAL_get_conc(h2)
+        _, b = Equiv.extract(h1_conc)
+        c, _ = Equiv.extract(h2_conc)
+        subst = match_single(c, b, {})
+        assert subst is not None
+        actual_subst: dict[int, Pattern] = subst
+        return self.equiv_transitivity(h1, lambda: self.dynamic_inst(h2, actual_subst))
+
+    def and_cong(self, pf1: ProvedExpression, pf2: ProvedExpression) -> Proved:
+        return self.and_intro(
+            (lambda: self.imim_and((lambda: self.and_l(pf1)), (lambda: self.and_l(pf2)))),
+            (lambda: self.imim_and((lambda: self.and_r(pf1)), (lambda: self.and_r(pf2)))),
+        )
+
+    def or_cong(self, pf1: ProvedExpression, pf2: ProvedExpression) -> Proved:
+        return self.and_intro(
+            (lambda: self.imim_or((lambda: self.and_l(pf1)), (lambda: self.and_l(pf2)))),
+            (lambda: self.imim_or((lambda: self.and_r(pf1)), (lambda: self.and_r(pf2)))),
+        )
+
     def is_propositional(self, pat: Pattern) -> bool:
         if pat == bot:
             return True
@@ -674,3 +817,58 @@ class Tautology(Propositional):
             raise AssertionError(
                 f'Unexpected pattern! Expected a term with only Or, And and Negations but got:\n{str(term)}\n'
             )
+
+    def AC_move_to_front(  # noqa: N802
+        self,
+        pos: int,
+        len: int,
+        assoc: ProvedExpression,
+        comm: ProvedExpression,
+        cong: Callable[[ProvedExpression, ProvedExpression], Proved],
+        op: Callable[[Pattern, Pattern], Pattern],
+    ) -> Proved:
+        """
+        Produces a proof of
+        p0 . (p1 . (p2 . (... px . (... . pn)))) <-> px . (p0 . (p1 . (... px-1 . (px+1 . (... . pn)))))
+
+        assoc is of the form: phi0 . (phi1 . phi2) <-> (phi0 . phi1) . phi2
+        comm is of the form: phi0 . phi1 <-> phi1 . phi0
+        cong is of the form:
+            p <-> q   r <-> s
+          ---------------------
+            p . r <-> q . s
+        """
+        if pos == 0:
+            return self.equiv_refl()
+        assoc_rev = lambda: self.equiv_sym(assoc)
+        is_last: bool = pos == len - 1
+        if is_last:
+            if pos == 1:
+                return comm()
+            pos -= 1
+        term: Pattern = MetaVar(pos + 1)
+        for i in range(pos, 1, -1):
+            term = op(MetaVar(i), term)
+        shift_left = lambda: self.dynamic_inst(assoc, {2: term})
+        for _ in range(pos - 1):
+            shift_left = partial(self.equiv_trans_match2, shift_left, assoc)
+        if is_last:
+            pf: ProvedExpression = lambda: self.equiv_trans_match2(shift_left, comm)
+        else:
+            pf = lambda: self.equiv_trans_match2(shift_left, lambda: cong(comm, (lambda: self.equiv_refl(phi2))))
+            pf = partial(self.equiv_trans_match2, pf, assoc_rev)
+        if pos > 1:
+            term2: Pattern = MetaVar(pos)
+            for i in range(pos - 1, 1, -1):
+                term2 = op(term2, MetaVar(i))
+            shift_right = lambda: self.dynamic_inst(assoc_rev, {0: term2, 2: MetaVar(0)})
+            for _ in range(pos - 2):
+                shift_right = partial(self.equiv_trans_match2, shift_right, assoc_rev)
+            return self.equiv_trans_match2(pf, lambda: cong((lambda: self.equiv_refl(MetaVar(pos + 1))), shift_right))
+        return pf()
+
+    def or_move_to_front(self, pos: int, len: int) -> Proved:
+        return self.AC_move_to_front(pos, len, self.or_assoc, self.or_comm, self.or_cong, Or)
+
+    def and_move_to_front(self, pos: int, len: int) -> Proved:
+        return self.AC_move_to_front(pos, len, self.and_assoc, self.and_comm, self.and_cong, And)
