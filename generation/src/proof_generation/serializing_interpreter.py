@@ -23,8 +23,9 @@ class SerializingInterpreter(IOInterpreter):
         self.out.write(bytes([Instruction.SVar, id]))
         return ret
 
-    def symbol(self, id: int) -> Pattern:
-        ret = super().symbol(id)
+    def symbol(self, name: int) -> Pattern:
+        ret = super().symbol(name)
+        # TODO: Fix this to get real identifier for the name
         self.out.write(bytes([Instruction.Symbol, id]))
         return ret
 

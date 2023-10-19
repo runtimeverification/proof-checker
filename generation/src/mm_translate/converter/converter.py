@@ -171,9 +171,9 @@ class MetamathConverter:
         assert isinstance(pattern, MetaVar)
         return pattern
 
-    def _add_symbol(self, var: Metavariable | str) -> None:
-        if var not in self._symbols:
-            self._symbols[var] = Symbol(len(self._symbols))
+    def _add_symbol(self, var: str) -> None:
+        if var not in self._symbols:   
+            self._symbols[var] = Symbol(var)
 
     def _is_symbol(self, name: str) -> bool:
         return name in self._symbols
@@ -404,7 +404,7 @@ class MetamathConverter:
             self._scope.add_metavariable(var)
             self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         elif var := get_symbol(statement):
-            self._add_symbol(var)
+            self._add_symbol(var.name)
             self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         elif var := get_var(statement):
             self._scope.add_variable(var)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 class Pattern:
@@ -55,8 +55,7 @@ class SVar(Pattern):
 
 @dataclass(frozen=True)
 class Symbol(Pattern):
-    name: int
-    pretty_name: str | None = field(default=None, compare=False)
+    name: str
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -68,10 +67,7 @@ class Symbol(Pattern):
         return self
 
     def __str__(self) -> str:
-        if self.pretty_name is None:
-            return f'σ{str(self.name)}'
-        else:
-            return f'{self.pretty_name}_{str(self.name)}'
+        return f'\u03c3{self.name}'
 
 
 @dataclass(frozen=True)
