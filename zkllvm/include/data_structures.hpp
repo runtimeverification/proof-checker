@@ -138,9 +138,15 @@ public:
 
   T &operator[](int index) {
     Node<T> *curr = head;
-    for (int i = 0; i < index; i++) {
+    int i = 0;
+    while (curr) {
+      if (i == index) {
+        return curr->data;
+      }
       curr = curr->next;
+      i++;
     }
+    assert(curr && "Index out of bounds.");
     return curr->data;
   }
 
