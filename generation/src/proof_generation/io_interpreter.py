@@ -35,5 +35,5 @@ class IOInterpreter(StatefulInterpreter):
         self.out.close()
         self.out = self.proof_out
 
-    def __del__() -> None:
+    def __del__(self) -> None:
         self.out.close()
