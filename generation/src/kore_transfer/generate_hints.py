@@ -6,6 +6,8 @@ import pyk.kore.syntax as kore
 from pyk.kore.parser import KoreParser
 from pyk.ktool.krun import KRunOutput, _krun
 
+from kore_transfer.generate_definition import convert_axiom, convert_substitution
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
@@ -13,6 +15,7 @@ if TYPE_CHECKING:
     import proof_generation.pattern as nf
     from kore_transfer.generate_definition import KoreDefinition
     from kore_transfer.kore_converter import KoreConverter
+    from rewrite.llvm_proof_hint import LLVMRewriteTrace
 
 
 class KoreHint:
@@ -43,7 +46,7 @@ def get_proof_hints(
     kore_converter: KoreConverter,
     max_step: int,
 ) -> Iterator[KoreHint]:
-    """This function should return proof hinst."""
+    """This function should return proof hints."""
     for step in range(max_step + 1):
         configuration_for_step: kore.Pattern = _get_confguration_for_depth(kompiled_dir, program_file, step)
         # TODO: Absolutely hardcoded solution until we have hints
@@ -70,3 +73,26 @@ def _get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: i
 
     parsed = KoreParser(finished_process.stdout)
     return parsed.pattern()
+
+
+def get_proof_hints_from_rewrite_trace(
+    llvm_proof_hint: LLVMRewriteTrace,
+    axioms: list[kore.Axiom],
+    kore_converter: KoreConverter,
+    max_step: int,
+) -> Iterator[KoreHint]:
+    """Emits proof hints corresponding to the given LLVM rewrite trace."""
+    assert max_step <= len(
+        llvm_proof_hint.trace
+    ), f'The requested number of rewrites {max_step} exceeds the length of the given trace {len(llvm_proof_hint.trace)}!'
+    pre_config = kore_converter.convert_pattern(llvm_proof_hint.initial_config)
+    post_config = pre_config
+    # TODO: treat the case where trace len is 0
+    for step in range(max_step):
+        rewrite_step = llvm_proof_hint.trace[step]
+        pre_config = post_config
+        axiom = convert_axiom(axioms[rewrite_step.rule_ordinal], kore_converter)
+        inst = convert_substitution(rewrite_step.substitution, kore_converter)
+        hint = KoreHint(pre_config, axiom, inst)
+        post_config = kore_converter.convert_pattern(rewrite_step.post_config)
+        yield hint
