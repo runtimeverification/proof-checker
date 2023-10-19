@@ -482,17 +482,6 @@ struct Pattern {
       exit(1);
     }
   }
-  enum class TermType { Pattern, Proved };
-  typedef std::tuple<TermType, Pattern *> Term;
-  Term CreateTerm(TermType type, Pattern *pattern) {
-    return std::make_tuple(type, pattern);
-  }
-
-  enum class EntryType { Pattern, Proved };
-  typedef std::tuple<EntryType, Pattern *> Entry;
-  Entry CreateEntry(EntryType type, Pattern *pattern) {
-    return std::make_tuple(type, pattern);
-  }
 
   /// Pattern construction utilities
   /// ------------------------------
@@ -692,6 +681,75 @@ struct Pattern {
     }
   }
 #endif
+
+  class Term {
+  public:
+    enum class Type { Pattern, Proved };
+    Type type;
+    Pattern *pattern;
+    Term(Type type, Pattern *pattern) : type(type), pattern(pattern) {}
+    static Term *newTerm(Type type, Pattern *pattern) {
+      auto term = static_cast<Term *>(malloc(sizeof(Term)));
+      term->type = type;
+      term->pattern = pattern;
+      return term;
+    }
+    ~Term() {
+      if (pattern) {
+        pattern->~Pattern();
+      }
+    }
+
+    bool operator==(const Term &rhs) const {
+      if (type != rhs.type) {
+        return false;
+      }
+      if (pattern == nullptr && rhs.pattern != nullptr ||
+          pattern != nullptr && rhs.pattern == nullptr) {
+        return false;
+      }
+      if (pattern != nullptr && rhs.pattern != nullptr &&
+          *pattern != *rhs.pattern) {
+        return false;
+      }
+      return true;
+    }
+    bool operator!=(const Term &rhs) const { return !(*this == rhs); }
+  };
+
+  class Entry {
+  public:
+    enum class Type { Pattern, Proved };
+    Type type;
+    Pattern *pattern;
+    Entry(Type type, Pattern *pattern) : type(type), pattern(pattern) {}
+    static Entry *newEntry(Type type, Pattern *pattern) {
+      auto entry = static_cast<Entry *>(malloc(sizeof(Entry)));
+      entry->type = type;
+      entry->pattern = pattern;
+      return entry;
+    }
+    ~Entry() {
+      if (pattern) {
+        pattern->~Pattern();
+      }
+    }
+    bool operator==(const Entry &rhs) const {
+      if (type != rhs.type) {
+        return false;
+      }
+      if (pattern == nullptr && rhs.pattern != nullptr ||
+          pattern != nullptr && rhs.pattern == nullptr) {
+        return false;
+      }
+      if (pattern != nullptr && rhs.pattern != nullptr &&
+          *pattern != *rhs.pattern) {
+        return false;
+      }
+      return true;
+    }
+    bool operator!=(const Entry &rhs) const { return !(*this == rhs); }
+  };
 
   // Notation
   static Pattern *bot() { return mu(0, svar(0)); }
@@ -914,19 +972,25 @@ struct Pattern {
   Term *pop_stack(Stack *stack) { return stack->pop(); }
 
   Pattern *pop_stack_pattern(Stack *stack) {
-    auto term = stack->pop();
-    if (std::get<0>(*term) != TermType::Pattern) {
+    auto term = pop_stack(stack);
+    if (term->type != Term::Type::Pattern) {
+#if DEBUG
       throw std::runtime_error("Expected pattern on the stack.");
+#endif
+      exit(1);
     }
-    return std::get<1>(*term);
+    return term->pattern;
   }
 
   Pattern *pop_stack_proved(Stack *stack) {
-    auto term = stack->pop();
-    if (std::get<0>(*term) != TermType::Proved) {
+    auto term = pop_stack(stack);
+    if (term->type != Term::Type::Proved) {
+#if DEBUG
       throw std::runtime_error("Expected proved on the stack.");
+#endif
+      exit(1);
     }
-    return std::get<1>(*term);
+    return term->pattern;
   }
 
   
