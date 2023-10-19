@@ -104,8 +104,8 @@ class KoreImplies(Notation):
 
 @dataclass(frozen=True, eq=False)
 class KoreApplies(Notation):
-    phi0: Pattern   # For sorts
-    phi1: Pattern   # For arguments
+    phi0: Pattern  # For sorts
+    phi1: Pattern  # For arguments
 
     @staticmethod
     def definition() -> Pattern:

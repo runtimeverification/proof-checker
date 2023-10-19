@@ -73,6 +73,7 @@ class KoreConverter:
 
                 return kl.KoreOr(or_sort_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, sorts, args):
+
                 def chain_patterns(patterns: list[nf.Pattern]) -> nf.Pattern:
                     if len(patterns) == 0:
                         return nf.Bot()
