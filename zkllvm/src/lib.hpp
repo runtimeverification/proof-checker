@@ -564,6 +564,135 @@ struct Pattern {
     return pattern;
   }
 
+  // Destructor to manually release memory
+  ~Pattern() {
+    if (left) {
+      left->~Pattern();
+    }
+    if (right) {
+      right->~Pattern();
+    }
+    if (subpattern) {
+      subpattern->~Pattern();
+    }
+    if (plug) {
+      plug->~Pattern();
+    }
+    if (e_fresh) {
+      e_fresh->~LinkedList();
+      free(e_fresh);
+    }
+    if (s_fresh) {
+      s_fresh->~LinkedList();
+      free(s_fresh);
+    }
+    if (positive) {
+      positive->~LinkedList();
+      free(positive);
+    }
+    if (negative) {
+      negative->~LinkedList();
+      free(negative);
+    }
+    if (app_ctx_holes) {
+      app_ctx_holes->~LinkedList();
+      free(app_ctx_holes);
+    }
+    free(this);
+  }
+
+  static void destroyPatterns(LinkedList<Pattern *> *patterns) {
+    if (!patterns->empty()) {
+      for (auto it : *patterns) {
+        it->~Pattern();
+      }
+    }
+  }
+
+#if DEBUG
+  void print() {
+    switch (inst) {
+    case Instruction::EVar:
+      std::cout << "EVar(" << (int)id << ")";
+      break;
+    case Instruction::SVar:
+      std::cout << "SVar(" << (int)id << ")";
+      break;
+    case Instruction::Symbol:
+      std::cout << "Symbol(" << (int)id << ")";
+      break;
+    case Instruction::Implication:
+      /* std::cout << "Implication(";
+       left->print();
+       std::cout << ", ";
+       right->print();
+       std::cout << ")";*/
+      std::cout << "(";
+      left->print();
+      std::cout << " -> ";
+      right->print();
+      std::cout << ")";
+      break;
+    case Instruction::Application:
+      std::cout << "Application(";
+      left->print();
+      std::cout << ", ";
+      right->print();
+      std::cout << ")";
+      break;
+    case Instruction::Exists:
+      std::cout << "Exists(" << (int)id << ", ";
+      subpattern->print();
+      std::cout << ")";
+      break;
+    case Instruction::Mu:
+      std::cout << "Mu(" << (int)id << ", ";
+      subpattern->print();
+      std::cout << ")";
+      break;
+    case Instruction::MetaVar:
+      // std::cout << "phi" << (int)id;
+      std::cout << "MetaVar(" << (int)id;
+      if (e_fresh->head) {
+        std::cout << ", ";
+        e_fresh->print();
+      }
+      if (s_fresh->head) {
+        std::cout << ", ";
+        s_fresh->print();
+      }
+      if (positive->head) {
+        std::cout << ", ";
+        positive->print();
+      }
+      if (negative->head) {
+        std::cout << ", ";
+        negative->print();
+      }
+      if (app_ctx_holes->head) {
+        std::cout << ", ";
+        app_ctx_holes->print();
+      }
+      std::cout << ")";
+      break;
+    case Instruction::ESubst:
+      std::cout << "ESubst(";
+      subpattern->print();
+      std::cout << ", " << (int)id << ", ";
+      plug->print();
+      std::cout << ")";
+      break;
+    case Instruction::SSubst:
+      std::cout << "SSubst(";
+      subpattern->print();
+      std::cout << ", " << (int)id << ", ";
+      plug->print();
+      std::cout << ")";
+      break;
+    }
+  }
+#endif
+
   // Notation
   static Pattern *bot() { return Pattern::mu(0, Pattern::svar(0)); }
 
@@ -801,117 +930,5 @@ struct Pattern {
     return std::get<1>(*term);
   }
 
-  // Destructor to manually release memory
-  ~Pattern() {
-    if (left) {
-      left->~Pattern();
-    }
-    if (right) {
-      right->~Pattern();
-    }
-    if (subpattern) {
-      subpattern->~Pattern();
-    }
-    if (plug) {
-      plug->~Pattern();
-    }
-    if (e_fresh) {
-      e_fresh->~LinkedList();
-      free(e_fresh);
-    }
-    if (s_fresh) {
-      s_fresh->~LinkedList();
-      free(s_fresh);
-    }
-    if (positive) {
-      positive->~LinkedList();
-      free(positive);
-    }
-    if (negative) {
-      negative->~LinkedList();
-      free(negative);
-    }
-    if (app_ctx_holes) {
-      app_ctx_holes->~LinkedList();
-      free(app_ctx_holes);
-    }
-    free(this);
-  }
-
-  static void destroyPatterns(LinkedList<Pattern *> *patterns) {
-    if (!patterns->empty()) {
-      for (auto it : *patterns) {
-        it->~Pattern();
-      }
-      patterns->~LinkedList();
-      free(patterns);
-    }
-  }
-
-#if DEBUG
-  void print() {
-    switch (inst) {
-    case Instruction::EVar:
-      std::cout << "EVar(" << (int)id << ")";
-      break;
-    case Instruction::SVar:
-      std::cout << "SVar(" << (int)id << ")";
-      break;
-    case Instruction::Symbol:
-      std::cout << "Symbol(" << (int)id << ")";
-      break;
-    case Instruction::Implication:
-      std::cout << "Implication(";
-      left->print();
-      std::cout << ", ";
-      right->print();
-      std::cout << ")";
-      break;
-    case Instruction::Application:
-      std::cout << "Application(";
-      left->print();
-      std::cout << ", ";
-      right->print();
-      std::cout << ")";
-      break;
-    case Instruction::Exists:
-      std::cout << "Exists(" << (int)id << ", ";
-      subpattern->print();
-      std::cout << ")";
-      break;
-    case Instruction::Mu:
-      std::cout << "Mu(" << (int)id << ", ";
-      subpattern->print();
-      std::cout << ")";
-      break;
-    case Instruction::MetaVar:
-      std::cout << "MetaVar(" << (int)id << ", ";
-      e_fresh->print();
-      std::cout << ", ";
-      s_fresh->print();
-      std::cout << ", ";
-      positive->print();
-      std::cout << ", ";
-      negative->print();
-      std::cout << ", ";
-      app_ctx_holes->print();
-      std::cout << ")";
-      break;
-    case Instruction::ESubst:
-      std::cout << "ESubst(";
-      subpattern->print();
-      std::cout << ", " << (int)id << ", ";
-      plug->print();
-      std::cout << ")";
-      break;
-    case Instruction::SSubst:
-      std::cout << "SSubst(";
-      subpattern->print();
-      std::cout << ", " << (int)id << ", ";
-      plug->print();
-      std::cout << ")";
-      break;
-    }
-  }
-#endif
+  
 };
