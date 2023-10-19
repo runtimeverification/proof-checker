@@ -232,8 +232,8 @@ class Tautology(Propositional):
         npq_conc = self.PROVISIONAL_get_conc(npq)
         nr_conc = self.PROVISIONAL_get_conc(nr)
         np, q = Implication.extract(npq_conc)
-        p = Negation.extract(np)
-        r = Negation.extract(nr_conc)
+        p = Negation.extract(np)[0]
+        r = Negation.extract(nr_conc)[0]
         # TODO
         return Proved(Implication(Implication(q, r), p))
 
@@ -245,7 +245,7 @@ class Tautology(Propositional):
         """
         pnq = self.PROVISIONAL_get_conc(pnq_pf)
         p, nq = Implication.extract(pnq)
-        q = Negation.extract(nq)
+        q = Negation.extract(nq)[0]
         return self.imp_transitivity(lambda: self.dni(q), lambda: self.absurd2(pnq_pf, r))
 
     def absurd_i(self, np_pf: ProvedExpression, q: Pattern) -> Proved:
@@ -255,7 +255,7 @@ class Tautology(Propositional):
           p -> q
         """
         np = self.PROVISIONAL_get_conc(np_pf)
-        p = Negation.extract(np)
+        p = Negation.extract(np)[0]
         return self.modus_ponens(self.absurd(p, q), np_pf())
 
     def and_not_r_intro(self, p_pf: ProvedExpression, nq_pf: ProvedExpression) -> Proved:
@@ -266,7 +266,7 @@ class Tautology(Propositional):
         """
         p = self.PROVISIONAL_get_conc(p_pf)
         nq = self.PROVISIONAL_get_conc(nq_pf)
-        q = Negation.extract(nq)
+        q = Negation.extract(nq)[0]
         # TODO
         return Proved(neg(Implication(p, q)))
 
@@ -535,12 +535,12 @@ class Tautology(Propositional):
                     pf1_conc = self.PROVISIONAL_get_conc(pf1)
                     pf1_l, pf1_r = Implication.extract(pf1_conc)
                     a1, nb1 = And.extract(pf1_l)
-                    b1 = Negation.extract(nb1)
+                    b1 = Negation.extract(nb1)[0]
                     pf1 = partial(self.imp_transitivity, partial(self.con3_i, partial(self.dne_r, a1, b1)), pf1)
                     pf2_conc = self.PROVISIONAL_get_conc(pf2)
                     pf2_l, pf2_r = Implication.extract(pf2_conc)
                     a2, nb2 = And.extract(pf2_r)
-                    b2 = Negation.extract(nb2)
+                    b2 = Negation.extract(nb2)[0]
                     pf2 = partial(self.imp_transitivity, pf2, partial(self.con3_i, partial(self.dni_r, a2, b2)))
                 return ConjAnd(term_l, term_r), pf1, pf2
             else:
