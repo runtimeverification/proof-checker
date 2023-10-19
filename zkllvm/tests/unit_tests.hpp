@@ -704,6 +704,9 @@ int test_phi_implies_phi_impl() {
   // Stack: $ph0; ph0 -> ph0
   proof->push_back((uint8_t)Instruction::Save);
   // @1
+  proof->push_back((uint8_t)Instruction::Prop2);
+  // Stack: $ph0; $ph0 -> ph0;
+  // [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
 
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();

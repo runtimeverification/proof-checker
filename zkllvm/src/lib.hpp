@@ -1103,8 +1103,14 @@ struct Pattern {
       case Instruction::ESubst:
       case Instruction::SSubst:
       case Instruction::Prop1:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(prop1)));
+        break;
       case Instruction::Prop2:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(prop2)));
+        break;
       case Instruction::Prop3:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(prop3)));
+        break;
       case Instruction::ModusPonens:
       case Instruction::Quantifier:
       case Instruction::Generalization:
