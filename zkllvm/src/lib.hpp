@@ -690,6 +690,22 @@ struct Pattern {
       break;
     }
   }
+
+  class Term;
+  static void printStack(LinkedList<Term *> *stack) {
+    std::cout << "Stack: ";
+    for (Term *it : *stack) {
+      if (it->type == Term::Type::Pattern) {
+        it->pattern->print();
+        std::cout << "; ";
+      } else if (it->type == Term::Type::Proved) {
+        std::cout << "[ Proved: ";
+        it->pattern->print();
+        std::cout << " ]; ";
+      }
+    }
+    std::cout << std::endl;
+  }
 #endif
 
   class Term {
@@ -1226,6 +1242,9 @@ struct Pattern {
         exit(1);
       }
       }
+#if DEBUG
+      printStack(stack);
+#endif
     }
   }
 };
