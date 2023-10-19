@@ -208,6 +208,9 @@ class Application(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return Application(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
+    def __str__(self) -> str:
+        return f'app({str(self.left)}, {str(self.right)})'
+
 
 @dataclass(frozen=True)
 class Exists(Pattern):
