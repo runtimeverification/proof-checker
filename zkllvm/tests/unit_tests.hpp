@@ -619,3 +619,10 @@ int test_instantiate() {
 
   return 0;
 }
+
+void execute_vector(LinkedList<uint8_t> *instrs, Pattern::Stack *stack,
+                    Pattern::Memory *memory, Pattern::Claims *claims,
+                    Pattern::ExecutionPhase phase) {
+
+  Pattern::execute_instructions(instrs, stack, memory, claims, phase);
+}
