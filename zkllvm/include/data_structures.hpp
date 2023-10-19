@@ -77,20 +77,15 @@ public:
     }
   }
 
-  void delete_front() {
-    if (!head) {
-      return;
-    }
-
-    Node<T> *next = head->next;
-    std::free(head);
-    head = next;
-  }
-
   T pop() {
     assert(head && "Insufficient stack items.");
     T value = head->data;
-    delete_front();
+
+    // Update the head
+    Node<T> *next = head->next;
+    std::free(head);
+    head = next;
+
     return value;
   }
 
