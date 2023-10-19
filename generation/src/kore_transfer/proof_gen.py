@@ -42,7 +42,7 @@ def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: 
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    proof_gen.main(['', 'binary',  str(output_dir), file_name])
+    proof_gen.main(['', 'binary', str(output_dir), file_name])
 
 
 def main(
