@@ -157,8 +157,8 @@ class ProofExp(ABC):
                 ExecutionPhase.Gamma,
                 claims=list(map(Claim, cls.claims())),
                 out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-                claim_out=open(str(file_path.with_suffix('.ml-claim')), 'wb'),
-                proof_out=open(str(file_path.with_suffix('.ml-proof')), 'wb'),
+                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
             )
         )
         prover.execute_full()
@@ -170,8 +170,8 @@ class ProofExp(ABC):
                 ExecutionPhase.Gamma,
                 claims=list(map(Claim, cls.claims())),
                 out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
-                claim_out=open(str(file_path.with_suffix('.pretty-claim')), 'w'),
-                proof_out=open(str(file_path.with_suffix('.pretty-proof')), 'w'),
+                claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
+                proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
             )
         )
         prover.execute_full()
@@ -194,8 +194,8 @@ class ProofExp(ABC):
                 claims=list(map(Claim, cls.claims())),
                 patterns_for_memoization=counter.interpreter.finalize(),
                 out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-                claim_out=open(str(file_path.with_suffix('.ml-claim')), 'wb'),
-                proof_out=open(str(file_path.with_suffix('.ml-proof')), 'wb'),
+                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
             )
         )
         memoizer.execute_full()

@@ -24,11 +24,16 @@ class IOInterpreter(StatefulInterpreter):
         self.proof_out = proof_out
 
     def into_claim_phase(self) -> None:
-        super().into_claim_phase()
         assert self.claim_out
+        super().into_claim_phase()
+        self.out.close()
         self.out = self.claim_out
 
     def into_proof_phase(self) -> None:
-        super().into_proof_phase()
         assert self.proof_out
+        super().into_proof_phase()
+        self.out.close()
         self.out = self.proof_out
+
+    def __del__() -> None:
+        self.out.close()
