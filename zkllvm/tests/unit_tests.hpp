@@ -707,6 +707,25 @@ int test_phi_implies_phi_impl() {
   proof->push_back((uint8_t)Instruction::Prop2);
   // Stack: $ph0; $ph0 -> ph0;
   // [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
+  proof->push_back((uint8_t)Instruction::Instantiate);
+  proof->push_back((uint8_t)1);
+  proof->push_back((uint8_t)1);
+  // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2)) ->
+  //                     (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
+  proof->push_back((uint8_t)Instruction::Instantiate);
+  proof->push_back((uint8_t)1);
+  proof->push_back((uint8_t)2);
+  // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0)) ->
+  //               (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+  proof->push_back((uint8_t)Instruction::Load);
+  proof->push_back((uint8_t)1);
+  // Stack: p1 ; $ph0 -> ph0
+  proof->push_back((uint8_t)Instruction::Prop1);
+  // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)]
+  proof->push_back((uint8_t)Instruction::Instantiate);
+  proof->push_back((uint8_t)1);
+  proof->push_back((uint8_t)1);
+  // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
 
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();

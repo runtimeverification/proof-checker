@@ -964,10 +964,10 @@ struct Pattern {
     }
   }
 
-  void instantiate_in_place(Pattern &p, IdList &vars,
-                            LinkedList<Pattern *> &plugs) {
+  static void instantiate_in_place(Pattern &p, IdList &vars,
+                                   LinkedList<Pattern *> &plugs) {
     if (auto ret = instantiate_internal(p, vars, plugs)) {
-      p = *ret.unwrap();
+      p = *copy(ret.unwrap()); // FIXME: We shouldn't have to copy here
     }
   }
 
@@ -1116,7 +1116,40 @@ struct Pattern {
       case Instruction::Generalization:
       case Instruction::Existence:
       case Instruction::Substitution:
-      case Instruction::Instantiate:
+      case Instruction::Instantiate: {
+        auto n = iterator.next();
+        if (n == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Insufficient parameters for Instantiate instruction");
+#endif
+          exit(1);
+        }
+        auto ids = LinkedList<Id>::create();
+        auto plugs = LinkedList<Pattern *>::create();
+
+        auto metaterm = pop_stack(stack);
+        for (int i = 0; i < *n; i++) {
+          ids->push(*iterator.next());
+          plugs->push(pop_stack_pattern(stack));
+        }
+
+        if (metaterm->type == Term::Type::Pattern) {
+          instantiate_in_place(*metaterm->pattern, *ids, *plugs);
+          stack->push(
+              Term::newTerm(Term::Type::Pattern, copy(metaterm->pattern)));
+        } else if (metaterm->type == Term::Type::Proved) {
+          instantiate_in_place(*metaterm->pattern, *ids, *plugs);
+          stack->push(
+              Term::newTerm(Term::Type::Proved, copy(metaterm->pattern)));
+        } else {
+#if DEBUG
+          throw std::runtime_error("Instantiate needs a term on the stack");
+#endif
+          exit(1);
+        }
+        break;
+      }
       case Instruction::Pop:
         break;
       case Instruction::Save: {
