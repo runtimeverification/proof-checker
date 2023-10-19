@@ -172,7 +172,7 @@ class MetamathConverter:
         return pattern
 
     def _add_symbol(self, var: str) -> None:
-        if var not in self._symbols:   
+        if var not in self._symbols:
             self._symbols[var] = Symbol(var)
 
     def _is_symbol(self, name: str) -> bool:
