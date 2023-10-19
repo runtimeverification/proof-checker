@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, Notation, bot
+from proof_generation.pattern import Implication, MetaVar, Notation, bot, match_single
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -28,6 +28,26 @@ class Negation(Notation):
 
     def __str__(self) -> str:
         return f'~({str(self.phi0)})'
+    
+    #NOTE These two methods need to be redefined because the inherited ones
+    # return singleton tuples of Patterns rather than just plain Patterns
+    # and this messes up assignments.
+    # This will be an issue for all notations encapsulating exactly one argument
+    # pattern
+    @staticmethod
+    def unwrap(pattern: Pattern) -> Pattern | None:
+        if isinstance(pattern, Negation):
+            return pattern.phi0
+        match_result = match_single(Negation.definition(), pattern)
+        if match_result is None:
+            return None
+        return match_result[0]
+
+    @classmethod
+    def extract(cls, pattern: Pattern) -> tuple[Pattern, ...]:
+        ret = cls.unwrap(pattern)
+        assert ret is not None, f"Expected a {cls.label()} but got instead: {str(pattern)}\n"
+        return ret
 
 
 def neg(p: Pattern) -> Pattern:
