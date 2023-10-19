@@ -73,11 +73,22 @@ class KoreConverter:
 
                 return kl.KoreOr(or_sort_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, sorts, args):
-                app_symbol_pattern: nf.Symbol = self._resolve_symbol(symbol)
-                args_pattern: list[nf.Pattern] = [self._convert_pattern(arg) for arg in args]
-                sorts_pattern: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
+                def chain_patterns(patterns: list[nf.Pattern]) -> nf.Pattern:
+                    if len(patterns) == 0:
+                        return nf.Bot()
+                    else:
+                        next_one, *patterns_left = patterns
+                        return nf.Application(next_one, chain_patterns(patterns_left))
 
-                return self._resolve_notation(symbol, app_symbol_pattern, [*sorts_pattern, *args_pattern])
+                app_symbol: nf.Pattern = self._resolve_symbol(symbol)
+                args_patterns: list[nf.Pattern] = [self._convert_pattern(arg) for arg in args]
+                sorts_patterns: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
+
+                args_chain = chain_patterns([app_symbol] + args_patterns) if len(args_patterns) > 0 else app_symbol
+                sorts_chain = chain_patterns(sorts_patterns)
+
+                assert isinstance(args_chain, (nf.Application, nf.Symbol))
+                return kl.KoreApplies(sorts_chain, args_chain)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return self._resolve_evar(pattern)

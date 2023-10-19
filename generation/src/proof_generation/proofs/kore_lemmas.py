@@ -103,6 +103,23 @@ class KoreImplies(Notation):
 
 
 @dataclass(frozen=True, eq=False)
+class KoreApplies(Notation):
+    phi0: Pattern   # For sorts
+    phi1: Pattern   # For arguments
+
+    @staticmethod
+    def definition() -> Pattern:
+        # TODO: We just drop the sort for now
+        # In the Kore we can have an application of a symbol to none or several arguments. We chain them manually
+        # in a single pattern and then save it to phi1. We can't guarantee that there are two or more args as in
+        # the normal application.
+        return phi1
+
+    def __str__(self) -> str:
+        return f'(kapp({str(self.phi0)}) ({str(self.phi1)})'
+
+
+@dataclass(frozen=True, eq=False)
 class KoreRewrites(Notation):
     phi0: Pattern
     phi1: Pattern
