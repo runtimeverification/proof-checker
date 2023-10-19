@@ -12,25 +12,26 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     import proof_generation.pattern as nf
-    from kore_transfer.generate_definition import KoreDefinition
     from kore_transfer.kore_converter import KoreConverter
 
 
 class KoreHint:
-    def __init__(self, pattern: nf.Pattern, axiom: nf.Pattern | None, instantiations: tuple[nf.Pattern, ...]) -> None:
+    def __init__(
+        self, conf_before: nf.Pattern, conf_after: nf.Pattern, axiom_number: int, instantiations: tuple[nf.Pattern, ...]
+    ) -> None:
         # TODO: Change interface according to the real hint format
-        self._pattern: nf.Pattern = pattern
-        self._axiom: nf.Pattern | None = axiom
+        self._pre_configuration: nf.Pattern = conf_before
+        self._post_configuration: nf.Pattern = conf_after
         self._instantiations: tuple[nf.Pattern, ...] = instantiations
+        self.axiom_number: int = axiom_number
 
     @property
-    def pattern(self) -> nf.Pattern:
-        return self._pattern
+    def configurations_before(self) -> nf.Pattern:
+        return self._pre_configuration
 
     @property
-    def relevant_axiom(self) -> nf.Pattern | None:
-        """Return the relevant axiom for the given hint."""
-        return self._axiom
+    def configuration_after(self) -> nf.Pattern:
+        return self._post_configuration
 
     @property
     def instantiations(self) -> dict[int, nf.Pattern]:
@@ -40,7 +41,6 @@ class KoreHint:
 def get_proof_hints(
     kompiled_dir: Path,
     program_file: Path,
-    definition: type[KoreDefinition],
     kore_converter: KoreConverter,
     max_step: int,
 ) -> Iterator[KoreHint]:
@@ -51,13 +51,14 @@ def get_proof_hints(
         # Unbounded iteration
         counter = count(0)
 
-    last_axiom: kore.Pattern | None = None
+    last_configuration: kore.Pattern | None = None
     for step in counter:
         configuration_for_step: kore.Pattern = _get_confguration_for_depth(kompiled_dir, program_file, step)
-        if last_axiom and configuration_for_step == last_axiom:
+        if not last_configuration:
+            last_configuration = configuration_for_step
+            continue
+        elif configuration_for_step == last_configuration:
             break
-        else:
-            last_axiom = configuration_for_step
 
         # TODO: Absolutely hardcoded solution until we have hints
         assert (
@@ -66,13 +67,13 @@ def get_proof_hints(
             and isinstance(configuration_for_step.args[0].args[0], kore.App)
         )
 
-        pattern = kore_converter.convert_pattern(configuration_for_step)
+        pre_conf_pattern = kore_converter.convert_pattern(last_configuration)
+        post_conf_pattern = kore_converter.convert_pattern(configuration_for_step)
         inst1 = kore_converter.convert_pattern(configuration_for_step.args[0].args[0].args[1])
         inst2 = kore_converter.convert_pattern(configuration_for_step.args[1])
 
-        # TODO: The choice for an axiom is hardcoded and should be changed!
-        axiom = _choose_axiom(step, definition)
-        hint = KoreHint(pattern, axiom, (inst1, inst2))
+        hint = KoreHint(pre_conf_pattern, post_conf_pattern, step - 1, (inst1, inst2))
+        last_configuration = configuration_for_step
         yield hint
 
 
@@ -85,10 +86,3 @@ def _get_confguration_for_depth(definition_dir: Path, input_file: Path, depth: i
 
     parsed = KoreParser(finished_process.stdout)
     return parsed.pattern()
-
-
-def _choose_axiom(step: int, definition: type[KoreDefinition]) -> nf.Pattern | None:
-    if step < len(definition.axioms()):
-        return definition.axioms()[step]
-    else:
-        return None

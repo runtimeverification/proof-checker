@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from pyk.kore.kompiled import KompiledKore
 from pyk.ktool.kompile import kompile
 
-from kore_transfer.generate_definition import compose_definition
+from kore_transfer.generate_definition import KoreDefinition
 from kore_transfer.generate_hints import get_proof_hints
 from kore_transfer.generate_proof import generate_proofs
 from kore_transfer.kore_converter import KoreConverter
@@ -62,16 +62,15 @@ def main(
 
     print('Begin converting ... ')
     kore_converter = KoreConverter(kore_definition)
-    proof_expression = compose_definition(kore_definition, kore_converter)
 
     print('Intialize hint stream ... ')
     # TODO: Fix with the real hints
-    hints_iterator = get_proof_hints(kompiled_dir, Path(program_file), proof_expression, kore_converter, step)
+    hints_iterator = get_proof_hints(kompiled_dir, Path(program_file), kore_converter, step)
 
     print('Begin generating proofs ... ')
-    generate_proofs(hints_iterator, proof_expression)
+    generate_proofs(hints_iterator, KoreDefinition, kore_converter)
 
-    generate_proof_file(proof_expression, Path(proof_dir), Path(k_file).stem)
+    generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem)
     print('Done!')
 
 
