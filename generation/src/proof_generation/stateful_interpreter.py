@@ -100,11 +100,6 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def add_notation(self, notation: Pattern) -> Pattern:
-        ret = super().add_notation(notation)
-        self.stack[-1] = notation
-        return ret
-
     def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         *self.stack, expected_plug, expected_pattern = self.stack
         assert expected_pattern == pattern

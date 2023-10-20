@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TextIO
 
 from proof_generation.io_interpreter import IOInterpreter
-from proof_generation.pattern import App, ESubst, Exists, Implies, Mu, Notation, SSubst
+from proof_generation.pattern import App, ESubst, Exists, Implies, Instantiate, Mu, SSubst
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -123,11 +123,6 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write(f'SSubst id={svar_id}')
 
     @pretty()
-    def add_notation(self, notation: Pattern) -> None:
-        if isinstance(notation, Notation):
-            self.out.write(f'// Notation {notation.label()}')
-
-    @pretty()
     def prop1(self) -> None:
         self.out.write('Prop1')
 
@@ -209,10 +204,7 @@ class PrettyPrintingInterpreter(IOInterpreter):
 
 
 class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
-    def add_notation(self, notation: Pattern) -> Pattern:
-        return super(PrettyPrintingInterpreter, self).add_notation(notation)
-
     def pretty_print_pattern(self, p: Pattern) -> str:
-        if isinstance(p, Notation):
-            return self.pretty_print_pattern(p.conclusion())
+        if isinstance(p, Instantiate):
+            return self.pretty_print_pattern(p.simplify())
         return super().pretty_print_pattern(p)

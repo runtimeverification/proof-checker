@@ -9,9 +9,9 @@ from proof_generation.pattern import (
     EVar,
     Exists,
     Implies,
+    Instantiate,
     MetaVar,
     Mu,
-    Notation,
     SSubst,
     SVar,
     Symbol,
@@ -93,11 +93,6 @@ class BasicInterpreter:
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(var, subpattern)
 
-    def add_notation(self, notation: Pattern) -> Pattern:
-        if isinstance(notation, Notation):
-            self.pattern(notation.conclusion())
-        return notation
-
     def pattern(self, p: Pattern) -> Pattern:
         match p:
             case EVar(name):
@@ -124,8 +119,14 @@ class BasicInterpreter:
 
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
-        if isinstance(p, Notation):
-            return self.add_notation(p)
+            case Instantiate(pattern, subst):
+                for inst in subst.values():
+                    self.pattern(inst)
+                ret = self.pattern(pattern)
+                if not len(subst):
+                    return ret
+                else:
+                    return self.instantiate_pattern(pattern, subst)
 
         raise NotImplementedError(f'{type(p)}')
 
@@ -150,7 +151,7 @@ class BasicInterpreter:
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
-        return Proved(Implies(Implies(Implies(phi0, bot), bot), phi0))
+        return Proved(Implies(Implies(Implies(phi0, bot()), bot()), phi0))
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion

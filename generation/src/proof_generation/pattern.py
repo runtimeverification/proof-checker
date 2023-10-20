@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 
@@ -74,8 +73,8 @@ class Pattern:
 
     @classmethod
     def unwrap(cls, pattern: Pattern) -> tuple[Pattern, ...] | None:
-        if isinstance(pattern, Notation):
-            return cls.unwrap(pattern.conclusion())
+        if isinstance(pattern, Instantiate):
+            return cls.unwrap(pattern.simplify())
         if isinstance(pattern, cls):
             return tuple([v for _, v in sorted(vars(pattern).items()) if isinstance(v, Pattern)])
         return None
@@ -85,11 +84,6 @@ class Pattern:
         ret = cls.unwrap(pattern)
         assert ret is not None, f'Expected a/an {cls.__name__} but got instead: {str(pattern)}\n'
         return ret
-
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, Notation):
-            return self.__eq__(o.conclusion())
-        return False
 
 
 @dataclass(frozen=True)
@@ -111,8 +105,8 @@ class EVar(Pattern):
     def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, EVar):
             return pat.name
-        if isinstance(pat, Notation):
-            return EVar.deconstruct(pat.conclusion())
+        if isinstance(pat, Instantiate):
+            return EVar.deconstruct(pat.simplify())
         return None
 
     def __str__(self) -> str:
@@ -138,8 +132,8 @@ class SVar(Pattern):
     def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, SVar):
             return pat.name
-        if isinstance(pat, Notation):
-            return SVar.deconstruct(pat.conclusion())
+        if isinstance(pat, Instantiate):
+            return SVar.deconstruct(pat.simplify())
         return None
 
     def __str__(self) -> str:
@@ -163,8 +157,8 @@ class Symbol(Pattern):
     def deconstruct(pat: Pattern) -> str | None:
         if isinstance(pat, Symbol):
             return pat.name
-        if isinstance(pat, Notation):
-            return Symbol.deconstruct(pat.conclusion())
+        if isinstance(pat, Instantiate):
+            return Symbol.deconstruct(pat.simplify())
         return None
 
     def __str__(self) -> str:
@@ -231,8 +225,8 @@ class Exists(Pattern):
     def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
         if isinstance(pat, Exists):
             return pat.var, pat.subpattern
-        if isinstance(pat, Notation):
-            return Exists.deconstruct(pat.conclusion())
+        if isinstance(pat, Instantiate):
+            return Exists.deconstruct(pat.simplify())
         return None
 
     def __str__(self) -> str:
@@ -259,8 +253,8 @@ class Mu(Pattern):
     def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
         if isinstance(pat, Mu):
             return pat.var, pat.subpattern
-        if isinstance(pat, Notation):
-            return Mu.deconstruct(pat.conclusion())
+        if isinstance(pat, Instantiate):
+            return Mu.deconstruct(pat.simplify())
         return None
 
     def __str__(self) -> str:
@@ -340,78 +334,57 @@ class SSubst(Pattern):
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
 
+InstantiationDict = dict[int, Pattern]
+
+
 @dataclass(frozen=True)
-class Notation(Pattern, ABC):
-    def label(self) -> str:
-        return f'{type(self).__name__!r}'
+class Instantiate(Pattern):
+    """Constructor for an unsimplified Instantiated Pattern.
+    This is typically used to contain Notation.
+    """
 
-    @abstractmethod
-    def definition(self) -> Pattern:
-        raise NotImplementedError('This notation has no definition.')
+    pattern: Pattern
+    inst: InstantiationDict
 
-    def arguments(self) -> dict[int, Pattern]:
-        ret: dict[int, Pattern] = {}
-
-        for i, arg in enumerate(vars(self).values()):
-            assert isinstance(arg, Pattern)
-            ret[i] = arg
-
-        return ret
-
-    def conclusion(self) -> Pattern:
-        return self.definition().instantiate(self.arguments())
-
-    # We assume all metavars in notations are instantiated for
-    # So this is correct, as this can only change "internals" of the instantiations
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args = self._instantiate_args(delta)
-        return type(self)(*args)
-
-    # TODO: Keep notations (without dropping them)
-    def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_esubst(evar_id, plug)
-
-    # TODO: Keep notations (without dropping them)
-    def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_ssubst(svar_id, plug)
-
-    @classmethod
-    def unwrap(cls, pattern: Pattern) -> tuple[Pattern, ...] | None:
-        assert cls is not Notation
-        assert issubclass(cls, Notation)
-        if isinstance(pattern, cls):
-            return tuple([v for _, v in sorted(pattern.arguments().items())])
-        match_result = match_single(cls().definition(), pattern)
-        if match_result is None:
-            return None
-        return tuple([v for _, v in sorted(match_result.items())])
-
-    def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
-        args: list[Pattern] = []
-
-        for arg in self.arguments().values():
-            args.append(arg.instantiate(delta))
-
-        return args
+    def simplify(self) -> Pattern:
+        """Instantiate pattern with plug.
+        Note that this doesn't fully reduce all notation, just one level.
+        """
+        return self.pattern.instantiate(self.inst)
 
     def __eq__(self, o: object) -> bool:
-        assert isinstance(o, Pattern)
-        if isinstance(o, Notation) and type(o) == type(self):
-            return o.arguments() == self.arguments()
-        return self.conclusion() == o
+        # TODO: This should recursively remove all notation.
+        return self.simplify() == o
 
-    def __str__(self) -> str:
-        pretty_args = ', '.join(map(str, self.arguments().values()))
-        return f'{self.label()} ({pretty_args})'
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        instantiated_subst = {k: v.instantiate(delta) for k, v in self.inst.items()}
+        unshadowed_delta = {k: v for k, v in delta.items() if k not in self.inst}
+        return Instantiate(self.pattern.instantiate(unshadowed_delta), instantiated_subst)
+
+    def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
+        # TODO: For "complete" substitutions (where all free metavars are replaced),
+        # and the substituted EVar does not occur, we should preserve the Instantiate,
+        # and apply the esubst to self.inst.
+        return self.simplify().apply_esubst(evar_id, plug)
+
+    def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        # TODO: For "complete" substitutions (where all free metavars are replaced),
+        # and the substituted SVar does not occur, we should preserve the Instantiate,
+        # and apply the ssubst to self.inst.
+        return self.simplify().apply_ssubst(svar_id, plug)
 
 
-@dataclass(frozen=True, eq=False)
-class Bot(Notation):
-    def definition(self) -> Pattern:
-        return Mu(0, SVar(0))
+@dataclass(frozen=True)
+class Notation:
+    label: str
+    definition: Pattern
+    format_str: str
 
-    def __str__(self) -> str:
-        return '⊥'
+    def __call__(self, *args: Pattern) -> Pattern:
+        return Instantiate(self.definition, dict(enumerate(args)))
+
+    def assert_matches(self, pattern: Pattern, msg: str) -> tuple[Pattern, ...]:
+        raise NotImplementedError
 
 
-bot = Bot()
+bot = Notation('bot', Mu(0, SVar(0)), '⊥')

@@ -19,7 +19,7 @@ class KoreConverter:
         self._evars: dict[str, nf.EVar] = {}
         self._svars: dict[str, nf.SVar] = {}
         self._metavars: dict[str, nf.MetaVar] = {}
-        self._notations: dict[str, type[nf.Notation]] = {}
+        self._notations: dict[str, nf.Notation] = {}
 
         # TODO: Update it depending on the numbering schemes used in hints
         self._axioms_to_choose_from: dict[int, kore.Axiom] = self._retrieve_axioms()
@@ -61,24 +61,24 @@ class KoreConverter:
                 left_rw_pattern = self._convert_pattern(left)
                 right_rw_pattern = self._convert_pattern(right)
 
-                return kl.KoreRewrites(rewrite_sort_symbol, left_rw_pattern, right_rw_pattern)
+                return kl.kore_rewrites(rewrite_sort_symbol, left_rw_pattern, right_rw_pattern)
             case kore.And(sort, left, right):
                 and_sort_symbol: nf.Pattern = self._resolve_symbol(sort)
                 left_and_pattern: nf.Pattern = self._convert_pattern(left)
                 right_and_pattern: nf.Pattern = self._convert_pattern(right)
 
-                return kl.KoreAnd(and_sort_symbol, left_and_pattern, right_and_pattern)
+                return kl.kore_and(and_sort_symbol, left_and_pattern, right_and_pattern)
             case kore.Or(sort, left, right):
                 or_sort_symbol: nf.Pattern = self._resolve_symbol(sort)
                 left_or_pattern: nf.Pattern = self._convert_pattern(left)
                 right_or_pattern: nf.Pattern = self._convert_pattern(right)
 
-                return kl.KoreOr(or_sort_symbol, left_or_pattern, right_or_pattern)
+                return kl.kore_or(or_sort_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, sorts, args):
 
                 def chain_patterns(patterns: list[nf.Pattern]) -> nf.Pattern:
                     if len(patterns) == 0:
-                        return nf.Bot()
+                        return nf.bot()
                     else:
                         next_one, *patterns_left = patterns
                         return nf.App(next_one, chain_patterns(patterns_left))
@@ -91,18 +91,18 @@ class KoreConverter:
                 sorts_chain = chain_patterns(sorts_patterns)
 
                 assert isinstance(args_chain, (nf.App, nf.Symbol))
-                return kl.KoreApplies(sorts_chain, args_chain)
+                return kl.kore_app(sorts_chain, args_chain)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return self._resolve_evar(pattern)
                 return self._resolve_metavar(name)
             case kore.Top(sort):
                 top_sort_symbol: nf.Pattern = self._resolve_symbol(sort)
-                return kl.KoreTop(top_sort_symbol)
+                return kl.kore_top(top_sort_symbol)
             case kore.DV(sort, value):
                 dv_sort_symbol: nf.Pattern = self._resolve_symbol(sort)
                 value_symbol: nf.Pattern = self._resolve_symbol(value.value)
-                return kl.KoreDv(dv_sort_symbol, value_symbol)
+                return kl.kore_dv(dv_sort_symbol, value_symbol)
 
         raise NotImplementedError(f'Pattern {pattern} is not supported')
 
