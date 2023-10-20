@@ -780,3 +780,24 @@ int test_phi_implies_phi_impl() {
 
   return 0;
 }
+int test_no_remaining_claims() {
+
+  auto gamma = LinkedList<uint8_t>::create();
+  auto claims = LinkedList<uint8_t>::create();
+  auto proof = LinkedList<uint8_t>::create();
+
+  claims->push_back((uint8_t)Instruction::Symbol);
+  claims->push_back((uint8_t)0);
+  claims->push_back((uint8_t)Instruction::Publish);
+
+  Pattern::verify(gamma, claims, proof);
+
+  gamma->~LinkedList();
+  free(gamma);
+  claims->~LinkedList();
+  free(claims);
+  proof->~LinkedList();
+  free(proof);
+
+  return 0;
+}

@@ -107,6 +107,12 @@ public:
     return value;
   }
 
+  void clear() {
+    while (head) {
+      pop();
+    }
+  }
+
   T front() {
     assert(head && "Insufficient stack items.");
     return head->data;

@@ -1335,4 +1335,47 @@ struct Pattern {
 #endif
     }
   }
+
+  static int verify(LinkedList<uint8_t> *gamma_buffer,
+                    LinkedList<uint8_t> *claims_buffer,
+                    LinkedList<uint8_t> *proof_buffer) {
+    auto claims = Claims::create();
+    auto memory = Memory::create();
+    auto stack = Stack::create();
+
+    execute_instructions(gamma_buffer,
+                         stack,  // stack is empty initially.
+                         memory, // memory is empty initially.
+                         claims, // claims is unused in this phase.
+                         ExecutionPhase::Gamma);
+
+    stack->clear();
+
+    execute_instructions(claims_buffer,
+                         stack,  // stack is empty initially.
+                         memory, // reuse memory
+                         claims, // claims populated in this phase
+                         ExecutionPhase::Claims);
+
+    stack->clear();
+
+    execute_instructions(proof_buffer,
+                         stack,  // stack is empty initially.
+                         memory, // axioms are used as initial memory
+                         claims, // claims are consumed by publish instruction
+                         ExecutionPhase::Proof);
+    if (!claims->empty()) {
+#if DEBUG
+      std::cout << "Checking finished but there are claims left unproved:"
+                << std::endl;
+      for (auto it : *claims) {
+        it->print();
+        std::cout << std::endl;
+      }
+#endif
+      return 1;
+    }
+
+    return 0;
+  }
 };

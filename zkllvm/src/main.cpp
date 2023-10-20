@@ -17,6 +17,7 @@ typedef __attribute__((ext_vector_type(1))) int proof_type;
   test_instantiate();
   test_construct_phi_implies_phi();
   test_phi_implies_phi_impl();
+  test_no_remaining_claims();
 
   return c[0];
 }
@@ -51,6 +52,10 @@ int main() {
 
   std::cout << "Executing test_phi_implies_phi_impl()" << std::endl;
   test_phi_implies_phi_impl();
+  std::cout << std::endl;
+
+  std::cout << "Executing test_no_remaining_claims()" << std::endl;
+  test_no_remaining_claims();
   std::cout << std::endl;
 
   return 0;
