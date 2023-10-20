@@ -30,12 +30,13 @@ class KoreConverter:
         return self._convert_pattern(pattern)
 
     def retrieve_axiom(self, position: int) -> nf.Pattern:
-        """Retrieve the axiom at the given position."""
+        """Retrieve the axiom at the given ordinal."""
         kore_axiom = self._axioms_to_choose_from[position]
         return self._convert_pattern(kore_axiom.pattern)
 
     def _retrieve_axioms(self) -> list[kore.Axiom]:
-        """Retrieve the axiom at the given position."""
+        """Collect and save all axioms from the definition in Kore without converting them. This list will 
+        be used to resolve ordinals from hints to real axioms."""
         axioms: list[kore.Axiom] = []
         for module in self._definition.modules:
             # Select only patterns below that starts with kore.Rewrites

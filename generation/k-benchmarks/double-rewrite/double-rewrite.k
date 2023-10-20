@@ -1,12 +1,12 @@
-module REWRITE-SYNTAX
+module DOUBLE-REWRITE-SYNTAX
 
   syntax Foo ::= FooA() | FooB() | FooC()
 
 endmodule
 
-module REWRITE
+module DOUBLE-REWRITE
 
-  imports REWRITE-SYNTAX
+  imports DOUBLE-REWRITE-SYNTAX
 
   rule FooA() => FooB()
   rule FooB() => FooC()
