@@ -6,6 +6,14 @@ template <typename T> struct Node {
   T data;
   Node *next;
 
+  Node(const T &value) : data(value), next(nullptr) {}
+
+  bool operator==(const Node &rhs) {
+    return data == rhs.data && next == rhs.next;
+  }
+
+  bool operator!=(const Node &rhs) { return !(*this == rhs); }
+
   static Node *create(const T &value) {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
     newNode->data = value;
@@ -28,6 +36,10 @@ public:
       curr = next;
     }
   }
+
+  bool operator==(const LinkedList &rhs) { return head == rhs.head; }
+
+  bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }
 
   void insert_front(const T &value) {
     Node<T> *newNode = Node<T>::create(value);
@@ -87,6 +99,12 @@ public:
     return list;
   }
 
+  static LinkedList *create(const T &value, const T &value2) {
+    LinkedList *list = create(value);
+    list->insert_front(value2);
+    return list;
+  }
+
   bool contains(const T &value) {
     Node<T> *curr = head;
     while (curr) {
@@ -117,6 +135,53 @@ public:
 
     return true; // No common elements found
   }
+
+  T &operator[](int index) {
+    Node<T> *curr = head;
+    int i = 0;
+    while (curr) {
+      if (i == index) {
+        return curr->data;
+      }
+      curr = curr->next;
+      i++;
+    }
+    assert(curr && "Index out of bounds.");
+    return curr->data;
+  }
+
+  size_t size() {
+    size_t count = 0;
+    Node<T> *curr = head;
+    while (curr) {
+      count++;
+      curr = curr->next;
+    }
+    return count;
+  }
+
+  bool empty() { return head == nullptr; }
+
+  class Iterator {
+  private:
+    Node<T> *current;
+
+  public:
+    Iterator(Node<T> *head) : current(head) {}
+
+    T &operator*() { return current->data; }
+    T *operator->() { return &current->data; }
+    bool operator==(const Iterator &other) { return current == other.current; }
+    bool operator!=(const Iterator &other) { return current != other.current; }
+
+    Iterator &operator++() {
+      current = current->next;
+      return *this;
+    }
+  };
+
+  Iterator begin() { return Iterator(head); }
+  Iterator end() { return Iterator(nullptr); }
 
 #ifdef DEBUG
   void print() {
