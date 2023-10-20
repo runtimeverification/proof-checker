@@ -26,7 +26,7 @@ void read_input_claim(claim_type &arr, LinkedList<uint8_t> *input) {
 
 void read_input_proof(proof_type &arr, LinkedList<uint8_t> *input) {
   int arr_size = arr[0];
-  for (int i = 1; i <= 70; i++) {
+  for (int i = 1; i <= arr_size; i++) {
     input->push_back((uint8_t)arr[i]);
   }
 }
