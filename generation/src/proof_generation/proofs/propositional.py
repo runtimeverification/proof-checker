@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implies, MetaVar, Notation, bot
@@ -18,58 +17,10 @@ phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 phi0_implies_phi0 = Implies(phi0, phi0)
 
-
-@dataclass(frozen=True, eq=False)
-class Negation(Notation):
-    phi0: Pattern
-
-    def definition(self) -> Pattern:
-        return Implies(MetaVar(0), bot)
-
-    def __str__(self) -> str:
-        return f'¬({str(self.phi0)})'
-
-
-def neg(p: Pattern) -> Pattern:
-    return Negation(p)
-
-
-@dataclass(frozen=True, eq=False)
-class Top(Notation):
-    def definition(self) -> Pattern:
-        return neg(bot)
-
-    def __str__(self) -> str:
-        return '⊤'
-
-
-top = Top()
-
-
-@dataclass(frozen=True, eq=False)
-class And(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return neg(Implies(phi0, neg(phi1)))
-
-    def __str__(self) -> str:
-        return f'({self.phi0} ⋀ {self.phi1})'
-
-
-@dataclass(frozen=True, eq=False)
-class Or(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @staticmethod
-    def definition() -> Pattern:
-        return Implies(neg(phi0), phi1)
-
-    def __str__(self) -> str:
-        return f'({self.phi0} \\/ {self.phi1})'
+neg = Notation('not', Implies(MetaVar(0), bot()), '¬({0})')
+top = Notation('top', neg(bot()), '⊤')
+_and = Notation('and', neg(Implies(phi0, neg(phi1))), '({0} ⋀ {1})')
+_or = Notation('or', Implies(neg(phi0), phi1), '({0} ⋁ {1})')
 
 
 class Propositional(ProofExp):
@@ -85,8 +36,8 @@ class Propositional(ProofExp):
         phi0 = MetaVar(0)
         return [
             Implies(phi0, phi0),  # Reflexivity
-            top,  # Top
-            Implies(bot, phi0),  # Bot_elim
+            top(),  # Top
+            Implies(bot(), phi0),  # Bot_elim
             Implies(neg(neg(phi0)), phi0),  # Contradiction
             Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
             Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
@@ -152,7 +103,7 @@ class Propositional(ProofExp):
         )
 
     def top_intro(self) -> Proved:
-        return self.dynamic_inst(self.imp_reflexivity, {0: bot})
+        return self.dynamic_inst(self.imp_reflexivity, {0: bot()})
 
     def bot_elim(self) -> Proved:
         neg_neg_phi0 = neg(neg(phi0))
@@ -161,17 +112,17 @@ class Propositional(ProofExp):
             # ((bot -> neg neg 0) -> (bot -> 0)))
             self.modus_ponens(
                 # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
-                self.dynamic_inst(self.prop2, {0: bot, 1: neg_neg_phi0, 2: phi0}),
+                self.dynamic_inst(self.prop2, {0: bot(), 1: neg_neg_phi0, 2: phi0}),
                 # (bot -> (neg neg 0 -> 0))
                 self.modus_ponens(
                     # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.dynamic_inst(self.prop1, {0: Implies(neg_neg_phi0, phi0), 1: bot}),
+                    self.dynamic_inst(self.prop1, {0: Implies(neg_neg_phi0, phi0), 1: bot()}),
                     # (neg neg 0 -> 0)
                     self.dynamic_inst(self.prop3, {0: phi0}),
                 ),
             ),
             # (bot -> (neg neg phi0))
-            self.dynamic_inst(self.prop1, {0: bot, 1: neg(phi0)}),
+            self.dynamic_inst(self.prop1, {0: bot(), 1: neg(phi0)}),
         )
 
     # (neg phi0 -> bot) -> phi0
@@ -180,10 +131,10 @@ class Propositional(ProofExp):
 
     # (neg phi0) -> phi0 -> phi1
     def absurd(self) -> Proved:
-        bot_to_1 = Implies(bot, phi1)
+        bot_to_1 = Implies(bot(), phi1)
 
         return self.modus_ponens(
-            self.dynamic_inst(self.prop2, {0: phi0, 1: bot, 2: phi1}),
+            self.dynamic_inst(self.prop2, {0: phi0, 1: bot(), 2: phi1}),
             self.modus_ponens(
                 self.dynamic_inst(self.prop1, {0: bot_to_1, 1: phi0}), self.dynamic_inst(self.bot_elim, {0: phi1})
             ),
@@ -193,15 +144,15 @@ class Propositional(ProofExp):
     def peirce_bot(self) -> Proved:
         def phi0_bot_imp_ph0() -> Pattern:
             # ((ph0 -> bot) -> ph0)
-            return Implies(Implies(phi0, bot), phi0)
+            return Implies(Implies(phi0, bot()), phi0)
 
         def phi0_bot_imp_bot() -> Pattern:
             # (ph0 -> bot) -> bot)
-            return Implies(Implies(phi0, bot), bot)
+            return Implies(Implies(phi0, bot()), bot())
 
         def phi0_bot_imp_phi0_bot() -> Pattern:
             # (phi0 -> bot) -> (phi0->bot)
-            return Implies(Implies(phi0, bot), Implies(phi0, bot))
+            return Implies(Implies(phi0, bot()), Implies(phi0, bot()))
 
         def modus_ponens_1() -> Proved:
             return self.modus_ponens(
@@ -248,8 +199,8 @@ class Propositional(ProofExp):
                             # ((phi0 -> bot) -> (phi0 -> bot)) -> (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot))),
                             0: Implies(
                                 Implies(
-                                    Implies(phi0, bot),
-                                    Implies(phi0, bot),
+                                    Implies(phi0, bot()),
+                                    Implies(phi0, bot()),
                                 ),
                                 Implies(
                                     phi0_bot_imp_ph0(),
@@ -262,9 +213,9 @@ class Propositional(ProofExp):
                     self.dynamic_inst(
                         self.prop2,
                         {
-                            0: Implies(phi0, bot),
+                            0: Implies(phi0, bot()),
                             1: phi0,
-                            2: bot,
+                            2: bot(),
                         },
                     ),
                 ),
@@ -285,7 +236,7 @@ class Propositional(ProofExp):
                     self.imp_reflexivity,
                     {
                         # (phi0 -> bot)
-                        0: Implies(phi0, bot),
+                        0: Implies(phi0, bot()),
                     },
                 ),
             )

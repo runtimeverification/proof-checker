@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
 
@@ -216,72 +215,60 @@ class SSubst(Pattern):
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
 
+InstantiationDict = dict[int, Pattern]
+
+
+@dataclass(frozen=True)
+class Instantiate(Pattern):
+    """Constructor for an unsimplified Instantiated Pattern.
+    This is typically used to contain Notation.
+    """
+
+    pattern: Pattern
+    inst: InstantiationDict
+
+    def simplify(self) -> Pattern:
+        """Instantiate pattern with plug.
+        Note that this doesn't fully reduce all notation, just one level.
+        """
+        return self.pattern.instantiate(self.inst)
+
+    def __eq__(self, o: object) -> bool:
+        # TODO: This should recursively remove all notation.
+        return self.simplify() == o
+
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        instantiated_subst = {k: v.instantiate(delta) for k, v in self.inst.items()}
+        unshadowed_delta = {k: v for k, v in delta.items() if k not in self.inst}
+        return Instantiate(self.pattern.instantiate(unshadowed_delta), instantiated_subst)
+
+    def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
+        inst = {k: v.apply_esubst(evar_id, plug) for k, v in self.inst.items()}
+        return Instantiate(self.pattern.apply_esubst(evar_id, plug), inst)
+
+    def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        inst = {k: v.apply_ssubst(svar_id, plug) for k, v in self.inst.items()}
+        return Instantiate(self.pattern.apply_ssubst(svar_id, plug), inst)
+
+
 @dataclass(frozen=True)
 class Notation:
     label: str
     definition: Pattern
     format_str: str
 
-
-@dataclass(frozen=True)
-class NotationInstantiation(Pattern, ABC):
-    def label(self) -> str:
-        return f'{type(self).__name__!r}'
-
-    @abstractmethod
-    def definition(self) -> Pattern:
-        raise NotImplementedError('This notation has no definition.')
-
-    def arguments(self) -> dict[int, Pattern]:
-        ret: dict[int, Pattern] = {}
-
-        for i, arg in enumerate(vars(self).values()):
-            assert isinstance(arg, Pattern)
-            ret[i] = arg
-
-        return ret
-
-    def __eq__(self, o: object) -> bool:
-        return self.conclusion() == o
-
-    def conclusion(self) -> Pattern:
-        return self.definition().instantiate(self.arguments())
-
-    # We assume all metavars in notations are instantiated for
-    # So this is correct, as this can only change "internals" of the instantiations
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args = self._instantiate_args(delta)
-        return type(self)(*args)
-
-    # TODO: Keep notations (without dropping them)
-    def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_esubst(evar_id, plug)
-
-    # TODO: Keep notations (without dropping them)
-    def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_ssubst(svar_id, plug)
-
-    def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
-        args: list[Pattern] = []
-
-        for arg in self.arguments().values():
-            args.append(arg.instantiate(delta))
-
-        return args
-
-    def __str__(self) -> str:
-        pretty_args = ', '.join(map(str, self.arguments().values()))
-        return f'{self.label()} ({pretty_args})'
+    def __call__(self, *args: Pattern) -> Pattern:
+        return Instantiate(self.definition, dict(enumerate(args)))
 
 
 # @dataclass(frozen=True, eq=False)
 # class FakeNotation(Notation):
 #     symbol: Symbol
 #     pattern_arguments: tuple[Pattern, ...]
-# 
+#
 #     def label(self) -> str:
 #         return f'FakeNotation[{str(self.symbol)}]'
-# 
+#
 #     def definition(self) -> Pattern:
 #         if len(self.pattern_arguments) == 0:
 #             return self.symbol
@@ -292,19 +279,18 @@ class NotationInstantiation(Pattern, ABC):
 #                 next_one, *arguments_left = arguments_left
 #                 current_callable = App(current_callable, next_one)
 #             return current_callable
-# 
+#
 #     def arguments(self) -> dict[int, Pattern]:
 #         ret: dict[int, Pattern] = {}
-# 
+#
 #         for i, arg in enumerate(self.pattern_arguments):
 #             ret[i] = arg
-# 
+#
 #         return ret
-# 
+#
 #     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
 #         args = self._instantiate_args(delta)
 #         return FakeNotation(self.symbol, tuple(args))
 
 
 bot = Notation('bot', Mu(0, SVar(0)), '⊥')
-

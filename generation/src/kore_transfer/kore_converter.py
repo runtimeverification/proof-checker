@@ -22,7 +22,7 @@ class KoreConverter:
         self._evars: dict[str, nf.EVar] = {}
         self._svars: dict[str, nf.SVar] = {}
         self._metavars: dict[str, nf.MetaVar] = {}
-        self._notations: dict[str, type[nf.Notation]] = {}
+        self._notations: dict[str, nf.Notation] = {}
 
         self._symbol_number = count(len(self.CONST_SYMBOLS))
         self._symbol_sort_number = count(len(self.CONST_SYMBOLS) + 100)
@@ -60,7 +60,7 @@ class KoreConverter:
                 return self._resolve_metavar(name)
             case kore.Top(sort):
                 # TODO: Revisit when we have sorting implemented!
-                return prop.Top()
+                return prop.top()
             case kore.DV(_, value):
                 # TODO: Revisit when we have sorting implemented!
                 return self._resolve_symbol(value.value)
