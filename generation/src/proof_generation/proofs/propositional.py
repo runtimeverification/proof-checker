@@ -4,11 +4,11 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import Implies, MetaVar, Notation, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProvedExpression
     from proof_generation.proved import Proved
@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
-phi0_implies_phi0 = Implies(phi0, phi0)
 
 
 @dataclass(frozen=True, eq=False)
@@ -24,7 +23,7 @@ class Negation(Notation):
     phi0: Pattern
 
     def definition(self) -> Pattern:
-        return Implies(MetaVar(0), bot)
+        return Implies(phi0, bot)
 
     def __str__(self) -> str:
         return f'¬({str(self.phi0)})'
@@ -51,12 +50,11 @@ class And(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return neg(Implies(phi0, neg(phi1)))
 
     def __str__(self) -> str:
-        return f'({self.phi0} ⋀ {self.phi1})'
+        return f'({self.phi0} ∧ {self.phi1})'
 
 
 @dataclass(frozen=True, eq=False)
@@ -64,12 +62,11 @@ class Or(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return Implies(neg(phi0), phi1)
 
     def __str__(self) -> str:
-        return f'({self.phi0} \\/ {self.phi1})'
+        return f'({self.phi0} ∨ {self.phi1})'
 
 
 class Propositional(ProofExp):
@@ -82,7 +79,6 @@ class Propositional(ProofExp):
 
     @staticmethod
     def claims() -> list[Pattern]:
-        phi0 = MetaVar(0)
         return [
             Implies(phi0, phi0),  # Reflexivity
             top,  # Top
@@ -94,7 +90,7 @@ class Propositional(ProofExp):
 
     def proof_expressions(self) -> list[ProvedExpression]:
         return [
-            self.imp_reflexivity,
+            self.imp_refl,
             self.top_intro,
             self.bot_elim,
             self.contradiction_proof,
@@ -102,95 +98,105 @@ class Propositional(ProofExp):
             self.peirce_bot,
         ]
 
+    # TODO This function should not exist anymore once we
+    # have support for Lemmas in the binary format
+    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern:  # noqa: N802
+        i = self.interpreter
+        self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
+        conc = p().conclusion
+        self.interpreter = i
+        return conc
+
     # Proofs
     # ======
 
-    # phi0 -> phi0
-    def imp_reflexivity(self) -> Proved:
+    def imp_refl(self, p: Pattern = phi0) -> Proved:
+        """p -> p"""
+        pp = Implies(p, p)
         # fmt: off
         return self.modus_ponens(
             self.modus_ponens(
-                self.dynamic_inst(self.prop2, {1: phi0_implies_phi0, 2: phi0}),
-                self.dynamic_inst(self.prop1, {1: phi0_implies_phi0})
-            ),
-            self.dynamic_inst(self.prop1, {1: phi0}),
-        )
+                self.dynamic_inst(self.prop2, {0: p, 1: pp, 2: p}),
+                self.dynamic_inst(self.prop1, {0: p, 1: pp})),
+            self.dynamic_inst(self.prop1, {0: p, 1: p}))
 
-    # phi1 -> phi2 and phi2 -> phi3 yields also a proof of phi1 -> phi3
+    def imp_provable(self, p: Pattern, q_pf: ProvedExpression) -> Proved:
+        """
+            q
+        ----------
+          p -> q
+        """
+        q = self.PROVISIONAL_get_conc(q_pf)
+        return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
+
     def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
-        # TODO: Consider if the extra loads caused by these calls are problematic
-        phi0_imp_phi1_conc = phi0_imp_phi1().conclusion
-
-        match phi0_imp_phi1_conc:
-            case Implies(phi0, phi1):
-                pass
-            case _:
-                raise AssertionError('Expected implication')
-        phi1_imp_phi2_conc = phi1_imp_phi2().conclusion
-        match phi1_imp_phi2_conc:
-            case Implies(phi1_r, phi2):
-                assert phi1_r == phi1
-            case _:
-                raise AssertionError('Expected implication')
+        """
+           p -> q    q -> r
+        ----------------------
+                p -> r
+        """
+        a, b = Implies.extract(self.PROVISIONAL_get_conc(phi0_imp_phi1))
+        b2, c = Implies.extract(self.PROVISIONAL_get_conc(phi1_imp_phi2))
+        assert b == b2
 
         return self.modus_ponens(
-            # (phi0 -> phi1) -> (phi0 -> phi2)
-            self.dynamic_inst(
-                lambda: self.modus_ponens(
-                    # (1 -> (phi1 -> phi2)) -> ((1 -> phi1) -> (1 -> phi2))
-                    self.dynamic_inst(self.prop2, {0: MetaVar(1), 1: phi1, 2: phi2}),
-                    #  1 -> (phi1 -> phi2)
-                    self.modus_ponens(
-                        # (phi1 -> phi2) -> (1 -> (phi1 -> phi2))
-                        self.dynamic_inst(self.prop1, {0: phi1_imp_phi2_conc}),
-                        phi1_imp_phi2(),
-                    ),
-                ),
-                {1: phi0},
+            # (a -> b) -> (a -> c)
+            self.modus_ponens(
+                # (a -> (b -> c)) -> ((a -> b) -> (a -> c))
+                self.dynamic_inst(self.prop2, {0: a, 1: b, 2: c}),
+                #  a -> (b -> c)
+                self.imp_provable(a, phi1_imp_phi2),
             ),
             phi0_imp_phi1(),
         )
 
     def top_intro(self) -> Proved:
-        return self.dynamic_inst(self.imp_reflexivity, {0: bot})
+        """top"""
+        return self.imp_refl(bot)
 
-    def bot_elim(self) -> Proved:
-        neg_neg_phi0 = neg(neg(phi0))
-
+    def bot_elim(self, p: Pattern = phi0) -> Proved:
+        """bot -> p"""
         return self.modus_ponens(
-            # ((bot -> neg neg 0) -> (bot -> 0)))
+            # ((bot -> neg neg p) -> (bot -> p)))
             self.modus_ponens(
-                # (bot -> (neg neg 0 -> 0)) -> ((bot -> neg neg 0) -> (bot -> 0))
-                self.dynamic_inst(self.prop2, {0: bot, 1: neg_neg_phi0, 2: phi0}),
-                # (bot -> (neg neg 0 -> 0))
-                self.modus_ponens(
-                    # (neg neg 0 -> 0) -> (bot -> (neg neg 0 -> 0))
-                    self.dynamic_inst(self.prop1, {0: Implies(neg_neg_phi0, phi0), 1: bot}),
-                    # (neg neg 0 -> 0)
-                    self.dynamic_inst(self.prop3, {0: phi0}),
-                ),
+                # (bot -> (neg neg p -> p)) -> ((bot -> neg neg p) -> (bot -> p))
+                self.dynamic_inst(self.prop2, {0: bot, 1: neg(neg(p)), 2: p}),
+                #  bot -> (neg neg p -> p)
+                self.imp_provable(bot, lambda: self.dynamic_inst(self.prop3, {0: p})),
             ),
-            # (bot -> (neg neg phi0))
-            self.dynamic_inst(self.prop1, {0: bot, 1: neg(phi0)}),
+            # (bot -> (neg neg p))
+            self.dynamic_inst(self.prop1, {0: bot, 1: neg(p)}),
         )
 
-    # (neg phi0 -> bot) -> phi0
+    def top_imp(self, p_pf: ProvedExpression) -> Proved:
+        """
+            p
+        ----------
+          T -> p
+        """
+        return self.imp_provable(top, p_pf)
+
+    def imp_top(self, p: Pattern) -> Proved:
+        """p -> T"""
+        return self.imp_provable(p, self.top_intro)
+
     def contradiction_proof(self) -> Proved:
-        return self.dynamic_inst(self.prop3, {0: phi0})
+        """(neg p -> bot) -> p"""
+        return self.prop3()
 
-    # (neg phi0) -> phi0 -> phi1
-    def absurd(self) -> Proved:
-        bot_to_1 = Implies(bot, phi1)
+    def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
+        """(neg p) -> p -> q"""
+        bot_to_b = Implies(bot, b)
 
         return self.modus_ponens(
-            self.dynamic_inst(self.prop2, {0: phi0, 1: bot, 2: phi1}),
-            self.modus_ponens(
-                self.dynamic_inst(self.prop1, {0: bot_to_1, 1: phi0}), self.dynamic_inst(self.bot_elim, {0: phi1})
-            ),
+            self.dynamic_inst(self.prop2, {0: a, 1: bot, 2: b}),
+            # a -> bot -> b
+            self.modus_ponens(self.dynamic_inst(self.prop1, {0: bot_to_b, 1: a}), self.bot_elim(b)),
         )
 
-    # (((ph0 -> bot) -> ph0) -> ph0)
     def peirce_bot(self) -> Proved:
+        """(((ph0 -> bot) -> ph0) -> ph0)"""
+
         def phi0_bot_imp_ph0() -> Pattern:
             # ((ph0 -> bot) -> ph0)
             return Implies(Implies(phi0, bot), phi0)
@@ -281,13 +287,7 @@ class Propositional(ProofExp):
                     },
                 ),
                 # ((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> phi0)
-                self.dynamic_inst(
-                    self.imp_reflexivity,
-                    {
-                        # (phi0 -> bot)
-                        0: Implies(phi0, bot),
-                    },
-                ),
+                self.imp_refl(Implies(phi0, bot)),
             )
 
         return self.modus_ponens(
@@ -307,7 +307,7 @@ class Propositional(ProofExp):
                         modus_ponens_3(),
                     ),
                 ),
-                self.dynamic_inst(self.imp_reflexivity, {0: phi0_bot_imp_ph0()}),
+                self.imp_refl(phi0_bot_imp_ph0()),
             ),
         )
 
