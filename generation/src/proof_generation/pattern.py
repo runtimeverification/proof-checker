@@ -20,9 +20,18 @@ def match_single(
             ret[id] = instance
     elif pattern == bot and instance == bot:
         pass
+    elif type(pattern) == type(instance) and issubclass(type(pattern), Notation):
+        cls = type(pattern)
+        pat_n = cls.unwrap(pattern)
+        inst_n = cls.unwrap(instance)
+        assert len(pat_n) == len(inst_n)
+        for i in range(len(pat_n)):
+            ret = match_single(pat_n[i], inst_n[i], ret)
+            if ret is None:
+                return None
     elif (pat_imp := Implication.unwrap(pattern)) and (inst_imp := Implication.unwrap(instance)):
         ret = match_single(pat_imp[0], inst_imp[0], ret)
-        if not ret:
+        if ret is None:
             return None
         ret = match_single(pat_imp[1], inst_imp[1], ret)
     elif (pat_evar := EVar.deconstruct(pattern)) and (inst_evar := EVar.deconstruct(instance)):
@@ -36,7 +45,7 @@ def match_single(
             return None
     elif (pat_app := Application.unwrap(pattern)) and (inst_app := Application.unwrap(instance)):
         ret = match_single(pat_app[0], inst_app[0], ret)
-        if not ret:
+        if ret is None:
             return None
         ret = match_single(pat_app[1], inst_app[1], ret)
     elif (pat_ex := Exists.deconstruct(pattern)) and (inst_ex := Exists.deconstruct(instance)):

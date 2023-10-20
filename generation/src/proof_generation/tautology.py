@@ -858,13 +858,21 @@ class Tautology(Propositional):
             pf = lambda: self.equiv_trans_match2(shift_left, lambda: cong(comm, (lambda: self.equiv_refl(phi2))))
             pf = partial(self.equiv_trans_match2, pf, assoc_rev)
         if pos > 1:
-            term2: Pattern = MetaVar(pos)
-            for i in range(pos - 1, 1, -1):
-                term2 = op(term2, MetaVar(i))
-            shift_right = lambda: self.dynamic_inst(assoc_rev, {0: term2, 2: MetaVar(0)})
-            for _ in range(pos - 2):
+            for_phi0: Pattern = MetaVar(0)
+            for i in range(1, pos-1):
+                for_phi0 = op(for_phi0, MetaVar(i))
+            if is_last:
+                for_phi2 = MetaVar(pos)
+            else:
+                for_phi2 = MetaVar(pos+1)
+            shift_right = lambda: self.dynamic_inst(assoc_rev, {0: for_phi0, 1: MetaVar(pos-1), 2: for_phi2})
+            for _ in range(pos-2):
                 shift_right = partial(self.equiv_trans_match2, shift_right, assoc_rev)
-            return self.equiv_trans_match2(pf, lambda: cong((lambda: self.equiv_refl(MetaVar(pos + 1))), shift_right))
+            if is_last:
+                left_term = MetaVar(pos+1)
+            else:
+                left_term = MetaVar(pos)
+            return self.equiv_transitivity(pf, lambda: cong((lambda: self.equiv_refl(left_term)), shift_right))
         return pf()
 
     def or_move_to_front(self, pos: int, len: int) -> Proved:
