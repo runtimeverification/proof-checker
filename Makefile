@@ -15,6 +15,7 @@ clean-kgenerated-proofs:
 update-snapshots:
 	rsync -u $(wildcard .build/proofs/*.*) proofs
 	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+	rsync -u $(wildcard .build/generated-from-k/*.ml*) proofs/generated-from-k
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 
