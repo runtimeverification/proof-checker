@@ -37,27 +37,18 @@ def get_proof_hints(
     llvm_proof_hint: LLVMRewriteTrace,
     axioms: list[kore.Axiom],
     kore_converter: KoreConverter,
-    max_step: int,
 ) -> Iterator[KoreHint]:
     """Emits proof hints corresponding to the given LLVM rewrite trace."""
-    assert max_step <= len(
-        llvm_proof_hint.trace
-    ), f'The requested number of rewrites {max_step} exceeds the length of the given trace {len(llvm_proof_hint.trace)}!'
-
     pre_config = kore_converter.convert_pattern(llvm_proof_hint.initial_config)
 
-    # TODO: Handle the no-rewrites case, which requires changing the KoreHints representation
-    if max_step <= 0:
-        pass
-        # yield KoreHint(pre_config, None, None)
-    else:
-        # Note that here len(llvm_proof_hint.trace) > 0
-        post_config = pre_config
-        for step in range(max_step):
-            rewrite_step = llvm_proof_hint.trace[step]
-            pre_config = post_config
-            axiom = kore_converter.convert_axiom(axioms[rewrite_step.rule_ordinal])
-            subst = kore_converter.convert_substitution(rewrite_step.substitution)
-            hint = KoreHint(pre_config, axiom, subst)
-            post_config = kore_converter.convert_pattern(rewrite_step.post_config)
-            yield hint
+    # Note that no hints will be generated if the trace is empty
+    post_config = pre_config
+    for rewrite_step in llvm_proof_hint.trace:
+        pre_config = post_config
+        print(f'ordinal: {rewrite_step.rule_ordinal}')
+        print(f'substitution: {rewrite_step.substitution}')
+        axiom = kore_converter.convert_axiom(axioms[rewrite_step.rule_ordinal])
+        subst = kore_converter.convert_substitution(rewrite_step.substitution)
+        hint = KoreHint(pre_config, axiom, subst)
+        post_config = kore_converter.convert_pattern(rewrite_step.post_config)
+        yield hint

@@ -70,7 +70,6 @@ def main(
     hints_file: str,
     output_dir: str,
     proof_dir: str,
-    step: int = 0,
     reuse_kompiled_dir: bool = False,
     rewrite_proof_files: bool = False,
 ) -> None:
@@ -93,7 +92,7 @@ def main(
     # print('Intialize hint stream ... ')
     # TODO: Fix with the real hints
     # hints_iterator = get_proof_hints(kompiled_dir, Path(program_file), proof_expression, kore_converter, step)
-    hints_iterator = get_proof_hints(read_proof_hint(hints_file), get_all_axioms(kore_definition), kore_converter, step)
+    hints_iterator = get_proof_hints(read_proof_hint(hints_file), get_all_axioms(kore_definition), kore_converter)
 
     print('Begin generating proofs ... ')
     generate_proofs(hints_iterator, proof_expression)
