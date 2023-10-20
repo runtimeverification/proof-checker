@@ -12,7 +12,6 @@ ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
 class KoreConverter:
-
     def __init__(self, kore_definition: kore.Definition) -> None:
         self._definition = kore_definition
 
@@ -35,7 +34,7 @@ class KoreConverter:
         return self._convert_pattern(kore_axiom.pattern)
 
     def _retrieve_axioms(self) -> list[kore.Axiom]:
-        """Collect and save all axioms from the definition in Kore without converting them. This list will 
+        """Collect and save all axioms from the definition in Kore without converting them. This list will
         be used to resolve ordinals from hints to real axioms."""
         axioms: list[kore.Axiom] = []
         for module in self._definition.modules:
