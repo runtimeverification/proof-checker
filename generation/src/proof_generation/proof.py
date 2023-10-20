@@ -94,6 +94,9 @@ class ProofExp(ABC):
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         return self.interpreter.modus_ponens(left, right)
 
+    def exists_quantifier(self) -> Proved:
+        return self.interpreter.exists_quantifier()
+
     def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
         return self.interpreter.exists_generalization(left, right, var)
 

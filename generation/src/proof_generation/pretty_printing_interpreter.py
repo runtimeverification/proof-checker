@@ -144,6 +144,10 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write('ModusPonens')
 
     @pretty()
+    def exists_quantifier(self) -> Proved:
+        self.out.write('Quantifier')
+
+    @pretty()
     def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
         self.out.write('Generalization')
 

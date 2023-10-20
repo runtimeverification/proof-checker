@@ -115,6 +115,11 @@ class SerializingInterpreter(IOInterpreter):
         self.out.write(bytes([Instruction.ModusPonens]))
         return ret
 
+    def exists_quantifier(self) -> Proved:
+        ret = super().exists_quantifier()
+        self.out.write(bytes([Instruction.Quantifier]))
+        return ret
+
     def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
         ret = super().exists_generalization(left, right, var)
         self.out.write(bytes([Instruction.Generalization]))
