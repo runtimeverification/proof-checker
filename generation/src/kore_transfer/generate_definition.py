@@ -73,7 +73,6 @@ def _convert_axioms(kore_definition: kore.Definition, converter: KoreConverter) 
     return axioms
 
 
-# TODO: Seems correct, but need to confirm!
 def convert_axiom(axiom: kore.Axiom, converter: KoreConverter) -> nf.Pattern:
     pattern = axiom.pattern
     assert isinstance(pattern, kore.Rewrites)
