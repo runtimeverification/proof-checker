@@ -61,35 +61,6 @@ def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: P
     assert pattern.apply_esubst(evar_id, plug) == expected
 
 
-# Subst 0 for 1 and then 1 for 2
-esubst_stack_seq = lambda term: ESubst(ESubst(term, EVar(0), plug=EVar(1)), EVar(1), plug=EVar(2))
-
-# Subst 1 for 2 and then 0 for 1
-esubst_stack_seq_rev = lambda term: ESubst(ESubst(pattern=term, var=EVar(1), plug=EVar(2)), var=EVar(0), plug=EVar(1))
-
-# Subst SVar1 for Evar1 and then EVar1 for EVar2
-stack_mixed1 = lambda term: ESubst(SSubst(pattern=term, var=SVar(1), plug=EVar(1)), var=EVar(1), plug=EVar(2))
-
-
-@pytest.mark.parametrize(
-    'stack, mvar, plugs, expected',
-    [
-        [esubst_stack_seq, phi0, {0: EVar(0)}, EVar(2)],
-        [esubst_stack_seq, phi0, {0: EVar(1)}, EVar(2)],
-        [esubst_stack_seq, phi1, {0: EVar(1)}, esubst_stack_seq(phi1)],
-        [esubst_stack_seq, phi0, {0: phi1}, esubst_stack_seq(phi1)],
-        [esubst_stack_seq_rev, phi0, {0: EVar(0)}, EVar(1)],
-        [esubst_stack_seq_rev, phi0, {0: phi1}, esubst_stack_seq_rev(phi1)],
-        [stack_mixed1, phi0, {0: SVar(1)}, EVar(2)],
-        [stack_mixed1, phi0, {0: SVar(2)}, SVar(2)],
-    ],
-)
-def test_instantiate_esubst(
-    stack: Callable[[MetaVar], Pattern], mvar: MetaVar, plugs: dict[int, Pattern], expected: Pattern
-) -> None:
-    assert stack(mvar).instantiate(plugs) == expected
-
-
 @pytest.mark.parametrize(
     'pattern, svar_id, plug, expected',
     [
@@ -139,10 +110,27 @@ ssubst_stack_seq = lambda term: SSubst(SSubst(term, SVar(0), plug=SVar(1)), SVar
 # Subst 1 for 2 and then 0 for 1
 ssubst_stack_seq_rev = lambda term: SSubst(SSubst(pattern=term, var=SVar(1), plug=SVar(2)), var=SVar(0), plug=SVar(1))
 
+# Subst 0 for 1 and then 1 for 2
+esubst_stack_seq = lambda term: ESubst(ESubst(term, EVar(0), plug=EVar(1)), EVar(1), plug=EVar(2))
+
+# Subst 1 for 2 and then 0 for 1
+esubst_stack_seq_rev = lambda term: ESubst(ESubst(pattern=term, var=EVar(1), plug=EVar(2)), var=EVar(0), plug=EVar(1))
+
+# Subst SVar1 for Evar1 and then EVar1 for EVar2
+stack_mixed1 = lambda term: ESubst(SSubst(pattern=term, var=SVar(1), plug=EVar(1)), var=EVar(1), plug=EVar(2))
+
 
 @pytest.mark.parametrize(
     'stack, mvar, plugs, expected',
     [
+        [esubst_stack_seq, phi0, {0: EVar(0)}, EVar(2)],
+        [esubst_stack_seq, phi0, {0: EVar(1)}, EVar(2)],
+        [esubst_stack_seq, phi1, {0: EVar(1)}, esubst_stack_seq(phi1)],
+        [esubst_stack_seq, phi0, {0: phi1}, esubst_stack_seq(phi1)],
+        [esubst_stack_seq_rev, phi0, {0: EVar(0)}, EVar(1)],
+        [esubst_stack_seq_rev, phi0, {0: phi1}, esubst_stack_seq_rev(phi1)],
+        [stack_mixed1, phi0, {0: SVar(1)}, EVar(2)],
+        [stack_mixed1, phi0, {0: SVar(2)}, SVar(2)],
         [ssubst_stack_seq, phi0, {0: SVar(0)}, SVar(2)],
         [ssubst_stack_seq, phi0, {0: SVar(1)}, SVar(2)],
         [ssubst_stack_seq, phi1, {0: SVar(1)}, ssubst_stack_seq(phi1)],
@@ -155,7 +143,7 @@ ssubst_stack_seq_rev = lambda term: SSubst(SSubst(pattern=term, var=SVar(1), plu
         [lambda mvar: SSubst(mvar, SVar(0), mvar), phi0, {0: SVar(0)}, SVar(0)],
     ],
 )
-def test_instantiate_ssubst(
+def test_instantiate_subst(
     stack: Callable[[MetaVar], Pattern], mvar: MetaVar, plugs: dict[int, Pattern], expected: Pattern
 ) -> None:
     assert stack(mvar).instantiate(plugs) == expected
