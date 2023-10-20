@@ -8,7 +8,7 @@ import pyk.kllvm.load  # noqa: F401
 from pyk.kore.kompiled import KompiledKore
 from pyk.ktool.kompile import kompile
 
-from kore_transfer.generate_definition import compose_definition
+from kore_transfer.generate_definition import KoreDefinition
 from kore_transfer.generate_hints import get_proof_hints
 from kore_transfer.generate_proof import generate_proofs
 from kore_transfer.kore_converter import KoreConverter
@@ -71,31 +71,21 @@ def main(
     reuse_kompiled_dir: bool = False,
     rewrite_proof_files: bool = False,
 ) -> None:
-    # First check that output directory either does not exist or can be rewritten
-    output_proof_dir = Path(proof_dir)
-    if output_proof_dir.exists() and not rewrite_proof_files:
-        print(f'Output directory {output_proof_dir} already exists and rewrite is not allowed. Exiting.')
-        return
-
     # Kompile sources
-    # TODO: I would move both calls to the `compose_definition` function, but
-    # it is used by the `get_proof_hints` function as well. So let's change it later.
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
     kore_converter = KoreConverter(kore_definition)
-    proof_expression = compose_definition(kore_definition, kore_converter)
 
     # print('Intialize hint stream ... ')
     # TODO: Fix with the real hints
-    # hints_iterator = get_proof_hints(kompiled_dir, Path(program_file), proof_expression, kore_converter, step)
-    hints_iterator = get_proof_hints(read_proof_hint(hints_file), get_all_axioms(kore_definition), kore_converter)
+    hints_iterator = get_proof_hints(read_proof_hint(hints_file), kore_converter)
 
     print('Begin generating proofs ... ')
-    generate_proofs(hints_iterator, proof_expression)
+    generate_proofs(hints_iterator, KoreDefinition, kore_converter)
 
-    generate_proof_file(proof_expression, output_proof_dir, Path(k_file).stem)
+    generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem)
     print('Done!')
 
 

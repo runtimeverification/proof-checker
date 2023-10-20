@@ -37,11 +37,18 @@ public:
     }
   }
 
-  bool operator==(const LinkedList &rhs) { return head == rhs.head; }
+  bool operator==(const LinkedList &rhs) const {
+    if (!head && !rhs.head) {
+      return true;
+    } else if (!head || !rhs.head) {
+      return false;
+    }
+    return (*head == *rhs.head);
+  }
 
   bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }
 
-  void insert_front(const T &value) {
+  void push(const T &value) {
     Node<T> *newNode = Node<T>::create(value);
 
     // If the list is empty, set the new node as the head
@@ -70,20 +77,15 @@ public:
     }
   }
 
-  void delete_front() {
-    if (!head) {
-      return;
-    }
-
-    Node<T> *next = head->next;
-    std::free(head);
-    head = next;
-  }
-
   T pop() {
     assert(head && "Insufficient stack items.");
     T value = head->data;
-    delete_front();
+
+    // Update the head
+    Node<T> *next = head->next;
+    std::free(head);
+    head = next;
+
     return value;
   }
 
@@ -95,13 +97,7 @@ public:
 
   static LinkedList *create(const T &value) {
     LinkedList *list = create();
-    list->insert_front(value);
-    return list;
-  }
-
-  static LinkedList *create(const T &value, const T &value2) {
-    LinkedList *list = create(value);
-    list->insert_front(value2);
+    list->push(value);
     return list;
   }
 
@@ -117,38 +113,24 @@ public:
   }
 
   bool isDisjoint(LinkedList<T> *otherList) {
-    Node<T> *current1 = head;
-
-    while (current1) {
-      Node<T> *current2 = otherList->head;
-
-      while (current2) {
-        if (current1->data == current2->data) {
-          return false; // Common element found
-        }
-
-        current2 = current2->next;
+    for (auto &item : *this) {
+      if (otherList->contains(item)) {
+        return false;
       }
-
-      current1 = current1->next;
     }
-
-    return true; // No common elements found
+    return true;
   }
 
-  T &operator[](int index) {
+  T &get(int index) {
     Node<T> *curr = head;
-    int i = 0;
-    while (curr) {
-      if (i == index) {
-        return curr->data;
-      }
+    for (int i = 0; i < index; i++) {
       curr = curr->next;
-      i++;
+      assert(curr && "Index out of bounds.");
     }
-    assert(curr && "Index out of bounds.");
     return curr->data;
   }
+
+  T &operator[](int index) { return get(index); }
 
   size_t size() {
     size_t count = 0;

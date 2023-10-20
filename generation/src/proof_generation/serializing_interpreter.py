@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, Any, BinaryIO
 
 from proof_generation.instruction import Instruction
 from proof_generation.io_interpreter import IOInterpreter
@@ -8,11 +8,23 @@ from proof_generation.io_interpreter import IOInterpreter
 if TYPE_CHECKING:
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
+    from proof_generation.io_interpreter import IO
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
     from proof_generation.proved import Proved
 
 
 class SerializingInterpreter(IOInterpreter):
+    def __init__(
+        self,
+        phase: ExecutionPhase,
+        out: IO[Any],
+        claims: list[Claim] | None = None,
+        claim_out: IO[Any] | None = None,
+        proof_out: IO[Any] | None = None,
+    ) -> None:
+        super().__init__(phase, out, claims, claim_out, proof_out)
+        self._symbol_identifiers: dict[str, int] = {}
+
     def evar(self, id: int) -> Pattern:
         ret = super().evar(id)
         self.out.write(bytes([Instruction.EVar, id]))
@@ -23,8 +35,12 @@ class SerializingInterpreter(IOInterpreter):
         self.out.write(bytes([Instruction.SVar, id]))
         return ret
 
-    def symbol(self, id: int) -> Pattern:
-        ret = super().symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        ret = super().symbol(name)
+
+        if name not in self._symbol_identifiers:
+            self._symbol_identifiers[name] = len(self._symbol_identifiers)
+        id = self._symbol_identifiers[name]
         self.out.write(bytes([Instruction.Symbol, id]))
         return ret
 

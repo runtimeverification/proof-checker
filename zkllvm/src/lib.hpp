@@ -4,9 +4,7 @@
 #include <iostream>
 #include <memory>
 
-#undef EOF
-
-enum class Instruction {
+enum class Instruction : uint8_t {
   // Patterns
   EVar = 2,
   SVar,
@@ -45,12 +43,12 @@ enum class Instruction {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar = (9 + 128),
+  CleanMetaVar = (uint8_t)(9 + 128),
   // EOF exclusive for zkLLVM
-  EOF
+  NO_OP
 };
 
-Instruction from(int value) {
+Instruction from(uint8_t value) {
   switch (value) {
   case 2:
     return Instruction::EVar;
@@ -113,13 +111,13 @@ Instruction from(int value) {
   case 137:
     return Instruction::CleanMetaVar;
   case 138:
-    return Instruction::EOF;
+    return Instruction::NO_OP;
   default:
     exit(1); // Bad instruction!
   }
 }
 
-using Id = int8_t;
+using Id = uint8_t;
 using IdList = LinkedList<Id>;
 
 struct Pattern {
@@ -157,9 +155,6 @@ struct Pattern {
   }
 
   bool operator==(const Pattern &rhs) const {
-#if DEBUG
-    std::cout << "operator==(const &lhs, const & rhs) called" << std::endl;
-#endif
     if (inst != rhs.inst || id != rhs.id) {
       return false;
     }
@@ -213,23 +208,23 @@ struct Pattern {
       return false;
     }
     if (e_fresh != nullptr && rhs.e_fresh != nullptr &&
-        e_fresh != rhs.e_fresh) {
+        *e_fresh != *rhs.e_fresh) {
       return false;
     }
     if (s_fresh != nullptr && rhs.s_fresh != nullptr &&
-        s_fresh != rhs.s_fresh) {
+        *s_fresh != *rhs.s_fresh) {
       return false;
     }
     if (positive != nullptr && rhs.positive != nullptr &&
-        positive != rhs.positive) {
+        *positive != *rhs.positive) {
       return false;
     }
     if (negative != nullptr && rhs.negative != nullptr &&
-        negative != rhs.negative) {
+        *negative != *rhs.negative) {
       return false;
     }
     if (app_ctx_holes != nullptr && rhs.app_ctx_holes != nullptr &&
-        app_ctx_holes != rhs.app_ctx_holes) {
+        *app_ctx_holes != *rhs.app_ctx_holes) {
       return false;
     }
     return true;
@@ -485,17 +480,6 @@ struct Pattern {
       exit(1);
     }
   }
-  enum class TermType { Pattern, Proved };
-  typedef std::tuple<TermType, Pattern *> Term;
-  Term CreateTerm(TermType type, Pattern *pattern) {
-    return std::make_tuple(type, pattern);
-  }
-
-  enum class EntryType { Pattern, Proved };
-  typedef std::tuple<EntryType, Pattern *> Entry;
-  Entry CreateEntry(EntryType type, Pattern *pattern) {
-    return std::make_tuple(type, pattern);
-  }
 
   /// Pattern construction utilities
   /// ------------------------------
@@ -567,15 +551,215 @@ struct Pattern {
     return pattern;
   }
 
+  // Destructor to manually release memory
+  ~Pattern() {
+    if (left) {
+      left->~Pattern();
+    }
+    if (right) {
+      right->~Pattern();
+    }
+    if (subpattern) {
+      subpattern->~Pattern();
+    }
+    if (plug) {
+      plug->~Pattern();
+    }
+    if (e_fresh) {
+      e_fresh->~LinkedList();
+      free(e_fresh);
+    }
+    if (s_fresh) {
+      s_fresh->~LinkedList();
+      free(s_fresh);
+    }
+    if (positive) {
+      positive->~LinkedList();
+      free(positive);
+    }
+    if (negative) {
+      negative->~LinkedList();
+      free(negative);
+    }
+    if (app_ctx_holes) {
+      app_ctx_holes->~LinkedList();
+      free(app_ctx_holes);
+    }
+    free(this);
+  }
+
+  static void destroyPatterns(LinkedList<Pattern *> *patterns) {
+    if (!patterns->empty()) {
+      for (auto it : *patterns) {
+        it->~Pattern();
+      }
+    }
+  }
+
+#if DEBUG
+  void print() {
+    switch (inst) {
+    case Instruction::EVar:
+      std::cout << "EVar(" << (int)id << ")";
+      break;
+    case Instruction::SVar:
+      std::cout << "SVar(" << (int)id << ")";
+      break;
+    case Instruction::Symbol:
+      std::cout << "Symbol(" << (int)id << ")";
+      break;
+    case Instruction::Implication:
+      /* std::cout << "Implication(";
+       left->print();
+       std::cout << ", ";
+       right->print();
+       std::cout << ")";*/
+      std::cout << "(";
+      left->print();
+      std::cout << " -> ";
+      right->print();
+      std::cout << ")";
+      break;
+    case Instruction::Application:
+      std::cout << "Application(";
+      left->print();
+      std::cout << ", ";
+      right->print();
+      std::cout << ")";
+      break;
+    case Instruction::Exists:
+      std::cout << "Exists(" << (int)id << ", ";
+      subpattern->print();
+      std::cout << ")";
+      break;
+    case Instruction::Mu:
+      std::cout << "Mu(" << (int)id << ", ";
+      subpattern->print();
+      std::cout << ")";
+      break;
+    case Instruction::MetaVar:
+      // std::cout << "phi" << (int)id;
+      std::cout << "MetaVar(" << (int)id;
+      if (e_fresh->head) {
+        std::cout << ", ";
+        e_fresh->print();
+      }
+      if (s_fresh->head) {
+        std::cout << ", ";
+        s_fresh->print();
+      }
+      if (positive->head) {
+        std::cout << ", ";
+        positive->print();
+      }
+      if (negative->head) {
+        std::cout << ", ";
+        negative->print();
+      }
+      if (app_ctx_holes->head) {
+        std::cout << ", ";
+        app_ctx_holes->print();
+      }
+      std::cout << ")";
+      break;
+    case Instruction::ESubst:
+      std::cout << "ESubst(";
+      subpattern->print();
+      std::cout << ", " << (int)id << ", ";
+      plug->print();
+      std::cout << ")";
+      break;
+    case Instruction::SSubst:
+      std::cout << "SSubst(";
+      subpattern->print();
+      std::cout << ", " << (int)id << ", ";
+      plug->print();
+      std::cout << ")";
+      break;
+    }
+  }
+#endif
+
+  class Term {
+  public:
+    enum class Type { Pattern, Proved };
+    Type type;
+    Pattern *pattern;
+    Term(Type type, Pattern *pattern) : type(type), pattern(pattern) {}
+    static Term *newTerm(Type type, Pattern *pattern) {
+      auto term = static_cast<Term *>(malloc(sizeof(Term)));
+      term->type = type;
+      term->pattern = pattern;
+      return term;
+    }
+    ~Term() {
+      if (pattern) {
+        pattern->~Pattern();
+      }
+      free(this);
+    }
+
+    bool operator==(const Term &rhs) const {
+      if (type != rhs.type) {
+        return false;
+      }
+      if (pattern == nullptr && rhs.pattern != nullptr ||
+          pattern != nullptr && rhs.pattern == nullptr) {
+        return false;
+      }
+      if (pattern != nullptr && rhs.pattern != nullptr &&
+          *pattern != *rhs.pattern) {
+        return false;
+      }
+      return true;
+    }
+    bool operator!=(const Term &rhs) const { return !(*this == rhs); }
+  };
+
+  class Entry {
+  public:
+    enum class Type { Pattern, Proved };
+    Type type;
+    Pattern *pattern;
+    Entry(Type type, Pattern *pattern) : type(type), pattern(pattern) {}
+    static Entry *newEntry(Type type, Pattern *pattern) {
+      auto entry = static_cast<Entry *>(malloc(sizeof(Entry)));
+      entry->type = type;
+      entry->pattern = pattern;
+      return entry;
+    }
+    ~Entry() {
+      if (pattern) {
+        pattern->~Pattern();
+      }
+      free(this);
+    }
+    bool operator==(const Entry &rhs) const {
+      if (type != rhs.type) {
+        return false;
+      }
+      if (pattern == nullptr && rhs.pattern != nullptr ||
+          pattern != nullptr && rhs.pattern == nullptr) {
+        return false;
+      }
+      if (pattern != nullptr && rhs.pattern != nullptr &&
+          *pattern != *rhs.pattern) {
+        return false;
+      }
+      return true;
+    }
+    bool operator!=(const Entry &rhs) const { return !(*this == rhs); }
+  };
+
   // Notation
-  static Pattern *bot() { return Pattern::mu(0, Pattern::svar(0)); }
+  static Pattern *bot() { return mu(0, svar(0)); }
 
   static Pattern *negate(Pattern *pattern) { // C++ doesn't accepted not
-    return Pattern::implies(pattern, Pattern::bot());
+    return implies(pattern, bot());
   }
 
   static Pattern *forall(Id evar, Pattern *pattern) {
-    return Pattern::negate(Pattern::exists(evar, Pattern::negate(pattern)));
+    return negate(exists(evar, negate(pattern)));
   }
 
   /// Substitution utilities
@@ -685,7 +869,7 @@ struct Pattern {
           inst_right = Optional<Pattern>(copy(p.right)).unwrap();
         }
         return Optional<Pattern>(
-            Pattern::implies(inst_left.unwrap(), inst_right.unwrap()));
+            implies(inst_left.unwrap(), inst_right.unwrap()));
       }
     }
     case Instruction::Application: {
@@ -702,8 +886,7 @@ struct Pattern {
         if (!inst_right.has_value()) {
           inst_right = Optional<Pattern>(copy(p.right));
         }
-        return Optional<Pattern>(
-            Pattern::app(inst_left.unwrap(), inst_right.unwrap()));
+        return Optional<Pattern>(app(inst_left.unwrap(), inst_right.unwrap()));
       }
     }
     case Instruction::Exists: {
@@ -715,7 +898,7 @@ struct Pattern {
         if (!inst_sub.has_value()) {
           inst_sub = Optional<Pattern>(copy(p.subpattern));
         }
-        return Optional<Pattern>(Pattern::exists(p.id, inst_sub.unwrap()));
+        return Optional<Pattern>(exists(p.id, inst_sub.unwrap()));
       }
     }
     case Instruction::Mu: {
@@ -727,7 +910,7 @@ struct Pattern {
         if (!inst_sub.has_value()) {
           inst_sub = Optional<Pattern>(copy(p.subpattern));
         }
-        return Optional<Pattern>(Pattern::mu(p.id, inst_sub.unwrap()));
+        return Optional<Pattern>(mu(p.id, inst_sub.unwrap()));
       }
     }
     case Instruction::ESubst: {
@@ -744,7 +927,7 @@ struct Pattern {
           inst_plug = Optional<Pattern>(copy(p.plug));
         }
         return Optional<Pattern>(
-            Pattern::esubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
+            esubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
       }
     }
     case Instruction::SSubst: {
@@ -761,7 +944,7 @@ struct Pattern {
           inst_plug = Optional<Pattern>(copy(p.plug));
         }
         return Optional<Pattern>(
-            Pattern::ssubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
+            ssubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
       }
     }
     default:
@@ -789,132 +972,24 @@ struct Pattern {
   Term *pop_stack(Stack *stack) { return stack->pop(); }
 
   Pattern *pop_stack_pattern(Stack *stack) {
-    auto term = stack->pop();
-    if (std::get<0>(*term) != TermType::Pattern) {
+    auto term = pop_stack(stack);
+    if (term->type != Term::Type::Pattern) {
+#if DEBUG
       throw std::runtime_error("Expected pattern on the stack.");
+#endif
+      exit(1);
     }
-    return std::get<1>(*term);
+    return term->pattern;
   }
 
   Pattern *pop_stack_proved(Stack *stack) {
-    auto term = stack->pop();
-    if (std::get<0>(*term) != TermType::Proved) {
-      throw std::runtime_error("Expected proved on the stack.");
-    }
-    return std::get<1>(*term);
-  }
-
-  // Destructor to manually release memory
-  ~Pattern() {
-    if (left) {
-      left->~Pattern();
-    }
-    if (right) {
-      right->~Pattern();
-    }
-    if (subpattern) {
-      subpattern->~Pattern();
-    }
-    if (plug) {
-      plug->~Pattern();
-    }
-    if (e_fresh) {
-      e_fresh->~LinkedList();
-      free(e_fresh);
-    }
-    if (s_fresh) {
-      s_fresh->~LinkedList();
-      free(s_fresh);
-    }
-    if (positive) {
-      positive->~LinkedList();
-      free(positive);
-    }
-    if (negative) {
-      negative->~LinkedList();
-      free(negative);
-    }
-    if (app_ctx_holes) {
-      app_ctx_holes->~LinkedList();
-      free(app_ctx_holes);
-    }
-    free(this);
-  }
-
-  static void destroyPatterns(LinkedList<Pattern *> *patterns) {
-    if (!patterns->empty()) {
-      for (auto it : *patterns) {
-        it->~Pattern();
-      }
-      patterns->~LinkedList();
-      free(patterns);
-    }
-  }
-
+    auto term = pop_stack(stack);
+    if (term->type != Term::Type::Proved) {
 #if DEBUG
-  void print() {
-    switch (inst) {
-    case Instruction::EVar:
-      std::cout << "EVar(" << (int)id << ")";
-      break;
-    case Instruction::SVar:
-      std::cout << "SVar(" << (int)id << ")";
-      break;
-    case Instruction::Symbol:
-      std::cout << "Symbol(" << (int)id << ")";
-      break;
-    case Instruction::Implication:
-      std::cout << "Implication(";
-      left->print();
-      std::cout << ", ";
-      right->print();
-      std::cout << ")";
-      break;
-    case Instruction::Application:
-      std::cout << "Application(";
-      left->print();
-      std::cout << ", ";
-      right->print();
-      std::cout << ")";
-      break;
-    case Instruction::Exists:
-      std::cout << "Exists(" << (int)id << ", ";
-      subpattern->print();
-      std::cout << ")";
-      break;
-    case Instruction::Mu:
-      std::cout << "Mu(" << (int)id << ", ";
-      subpattern->print();
-      std::cout << ")";
-      break;
-    case Instruction::MetaVar:
-      std::cout << "MetaVar(" << (int)id << ", ";
-      e_fresh->print();
-      std::cout << ", ";
-      s_fresh->print();
-      std::cout << ", ";
-      positive->print();
-      std::cout << ", ";
-      negative->print();
-      std::cout << ", ";
-      app_ctx_holes->print();
-      std::cout << ")";
-      break;
-    case Instruction::ESubst:
-      std::cout << "ESubst(";
-      subpattern->print();
-      std::cout << ", " << (int)id << ", ";
-      plug->print();
-      std::cout << ")";
-      break;
-    case Instruction::SSubst:
-      std::cout << "SSubst(";
-      subpattern->print();
-      std::cout << ", " << (int)id << ", ";
-      plug->print();
-      std::cout << ")";
-      break;
-    }
-  }
+      throw std::runtime_error("Expected proved on the stack.");
 #endif
+      exit(1);
+    }
+    return term->pattern;
+  }
 };

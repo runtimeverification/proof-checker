@@ -53,7 +53,7 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
 
         elif instruction == Instruction.Symbol:
             id = next_byte('Expected Symbol id.')
-            _ = interpreter.symbol(id)
+            _ = interpreter.symbol(str(id))
 
         elif instruction == Instruction.Implies:
             right = interpreter.stack[-1]

@@ -114,7 +114,7 @@ def test_importing_notations(parsed_lemma_database: Database) -> None:
     assert len(scope._notations) == 11 + 4  # from the file and builtin
 
     def bot() -> Pattern:
-        return Symbol(4)
+        return Symbol('\\bot')
 
     # bot does not have a definition, so it is treated as a logical symbol
     expected = bot()

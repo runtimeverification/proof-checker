@@ -13,8 +13,8 @@ clean-kgenerated-proofs:
 	rm -rf .build/proofs/generated-from-k
 
 update-snapshots:
-	cp -u $(wildcard .build/proofs/*.*) proofs
-	cp -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+	rsync -u $(wildcard .build/proofs/*.*) proofs
+	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 
@@ -99,7 +99,7 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-integration test-proof-gen test-proof-translate test-proof-ktranslate test-proof-verify
+test-system: test-integration test-proof-gen test-proof-translate test-proof-kgen test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
 test-integration:
@@ -132,7 +132,7 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/proof-hints/single-rewrite/foo-a.$*.hints .build/kompiled-definitions --clean --proof-dir proofs/generated-from-k/
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k generation/proof-hints/$*/foo-a.$*.hints .build/kompiled-definitions/$*-kompiled --clean --proof-dir proofs/generated-from-k/
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -143,17 +143,17 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # -------------------------------
 
 .build/proofs/generated-from-k/%.ml-proof: FORCE
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/proof-hints/single-rewrite/foo-a.$*.hints .build/kompiled-definitions  --proof-dir .build/proofs/generated-from-k/
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k generation/proof-hints/$*/foo-a.$*.hints .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
-KPROOF_TRANSLATION_TARGETS=$(addsuffix .ktranslate,${TRANSLATED_FROM_K})
-proofs/generated-from-k/%.ml-proof.ktranslate: .build/proofs/generated-from-k/%.ml-proof
+KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-gamma" ".build/proofs/generated-from-k/$*.ml-gamma"
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-claim" ".build/proofs/generated-from-k/$*.ml-claim"
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-proof" ".build/proofs/generated-from-k/$*.ml-proof"
 
-test-proof-ktranslate: ${KPROOF_TRANSLATION_TARGETS}
+test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 
-.PHONY: test-proof-ktranslate
+.PHONY: test-proof-kgen
 
 
 # Proof generation

@@ -8,6 +8,7 @@ from proof_generation.pattern import (
     ESubst,
     EVar,
     Exists,
+    FakeNotation,
     Implies,
     MetaVar,
     Mu,
@@ -34,6 +35,18 @@ class BasicInterpreter:
 
     def __init__(self, phase: ExecutionPhase):
         self.phase = phase
+        self._interpreting_warnings: set[str] = set()
+
+    @property
+    def safe_interpreting(self) -> bool:
+        return len(self._interpreting_warnings) == 0
+
+    @property
+    def interpreting_warnings(self) -> list[str]:
+        return list(self._interpreting_warnings)
+
+    def mark_generation_unsafe(self, warning: str) -> None:
+        self._interpreting_warnings.add(warning)
 
     def into_claim_phase(self) -> None:
         assert self.phase == ExecutionPhase.Gamma
@@ -49,8 +62,8 @@ class BasicInterpreter:
     def svar(self, id: int) -> Pattern:
         return SVar(id)
 
-    def symbol(self, id: int) -> Pattern:
-        return Symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        return Symbol(name)
 
     def metavar(
         self,
@@ -113,6 +126,8 @@ class BasicInterpreter:
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
         if isinstance(p, Notation):
+            if isinstance(p, FakeNotation):
+                self.mark_generation_unsafe(f'Using fake notation for symbol {str(p.symbol)}')
             return self.add_notation(p)
 
         raise NotImplementedError(f'{type(p)}')

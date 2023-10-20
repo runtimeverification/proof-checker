@@ -17,9 +17,9 @@ phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 
 # TODO: Make sure this is handled uniformly
-inhabitant_symbol = Symbol(0)
-kore_next_symbol = Symbol(1)
-kore_dv_symbol = Symbol(2)
+inhabitant_symbol = Symbol('inhabitant')
+kore_next_symbol = Symbol('kore_next')
+kore_dv_symbol = Symbol('kore_dv')
 
 
 @dataclass(frozen=True, eq=False)
@@ -100,6 +100,23 @@ class KoreImplies(Notation):
 
     def __str__(self) -> str:
         return f'({str(self.phi0)}[{str(self.phi1)}] k-> {str(self.phi0)}[{str(self.phi2)}])'
+
+
+@dataclass(frozen=True, eq=False)
+class KoreApplies(Notation):
+    phi0: Pattern  # For sorts
+    phi1: Pattern  # For arguments
+
+    @staticmethod
+    def definition() -> Pattern:
+        # TODO: We just drop the sort for now
+        # In the Kore we can have an application of a symbol to none or several arguments. We chain them manually
+        # in a single pattern and then save it to phi1. We can't guarantee that there are two or more args as in
+        # the normal application.
+        return phi1
+
+    def __str__(self) -> str:
+        return f'(kapp({str(self.phi0)}) ({str(self.phi1)})'
 
 
 @dataclass(frozen=True, eq=False)
