@@ -1140,8 +1140,20 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
         break;
       }
-      case Instruction::CleanMetaVar:
+      case Instruction::CleanMetaVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error("Expected id for MetaVar instruction");
+#endif
+          exit(1);
+        }
+        auto metavar_pat = Pattern::metavar_unconstrained(*id);
+
+        // Clean metavars are always well-formed
+        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
         break;
+      }
       case Instruction::Implication: {
         auto right = pop_stack_pattern(stack);
         auto left = pop_stack_pattern(stack);
@@ -1308,6 +1320,8 @@ struct Pattern {
         }
         break;
       }
+      case Instruction::NO_OP:
+        return;
       default: {
 #if DEBUG
         throw std::runtime_error("Unknown instruction: " +
