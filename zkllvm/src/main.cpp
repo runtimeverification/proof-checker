@@ -1,4 +1,4 @@
-#include "../tests/unit_tests.hpp"
+#include "lib.hpp"
 #include <array>
 #include <iostream>
 

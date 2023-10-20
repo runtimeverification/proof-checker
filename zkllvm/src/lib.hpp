@@ -43,7 +43,8 @@ enum class Instruction : uint8_t {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar = (uint8_t)(9 + 128),
+  CleanMetaVar, // For some reason setting CleanMetaVar = (uint8_t)(9 + 128)
+                // isn't working with zkLLVM
   // EOF exclusive for zkLLVM
   NO_OP
 };
@@ -154,6 +155,7 @@ struct Pattern {
     return pattern;
   }
 
+  // Equality operator
   bool operator==(const Pattern &rhs) const {
     if (inst != rhs.inst || id != rhs.id) {
       return false;
@@ -230,7 +232,6 @@ struct Pattern {
     return true;
   }
 
-  bool operator==(const Pattern *other) const { return *this == *other; }
   bool operator!=(const Pattern &rhs) { return !(*this == rhs); }
 
   // Copy constructor
@@ -1140,20 +1141,6 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
         break;
       }
-      case Instruction::CleanMetaVar: {
-        auto id = iterator.next();
-        if (id == buffer->end()) {
-#if DEBUG
-          throw std::runtime_error("Expected id for MetaVar instruction");
-#endif
-          exit(1);
-        }
-        auto metavar_pat = Pattern::metavar_unconstrained(*id);
-
-        // Clean metavars are always well-formed
-        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
-        break;
-      }
       case Instruction::Implication: {
         auto right = pop_stack_pattern(stack);
         auto left = pop_stack_pattern(stack);
@@ -1193,7 +1180,7 @@ struct Pattern {
           exit(1);
         }
 
-        if (premise1->left != *premise2) {
+        if (*premise1->left != *premise2) {
 #if DEBUG
           throw std::runtime_error(
               "Antecedents do not match for modus ponens.\n" +
@@ -1318,6 +1305,20 @@ struct Pattern {
           break;
         }
         }
+        break;
+      }
+      case Instruction::CleanMetaVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error("Expected id for MetaVar instruction");
+#endif
+          return 8;
+        }
+        auto metavar_pat = Pattern::metavar_unconstrained(*id);
+
+        // Clean metavars are always well-formed
+        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
         break;
       }
       case Instruction::NO_OP:
