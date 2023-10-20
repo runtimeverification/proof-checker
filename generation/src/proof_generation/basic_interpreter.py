@@ -161,6 +161,17 @@ class BasicInterpreter:
         assert l == right.conclusion, str(l) + ' != ' + str(right.conclusion)
         return Proved(r)
 
+    def exists_quantifier(self) -> Proved:
+        phi = MetaVar(0)
+        x = EVar(0)
+        y = EVar(1)
+        return Proved(Implies(ESubst(phi, x, y), Exists(x.name, phi)))
+
+    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
+        l, r = Implies.extract(left.conclusion)
+        assert r.e_fresh(var), f'{str(var)} in FV({str(r)})'
+        return Implies(Exists(var.id, l), r)
+
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return Proved(proved.conclusion.instantiate(delta))
 

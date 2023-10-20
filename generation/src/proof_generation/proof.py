@@ -94,6 +94,9 @@ class ProofExp(ABC):
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         return self.interpreter.modus_ponens(left, right)
 
+    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
+        return self.interpreter.exists_generalization(left, right, var)
+
     def dynamic_inst(self, proved_expr: ProvedExpression, delta: dict[int, Pattern]) -> Proved:
         for idn, p in delta.items():
             delta[idn] = self.interpreter.pattern(p)

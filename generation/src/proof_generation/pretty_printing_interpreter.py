@@ -144,6 +144,10 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write('ModusPonens')
 
     @pretty()
+    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
+        self.out.write('Generalization')
+
+    @pretty()
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))

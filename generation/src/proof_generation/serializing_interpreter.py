@@ -115,6 +115,11 @@ class SerializingInterpreter(IOInterpreter):
         self.out.write(bytes([Instruction.ModusPonens]))
         return ret
 
+    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
+        ret = super().exists_generalization(left, right, var)
+        self.out.write(bytes([Instruction.Generalization]))
+        return ret
+
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         ret = super().instantiate(proved, delta)
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
