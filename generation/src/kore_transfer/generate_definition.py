@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-import pyk.kore.syntax as kore
-
 import proof_generation.proof as proof
 
 if TYPE_CHECKING:
@@ -41,33 +39,15 @@ class KoreDefinition(proof.ProofExp):
 
         cls.proofs.append(proof_transition)
 
+    @classmethod
+    def add_axiom(cls, position: int, converter: KoreConverter) -> nf.Pattern:
+        """Add an axiom to the definition."""
+        new_axiom = converter.retrieve_axiom(position)
+        cls.axiom_patterns.append(new_axiom)
+        return new_axiom
+
     def proof_expressions(self) -> list[proof.ProvedExpression]:
         def make_function(obj: KoreDefinition, func: ProofMethod) -> proof.ProvedExpression:
             return lambda: func(obj)
 
         return [make_function(self, proof_func) for proof_func in self.proofs]
-
-
-def compose_definition(kore_definition: kore.Definition, converter: KoreConverter) -> type[KoreDefinition]:
-    """Compose the proofs for all steps."""
-    extracted_axioms = _convert_axioms(kore_definition, converter)
-    KoreDefinition.axiom_patterns.extend(extracted_axioms)
-    return KoreDefinition
-
-
-def _convert_axioms(kore_definition: kore.Definition, converter: KoreConverter) -> list[nf.Pattern]:
-    axioms: list[nf.Pattern] = []
-    for module in kore_definition.modules:
-        # Select only patterns below that starts with kore.Rewrites
-        for axiom in (axiom for axiom in module.axioms if isinstance(axiom.pattern, kore.Rewrites)):
-            pattern = axiom.pattern
-            assert isinstance(pattern, kore.Rewrites)
-            assert isinstance(pattern.left, kore.And)
-            assert isinstance(pattern.right, kore.And)
-            # TODO: Remove side conditions for now
-            preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-
-            converted_axiom = converter.convert_pattern(preprocessed_pattern)
-            axioms.append(converted_axiom)
-
-    return axioms

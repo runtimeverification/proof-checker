@@ -64,9 +64,9 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write(str(id))
 
     @pretty()
-    def symbol(self, id: int) -> None:
+    def symbol(self, name: str) -> None:
         self.out.write('Symbol ')
-        self.out.write(str(id))
+        self.out.write(name)
 
     @pretty()
     def metavar(
