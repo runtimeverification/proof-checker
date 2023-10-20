@@ -18,11 +18,10 @@ def generate_proofs(
 ) -> None:
     claims = 0
     for hint in hints:
-        axiom_number = hint.axiom_number
-        axiom = proof_expression.add_axiom(axiom_number, kore_converter)
+        axiom = proof_expression.add_axiom(hint.axiom_ordinal, kore_converter)
 
         assert isinstance(axiom, kl.KoreRewrites), f'The hint should contain a rewriting rule, got {str(axiom)}'
-        claim = kl.KoreRewrites(axiom.phi0, hint.configurations_before, hint.configuration_after)
+        claim = kl.KoreRewrites(axiom.phi0, hint.configuration_before, hint.configuration_after)
 
         assert isinstance(axiom, nf.Pattern), f'The hint should contain a pattern, got {axiom}'
         proof_expression.prove_rewrite_step(claim, axiom, hint.instantiations)
