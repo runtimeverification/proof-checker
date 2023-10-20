@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 
 
 class KoreHint:
-    def __init__(self, pattern: nf.Pattern, axiom: nf.Pattern, instantiations: dict[int, nf.Pattern]) -> None:
+    def __init__(self, pattern: nf.Pattern, axiom_ordinal: int, instantiations: dict[int, nf.Pattern]) -> None:
         # TODO: Change interface according to the real hint format
         self._pattern: nf.Pattern = pattern
-        self._axiom: nf.Pattern = axiom
+        self._axiom_ordinal: int = axiom_ordinal
         self._instantiations: dict[int, nf.Pattern] = instantiations
 
     @property
@@ -24,9 +24,9 @@ class KoreHint:
         return self._pattern
 
     @property
-    def relevant_axiom(self) -> nf.Pattern:
+    def axiom_ordinal(self) -> int:
         """Return the relevant axiom for the given hint."""
-        return self._axiom
+        return self._axiom_ordinal
 
     @property
     def instantiations(self) -> dict[int, nf.Pattern]:
@@ -45,10 +45,7 @@ def get_proof_hints(
     post_config = pre_config
     for rewrite_step in llvm_proof_hint.trace:
         pre_config = post_config
-        print(f'ordinal: {rewrite_step.rule_ordinal}')
-        print(f'substitution: {rewrite_step.substitution}')
-        axiom = kore_converter.convert_axiom(axioms[rewrite_step.rule_ordinal])
         subst = kore_converter.convert_substitution(rewrite_step.substitution)
-        hint = KoreHint(pre_config, axiom, subst)
+        hint = KoreHint(pre_config, rewrite_step.rule_ordinal, subst)
         post_config = kore_converter.convert_pattern(rewrite_step.post_config)
         yield hint

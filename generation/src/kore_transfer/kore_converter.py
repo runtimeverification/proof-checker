@@ -101,17 +101,6 @@ class KoreConverter:
             self._metavars[name] = nf.MetaVar(name=len(self._metavars))
         return self._metavars[name]
 
-    def convert_axiom(self, axiom: kore.Axiom) -> nf.Pattern:
-        pattern = axiom.pattern
-        assert isinstance(pattern, kore.Rewrites)
-        assert isinstance(pattern.left, kore.And)
-        assert isinstance(pattern.right, kore.And)
-
-        # TODO: Remove side conditions for now
-        preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-
-        return self.convert_pattern(preprocessed_pattern)
-
     def _lookup_metavar(self, name: str) -> nf.MetaVar:
         assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
         return self._metavars[name]

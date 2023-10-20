@@ -16,7 +16,5 @@ def generate_proofs(hints: Iterator[KoreHint], proof_expression: type[KoreDefini
     for next_hint in hints:
         # TODO: Process as `KoreRewrite` instead
         claim = nf.Implication(curr_hint.pattern, next_hint.pattern)
-
-        axiom = curr_hint.relevant_axiom
-        proof_expression.prove_rewrite_step(claim, axiom, curr_hint.instantiations)
+        proof_expression.prove_rewrite_step(claim, curr_hint.axiom_ordinal, curr_hint.instantiations)
         curr_hint = next_hint
