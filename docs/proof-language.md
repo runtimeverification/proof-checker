@@ -285,7 +285,7 @@ class EVar(Pattern):
     def well_formed():
         return True
 
-class Implication(Pattern):
+class Implies(Pattern):
     left: Pattern
     right: Pattern
 
@@ -305,7 +305,7 @@ class Implication(Pattern):
         return left.well_formed()
            and right.well_formed()
 
-class Application(Pattern):
+class App(Pattern):
     left: Pattern
     right: Pattern
 
@@ -574,14 +574,14 @@ They may use `MetaVar`s to represent their schematic nature.
 class Lukasiewicz(Proof):
     def conclusion():
         phi1 = MetaVar('phi1')
-        return Implication(Implication(Implication(MetaVar(phi1) , ...)...)...)
+        return Implies(Implies(Implies(MetaVar(phi1) , ...)...)...)
 
 class Quantifier(Proof):
     def conclusion():
         x = EVar('#x')
         y = EVar('#y')
         phi = MetaVar('phi', fresh=[y])
-        return Implication(ESubst(phi, x, y), Exists(x, phi))
+        return Implies(ESubst(phi, x, y), Exists(x, phi))
 
 class PropagationOr(Proof):
     def conclusion():
@@ -589,7 +589,7 @@ class PropagationOr(Proof):
         C = MetaVar(app_ctx_holes=(EVar('#hole'),))
         phi1 = MetaVar('#phi1')
         phi2 = MetaVar('#phi2')
-        return Implication(ESubst(C, or(phi1, phi2), hole), or(ESubst(C, phi1, hole), ESubst(C, phi2, hole)))
+        return Implies(ESubst(C, or(phi1, phi2), hole), or(ESubst(C, phi1, hole), ESubst(C, phi2, hole)))
 
 ...
 ```
@@ -697,7 +697,7 @@ class InstantiateNotation(Pattern):
 
 ```python
 class ModusPonens(Proof):
-    premise_left: Implication
+    premise_left: Implies
     premise_right: Pattern
 
     def conclusion():
@@ -707,7 +707,7 @@ class ModusPonens(Proof):
         assert premise_right == premise_left.left
 
 class Generalization(Proof):
-    premise: Implication
+    premise: Implies
 
     def phi1():
         premise.left
@@ -715,7 +715,7 @@ class Generalization(Proof):
         premise.right
 
     def conclusion():
-        return Implication(ESubst(MetaVar(phi), EVar(x), EVar(y)), Exists(EVar(x), MetaVar(phi)))
+        return Implies(ESubst(MetaVar(phi), EVar(x), EVar(y)), Exists(EVar(x), MetaVar(phi)))
 
     def well_formed():
         assert EVar(x) is fresh in phi1()
@@ -775,7 +775,7 @@ Otherwise, execution aborts, and verification fails.
 `Symbol <u8>`
 :   Push a `Symbol` onto the stack.
 
-`Implication`/`Application`
+`Implies`/`App`
 :   Consume the two patterns from the stack,
     and push an implication/application to the stack
     with appropriate arguments.

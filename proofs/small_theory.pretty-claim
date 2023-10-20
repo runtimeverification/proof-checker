@@ -5,7 +5,7 @@ Symbol 2
 	Stack:
 	0: σ0
 	1: σ2
-Implication
+Implies
 	Stack:
 	0: (σ0 -> σ2)
 Publish

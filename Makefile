@@ -161,32 +161,16 @@ test-proof-ktranslate: ${KPROOF_TRANSLATION_TARGETS}
 
 .build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
-
-.build/proofs/%.ml-claim: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary claim $@
-
-.build/proofs/%.ml-gamma: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary gamma $@
+	poetry -C generation run python -m "proof_generation.proofs.$*" memo $(dir $@) $*
 
 .build/proofs/%.pretty-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty proof $@
-
-.build/proofs/%.pretty-claim: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
-
-.build/proofs/%.pretty-gamma: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty gamma $@
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
-proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim .build/proofs/%.pretty-gamma
+proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.pretty-proof
 	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
 	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
 	${DIFF} --label expected "proofs/$*.pretty-gamma" --label actual ".build/proofs/$*.pretty-gamma"
@@ -225,7 +209,7 @@ verify-translated: clean-translated-proofs ${TRANSLATED_PROOF_VERIFY_BUILD_TARGE
 .PHONY: verify-translated
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
-proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-proof
 	$(CARGO) run --release --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
@@ -242,7 +226,7 @@ verify-kgenerated: clean-kgenerated-proofs ${PROOF_VERIFY_KBUILD_TARGETS}
 # ---------
 
 PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
-proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+proofs/%.ml-proof.profile: .build/proofs/%.ml-proof
 	$(CARGO)  build --release --bin profiler
 	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 	mv flamegraph.svg $*.svg

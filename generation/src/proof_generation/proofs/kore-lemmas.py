@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Application, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import And, Negation, Or
 
@@ -28,10 +28,10 @@ class KoreTop(Notation):
 
     @staticmethod
     def definition() -> Pattern:
-        return Application(inhabitant_symbol, phi0)
+        return App(inhabitant_symbol, phi0)
 
     def __str__(self) -> str:
-        return f'(k\u22A4 {self.phi0})'
+        return f'(k⊤ {self.phi0})'
 
 
 @dataclass(frozen=True, eq=False)
@@ -44,7 +44,7 @@ class KoreNot(Notation):
         return And(Negation(phi1), KoreTop(phi0))
 
     def __str__(self) -> str:
-        return f'(k\u22A4 {self.phi0})'
+        return f'(k¬ {self.phi0})'
 
 
 @dataclass(frozen=True, eq=False)
@@ -58,7 +58,7 @@ class KoreAnd(Notation):
         return And(phi1, phi2)
 
     def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k/\\ {str(self.phi0)}[{str(self.phi2)}])'
+        return f'({str(self.phi0)}[{str(self.phi1)}] k⋀ {str(self.phi0)}[{str(self.phi2)}])'
 
 
 @dataclass(frozen=True, eq=False)
@@ -72,7 +72,7 @@ class KoreOr(Notation):
         return Or(phi1, phi2)
 
     def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k\\/ {str(self.phi0)}[{str(self.phi2)}])'
+        return f'({str(self.phi0)}[{str(self.phi1)}] k⋁ {str(self.phi0)}[{str(self.phi2)}])'
 
 
 @dataclass(frozen=True, eq=False)
@@ -82,10 +82,10 @@ class KoreNext(Notation):
 
     @staticmethod
     def definition() -> Pattern:
-        return Application(kore_next_symbol, phi1)
+        return App(kore_next_symbol, phi1)
 
     def __str__(self) -> str:
-        return f'(\u2666 {str(self.phi1)})'
+        return f'(♦ {str(self.phi1)})'
 
 
 @dataclass(frozen=True, eq=False)
@@ -123,7 +123,7 @@ class KoreDv(Notation):
 
     @staticmethod
     def definition() -> Pattern:
-        return Application(Application(kore_dv_symbol, phi0), phi1)
+        return App(App(kore_dv_symbol, phi0), phi1)
 
 
 # TODO: Add kore-transitivity

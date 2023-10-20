@@ -11,7 +11,7 @@ from mm_translate.metamath.parser import load_database
 from mm_translate.translate import convert_to_implication, exec_proof
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
-from proof_generation.pattern import Implication, MetaVar
+from proof_generation.pattern import Implies, MetaVar
 from proof_generation.proof import ProofExp
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
@@ -78,7 +78,7 @@ def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
     proofexp.execute_full()
 
     assert isinstance(proofexp.interpreter, StatefulInterpreter)
-    assert proofexp.interpreter.stack == [Proved(Implication(MetaVar(0), MetaVar(0)))]
+    assert proofexp.interpreter.stack == [Proved(Implies(MetaVar(0), MetaVar(0)))]
 
 
 @pytest.mark.parametrize('db', ['parsed_transfer_database', 'parsed_transfer_compressed_database'])

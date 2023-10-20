@@ -69,42 +69,42 @@ class Symbol(Pattern):
 
     def __str__(self) -> str:
         if self.pretty_name is None:
-            return f'\u03c3{str(self.name)}'
+            return f'σ{str(self.name)}'
         else:
             return f'{self.pretty_name}_{str(self.name)}'
 
 
 @dataclass(frozen=True)
-class Implication(Pattern):
+class Implies(Pattern):
     left: Pattern
     right: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return Implication(self.left.instantiate(delta), self.right.instantiate(delta))
+        return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return Implication(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
+        return Implies(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return Implication(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
+        return Implies(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
         return f'({str(self.left)} -> {str(self.right)})'
 
 
 @dataclass(frozen=True)
-class Application(Pattern):
+class App(Pattern):
     left: Pattern
     right: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return Application(self.left.instantiate(delta), self.right.instantiate(delta))
+        return App(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return Application(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
+        return App(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return Application(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
+        return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
         return f'(app ({str(self.left)}) ({str(self.right)}))'
@@ -127,7 +127,7 @@ class Exists(Pattern):
         return Exists(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'(\u2203 x{self.var} . {str(self.subpattern)})'
+        return f'(∃ x{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -147,7 +147,7 @@ class Mu(Pattern):
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'(\u03BC X{self.var} . {str(self.subpattern)})'
+        return f'(μ X{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -283,7 +283,7 @@ class FakeNotation(Notation):
             arguments_left = [MetaVar(i) for i, _ in enumerate(self.pattern_arguments)]
             while len(arguments_left) > 0:
                 next_one, *arguments_left = arguments_left
-                current_callable = Application(current_callable, next_one)
+                current_callable = App(current_callable, next_one)
             return current_callable
 
     def arguments(self) -> dict[int, Pattern]:
@@ -305,7 +305,7 @@ class Bot(Notation):
         return Mu(0, SVar(0))
 
     def __str__(self) -> str:
-        return '\u22A5'
+        return '⊥'
 
 
 bot = Bot()

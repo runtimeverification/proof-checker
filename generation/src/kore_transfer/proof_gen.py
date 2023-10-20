@@ -44,9 +44,7 @@ def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: 
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    proof_gen.main(['', 'binary', 'gamma', str(output_dir / f'{file_name}.ml-gamma')])
-    proof_gen.main(['', 'binary', 'claim', str(output_dir / f'{file_name}.ml-claim')])
-    proof_gen.main(['', 'binary', 'proof', str(output_dir / f'{file_name}.ml-proof')])
+    proof_gen.main(['', 'binary', str(output_dir), file_name])
 
 
 HINTS_DIR_PATH = 'proof-hints'
