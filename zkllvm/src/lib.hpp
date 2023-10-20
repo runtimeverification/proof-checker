@@ -141,16 +141,11 @@ struct Pattern {
   // Constructor for creating instances of Pattern
   static Pattern *newPattern(Instruction inst, Id id) noexcept {
     auto pattern = static_cast<Pattern *>(malloc(sizeof(Pattern)));
-    my_memset(pattern, 0, sizeof(Pattern));
+    memset_(pattern, 0, sizeof(Pattern));
 
     pattern->id = id;
     pattern->inst = inst;
 
-    pattern->e_fresh = nullptr;
-    pattern->s_fresh = nullptr;
-    pattern->positive = nullptr;
-    pattern->negative = nullptr;
-    pattern->app_ctx_holes = nullptr;
     return pattern;
   }
 
@@ -382,7 +377,7 @@ struct Pattern {
   bool pattern_well_formed() noexcept {
     switch (inst) {
     case Instruction::MetaVar:
-      return !app_ctx_holes->constainsElementOf(e_fresh);
+      return !app_ctx_holes->containsElementOf(e_fresh);
     case Instruction::Mu:
       return subpattern->pattern_positive(id);
     case Instruction::ESubst:
@@ -1243,7 +1238,6 @@ struct Pattern {
     auto claims = Claims();
     auto memory = Memory();
     auto stack = Stack();
-
 
     execute_instructions(gamma_buffer,
                          stack,  // stack is empty initially.

@@ -2,9 +2,9 @@
 #include <cstdlib>
 #include <iostream>
 
-void *my_memset(void *ptr, uint8_t value, size_t num) {
-  unsigned char *byte_ptr = (unsigned char *)ptr;
-  unsigned char byte_value = (unsigned char)value;
+void *memset_(void *ptr, uint8_t value, size_t num) {
+  auto *byte_ptr = (unsigned char *)ptr;
+  auto byte_value = (unsigned char)value;
 
   for (size_t i = 0; i < num; i++) {
     byte_ptr[i] = byte_value;
@@ -17,7 +17,7 @@ template <typename T> struct Node {
   T data;
   Node *next;
 
-  Node(const T &value) noexcept : data(value), next(nullptr) {}
+  explicit Node(const T &value) noexcept : data(value), next(nullptr) {}
 
   bool operator==(const Node &rhs) const noexcept { return equal(*this, rhs); }
 
@@ -25,7 +25,7 @@ template <typename T> struct Node {
 
   static Node *create(const T &value) noexcept {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
-    my_memset(newNode, 0, sizeof(Node));
+      memset_(newNode, 0, sizeof(Node));
     newNode->data = value;
     newNode->next = nullptr;
     return newNode;
@@ -120,6 +120,7 @@ public:
   void clear() noexcept {
     while (head) {
       Node<T> *next = head->next;
+      head->~Node();
       std::free(head);
       head = next;
     }
@@ -153,7 +154,7 @@ public:
     return false;
   }
 
-  bool constainsElementOf(LinkedList<T> *otherList) noexcept {
+  bool containsElementOf(LinkedList<T> *otherList) noexcept {
     for (auto &item : *this) {
       if (otherList->contains(item)) {
         return true;
@@ -206,38 +207,10 @@ public:
       return *this;
     }
 
-    Iterator next() noexcept {
-      Iterator tmp = *this;
-      ++(*this);
-      return tmp;
-    }
-
-    Node<T> *getCurrent() noexcept { return current; }
   };
 
   Iterator begin() noexcept { return Iterator(head); }
   Iterator end() noexcept { return Iterator(nullptr); }
-
-  // Implement find function
-  Iterator find(const T &value) noexcept {
-    Node<T> *curr = head;
-    while (curr) {
-      if (curr->data == value) {
-        return Iterator(curr);
-      }
-      curr = curr->next;
-    }
-    return Iterator(nullptr);
-  }
-
-  void clear(Iterator it) noexcept {
-    Node<T> *curr = it.getCurrent();
-    while (curr) {
-      Node<T> *next = curr->next;
-      std::free(curr);
-      curr = next;
-    }
-  }
 
 #ifdef DEBUG
   void print() noexcept {
