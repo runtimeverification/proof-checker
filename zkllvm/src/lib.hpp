@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 
-enum class Instruction {
+enum class Instruction : uint8_t {
   // Patterns
   EVar = 2,
   SVar,
@@ -43,11 +43,12 @@ enum class Instruction {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar = (9 + 128)
-
+  CleanMetaVar = (uint8_t)(9 + 128),
+  // EOF exclusive for zkLLVM
+  NO_OP
 };
 
-Instruction from(int value) {
+Instruction from(uint8_t value) {
   switch (value) {
   case 2:
     return Instruction::EVar;
@@ -109,13 +110,14 @@ Instruction from(int value) {
     return Instruction::Publish;
   case 137:
     return Instruction::CleanMetaVar;
+  case 138:
+    return Instruction::NO_OP;
   default:
     exit(1); // Bad instruction!
-    break;
   }
 }
 
-using Id = int8_t;
+using Id = uint8_t;
 using IdList = LinkedList<Id>;
 
 struct Pattern {
@@ -151,6 +153,85 @@ struct Pattern {
     pattern->app_ctx_holes = nullptr;
     return pattern;
   }
+
+  bool operator==(const Pattern &rhs) const {
+    if (inst != rhs.inst || id != rhs.id) {
+      return false;
+    }
+    if (left == nullptr && rhs.left != nullptr ||
+        left != nullptr && rhs.left == nullptr) {
+      return false;
+    }
+    if (right == nullptr && rhs.right != nullptr ||
+        right != nullptr && rhs.right == nullptr) {
+      return false;
+    }
+    if (subpattern == nullptr && rhs.subpattern != nullptr ||
+        subpattern != nullptr && rhs.subpattern == nullptr) {
+      return false;
+    }
+    if (plug == nullptr && rhs.plug != nullptr ||
+        plug != nullptr && rhs.plug == nullptr) {
+      return false;
+    }
+    if (e_fresh == nullptr && rhs.e_fresh != nullptr ||
+        e_fresh != nullptr && rhs.e_fresh == nullptr) {
+      return false;
+    }
+    if (s_fresh == nullptr && rhs.s_fresh != nullptr ||
+        s_fresh != nullptr && rhs.s_fresh == nullptr) {
+      return false;
+    }
+    if (positive == nullptr && rhs.positive != nullptr ||
+        positive != nullptr && rhs.positive == nullptr) {
+      return false;
+    }
+    if (negative == nullptr && rhs.negative != nullptr ||
+        negative != nullptr && rhs.negative == nullptr) {
+      return false;
+    }
+    if (app_ctx_holes == nullptr && rhs.app_ctx_holes != nullptr ||
+        app_ctx_holes != nullptr && rhs.app_ctx_holes == nullptr) {
+      return false;
+    }
+    if (left != nullptr && rhs.left != nullptr && *left != *rhs.left) {
+      return false;
+    }
+    if (right != nullptr && rhs.right != nullptr && *right != *rhs.right) {
+      return false;
+    }
+    if (subpattern != nullptr && rhs.subpattern != nullptr &&
+        *subpattern != *rhs.subpattern) {
+      return false;
+    }
+    if (plug != nullptr && rhs.plug != nullptr && *plug != *rhs.plug) {
+      return false;
+    }
+    if (e_fresh != nullptr && rhs.e_fresh != nullptr &&
+        *e_fresh != *rhs.e_fresh) {
+      return false;
+    }
+    if (s_fresh != nullptr && rhs.s_fresh != nullptr &&
+        *s_fresh != *rhs.s_fresh) {
+      return false;
+    }
+    if (positive != nullptr && rhs.positive != nullptr &&
+        *positive != *rhs.positive) {
+      return false;
+    }
+    if (negative != nullptr && rhs.negative != nullptr &&
+        *negative != *rhs.negative) {
+      return false;
+    }
+    if (app_ctx_holes != nullptr && rhs.app_ctx_holes != nullptr &&
+        *app_ctx_holes != *rhs.app_ctx_holes) {
+      return false;
+    }
+    return true;
+  }
+
+  bool operator==(const Pattern *other) const { return *this == *other; }
+  bool operator!=(const Pattern &rhs) { return !(*this == rhs); }
 
   // Copy constructor
   static Pattern *copy(Pattern *pattern) {
@@ -205,28 +286,18 @@ struct Pattern {
     switch (inst) {
     case Instruction::EVar:
       return evar != id;
-      break;
     case Instruction::SVar:
-      return true;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return e_fresh->contains(evar);
-      break;
     case Instruction::Implication:
-      return left->pattern_e_fresh(evar) && right->pattern_e_fresh(evar);
-      break;
     case Instruction::Application:
       return left->pattern_e_fresh(evar) && right->pattern_e_fresh(evar);
-      break;
     case Instruction::Exists:
       return (evar == id) || subpattern->pattern_e_fresh(evar);
-      break;
     case Instruction::Mu:
       return subpattern->pattern_e_fresh(evar);
-      break;
     case Instruction::ESubst:
       // Assume: substitution is well-formed => plug occurs in the result
 
@@ -240,7 +311,6 @@ struct Pattern {
       // as evar != evar_id (note that instances of evar_id
       // in pattern do not influence the result)
       return subpattern->pattern_e_fresh(evar) && plug->pattern_e_fresh(evar);
-      break;
 
     case Instruction::SSubst:
       // Assume: substitution is well-formed => plug occurs in the result
@@ -251,7 +321,6 @@ struct Pattern {
       // as svar_id != evar (note that instances of evar_id
       // in pattern do not influence the result)
       return subpattern->pattern_e_fresh(evar) && plug->pattern_e_fresh(evar);
-      break;
 
     default:
 #if DEBUG
@@ -259,7 +328,6 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
@@ -267,28 +335,19 @@ struct Pattern {
     switch (inst) {
     case Instruction::EVar:
       return true;
-      break;
     case Instruction::SVar:
       return id != svar;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return s_fresh->contains(svar);
-      break;
     case Instruction::Implication:
-      return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
-      break;
     case Instruction::Application:
       return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
-      break;
     case Instruction::Exists:
       return subpattern->pattern_s_fresh(svar);
-      break;
     case Instruction::Mu:
       return (svar == id) || subpattern->pattern_s_fresh(svar);
-      break;
     case Instruction::ESubst:
       // Assume: substitution is well-formed => plug occurs in the result
 
@@ -298,7 +357,6 @@ struct Pattern {
       // as evar_id != svar (note that instances of evar_id
       // in pattern do not influence the result)
       return subpattern->pattern_s_fresh(svar) && plug->pattern_s_fresh(svar);
-      break;
 
     case Instruction::SSubst:
       // Assume: substitution is well-formed => plug occurs in the result
@@ -309,7 +367,6 @@ struct Pattern {
       }
 
       return subpattern->pattern_s_fresh(svar) && plug->pattern_s_fresh(svar);
-      break;
 
     default:
 #if DEBUG
@@ -317,40 +374,28 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
   bool pattern_positive(Id svar) {
     switch (inst) {
     case Instruction::EVar:
-      return true;
-      break;
     case Instruction::SVar:
-      return true;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return positive->contains(svar);
-      break;
     case Instruction::Implication:
       return left->pattern_negative(svar) && right->pattern_positive(svar);
-      break;
     case Instruction::Application:
       return left->pattern_positive(svar) && right->pattern_positive(svar);
-      break;
     case Instruction::Exists:
       return subpattern->pattern_positive(svar);
-      break;
     case Instruction::Mu:
       return svar == id || subpattern->pattern_positive(svar);
-      break;
     case Instruction::ESubst:
       // best-effort for now, see spec
       return subpattern->pattern_positive(svar) && plug->pattern_s_fresh(svar);
-      break;
     case Instruction::SSubst: {
       auto plug_positive_svar =
           plug->pattern_s_fresh(svar) ||
@@ -362,7 +407,6 @@ struct Pattern {
       }
 
       return subpattern->pattern_positive(svar) && plug_positive_svar;
-      break;
     }
     default:
 #if DEBUG
@@ -370,7 +414,6 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
@@ -378,32 +421,23 @@ struct Pattern {
     switch (inst) {
     case Instruction::EVar:
       return true;
-      break;
     case Instruction::SVar:
       return id != svar;
-      break;
     case Instruction::Symbol:
       return true;
-      break;
     case Instruction::MetaVar:
       return negative->contains(svar);
-      break;
     case Instruction::Implication:
       return left->pattern_positive(svar) && right->pattern_negative(svar);
-      break;
     case Instruction::Application:
       return left->pattern_negative(svar) && right->pattern_negative(svar);
-      break;
     case Instruction::Exists:
       return subpattern->pattern_s_fresh(svar);
-      break;
     case Instruction::Mu:
       return svar == id || subpattern->pattern_negative(svar);
-      break;
     case Instruction::ESubst:
       // best-effort for now, see spec
       return subpattern->pattern_negative(svar) && plug->pattern_s_fresh(svar);
-      break;
     case Instruction::SSubst: {
       auto plug_negative_svar =
           plug->pattern_s_fresh(svar) ||
@@ -415,7 +449,6 @@ struct Pattern {
       }
 
       return subpattern->pattern_negative(svar) && plug_negative_svar;
-      break;
     }
     default:
 #if DEBUG
@@ -423,7 +456,6 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
   }
 
@@ -433,16 +465,12 @@ struct Pattern {
     switch (inst) {
     case Instruction::MetaVar:
       return !app_ctx_holes->isDisjoint(e_fresh);
-      break;
     case Instruction::Mu:
       return subpattern->pattern_positive(id);
-      break;
     case Instruction::ESubst:
       return !subpattern->pattern_e_fresh(id);
-      break;
     case Instruction::SSubst:
       return !subpattern->pattern_s_fresh(id);
-      break;
     default:
 #if DEBUG
       throw std::runtime_error("Well-formedness checking is unimplemented yet "
@@ -450,19 +478,7 @@ struct Pattern {
                                std::to_string((int)inst));
 #endif
       exit(1);
-      break;
     }
-  }
-  enum class TermType { Pattern, Proved };
-  typedef std::tuple<TermType, Pattern *> Term;
-  Term CreateTerm(TermType type, Pattern *pattern) {
-    return std::make_tuple(type, pattern);
-  }
-
-  enum class EntryType { Pattern, Proved };
-  typedef std::tuple<EntryType, Pattern *> Entry;
-  Entry CreateEntry(EntryType type, Pattern *pattern) {
-    return std::make_tuple(type, pattern);
   }
 
   /// Pattern construction utilities
@@ -535,45 +551,6 @@ struct Pattern {
     return pattern;
   }
 
-  // Notation
-  static Pattern *bot() { return Pattern::mu(0, Pattern::svar(0)); }
-
-  static Pattern *negate(Pattern *pattern) { // C++ doesn't accepted not
-    return Pattern::implies(pattern, Pattern::bot());
-  }
-
-  static Pattern *forall(Id evar, Pattern *pattern) {
-    return Pattern::negate(Pattern::exists(evar, Pattern::negate(pattern)));
-  }
-
-  /// Proof checker
-  /// =============
-
-  typedef LinkedList<Term *> Stack;
-  typedef LinkedList<Pattern *> Claims;
-  typedef LinkedList<Entry *> Memory;
-
-  /// Stack utilities
-  /// ---------------
-
-  Term *pop_stack(Stack *stack) { return stack->pop(); }
-
-  Pattern *pop_stack_pattern(Stack *stack) {
-    auto term = stack->pop();
-    if (std::get<0>(*term) != TermType::Pattern) {
-      throw std::runtime_error("Expected pattern on the stack.");
-    }
-    return std::get<1>(*term);
-  }
-
-  Pattern *pop_stack_proved(Stack *stack) {
-    auto term = stack->pop();
-    if (std::get<0>(*term) != TermType::Proved) {
-      throw std::runtime_error("Expected proved on the stack.");
-    }
-    return std::get<1>(*term);
-  }
-
   // Destructor to manually release memory
   ~Pattern() {
     if (left) {
@@ -611,6 +588,14 @@ struct Pattern {
     free(this);
   }
 
+  static void destroyPatterns(LinkedList<Pattern *> *patterns) {
+    if (!patterns->empty()) {
+      for (auto it : *patterns) {
+        it->~Pattern();
+      }
+    }
+  }
+
 #if DEBUG
   void print() {
     switch (inst) {
@@ -624,9 +609,14 @@ struct Pattern {
       std::cout << "Symbol(" << (int)id << ")";
       break;
     case Instruction::Implication:
-      std::cout << "Implication(";
+      /* std::cout << "Implication(";
+       left->print();
+       std::cout << ", ";
+       right->print();
+       std::cout << ")";*/
+      std::cout << "(";
       left->print();
-      std::cout << ", ";
+      std::cout << " -> ";
       right->print();
       std::cout << ")";
       break;
@@ -648,16 +638,28 @@ struct Pattern {
       std::cout << ")";
       break;
     case Instruction::MetaVar:
-      std::cout << "MetaVar(" << (int)id << ", ";
-      e_fresh->print();
-      std::cout << ", ";
-      s_fresh->print();
-      std::cout << ", ";
-      positive->print();
-      std::cout << ", ";
-      negative->print();
-      std::cout << ", ";
-      app_ctx_holes->print();
+      // std::cout << "phi" << (int)id;
+      std::cout << "MetaVar(" << (int)id;
+      if (e_fresh->head) {
+        std::cout << ", ";
+        e_fresh->print();
+      }
+      if (s_fresh->head) {
+        std::cout << ", ";
+        s_fresh->print();
+      }
+      if (positive->head) {
+        std::cout << ", ";
+        positive->print();
+      }
+      if (negative->head) {
+        std::cout << ", ";
+        negative->print();
+      }
+      if (app_ctx_holes->head) {
+        std::cout << ", ";
+        app_ctx_holes->print();
+      }
       std::cout << ")";
       break;
     case Instruction::ESubst:
@@ -677,4 +679,317 @@ struct Pattern {
     }
   }
 #endif
+
+  class Term {
+  public:
+    enum class Type { Pattern, Proved };
+    Type type;
+    Pattern *pattern;
+    Term(Type type, Pattern *pattern) : type(type), pattern(pattern) {}
+    static Term *newTerm(Type type, Pattern *pattern) {
+      auto term = static_cast<Term *>(malloc(sizeof(Term)));
+      term->type = type;
+      term->pattern = pattern;
+      return term;
+    }
+    ~Term() {
+      if (pattern) {
+        pattern->~Pattern();
+      }
+      free(this);
+    }
+
+    bool operator==(const Term &rhs) const {
+      if (type != rhs.type) {
+        return false;
+      }
+      if (pattern == nullptr && rhs.pattern != nullptr ||
+          pattern != nullptr && rhs.pattern == nullptr) {
+        return false;
+      }
+      if (pattern != nullptr && rhs.pattern != nullptr &&
+          *pattern != *rhs.pattern) {
+        return false;
+      }
+      return true;
+    }
+    bool operator!=(const Term &rhs) const { return !(*this == rhs); }
+  };
+
+  class Entry {
+  public:
+    enum class Type { Pattern, Proved };
+    Type type;
+    Pattern *pattern;
+    Entry(Type type, Pattern *pattern) : type(type), pattern(pattern) {}
+    static Entry *newEntry(Type type, Pattern *pattern) {
+      auto entry = static_cast<Entry *>(malloc(sizeof(Entry)));
+      entry->type = type;
+      entry->pattern = pattern;
+      return entry;
+    }
+    ~Entry() {
+      if (pattern) {
+        pattern->~Pattern();
+      }
+      free(this);
+    }
+    bool operator==(const Entry &rhs) const {
+      if (type != rhs.type) {
+        return false;
+      }
+      if (pattern == nullptr && rhs.pattern != nullptr ||
+          pattern != nullptr && rhs.pattern == nullptr) {
+        return false;
+      }
+      if (pattern != nullptr && rhs.pattern != nullptr &&
+          *pattern != *rhs.pattern) {
+        return false;
+      }
+      return true;
+    }
+    bool operator!=(const Entry &rhs) const { return !(*this == rhs); }
+  };
+
+  // Notation
+  static Pattern *bot() { return mu(0, svar(0)); }
+
+  static Pattern *negate(Pattern *pattern) { // C++ doesn't accepted not
+    return implies(pattern, bot());
+  }
+
+  static Pattern *forall(Id evar, Pattern *pattern) {
+    return negate(exists(evar, negate(pattern)));
+  }
+
+  /// Substitution utilities
+  /// ----------------------
+  template <class Pattern> class Optional {
+  private:
+    Pattern *value;
+    bool hasValue;
+
+  public:
+    Optional(Pattern *value) : value(value), hasValue(true) {}
+    Optional(std::nullptr_t) : hasValue(false) {}
+    Optional() : hasValue(false) { value = nullptr; }
+    ~Optional() = default;
+
+    operator bool() const { return hasValue; }
+
+    // returns nullptr if hasValue is false
+    Pattern *operator*() { return value; }
+    Pattern *unwrap() { return value; }
+
+    bool has_value() { return hasValue; }
+  };
+
+  static Optional<Pattern> instantiate_internal(Pattern &p, IdList &vars,
+                                                LinkedList<Pattern *> &plugs) {
+    switch (p.inst) {
+    case Instruction::EVar:
+    case Instruction::SVar:
+    case Instruction::Symbol:
+      return Optional<Pattern>();
+    case Instruction::MetaVar: {
+      Id pos = 0;
+      for (auto it : vars) {
+        if (it == p.id) {
+          for (const auto &evar : *p.e_fresh) {
+            if (!plugs[pos]->pattern_e_fresh(evar)) {
+#ifdef DEBUG
+              throw std::runtime_error("Instantiation of MetaVar " +
+                                       std::to_string(p.id) +
+                                       " breaks a freshness constraint: EVar " +
+                                       std::to_string(evar));
+#endif
+              exit(1);
+            }
+          }
+          for (const auto &svar : *p.s_fresh) {
+            if (!plugs[pos]->pattern_s_fresh(svar)) {
+#ifdef DEBUG
+              throw std::runtime_error("Instantiation of MetaVar " +
+                                       std::to_string(p.id) +
+                                       " breaks a freshness constraint: SVar " +
+                                       std::to_string(svar));
+#endif
+              exit(1);
+            }
+          }
+          for (const auto &svar : *p.positive) {
+            if (!plugs[pos]->pattern_positive(svar)) {
+#ifdef DEBUG
+              throw std::runtime_error(
+                  "Instantiation of MetaVar " + std::to_string(p.id) +
+                  " breaks a positivity constraint: SVar " +
+                  std::to_string(svar));
+#endif
+              exit(1);
+            }
+          }
+          for (const auto &svar : *p.negative) {
+            if (!plugs[pos]->pattern_negative(svar)) {
+#ifdef DEBUG
+              throw std::runtime_error(
+                  "Instantiation of MetaVar " + std::to_string(p.id) +
+                  " breaks a negativity constraint: SVar " +
+                  std::to_string(svar));
+#endif
+              exit(1);
+            }
+          }
+
+          if (pos >= plugs.size()) {
+#ifdef DEBUG
+            throw std::runtime_error(
+                "Substitution does not contain a corresponding value.");
+#endif
+            exit(1);
+          }
+
+          return Optional<Pattern>(copy(plugs[pos]));
+        }
+        pos++;
+      }
+      return Optional<Pattern>();
+    }
+    case Instruction::Implication: {
+      Optional<Pattern> inst_left = instantiate_internal(*p.left, vars, plugs);
+      Optional<Pattern> inst_right =
+          instantiate_internal(*p.right, vars, plugs);
+
+      if (!inst_left.has_value() && !inst_right.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_left.has_value()) {
+          inst_left = Optional<Pattern>(copy(p.left)).unwrap();
+        }
+        if (!inst_right.has_value()) {
+          inst_right = Optional<Pattern>(copy(p.right)).unwrap();
+        }
+        return Optional<Pattern>(
+            implies(inst_left.unwrap(), inst_right.unwrap()));
+      }
+    }
+    case Instruction::Application: {
+      Optional<Pattern> inst_left = instantiate_internal(*p.left, vars, plugs);
+      Optional<Pattern> inst_right =
+          instantiate_internal(*p.right, vars, plugs);
+
+      if (!inst_left.has_value() && !inst_right.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_left.has_value()) {
+          inst_left = Optional<Pattern>(copy(p.left));
+        }
+        if (!inst_right.has_value()) {
+          inst_right = Optional<Pattern>(copy(p.right));
+        }
+        return Optional<Pattern>(app(inst_left.unwrap(), inst_right.unwrap()));
+      }
+    }
+    case Instruction::Exists: {
+      Optional<Pattern> inst_sub =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      if (!inst_sub.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_sub.has_value()) {
+          inst_sub = Optional<Pattern>(copy(p.subpattern));
+        }
+        return Optional<Pattern>(exists(p.id, inst_sub.unwrap()));
+      }
+    }
+    case Instruction::Mu: {
+      Optional<Pattern> inst_sub =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      if (!inst_sub.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_sub.has_value()) {
+          inst_sub = Optional<Pattern>(copy(p.subpattern));
+        }
+        return Optional<Pattern>(mu(p.id, inst_sub.unwrap()));
+      }
+    }
+    case Instruction::ESubst: {
+      Optional<Pattern> inst_pattern =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      Optional<Pattern> inst_plug = instantiate_internal(*p.plug, vars, plugs);
+      if (!inst_pattern.has_value() && !inst_plug.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_pattern.has_value()) {
+          inst_pattern = Optional<Pattern>(copy(p.subpattern));
+        }
+        if (!inst_plug.has_value()) {
+          inst_plug = Optional<Pattern>(copy(p.plug));
+        }
+        return Optional<Pattern>(
+            esubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
+      }
+    }
+    case Instruction::SSubst: {
+      Optional<Pattern> inst_pattern =
+          instantiate_internal(*p.subpattern, vars, plugs);
+      Optional<Pattern> inst_plug = instantiate_internal(*p.plug, vars, plugs);
+      if (!inst_pattern.has_value() && !inst_plug.has_value()) {
+        return Optional<Pattern>();
+      } else {
+        if (!inst_pattern.has_value()) {
+          inst_pattern = Optional<Pattern>(copy(p.subpattern));
+        }
+        if (!inst_plug.has_value()) {
+          inst_plug = Optional<Pattern>(copy(p.plug));
+        }
+        return Optional<Pattern>(
+            ssubst(inst_pattern.unwrap(), p.id, inst_plug.unwrap()));
+      }
+    }
+    default:
+      return Optional<Pattern>();
+    }
+  }
+
+  void instantiate_in_place(Pattern &p, IdList &vars,
+                            LinkedList<Pattern *> &plugs) {
+    if (auto ret = instantiate_internal(p, vars, plugs)) {
+      p = *ret.unwrap();
+    }
+  }
+
+  /// Proof checker
+  /// =============
+
+  typedef LinkedList<Term *> Stack;
+  typedef LinkedList<Pattern *> Claims;
+  typedef LinkedList<Entry *> Memory;
+
+  /// Stack utilities
+  /// ---------------
+
+  Term *pop_stack(Stack *stack) { return stack->pop(); }
+
+  Pattern *pop_stack_pattern(Stack *stack) {
+    auto term = pop_stack(stack);
+    if (term->type != Term::Type::Pattern) {
+#if DEBUG
+      throw std::runtime_error("Expected pattern on the stack.");
+#endif
+      exit(1);
+    }
+    return term->pattern;
+  }
+
+  Pattern *pop_stack_proved(Stack *stack) {
+    auto term = pop_stack(stack);
+    if (term->type != Term::Type::Proved) {
+#if DEBUG
+      throw std::runtime_error("Expected proved on the stack.");
+#endif
+      exit(1);
+    }
+    return term->pattern;
+  }
 };

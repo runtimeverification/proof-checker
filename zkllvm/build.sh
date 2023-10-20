@@ -40,6 +40,10 @@ OUTPUT_LLVM_LINK_2="${OUTPUTDIR}/${FILENAME}_${EXT}_example.ll"
 OUTPUT_CIRCUIT="${OUTPUTDIR}/circuit.crct"
 OUTPUT_TABLE="${OUTPUTDIR}/assignment_table.tbl"
 
+# Clean output directory
+rm -r output/*
+
+# Compile the program to LLVM IR
 ${CLANG_EXE} -target assigner -D__ZKLLVM__ \
 -I "${CRYPTO3_LIB_DIR}"/libs/algebra/include \
 -I "${ZKLLVM_ROOT}"/build/include \
@@ -69,10 +73,15 @@ ${CLANG_EXE} -target assigner -D__ZKLLVM__ \
 -I "${CRYPTO3_LIB_DIR}"/libs/zk/include \
 -I "${ZKLLVM_ROOT}"/libs/stdlib/libcpp \
 -I "${ZKLLVM_ROOT}"/libs/stdlib/libc/include \
--emit-llvm -O1 -S "${FILEPATH}/${FILE}" -o "${OUTPUT_CLANG}"
+-emit-llvm -O1 -S -std=c++20 "${FILEPATH}/${FILE}" -o "${OUTPUT_CLANG}"
 
+# Link the program with the ZKLLVM libc
 ${LLVM_LINK} -S "${OUTPUT_CLANG}" -o "${OUTPUT_LLVM_LINK_1}"
 ${LLVM_LINK} -S "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.ll" -o "${OUTPUT_LLVM_LINK_2}"
+
+# Generate the circuit and the assignment table
 echo "Circuit Function output: "
 ${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output --check
+
+# Generate the test proof
 time ${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}"

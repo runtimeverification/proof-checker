@@ -1,5 +1,5 @@
-#include <iostream>
 #include "../tests/unit_tests.hpp"
+#include <iostream>
 
 #ifndef DEBUG
 typedef __attribute__((ext_vector_type(1))) int assumption_type;
@@ -14,6 +14,7 @@ typedef __attribute__((ext_vector_type(1))) int proof_type;
   test_sfresh(x, y);
   test_positivity();
   test_wellformedness_positive();
+  test_instantiate();
 
   return c[0];
 }
@@ -36,6 +37,10 @@ int main() {
 
   std::cout << "Exeuting test_wellformedness_positive()" << std::endl;
   test_wellformedness_positive();
+  std::cout << std::endl;
+
+  std::cout << "Exeuting test_instantiate()" << std::endl;
+  test_instantiate();
   std::cout << std::endl;
 
   return 0;

@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implication, Symbol
+from proof_generation.pattern import Implies, Symbol
 from proof_generation.proofs.propositional import Propositional
 
 if TYPE_CHECKING:
@@ -15,13 +15,13 @@ if TYPE_CHECKING:
 class SmallTheory(Propositional):
     @staticmethod
     def axioms() -> list[Pattern]:
-        symbol0_implies_symbol1 = Implication(Symbol(0), Symbol(1))
-        symbol1_implies_symbol2 = Implication(Symbol(1), Symbol(2))
+        symbol0_implies_symbol1 = Implies(Symbol('s0'), Symbol('s1'))
+        symbol1_implies_symbol2 = Implies(Symbol('s1'), Symbol('s2'))
         return [symbol0_implies_symbol1, symbol1_implies_symbol2]
 
     @staticmethod
     def claims() -> list[Pattern]:
-        symbol0_implies_symbol2 = Implication(Symbol(0), Symbol(2))
+        symbol0_implies_symbol2 = Implies(Symbol('s0'), Symbol('s2'))
         return [symbol0_implies_symbol2]
 
     def proof_expressions(self) -> list[ProvedExpression]:

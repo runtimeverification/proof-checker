@@ -6,6 +6,14 @@ template <typename T> struct Node {
   T data;
   Node *next;
 
+  Node(const T &value) : data(value), next(nullptr) {}
+
+  bool operator==(const Node &rhs) {
+    return data == rhs.data && next == rhs.next;
+  }
+
+  bool operator!=(const Node &rhs) { return !(*this == rhs); }
+
   static Node *create(const T &value) {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
     newNode->data = value;
@@ -29,7 +37,18 @@ public:
     }
   }
 
-  void insert_front(const T &value) {
+  bool operator==(const LinkedList &rhs) const {
+    if (!head && !rhs.head) {
+      return true;
+    } else if (!head || !rhs.head) {
+      return false;
+    }
+    return (*head == *rhs.head);
+  }
+
+  bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }
+
+  void push(const T &value) {
     Node<T> *newNode = Node<T>::create(value);
 
     // If the list is empty, set the new node as the head
@@ -58,20 +77,15 @@ public:
     }
   }
 
-  void delete_front() {
-    if (!head) {
-      return;
-    }
-
-    Node<T> *next = head->next;
-    std::free(head);
-    head = next;
-  }
-
   T pop() {
     assert(head && "Insufficient stack items.");
     T value = head->data;
-    delete_front();
+
+    // Update the head
+    Node<T> *next = head->next;
+    std::free(head);
+    head = next;
+
     return value;
   }
 
@@ -83,7 +97,7 @@ public:
 
   static LinkedList *create(const T &value) {
     LinkedList *list = create();
-    list->insert_front(value);
+    list->push(value);
     return list;
   }
 
@@ -99,24 +113,57 @@ public:
   }
 
   bool isDisjoint(LinkedList<T> *otherList) {
-    Node<T> *current1 = head;
-
-    while (current1) {
-      Node<T> *current2 = otherList->head;
-
-      while (current2) {
-        if (current1->data == current2->data) {
-          return false; // Common element found
-        }
-
-        current2 = current2->next;
+    for (auto &item : *this) {
+      if (otherList->contains(item)) {
+        return false;
       }
-
-      current1 = current1->next;
     }
-
-    return true; // No common elements found
+    return true;
   }
+
+  T &get(int index) {
+    Node<T> *curr = head;
+    for (int i = 0; i < index; i++) {
+      curr = curr->next;
+      assert(curr && "Index out of bounds.");
+    }
+    return curr->data;
+  }
+
+  T &operator[](int index) { return get(index); }
+
+  size_t size() {
+    size_t count = 0;
+    Node<T> *curr = head;
+    while (curr) {
+      count++;
+      curr = curr->next;
+    }
+    return count;
+  }
+
+  bool empty() { return head == nullptr; }
+
+  class Iterator {
+  private:
+    Node<T> *current;
+
+  public:
+    Iterator(Node<T> *head) : current(head) {}
+
+    T &operator*() { return current->data; }
+    T *operator->() { return &current->data; }
+    bool operator==(const Iterator &other) { return current == other.current; }
+    bool operator!=(const Iterator &other) { return current != other.current; }
+
+    Iterator &operator++() {
+      current = current->next;
+      return *this;
+    }
+  };
+
+  Iterator begin() { return Iterator(head); }
+  Iterator end() { return Iterator(nullptr); }
 
 #ifdef DEBUG
   void print() {

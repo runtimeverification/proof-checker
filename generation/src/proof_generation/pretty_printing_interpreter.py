@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TextIO
 
 from proof_generation.io_interpreter import IOInterpreter
-from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, SSubst
+from proof_generation.pattern import App, ESubst, Exists, Implies, Mu, Notation, SSubst
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -64,9 +64,9 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write(str(id))
 
     @pretty()
-    def symbol(self, id: int) -> None:
+    def symbol(self, name: str) -> None:
         self.out.write('Symbol ')
-        self.out.write(str(id))
+        self.out.write(name)
 
     @pretty()
     def metavar(
@@ -98,11 +98,11 @@ class PrettyPrintingInterpreter(IOInterpreter):
 
     @pretty()
     def implies(self, left: Pattern, right: Pattern) -> None:
-        self.out.write('Implication')
+        self.out.write('Implies')
 
     @pretty()
     def app(self, left: Pattern, right: Pattern) -> None:
-        self.out.write('Application')
+        self.out.write('App')
 
     @pretty()
     def exists(self, var: int, subpattern: Pattern) -> None:
@@ -184,14 +184,14 @@ class PrettyPrintingInterpreter(IOInterpreter):
         # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
         # like implication while keeping notations
         match p:
-            case Implication(left, right):
+            case Implies(left, right):
                 return f'({self.pretty_print_pattern(left)} -> {self.pretty_print_pattern(right)})'
-            case Application(left, right):
+            case App(left, right):
                 return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
             case Exists(var, subpattern):
-                return f'(\u2203 x{var} . {self.pretty_print_pattern(subpattern)})'
+                return f'(∃ x{var} . {self.pretty_print_pattern(subpattern)})'
             case Mu(var, subpattern):
-                return f'(\u03BC X{var} . {self.pretty_print_pattern(p.subpattern)})'
+                return f'(μ X{var} . {self.pretty_print_pattern(p.subpattern)})'
             case ESubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
@@ -203,7 +203,7 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write('\tStack:\n')
         for i, item in enumerate(self.stack):
             if isinstance(item, Proved):
-                self.out.write(f'\t{i}: \u22A2 {self.pretty_print_pattern(item.conclusion)}\n')
+                self.out.write(f'\t{i}: ⊢ {self.pretty_print_pattern(item.conclusion)}\n')
                 continue
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 

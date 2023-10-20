@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import count
 from typing import TYPE_CHECKING
 
 import pyk.kore.syntax as kore
@@ -11,25 +12,26 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     import proof_generation.pattern as nf
-    from kore_transfer.generate_definition import KoreDefinition
     from kore_transfer.kore_converter import KoreConverter
 
 
 class KoreHint:
-    def __init__(self, pattern: nf.Pattern, axiom: nf.Pattern, instantiations: tuple[nf.Pattern, ...]) -> None:
+    def __init__(
+        self, conf_before: nf.Pattern, conf_after: nf.Pattern, axiom_number: int, instantiations: tuple[nf.Pattern, ...]
+    ) -> None:
         # TODO: Change interface according to the real hint format
-        self._pattern: nf.Pattern = pattern
-        self._axiom: nf.Pattern = axiom
+        self._pre_configuration: nf.Pattern = conf_before
+        self._post_configuration: nf.Pattern = conf_after
         self._instantiations: tuple[nf.Pattern, ...] = instantiations
+        self.axiom_number: int = axiom_number
 
     @property
-    def pattern(self) -> nf.Pattern:
-        return self._pattern
+    def configurations_before(self) -> nf.Pattern:
+        return self._pre_configuration
 
     @property
-    def relevant_axiom(self) -> nf.Pattern:
-        """Return the relevant axiom for the given hint."""
-        return self._axiom
+    def configuration_after(self) -> nf.Pattern:
+        return self._post_configuration
 
     @property
     def instantiations(self) -> dict[int, nf.Pattern]:
@@ -39,13 +41,25 @@ class KoreHint:
 def get_proof_hints(
     kompiled_dir: Path,
     program_file: Path,
-    definition: type[KoreDefinition],
     kore_converter: KoreConverter,
     max_step: int,
 ) -> Iterator[KoreHint]:
     """This function should return proof hinst."""
-    for step in range(max_step + 1):
+    if max_step > 0:
+        counter = iter(range(max_step + 1))
+    else:
+        # Unbounded iteration
+        counter = count(0)
+
+    last_configuration: kore.Pattern | None = None
+    for step in counter:
         configuration_for_step: kore.Pattern = _get_confguration_for_depth(kompiled_dir, program_file, step)
+        if not last_configuration:
+            last_configuration = configuration_for_step
+            continue
+        elif configuration_for_step == last_configuration:
+            break
+
         # TODO: Absolutely hardcoded solution until we have hints
         assert (
             isinstance(configuration_for_step, kore.App)
@@ -53,11 +67,13 @@ def get_proof_hints(
             and isinstance(configuration_for_step.args[0].args[0], kore.App)
         )
 
-        pattern = kore_converter.convert_pattern(configuration_for_step)
+        pre_conf_pattern = kore_converter.convert_pattern(last_configuration)
+        post_conf_pattern = kore_converter.convert_pattern(configuration_for_step)
         inst1 = kore_converter.convert_pattern(configuration_for_step.args[0].args[0].args[1])
         inst2 = kore_converter.convert_pattern(configuration_for_step.args[1])
 
-        hint = KoreHint(pattern, definition.axioms()[0], (inst1, inst2))
+        hint = KoreHint(pre_conf_pattern, post_conf_pattern, step - 1, (inst1, inst2))
+        last_configuration = configuration_for_step
         yield hint
 
 
