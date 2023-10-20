@@ -406,44 +406,6 @@ class Notation(Pattern, ABC):
 
 
 @dataclass(frozen=True, eq=False)
-class FakeNotation(Notation):
-    symbol: Symbol
-    pattern_arguments: tuple[Pattern, ...]
-
-    def label(self) -> str:
-        return f'FakeNotation[{str(self.symbol)}]'
-
-    def definition(self) -> Pattern:
-        if len(self.pattern_arguments) == 0:
-            return self.symbol
-        else:
-            current_callable: Pattern = self.symbol
-            arguments_left = [MetaVar(i) for i, _ in enumerate(self.pattern_arguments)]
-            while len(arguments_left) > 0:
-                next_one, *arguments_left = arguments_left
-                current_callable = App(current_callable, next_one)
-            return current_callable
-
-    def arguments(self) -> dict[int, Pattern]:
-        ret: dict[int, Pattern] = {}
-
-        for i, arg in enumerate(self.pattern_arguments):
-            ret[i] = arg
-
-        return ret
-
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args = self._instantiate_args(delta)
-        return FakeNotation(self.symbol, tuple(args))
-
-    def __eq__(self, o: object) -> bool:
-        assert isinstance(o, Pattern)
-        if isinstance(o, Notation) and type(o) == type(self):
-            return o.arguments() == self.arguments()
-        return self.conclusion() == o
-
-
-@dataclass(frozen=True, eq=False)
 class Bot(Notation):
     def definition(self) -> Pattern:
         return Mu(0, SVar(0))

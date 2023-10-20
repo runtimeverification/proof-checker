@@ -124,7 +124,7 @@ class KoreConverter:
         if name in self._notations:
             return self._notations[name](*arguments)
         else:
-            return nf.FakeNotation(symbol, tuple(arguments))
+            raise AssertionError('TODO: Fixme')
 
     def _resolve_evar(self, evar: kore.EVar) -> nf.EVar:
         """Resolve the evar in the given pattern."""
