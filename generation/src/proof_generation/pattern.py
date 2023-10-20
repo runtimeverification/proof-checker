@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import frozendict
 
 
 def match_single(
@@ -334,7 +335,7 @@ class SSubst(Pattern):
         return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
 
 
-InstantiationDict = dict[int, Pattern]
+InstantiationDict = frozendict[int, Pattern]
 
 
 @dataclass(frozen=True)
