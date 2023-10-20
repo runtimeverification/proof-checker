@@ -1,25 +1,25 @@
-Symbol 0
+Symbol s0
 	Stack:
-	0: σ0
-Symbol 1
+	0: σs0
+Symbol s1
 	Stack:
-	0: σ0
-	1: σ1
+	0: σs0
+	1: σs1
 Implies
 	Stack:
-	0: (σ0 -> σ1)
+	0: (σs0 -> σs1)
 Publish
-Symbol 1
+Symbol s1
 	Stack:
-	0: (σ0 -> σ1)
-	1: σ1
-Symbol 2
+	0: (σs0 -> σs1)
+	1: σs1
+Symbol s2
 	Stack:
-	0: (σ0 -> σ1)
-	1: σ1
-	2: σ2
+	0: (σs0 -> σs1)
+	1: σs1
+	2: σs2
 Implies
 	Stack:
-	0: (σ0 -> σ1)
-	1: (σ1 -> σ2)
+	0: (σs0 -> σs1)
+	1: (σs1 -> σs2)
 Publish
