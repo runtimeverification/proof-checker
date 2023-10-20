@@ -1,63 +1,71 @@
 #include "../tests/unit_tests.hpp"
+#include <array>
 #include <iostream>
 
-#ifndef DEBUG
-typedef __attribute__((ext_vector_type(1))) int assumption_type;
-typedef __attribute__((ext_vector_type(1))) int claim_type;
-typedef __attribute__((ext_vector_type(1))) int proof_type;
+#define MAX_SIZE_ASSUMPTION 2
+#define MAX_SIZE_CLAIM 9
+#define MAX_SIZE_PROOF 72
 
+typedef std::array<int, MAX_SIZE_ASSUMPTION> assumption_type;
+typedef std::array<int, MAX_SIZE_CLAIM> claim_type;
+typedef std::array<int, MAX_SIZE_PROOF> proof_type;
+
+void read_input_assumption(assumption_type &arr, LinkedList<uint8_t> *input) {
+  int arr_size = arr[0];
+  for (int i = 1; i <= arr_size; i++) {
+    input->push_back((uint8_t)arr[i]);
+  }
+}
+
+void read_input_claim(claim_type &arr, LinkedList<uint8_t> *input) {
+  int arr_size = arr[0];
+  for (int i = 1; i <= arr_size; i++) {
+    input->push_back((uint8_t)arr[i]);
+  }
+}
+
+void read_input_proof(proof_type &arr, LinkedList<uint8_t> *input) {
+  int arr_size = arr[0];
+  for (int i = 1; i <= 70; i++) {
+    input->push_back((uint8_t)arr[i]);
+  }
+}
+
+#ifndef DEBUG
 [[circuit]] int foo(assumption_type a, claim_type c, proof_type p) {
 
-  int x = 1;
-  int y = 2;
-  test_efresh(x, y);
-  test_sfresh(x, y);
-  test_positivity();
-  test_wellformedness_positive();
-  test_instantiate();
-  test_construct_phi_implies_phi();
-  test_phi_implies_phi_impl();
-  test_no_remaining_claims();
+  auto gamma = LinkedList<uint8_t>::create();
+  auto claim = LinkedList<uint8_t>::create();
+  auto proof = LinkedList<uint8_t>::create();
 
-  return c[0];
+  read_input_assumption(a, gamma);
+  read_input_claim(c, claim);
+  read_input_proof(p, proof);
+
+  return Pattern::verify(gamma, claim, proof);
 }
 #else
 int main() {
-  int x = 1;
-  int y = 2;
+  assumption_type assumption = {0, 128};
+  claim_type claim_gamma = {7, 137, 0, 137, 0, 5, 28, 30, 138};
+  proof_type proof_gamma = {
+      70,  137, 0,   137, 0,  137, 0,  5,  28,  5,   28, 29,  0,  137, 0,  // 15
+      29,  0,   137, 0,   5,  5,   29, 2,  29,  0,   5,  137, 0,  29,  0,  // 15
+      137, 0,   13,  26,  3,  2,   1,  0,  137, 0,   29, 0,   12, 26,  2,  // 15
+      1,   0,   21,  28,  27, 27,  27, 29, 3,   137, 0,  137, 0,  12,  26, // 15
+      2,   1,   0,   21,  28, 27,  27, 27, 29,  4,   30, 138};             // 12
 
-  std::cout << "Executing test_efresh(" << x << ", " << y << ")" << std::endl;
-  test_efresh(x, y);
-  std::cout << std::endl;
+  auto gamma = LinkedList<uint8_t>::create();
+  auto claims = LinkedList<uint8_t>::create();
+  auto proof = LinkedList<uint8_t>::create();
 
-  std::cout << "Executing test_sfresh(" << x << ", " << y << ")" << std::endl;
-  test_sfresh(x, y);
-  std::cout << std::endl;
+  read_input_assumption(assumption, gamma);
+  read_input_claim(claim_gamma, claims);
+  read_input_proof(proof_gamma, proof);
 
-  std::cout << "Executing test_positivity()" << std::endl;
-  test_positivity();
-  std::cout << std::endl;
+  std::cout << static_cast<int>(proof->get(proof->size()-1)) << std::endl;
 
-  std::cout << "Executing test_wellformedness_positive()" << std::endl;
-  test_wellformedness_positive();
-  std::cout << std::endl;
-
-  std::cout << "Executing test_instantiate()" << std::endl;
-  test_instantiate();
-  std::cout << std::endl;
-
-  std::cout << "Executing test_construct_phi_implies_phi()" << std::endl;
-  test_construct_phi_implies_phi();
-  std::cout << std::endl;
-
-  std::cout << "Executing test_phi_implies_phi_impl()" << std::endl;
-  test_phi_implies_phi_impl();
-  std::cout << std::endl;
-
-  std::cout << "Executing test_no_remaining_claims()" << std::endl;
-  test_no_remaining_claims();
-  std::cout << std::endl;
-
+  Pattern::verify(gamma, claims, proof);
   return 0;
 }
 #endif
