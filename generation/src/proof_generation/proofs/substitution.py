@@ -21,13 +21,15 @@ class Forall(Notation):
         return neg(Exists(self.var, neg(phi0)))
 
     def __str__(self) -> str:
-        return f'(\u2200 x{self.var} . {str(self.phi0)})'
+        return f'(∀ x{self.var} . {str(self.phi0)})'
 
 
 class Substitution(Propositional):
     @staticmethod
     def axioms() -> list[Pattern]:
-        return []
+        return [
+            Implies(phi0, neg(neg(phi0))),  # Double Negation Intro
+        ]
 
     @staticmethod
     def claims() -> list[Pattern]:
@@ -36,23 +38,38 @@ class Substitution(Propositional):
     def proof_expressions(self) -> list[ProvedExpression]:
         return []
 
-    def universal_gen(self, phi: MetaVar) -> ProvedExpression:
+    def dneg_intro(self, a: Pattern) -> ProvedExpression:
+        return lambda: self.dynamic_inst(
+            self.load_axiom(self.axioms[0]), {0: a}
+        )
+
+    def universal_gen(self, phi: ProvedExpression, var: EVar) -> ProvedExpression:
         """
         phi
         --------------------------------------
-        forall x . phi
+        forall {var} . phi
         """
-        return lambda: ret
+        return self.dynamic_inst(
+            # (exists {var} (neg phi)) -> bot == forall {var} phi
+            self.exists_generalization(
+                # neg phi -> bot
+                self.modus_ponens(
+                    # phi -> (neg phi -> bot)
+                    self.dneg_intro(self.PROVISIONAL_get_conc(phi)),
+                    phi()
+                ),
+                bot,
+                var
+            )
+        )
 
-    def functional_subst(self, phi: MetaVar, phi1: MetaVar, x: EVar) -> ProvedExpression:
+    def functional_subst(self, phi: ProvedExpression, phi1: ProvedExpression, x: EVar) -> ProvedExpression:
         """
         --------------------------------------
         (exists x . phi1 = x) -> ((forall x. phi) -> phi[phi1/x])
         """
-        ret =
-
-        return lambda: ret
+        raise NotImplementedError
 
 
 if __name__ == '__main__':
-    SmallTheory.main(sys.argv)
+    Substitution.main(sys.argv)
