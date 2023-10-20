@@ -1075,9 +1075,42 @@ struct Pattern {
       switch (instr_u32) {
         // TODO: Add an abstraction for pushing these one-argument terms on
         // stack?
-      case Instruction::EVar:
-      case Instruction::SVar:
-      case Instruction::Symbol:
+      case Instruction::EVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Expected id for the EVar to be put on stack");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, evar(*id)));
+        break;
+      }
+      case Instruction::SVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Expected id for the SVar to be put on stack");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, svar(*id)));
+        break;
+      }
+      case Instruction::Symbol: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Expected id for the Symbol to be put on stack");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, symbol(*id)));
+        break;
+      }
       case Instruction::MetaVar: {
         auto getId = iterator.next();
         if (getId == buffer->end()) {
@@ -1115,7 +1148,12 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, implies(left, right)));
         break;
       }
-      case Instruction::Application:
+      case Instruction::Application: {
+        auto right = pop_stack_pattern(stack);
+        auto left = pop_stack_pattern(stack);
+        stack->push(Term::newTerm(Term::Type::Pattern, app(left, right)));
+        break;
+      }
       case Instruction::Exists:
       case Instruction::Mu:
       case Instruction::ESubst:
