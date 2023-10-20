@@ -83,7 +83,7 @@ class Propositional(ProofExp):
             Implies(phi0, phi0),  # Reflexivity
             top,  # Top
             Implies(bot, phi0),  # Bot_elim
-            Implies(neg(neg(phi0)), phi0),  # Contradiction
+            Implies(neg(neg(phi0)), phi0),  # Double Negation elim
             Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
             Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
         ]
@@ -93,7 +93,7 @@ class Propositional(ProofExp):
             self.imp_refl,
             self.top_intro,
             self.bot_elim,
-            self.contradiction_proof,
+            self.dneg_elim,
             self.absurd,
             self.peirce_bot,
         ]
@@ -180,12 +180,12 @@ class Propositional(ProofExp):
         """p -> T"""
         return self.imp_provable(p, self.top_intro)
 
-    def contradiction_proof(self) -> Proved:
-        """(neg p -> bot) -> p"""
+    def dneg_elim(self) -> Proved:
+        """(neg neg p) -> p"""
         return self.prop3()
 
     def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
-        """(neg p) -> p -> q"""
+        """(neg p) -> (p -> q)"""
         bot_to_b = Implies(bot, b)
 
         return self.modus_ponens(
