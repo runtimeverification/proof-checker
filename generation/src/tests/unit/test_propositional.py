@@ -12,9 +12,7 @@ def test_prove_transitivity() -> None:
     prop = Propositional(BasicInterpreter(phase=ExecutionPhase.Proof))
     phi0_implies_phi1 = lambda: Proved(Implies(Symbol('s0'), Symbol('s1')))
     phi1_implies_phi2 = lambda: Proved(Implies(Symbol('s1'), Symbol('s2')))
-    assert prop.imp_transitivity(phi0_implies_phi1, phi1_implies_phi2).conclusion == Implies(
-        Symbol('s0'), Symbol('s2')
-    )
+    assert prop.imp_transitivity(phi0_implies_phi1, phi1_implies_phi2).conclusion == Implies(Symbol('s0'), Symbol('s2'))
 
 
 def test_prove_transitivity_via_theory() -> None:
