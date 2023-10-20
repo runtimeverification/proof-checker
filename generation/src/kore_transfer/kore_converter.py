@@ -71,14 +71,14 @@ class KoreConverter:
         """Resolve the symbol in the given pattern."""
         if isinstance(pattern, str):
             if pattern not in self._symbols:
-                self._symbols[pattern] = nf.Symbol(name=next(self._symbol_number), pretty_name=pattern)
+                self._symbols[pattern] = nf.Symbol('kore_' + pattern)
             return self._symbols[pattern]
         elif isinstance(pattern, kore.Sort):
             if pattern.name not in self._symbols:
-                self._symbols[pattern.name] = nf.Symbol(name=next(self._symbol_sort_number), pretty_name=pattern.name)
+                self._symbols[pattern.name] = nf.Symbol('kore_sort_' + pattern.name)
             return self._symbols[pattern.name]
         elif type(pattern) in self.CONST_SYMBOLS:
-            return nf.Symbol(name=self.CONST_SYMBOLS.index(type(pattern)), pretty_name=f'KORE_{type(pattern).__name__}')
+            return nf.Symbol(f'kore_app_{type(pattern).__name__}')
         else:
             raise NotImplementedError(f'Pattern {pattern} is not supported')
 

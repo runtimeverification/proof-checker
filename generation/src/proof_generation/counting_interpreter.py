@@ -127,8 +127,8 @@ class CountingInterpreter(StatefulInterpreter):
         self._collect_patterns(ret)
         return ret
 
-    def symbol(self, id: int) -> Pattern:
-        ret = super().symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        ret = super().symbol(name)
         self._collect_patterns(ret)
         return ret
 

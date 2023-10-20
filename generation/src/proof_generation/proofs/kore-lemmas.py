@@ -17,9 +17,9 @@ phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 
 # TODO: Make sure this is handled uniformly
-inhabitant_symbol = Symbol(0)
-kore_next_symbol = Symbol(1)
-kore_dv_symbol = Symbol(2)
+inhabitant_symbol = Symbol('inhabitant')
+kore_next_symbol = Symbol('kore_next')
+kore_dv_symbol = Symbol('kore_dv')
 
 
 @dataclass(frozen=True, eq=False)

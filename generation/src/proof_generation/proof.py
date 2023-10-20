@@ -53,8 +53,8 @@ class ProofExp(ABC):
     def evar(self, id: int) -> Pattern:
         return self.interpreter.evar(id)
 
-    def symbol(self, id: int) -> Pattern:
-        return self.interpreter.symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        return self.interpreter.symbol(name)
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
         return self.interpreter.implies(left, right)

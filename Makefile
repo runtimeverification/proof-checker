@@ -13,8 +13,8 @@ clean-kgenerated-proofs:
 	rm -rf .build/proofs/generated-from-k
 
 update-snapshots:
-	cp -u $(wildcard .build/proofs/*.*) proofs
-	cp -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+	rsync -u $(wildcard .build/proofs/*.*) proofs
+	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 

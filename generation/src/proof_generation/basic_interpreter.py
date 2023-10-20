@@ -49,8 +49,8 @@ class BasicInterpreter:
     def svar(self, id: int) -> Pattern:
         return SVar(id)
 
-    def symbol(self, id: int) -> Pattern:
-        return Symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        return Symbol(name)
 
     def metavar(
         self,
