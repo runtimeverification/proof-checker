@@ -121,29 +121,29 @@ stack_mixed1 = lambda term: ESubst(SSubst(pattern=term, var=SVar(1), plug=EVar(1
 
 
 @pytest.mark.parametrize(
-    'stack, mvar, plugs, expected',
+    'pattern, plugs, expected',
     [
-        [esubst_stack_seq, phi0, {0: EVar(0)}, EVar(2)],
-        [esubst_stack_seq, phi0, {0: EVar(1)}, EVar(2)],
-        [esubst_stack_seq, phi1, {0: EVar(1)}, esubst_stack_seq(phi1)],
-        [esubst_stack_seq, phi0, {0: phi1}, esubst_stack_seq(phi1)],
-        [esubst_stack_seq_rev, phi0, {0: EVar(0)}, EVar(1)],
-        [esubst_stack_seq_rev, phi0, {0: phi1}, esubst_stack_seq_rev(phi1)],
-        [stack_mixed1, phi0, {0: SVar(1)}, EVar(2)],
-        [stack_mixed1, phi0, {0: SVar(2)}, SVar(2)],
-        [ssubst_stack_seq, phi0, {0: SVar(0)}, SVar(2)],
-        [ssubst_stack_seq, phi0, {0: SVar(1)}, SVar(2)],
-        [ssubst_stack_seq, phi1, {0: SVar(1)}, ssubst_stack_seq(phi1)],
-        [ssubst_stack_seq, phi0, {0: phi1}, ssubst_stack_seq(phi1)],
-        [ssubst_stack_seq_rev, phi0, {0: SVar(0)}, SVar(1)],
-        [ssubst_stack_seq_rev, phi0, {0: phi1}, ssubst_stack_seq_rev(phi1)],
-        [stack_mixed1, phi0, {0: SVar(1)}, EVar(2)],
-        [stack_mixed1, phi0, {0: SVar(2)}, SVar(2)],
+        [esubst_stack_seq(phi0), {0: EVar(0)}, EVar(2)],
+        [esubst_stack_seq(phi0), {0: EVar(1)}, EVar(2)],
+        [esubst_stack_seq(phi1), {0: EVar(1)}, esubst_stack_seq(phi1)],
+        [esubst_stack_seq(phi0), {0: phi1}, esubst_stack_seq(phi1)],
+        [esubst_stack_seq_rev(phi0), {0: EVar(0)}, EVar(1)],
+        [esubst_stack_seq_rev(phi0), {0: phi1}, esubst_stack_seq_rev(phi1)],
+        [stack_mixed1(phi0), {0: SVar(1)}, EVar(2)],
+        [stack_mixed1(phi0), {0: SVar(2)}, SVar(2)],
+        [ssubst_stack_seq(phi0), {0: SVar(0)}, SVar(2)],
+        [ssubst_stack_seq(phi0), {0: SVar(1)}, SVar(2)],
+        [ssubst_stack_seq(phi1), {0: SVar(1)}, ssubst_stack_seq(phi1)],
+        [ssubst_stack_seq(phi0), {0: phi1}, ssubst_stack_seq(phi1)],
+        [ssubst_stack_seq_rev(phi0), {0: SVar(0)}, SVar(1)],
+        [ssubst_stack_seq_rev(phi0), {0: phi1}, ssubst_stack_seq_rev(phi1)],
+        [stack_mixed1(phi0), {0: SVar(1)}, EVar(2)],
+        [stack_mixed1(phi0), {0: SVar(2)}, SVar(2)],
         # This fails if metavar instantiations are not propagated into the plug
-        [lambda mvar: SSubst(mvar, SVar(0), mvar), phi0, {0: SVar(0)}, SVar(0)],
+        [SSubst(phi0, SVar(0), phi0), {0: SVar(0)}, SVar(0)],
     ],
 )
 def test_instantiate_subst(
-    stack: Callable[[MetaVar], Pattern], mvar: MetaVar, plugs: dict[int, Pattern], expected: Pattern
+    pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern
 ) -> None:
-    assert stack(mvar).instantiate(plugs) == expected
+    assert pattern.instantiate(plugs) == expected
