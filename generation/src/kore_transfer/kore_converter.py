@@ -112,11 +112,16 @@ class KoreConverter:
 
         return self.convert_pattern(preprocessed_pattern)
 
+    def _lookup_metavar(self, name: str) -> nf.MetaVar:
+        assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
+        return self._metavars[name]
+
     def convert_substitution(
         self,
         subst: tuple[tuple[str, kore.Pattern], ...],
-    ) -> tuple[nf.Pattern, ...]:
-        substitutions = []
-        for _, pattern in subst:
-            substitutions.append(self.convert_pattern(pattern))
-        return tuple(substitutions)
+    ) -> dict[int, nf.Pattern]:
+        substitutions = {}
+        for id, pattern in subst:
+            name = self._lookup_metavar(id).name
+            substitutions[name] = self.convert_pattern(pattern)
+        return substitutions

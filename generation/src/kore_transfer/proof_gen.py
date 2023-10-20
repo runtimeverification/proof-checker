@@ -9,7 +9,7 @@ from pyk.kore.kompiled import KompiledKore
 from pyk.ktool.kompile import kompile
 
 from kore_transfer.generate_definition import compose_definition
-from kore_transfer.generate_hints import get_proof_hints_from_rewrite_trace
+from kore_transfer.generate_hints import get_proof_hints
 from kore_transfer.generate_proof import generate_proofs
 from kore_transfer.kore_converter import KoreConverter
 from rewrite.llvm_proof_hint import LLVMRewriteTrace
@@ -93,9 +93,7 @@ def main(
     # print('Intialize hint stream ... ')
     # TODO: Fix with the real hints
     # hints_iterator = get_proof_hints(kompiled_dir, Path(program_file), proof_expression, kore_converter, step)
-    hints_iterator = get_proof_hints_from_rewrite_trace(
-        read_proof_hint(hints_file), get_all_axioms(kore_definition), kore_converter, step
-    )
+    hints_iterator = get_proof_hints(read_proof_hint(hints_file), get_all_axioms(kore_definition), kore_converter, step)
 
     print('Begin generating proofs ... ')
     generate_proofs(hints_iterator, proof_expression)
