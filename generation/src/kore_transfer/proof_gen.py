@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -110,10 +109,9 @@ if __name__ == '__main__':
     argparser.add_argument('kfile', type=str, help='Path to the K definition file')
     argparser.add_argument('hints', type=str, help='Path to the binary hints file')
     argparser.add_argument('output_dir', type=str, help='Path to the output directory')
-    argparser.add_argument('--depth', type=int, default=0, help='Execution steps from the beginning')
     argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
     argparser.add_argument('--clean', action='store_true', default=False, help='Rewrite proofs if they already exist')
     argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
 
     args = argparser.parse_args()
-    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.depth, args.reuse, args.clean)
+    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.reuse, args.clean)

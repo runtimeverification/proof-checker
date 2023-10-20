@@ -132,7 +132,7 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/proof-hints/single-rewrite/foo-a.$*.hints .build/kompiled-definitions --clean --depth 1 --proof-dir proofs/generated-from-k/
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/proof-hints/single-rewrite/foo-a.$*.hints .build/kompiled-definitions --clean --proof-dir proofs/generated-from-k/
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -143,7 +143,7 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # -------------------------------
 
 .build/proofs/generated-from-k/%.ml-proof: FORCE
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/proof-hints/single-rewrite/foo-a.$*.hints .build/kompiled-definitions  --depth 1 --proof-dir .build/proofs/generated-from-k/
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/proof-hints/single-rewrite/foo-a.$*.hints .build/kompiled-definitions  --proof-dir .build/proofs/generated-from-k/
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .ktranslate,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.ktranslate: .build/proofs/generated-from-k/%.ml-proof
