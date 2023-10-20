@@ -516,8 +516,12 @@ int test_instantiate() {
   assert(*internal7 == nullptr);
 
   // Simultaneous instantiations
-  auto vars12 = IdList::create(1, 2);
-  auto plugsx0X0 = Patterns::create(Pattern::copy(x0), Pattern::copy(X0));
+  auto vars12 = IdList::create();
+  vars12->push_back(1);
+  vars12->push_back(2);
+  auto plugsx0X0 = Patterns::create();
+  plugsx0X0->push_back(Pattern::copy(x0));
+  plugsx0X0->push_back(Pattern::copy(X0));
   auto phi1 = Pattern::metavar_unconstrained(1);
   auto muX0phi1 = Pattern::mu(0, Pattern::copy(phi1));
   auto muX0X0 = Pattern::mu(0, Pattern::copy(X0));
@@ -529,7 +533,9 @@ int test_instantiate() {
          nullptr);
 
   // Order matters if corresponding value is not moved
-  auto vars10 = IdList::create(1, 0);
+  auto vars10 = IdList::create();
+  vars10->push_back(1);
+  vars10->push_back(0);
   auto internal8 =
       Pattern::instantiate_internal(*existsx0phi0, *vars10, *plugsx0X0);
   auto internal9 =
