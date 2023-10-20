@@ -1197,6 +1197,8 @@ struct Pattern {
       case Instruction::Quantifier:
       case Instruction::Generalization:
       case Instruction::Existence:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(existence)));
+        break;
       case Instruction::Substitution:
         break;
       case Instruction::Instantiate: {
@@ -1234,6 +1236,7 @@ struct Pattern {
         break;
       }
       case Instruction::Pop:
+        stack->pop();
         break;
       case Instruction::Save: {
         auto term = stack->front();
@@ -1273,7 +1276,38 @@ struct Pattern {
         }
         break;
       }
-      case Instruction::Publish:
+      case Instruction::Publish: {
+        switch (phase) {
+        case ExecutionPhase::Gamma:
+          memory->push_back(
+              Entry::newEntry(Entry::Type::Proved, pop_stack_pattern(stack)));
+          break;
+        case ExecutionPhase::Claims:
+          claims->push_back(pop_stack_pattern(stack));
+          break;
+        case ExecutionPhase::Proof: {
+          auto claim = claims->pop();
+          if (claim == nullptr) {
+#if DEBUG
+            throw std::runtime_error("Insufficient claims.");
+#endif
+            exit(1);
+          }
+          auto theorem = pop_stack_proved(stack);
+          if (*claim != *theorem) {
+#if DEBUG
+            throw std::runtime_error(
+                "This proof does not prove the requested claim: " +
+                std::to_string((int)claim->inst) +
+                ", theorem: " + std::to_string((int)theorem->inst));
+#endif
+            exit(1);
+          }
+          break;
+        }
+        }
+        break;
+      }
       default: {
 #if DEBUG
         throw std::runtime_error("Unknown instruction: " +
