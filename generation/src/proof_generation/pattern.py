@@ -396,6 +396,12 @@ class Notation(Pattern, ABC):
 
         return args
 
+    def __eq__(self, o: object) -> bool:
+        assert isinstance(o, Pattern)
+        if isinstance(o, Notation) and type(o) == type(self):
+            return o.arguments() == self.arguments()
+        return self.conclusion() == o
+
     def __str__(self) -> str:
         pretty_args = ', '.join(map(str, self.arguments().values()))
         return f'{self.label()} ({pretty_args})'
