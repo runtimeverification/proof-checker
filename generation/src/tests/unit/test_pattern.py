@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.pattern import Application, ESubst, EVar, Exists, Implication, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -16,38 +16,38 @@ if TYPE_CHECKING:
     'pattern, evar_id, plug, expected',
     [
         # Atomic cases
-        [EVar(0), 0, Symbol(1), Symbol(1)],
+        [EVar(0), 0, Symbol('s1'), Symbol('s1')],
         [EVar(0), 0, EVar(2), EVar(2)],
         [EVar(0), 1, EVar(2), EVar(0)],
-        [SVar(0), 0, Symbol(0), SVar(0)],
+        [SVar(0), 0, Symbol('s0'), SVar(0)],
         [SVar(1), 0, EVar(0), SVar(1)],
-        [Symbol(0), 0, Symbol(1), Symbol(0)],
+        [Symbol('s0'), 0, Symbol('s1'), Symbol('s0')],
         # Distribute over subpatterns
-        [Implication(EVar(7), Symbol(1)), 7, Symbol(0), Implication(Symbol(0), Symbol(1))],
-        [Implication(EVar(7), Symbol(1)), 6, Symbol(0), Implication(EVar(7), Symbol(1))],
-        [Application(EVar(7), Symbol(1)), 7, Symbol(0), Application(Symbol(0), Symbol(1))],
-        [Application(EVar(7), Symbol(1)), 6, Symbol(0), Application(EVar(7), Symbol(1))],
+        [Implies(EVar(7), Symbol('s1')), 7, Symbol('s0'), Implies(Symbol('s0'), Symbol('s1'))],
+        [Implies(EVar(7), Symbol('s1')), 6, Symbol('s0'), Implies(EVar(7), Symbol('s1'))],
+        [App(EVar(7), Symbol('s1')), 7, Symbol('s0'), App(Symbol('s0'), Symbol('s1'))],
+        [App(EVar(7), Symbol('s1')), 6, Symbol('s0'), App(EVar(7), Symbol('s1'))],
         # Distribute over subpatterns unless evar_id = binder
-        [Exists(1, EVar(1)), 1, Symbol(2), Exists(1, EVar(1))],
-        [Exists(0, EVar(1)), 1, Symbol(2), Exists(0, Symbol(2))],
-        [Mu(1, EVar(1)), 0, Symbol(2), Mu(1, EVar(1))],
-        [Mu(1, EVar(1)), 1, Symbol(2), Mu(1, Symbol(2))],
+        [Exists(1, EVar(1)), 1, Symbol('s2'), Exists(1, EVar(1))],
+        [Exists(0, EVar(1)), 1, Symbol('s2'), Exists(0, Symbol('s2'))],
+        [Mu(1, EVar(1)), 0, Symbol('s2'), Mu(1, EVar(1))],
+        [Mu(1, EVar(1)), 1, Symbol('s2'), Mu(1, Symbol('s2'))],
         # Subst on metavar should wrap in constructor
-        [MetaVar(0), 0, Symbol(1), ESubst(MetaVar(0), EVar(0), Symbol(1))],
+        [MetaVar(0), 0, Symbol('s1'), ESubst(MetaVar(0), EVar(0), Symbol('s1'))],
         # Subst when evar_id is fresh should do nothing
-        [MetaVar(0, e_fresh=(EVar(0), EVar(1))), 0, Symbol(1), MetaVar(0, e_fresh=(EVar(0), EVar(1)))],
+        [MetaVar(0, e_fresh=(EVar(0), EVar(1))), 0, Symbol('s1'), MetaVar(0, e_fresh=(EVar(0), EVar(1)))],
         # Subst on substs should stack
         [
-            ESubst(MetaVar(0), EVar(0), Symbol(1)),
+            ESubst(MetaVar(0), EVar(0), Symbol('s1')),
             0,
-            Symbol(1),
-            ESubst(ESubst(MetaVar(0), EVar(0), Symbol(1)), EVar(0), Symbol(1)),
+            Symbol('s1'),
+            ESubst(ESubst(MetaVar(0), EVar(0), Symbol('s1')), EVar(0), Symbol('s1')),
         ],
         [
-            SSubst(MetaVar(0), SVar(0), Symbol(1)),
+            SSubst(MetaVar(0), SVar(0), Symbol('s1')),
             0,
-            Symbol(1),
-            ESubst(SSubst(MetaVar(0), SVar(0), Symbol(1)), EVar(0), Symbol(1)),
+            Symbol('s1'),
+            ESubst(SSubst(MetaVar(0), SVar(0), Symbol('s1')), EVar(0), Symbol('s1')),
         ],
     ],
 )
@@ -88,38 +88,38 @@ def test_instantiate_esubst(
     'pattern, svar_id, plug, expected',
     [
         # Atomic cases
-        [EVar(0), 0, Symbol(1), EVar(0)],
+        [EVar(0), 0, Symbol('s1'), EVar(0)],
         [EVar(0), 1, EVar(2), EVar(0)],
-        [SVar(0), 0, Symbol(0), Symbol(0)],
+        [SVar(0), 0, Symbol('s0'), Symbol('s0')],
         [SVar(1), 0, EVar(0), SVar(1)],
-        [Symbol(0), 0, Symbol(1), Symbol(0)],
+        [Symbol('s0'), 0, Symbol('s1'), Symbol('s0')],
         # Distribute over subpatterns
-        [Implication(SVar(7), Symbol(1)), 7, Symbol(0), Implication(Symbol(0), Symbol(1))],
-        [Implication(SVar(7), Symbol(1)), 6, Symbol(0), Implication(SVar(7), Symbol(1))],
-        [Application(SVar(7), Symbol(1)), 7, Symbol(0), Application(Symbol(0), Symbol(1))],
-        [Application(SVar(7), Symbol(1)), 6, Symbol(0), Application(SVar(7), Symbol(1))],
+        [Implies(SVar(7), Symbol('s1')), 7, Symbol('s0'), Implies(Symbol('s0'), Symbol('s1'))],
+        [Implies(SVar(7), Symbol('s1')), 6, Symbol('s0'), Implies(SVar(7), Symbol('s1'))],
+        [App(SVar(7), Symbol('s1')), 7, Symbol('s0'), App(Symbol('s0'), Symbol('s1'))],
+        [App(SVar(7), Symbol('s1')), 6, Symbol('s0'), App(SVar(7), Symbol('s1'))],
         # Distribute over subpatterns unless svar_id = binder
-        [Exists(1, SVar(0)), 0, Symbol(2), Exists(1, Symbol(2))],
-        [Exists(1, Symbol(1)), 1, Symbol(2), Exists(1, Symbol(1))],
-        [Mu(1, SVar(1)), 0, Symbol(2), Mu(1, SVar(1))],
-        [Mu(1, SVar(1)), 1, Symbol(2), Mu(1, SVar(1))],
-        [Mu(1, SVar(2)), 2, Symbol(2), Mu(1, Symbol(2))],
+        [Exists(1, SVar(0)), 0, Symbol('s2'), Exists(1, Symbol('s2'))],
+        [Exists(1, Symbol('s1')), 1, Symbol('s2'), Exists(1, Symbol('s1'))],
+        [Mu(1, SVar(1)), 0, Symbol('s2'), Mu(1, SVar(1))],
+        [Mu(1, SVar(1)), 1, Symbol('s2'), Mu(1, SVar(1))],
+        [Mu(1, SVar(2)), 2, Symbol('s2'), Mu(1, Symbol('s2'))],
         # Subst on metavar should wrap in constructor
-        [MetaVar(0), 0, Symbol(1), SSubst(MetaVar(0), SVar(0), Symbol(1))],
+        [MetaVar(0), 0, Symbol('s1'), SSubst(MetaVar(0), SVar(0), Symbol('s1'))],
         # Subst when evar_id is fresh should do nothing
-        [MetaVar(0, s_fresh=(SVar(0), SVar(1))), 0, Symbol(1), MetaVar(0, s_fresh=(SVar(0), SVar(1)))],
+        [MetaVar(0, s_fresh=(SVar(0), SVar(1))), 0, Symbol('s1'), MetaVar(0, s_fresh=(SVar(0), SVar(1)))],
         # Subst on substs should stack
         [
-            ESubst(MetaVar(0), EVar(0), Symbol(1)),
+            ESubst(MetaVar(0), EVar(0), Symbol('s1')),
             0,
-            Symbol(1),
-            SSubst(ESubst(MetaVar(0), EVar(0), Symbol(1)), SVar(0), Symbol(1)),
+            Symbol('s1'),
+            SSubst(ESubst(MetaVar(0), EVar(0), Symbol('s1')), SVar(0), Symbol('s1')),
         ],
         [
-            SSubst(MetaVar(0), SVar(0), Symbol(1)),
+            SSubst(MetaVar(0), SVar(0), Symbol('s1')),
             0,
-            Symbol(1),
-            SSubst(SSubst(MetaVar(0), SVar(0), Symbol(1)), SVar(0), Symbol(1)),
+            Symbol('s1'),
+            SSubst(SSubst(MetaVar(0), SVar(0), Symbol('s1')), SVar(0), Symbol('s1')),
         ],
     ],
 )

@@ -52,8 +52,8 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def symbol(self, id: int) -> Pattern:
-        ret = super().symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        ret = super().symbol(name)
         self.stack.append(ret)
         return ret
 

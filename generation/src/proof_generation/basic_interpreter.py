@@ -4,11 +4,12 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import (
-    Application,
+    App,
     ESubst,
     EVar,
     Exists,
-    Implication,
+    FakeNotation,
+    Implies,
     MetaVar,
     Mu,
     Notation,
@@ -34,6 +35,18 @@ class BasicInterpreter:
 
     def __init__(self, phase: ExecutionPhase):
         self.phase = phase
+        self._interpreting_warnings: set[str] = set()
+
+    @property
+    def safe_interpreting(self) -> bool:
+        return len(self._interpreting_warnings) == 0
+
+    @property
+    def interpreting_warnings(self) -> list[str]:
+        return list(self._interpreting_warnings)
+
+    def mark_generation_unsafe(self, warning: str) -> None:
+        self._interpreting_warnings.add(warning)
 
     def into_claim_phase(self) -> None:
         assert self.phase == ExecutionPhase.Gamma
@@ -49,8 +62,8 @@ class BasicInterpreter:
     def svar(self, id: int) -> Pattern:
         return SVar(id)
 
-    def symbol(self, id: int) -> Pattern:
-        return Symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        return Symbol(name)
 
     def metavar(
         self,
@@ -64,10 +77,10 @@ class BasicInterpreter:
         return MetaVar(id, e_fresh, s_fresh, positive, negative, application_context)
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
-        return Implication(left, right)
+        return Implies(left, right)
 
     def app(self, left: Pattern, right: Pattern) -> Pattern:
-        return Application(left, right)
+        return App(left, right)
 
     def exists(self, var: int, subpattern: Pattern) -> Pattern:
         return Exists(var, subpattern)
@@ -94,9 +107,9 @@ class BasicInterpreter:
                 return self.svar(name)
             case Symbol(name):
                 return self.symbol(name)
-            case Implication(left, right):
+            case Implies(left, right):
                 return self.implies(self.pattern(left), self.pattern(right))
-            case Application(left, right):
+            case App(left, right):
                 return self.app(self.pattern(left), self.pattern(right))
             case Exists(var, subpattern):
                 return self.exists(var, self.pattern(subpattern))
@@ -113,6 +126,8 @@ class BasicInterpreter:
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
         if isinstance(p, Notation):
+            if isinstance(p, FakeNotation):
+                self.mark_generation_unsafe(f'Using fake notation for symbol {str(p.symbol)}')
             return self.add_notation(p)
 
         raise NotImplementedError(f'{type(p)}')
@@ -123,22 +138,22 @@ class BasicInterpreter:
     def prop1(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
         phi1: MetaVar = MetaVar(1)
-        return Proved(Implication(phi0, Implication(phi1, phi0)))
+        return Proved(Implies(phi0, Implies(phi1, phi0)))
 
     def prop2(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
         phi1: MetaVar = MetaVar(1)
         phi2: MetaVar = MetaVar(2)
         return Proved(
-            Implication(
-                Implication(phi0, Implication(phi1, phi2)),
-                Implication(Implication(phi0, phi1), Implication(phi0, phi2)),
+            Implies(
+                Implies(phi0, Implies(phi1, phi2)),
+                Implies(Implies(phi0, phi1), Implies(phi0, phi2)),
             ),
         )
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
-        return Proved(Implication(Implication(Implication(phi0, bot), bot), phi0))
+        return Proved(Implies(Implies(Implies(phi0, bot), bot), phi0))
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion

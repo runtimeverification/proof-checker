@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 
@@ -149,7 +150,7 @@ class SVar(Pattern):
 
 @dataclass(frozen=True)
 class Symbol(Pattern):
-    name: int
+    name: str
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -169,44 +170,44 @@ class Symbol(Pattern):
         return None
 
     def __str__(self) -> str:
-        return f'\u03c3{str(self.name)}'
+        return f'\u03c3{self.name}'
 
 
 @dataclass(frozen=True)
-class Implication(Pattern):
+class Implies(Pattern):
     left: Pattern
     right: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return Implication(self.left.instantiate(delta), self.right.instantiate(delta))
+        return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return Implication(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
+        return Implies(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return Implication(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
+        return Implies(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
         return f'({str(self.left)} -> {str(self.right)})'
 
 
 def imp(p1: Pattern, p2: Pattern) -> Pattern:
-    return Implication(p1, p2)
+    return Implies(p1, p2)
 
 
 @dataclass(frozen=True)
-class Application(Pattern):
+class App(Pattern):
     left: Pattern
     right: Pattern
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        return Application(self.left.instantiate(delta), self.right.instantiate(delta))
+        return App(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return Application(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
+        return App(self.left.apply_esubst(evar_id, plug), self.right.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return Application(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
+        return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
         return f'app({str(self.left)}, {str(self.right)})'
@@ -237,7 +238,7 @@ class Exists(Pattern):
         return None
 
     def __str__(self) -> str:
-        return f'(\u2203 x{self.var} . {str(self.subpattern)})'
+        return f'(∃ x{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -265,7 +266,7 @@ class Mu(Pattern):
         return None
 
     def __str__(self) -> str:
-        return f'(\u03BC X{self.var} . {str(self.subpattern)})'
+        return f'(μ X{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -342,13 +343,12 @@ class SSubst(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation(Pattern):
-    @classmethod
-    def label(cls) -> str:
-        return f'{cls.__name__!r}'
+class Notation(Pattern, ABC):
+    def label(self) -> str:
+        return f'{type(self).__name__!r}'
 
-    @staticmethod
-    def definition() -> Pattern:
+    @abstractmethod
+    def definition(self) -> Pattern:
         raise NotImplementedError('This notation has no definition.')
 
     def arguments(self) -> dict[int, Pattern]:
@@ -366,11 +366,7 @@ class Notation(Pattern):
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args: list[Pattern] = []
-
-        for arg in self.arguments().values():
-            args.append(arg.instantiate(delta))
-
+        args = self._instantiate_args(delta)
         return type(self)(*args)
 
     # TODO: Keep notations (without dropping them)
@@ -392,8 +388,49 @@ class Notation(Pattern):
             return None
         return tuple([v for _, v in sorted(match_result.items())])
 
+    def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
+        args: list[Pattern] = []
+
+        for arg in self.arguments().values():
+            args.append(arg.instantiate(delta))
+
+        return args
+
     def __str__(self) -> str:
-        return f'{self.label()} {str(self.arguments())}'
+        pretty_args = ', '.join(map(str, self.arguments().values()))
+        return f'{self.label()} ({pretty_args})'
+
+
+@dataclass(frozen=True, eq=False)
+class FakeNotation(Notation):
+    symbol: Symbol
+    pattern_arguments: tuple[Pattern, ...]
+
+    def label(self) -> str:
+        return f'FakeNotation[{str(self.symbol)}]'
+
+    def definition(self) -> Pattern:
+        if len(self.pattern_arguments) == 0:
+            return self.symbol
+        else:
+            current_callable: Pattern = self.symbol
+            arguments_left = [MetaVar(i) for i, _ in enumerate(self.pattern_arguments)]
+            while len(arguments_left) > 0:
+                next_one, *arguments_left = arguments_left
+                current_callable = App(current_callable, next_one)
+            return current_callable
+
+    def arguments(self) -> dict[int, Pattern]:
+        ret: dict[int, Pattern] = {}
+
+        for i, arg in enumerate(self.pattern_arguments):
+            ret[i] = arg
+
+        return ret
+
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        args = self._instantiate_args(delta)
+        return FakeNotation(self.symbol, tuple(args))
 
     def __eq__(self, o: object) -> bool:
         assert isinstance(o, Pattern)
@@ -404,12 +441,11 @@ class Notation(Pattern):
 
 @dataclass(frozen=True, eq=False)
 class Bot(Notation):
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return Mu(0, SVar(0))
 
     def __str__(self) -> str:
-        return '\u22A5'
+        return '⊥'
 
 
 bot = Bot()

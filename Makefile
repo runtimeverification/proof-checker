@@ -9,11 +9,14 @@ clean-proofs:
 clean-translated-proofs:
 	rm -rf .build/proofs/translated
 
-update-snapshots:
-	cp -u $(wildcard .build/proofs/*.*) proofs
-	cp -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+clean-kgenerated-proofs:
+	rm -rf .build/proofs/generated-from-k
 
-.PHONY: clean-proofs update-snapshots clean-translated-proofs
+update-snapshots:
+	rsync -u $(wildcard .build/proofs/*.*) proofs
+	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+
+.PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 
 # Installation and setup
 # ======================
@@ -96,7 +99,7 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-integration test-proof-gen test-proof-translate test-proof-verify
+test-system: test-integration test-proof-gen test-proof-translate test-proof-kgen test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
 test-integration:
@@ -106,6 +109,7 @@ test-integration:
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
 TRANSLATED_PROOFS=$(wildcard proofs/translated/*.ml-proof)
+TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*.ml-proof)
 
 
 # Proof conversion checking
@@ -123,38 +127,50 @@ proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
 
 test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
+# Regenerate proofs from K
+# -------------------------
+
+KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k generation/k-benchmarks/$*/foo-a.$* .build/kompiled-definitions/$*-kompiled --clean --proof-dir proofs/generated-from-k/
+
+update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
+
+.PHONY: update-k-proofs
+
+
+# Checking proof generation for K
+# -------------------------------
+
+.build/proofs/generated-from-k/%.ml-proof: FORCE
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k generation/k-benchmarks/$*/foo-a.$* .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
+
+KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof
+	${BIN_DIFF} "proofs/generated-from-k/$*.ml-gamma" ".build/proofs/generated-from-k/$*.ml-gamma"
+	${BIN_DIFF} "proofs/generated-from-k/$*.ml-claim" ".build/proofs/generated-from-k/$*.ml-claim"
+	${BIN_DIFF} "proofs/generated-from-k/$*.ml-proof" ".build/proofs/generated-from-k/$*.ml-proof"
+
+test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
+
+.PHONY: test-proof-kgen
+
 
 # Proof generation
 # ----------------
 
 .build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
-
-.build/proofs/%.ml-claim: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary claim $@
-
-.build/proofs/%.ml-gamma: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary gamma $@
+	poetry -C generation run python -m "proof_generation.proofs.$*" memo $(dir $@) $*
 
 .build/proofs/%.pretty-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty proof $@
-
-.build/proofs/%.pretty-claim: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
-
-.build/proofs/%.pretty-gamma: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty gamma $@
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
-proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim .build/proofs/%.pretty-gamma
+proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.pretty-proof
 	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
 	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
 	${DIFF} --label expected "proofs/$*.pretty-gamma" --label actual ".build/proofs/$*.pretty-gamma"
@@ -179,7 +195,11 @@ proofs/translated/%.ml-proof.verify: proofs/translated/%.ml-proof
 test-proof-verify-translated: ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 .PHONY: test-proof-verify-translated
 
-test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
+KTRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS=$(addsuffix .kverify,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kverify: proofs/generated-from-k/%.ml-proof
+	$(CARGO) run --release --bin checker proofs/generated-from-k/$*.ml-gamma proofs/generated-from-k/$*.ml-claim $<
+
+test-proof-verify: ${PROOF_VERIFY_SNAPSHOT_TARGETS} ${TRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS} ${KTRANSLATED_PROOF_VERIFY_SNAPSHOT_TARGETS}
 
 TRANSLATED_PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-translated,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.verify-translated: .build/proofs/translated/%.ml-proof
@@ -189,18 +209,24 @@ verify-translated: clean-translated-proofs ${TRANSLATED_PROOF_VERIFY_BUILD_TARGE
 .PHONY: verify-translated
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
-proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-proof
 	$(CARGO) run --release --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
 .PHONY: verify-generated
 
+PROOF_VERIFY_KBUILD_TARGETS=$(addsuffix .verify-kgenerated,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.verify-kgenerated: .build/proofs/generated-from-k/%.ml-proof
+	$(CARGO) run --release --bin checker .build/proofs/generated-from-k/$*.ml-gamma .build/proofs/generated-from-k/$*.ml-claim .build/proofs/generated-from-k/$*.ml-proof
+
+verify-kgenerated: clean-kgenerated-proofs ${PROOF_VERIFY_KBUILD_TARGETS}
+.PHONY: verify-kgenerated
 
 # Profiling
 # ---------
 
 PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
-proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+proofs/%.ml-proof.profile: .build/proofs/%.ml-proof
 	$(CARGO)  build --release --bin profiler
 	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 	mv flamegraph.svg $*.svg

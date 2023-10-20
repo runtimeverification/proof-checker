@@ -9,7 +9,7 @@ from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.pattern import Application, EVar, Exists, Implication, MetaVar, Mu
+from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Mu
 from proof_generation.pretty_printing_interpreter import NotationlessPrettyPrinter, PrettyPrintingInterpreter
 from proof_generation.proofs.propositional import Propositional
 from proof_generation.serializing_interpreter import SerializingInterpreter
@@ -33,11 +33,11 @@ def test_instantiate() -> None:
     assert phi0.instantiate({0: phi0_ef0}) == phi0_ef0
     assert phi0.instantiate({1: phi0_ef0}) == phi0
 
-    assert Implication(phi0, phi0).instantiate({0: phi1}) == Implication(phi1, phi1)
-    assert Implication(phi0, phi1).instantiate({2: phi0_ef0}) == Implication(phi0, phi1)
+    assert Implies(phi0, phi0).instantiate({0: phi1}) == Implies(phi1, phi1)
+    assert Implies(phi0, phi1).instantiate({2: phi0_ef0}) == Implies(phi0, phi1)
 
-    assert Application(phi0, phi0).instantiate({0: phi1}) == Application(phi1, phi1)
-    assert Application(phi0, phi1).instantiate({2: phi0_ef0}) == Application(phi0, phi1)
+    assert App(phi0, phi0).instantiate({0: phi1}) == App(phi1, phi1)
+    assert App(phi0, phi1).instantiate({2: phi0_ef0}) == App(phi0, phi1)
 
     assert Exists(0, phi0).instantiate({0: phi1}) == Exists(0, phi1)
     assert Exists(0, phi0).instantiate({0: phi0_ef0}) == Exists(0, phi0_ef0)
@@ -52,22 +52,22 @@ def test_instantiate() -> None:
 
 def test_conclusion() -> None:
     phi0 = MetaVar(0)
-    phi0_implies_phi0 = Implication(phi0, phi0)
+    phi0_implies_phi0 = Implies(phi0, phi0)
     prop = Propositional(StatefulInterpreter(phase=ExecutionPhase.Proof))
     prop.modus_ponens(
         prop.modus_ponens(
             prop.dynamic_inst(prop.prop2, {1: phi0_implies_phi0, 2: phi0}).assertc(
-                Implication(
-                    Implication(phi0, Implication(phi0_implies_phi0, phi0)),
-                    Implication(Implication(phi0, phi0_implies_phi0), Implication(phi0, phi0)),
+                Implies(
+                    Implies(phi0, Implies(phi0_implies_phi0, phi0)),
+                    Implies(Implies(phi0, phi0_implies_phi0), Implies(phi0, phi0)),
                 )
             ),
             prop.dynamic_inst(prop.prop1, {1: phi0_implies_phi0}).assertc(
-                Implication(phi0, Implication(phi0_implies_phi0, phi0))
+                Implies(phi0, Implies(phi0_implies_phi0, phi0))
             ),
-        ).assertc(Implication(Implication(phi0, phi0_implies_phi0), Implication(phi0, phi0))),
+        ).assertc(Implies(Implies(phi0, phi0_implies_phi0), Implies(phi0, phi0))),
         prop.dynamic_inst(prop.prop1, {1: phi0}),
-    ).assertc(Implication(phi0, phi0))
+    ).assertc(Implies(phi0, phi0))
 
 
 def uncons_metavar_instrs(id: int) -> list[int]:
@@ -77,7 +77,7 @@ def uncons_metavar_instrs(id: int) -> list[int]:
 def test_prove_imp_refl() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)
-    phi0_implies_phi0 = Implication(phi0, phi0)
+    phi0_implies_phi0 = Implies(phi0, phi0)
     prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out))
     proved = prop.publish_proof(prop.imp_refl())
     assert proved.conclusion == phi0_implies_phi0
@@ -118,13 +118,16 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).__getattribute__(target)()
+    interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
+    _ = Propositional(interpreter_ser).__getattribute__(target)()
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
+    interpreter_ser_deser = NotationlessPrettyPrinter(phase=phase, out=out_ser_deser)
+    deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
 
     # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
-    _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).__getattribute__(target)()
+    interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
+    _ = Propositional(interpreter_pretty).__getattribute__(target)()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
 
@@ -137,12 +140,15 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
-    _ = Propositional(SerializingInterpreter(phase=phase, out=out_ser)).interpreter.pattern(target)
+    interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
+    _ = Propositional(interpreter_ser).interpreter.pattern(target)
     out_ser_deser = StringIO()
-    deserialize_instructions(out_ser.getvalue(), NotationlessPrettyPrinter(phase=phase, out=out_ser_deser))
+    interpreter_ser_deser = NotationlessPrettyPrinter(phase=phase, out=out_ser_deser)
+    deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
 
     # Prettyprint the claim directly, but omit notation
     out_pretty = StringIO()
-    _ = Propositional(NotationlessPrettyPrinter(phase=phase, out=out_pretty)).interpreter.pattern(target)
+    interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
+    _ = Propositional(interpreter_pretty).interpreter.pattern(target)
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()

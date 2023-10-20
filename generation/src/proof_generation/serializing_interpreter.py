@@ -1,26 +1,29 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, Any, BinaryIO
 
 from proof_generation.instruction import Instruction
-from proof_generation.stateful_interpreter import StatefulInterpreter
+from proof_generation.io_interpreter import IOInterpreter
 
 if TYPE_CHECKING:
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
+    from proof_generation.io_interpreter import IO
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
     from proof_generation.proved import Proved
 
 
-class SerializingInterpreter(StatefulInterpreter):
+class SerializingInterpreter(IOInterpreter):
     def __init__(
         self,
         phase: ExecutionPhase,
-        out: BinaryIO,
+        out: IO[Any],
         claims: list[Claim] | None = None,
+        claim_out: IO[Any] | None = None,
+        proof_out: IO[Any] | None = None,
     ) -> None:
-        super().__init__(phase=phase, claims=claims)
-        self.out = out
+        super().__init__(phase, out, claims, claim_out, proof_out)
+        self._symbol_identifiers: dict[str, int] = {}
 
     def evar(self, id: int) -> Pattern:
         ret = super().evar(id)
@@ -32,8 +35,12 @@ class SerializingInterpreter(StatefulInterpreter):
         self.out.write(bytes([Instruction.SVar, id]))
         return ret
 
-    def symbol(self, id: int) -> Pattern:
-        ret = super().symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        ret = super().symbol(name)
+
+        if name not in self._symbol_identifiers:
+            self._symbol_identifiers[name] = len(self._symbol_identifiers)
+        id = self._symbol_identifiers[name]
         self.out.write(bytes([Instruction.Symbol, id]))
         return ret
 
@@ -60,12 +67,12 @@ class SerializingInterpreter(StatefulInterpreter):
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
         ret = super().implies(left, right)
-        self.out.write(bytes([Instruction.Implication]))
+        self.out.write(bytes([Instruction.Implies]))
         return ret
 
     def app(self, left: Pattern, right: Pattern) -> Pattern:
         ret = super().app(left, right)
-        self.out.write(bytes([Instruction.Application]))
+        self.out.write(bytes([Instruction.App]))
         return ret
 
     def exists(self, var: int, subpattern: Pattern) -> Pattern:
@@ -152,8 +159,10 @@ class MemoizingInterpreter(SerializingInterpreter):
         out: BinaryIO,
         claims: list[Claim] | None = None,
         patterns_for_memoization: set[Pattern] | None = None,
+        claim_out: BinaryIO | None = None,
+        proof_out: BinaryIO | None = None,
     ) -> None:
-        super().__init__(phase, out, claims)
+        super().__init__(phase, out, claims, claim_out, proof_out)
         self._patterns_for_memoization: set[Pattern]
         if patterns_for_memoization is None:
             self._patterns_for_memoization = set()

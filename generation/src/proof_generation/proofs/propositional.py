@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, Notation, bot
+from proof_generation.pattern import Implies, MetaVar, Notation, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -22,12 +22,11 @@ phi2 = MetaVar(2)
 class Negation(Notation):
     phi0: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
-        return Implication(phi0, bot)
+    def definition(self) -> Pattern:
+        return Implies(phi0, bot)
 
     def __str__(self) -> str:
-        return f'~({str(self.phi0)})'
+        return f'¬({str(self.phi0)})'
 
 
 def neg(p: Pattern) -> Pattern:
@@ -36,41 +35,38 @@ def neg(p: Pattern) -> Pattern:
 
 @dataclass(frozen=True, eq=False)
 class Top(Notation):
-    @staticmethod
-    def definition() -> Pattern:
+    def definition(self) -> Pattern:
         return neg(bot)
 
     def __str__(self) -> str:
-        return '\u22A4'
+        return '⊤'
 
 
 top = Top()
 
 
 @dataclass(frozen=True, eq=False)
-class Or(Notation):
-    left: Pattern
-    right: Pattern
+class And(Notation):
+    phi0: Pattern
+    phi1: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
-        return Implication(neg(phi0), phi1)
+    def definition(self) -> Pattern:
+        return neg(Implies(phi0, neg(phi1)))
 
     def __str__(self) -> str:
-        return f'({str(self.left)}) \\/ ({str(self.right)})'
+        return f'({self.phi0} ∧ {self.phi1})'
 
 
 @dataclass(frozen=True, eq=False)
-class And(Notation):
-    left: Pattern
-    right: Pattern
+class Or(Notation):
+    phi0: Pattern
+    phi1: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
-        return neg(Implication(phi0, neg(phi1)))
+    def definition(self) -> Pattern:
+        return Implies(neg(phi0), phi1)
 
     def __str__(self) -> str:
-        return f'({str(self.left)}) /\\ ({str(self.right)})'
+        return f'({self.phi0} ∨ {self.phi1})'
 
 
 class Propositional(ProofExp):
@@ -84,12 +80,12 @@ class Propositional(ProofExp):
     @staticmethod
     def claims() -> list[Pattern]:
         return [
-            Implication(phi0, phi0),  # Reflexivity
+            Implies(phi0, phi0),  # Reflexivity
             top,  # Top
-            Implication(bot, phi0),  # Bot_elim
-            Implication(neg(neg(phi0)), phi0),  # Contradiction
-            Implication(neg(phi0), Implication(phi0, phi1)),  # Absurd
-            Implication(Implication(neg(phi0), phi0), phi0),  # Peirce_bot
+            Implies(bot, phi0),  # Bot_elim
+            Implies(neg(neg(phi0)), phi0),  # Contradiction
+            Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
+            Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
         ]
 
     def proof_expressions(self) -> list[ProvedExpression]:
@@ -203,15 +199,15 @@ class Propositional(ProofExp):
 
         def phi0_bot_imp_ph0() -> Pattern:
             # ((ph0 -> bot) -> ph0)
-            return Implication(Implication(phi0, bot), phi0)
+            return Implies(Implies(phi0, bot), phi0)
 
         def phi0_bot_imp_bot() -> Pattern:
             # (ph0 -> bot) -> bot)
-            return Implication(Implication(phi0, bot), bot)
+            return Implies(Implies(phi0, bot), bot)
 
         def phi0_bot_imp_phi0_bot() -> Pattern:
             # (phi0 -> bot) -> (phi0->bot)
-            return Implication(Implication(phi0, bot), Implication(phi0, bot))
+            return Implies(Implies(phi0, bot), Implies(phi0, bot))
 
         def modus_ponens_1() -> Proved:
             return self.modus_ponens(
@@ -230,7 +226,7 @@ class Propositional(ProofExp):
                         self.prop1,
                         {
                             # (((ph0 -> bot) -> bot) -> ph0)
-                            0: Implication(phi0_bot_imp_bot(), phi0),
+                            0: Implies(phi0_bot_imp_bot(), phi0),
                             # ((ph0 -> bot) -> ph0)
                             1: phi0_bot_imp_ph0(),
                         },
@@ -248,7 +244,7 @@ class Propositional(ProofExp):
                         0: phi0_bot_imp_ph0(),
                         1: phi0_bot_imp_phi0_bot(),
                         # (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot)))
-                        2: Implication(phi0_bot_imp_ph0(), phi0_bot_imp_bot()),
+                        2: Implies(phi0_bot_imp_ph0(), phi0_bot_imp_bot()),
                     },
                 ),
                 self.modus_ponens(
@@ -256,12 +252,12 @@ class Propositional(ProofExp):
                         self.prop1,
                         {
                             # ((phi0 -> bot) -> (phi0 -> bot)) -> (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot))),
-                            0: Implication(
-                                Implication(
-                                    Implication(phi0, bot),
-                                    Implication(phi0, bot),
+                            0: Implies(
+                                Implies(
+                                    Implies(phi0, bot),
+                                    Implies(phi0, bot),
                                 ),
-                                Implication(
+                                Implies(
                                     phi0_bot_imp_ph0(),
                                     phi0_bot_imp_bot(),
                                 ),
@@ -272,7 +268,7 @@ class Propositional(ProofExp):
                     self.dynamic_inst(
                         self.prop2,
                         {
-                            0: Implication(phi0, bot),
+                            0: Implies(phi0, bot),
                             1: phi0,
                             2: bot,
                         },

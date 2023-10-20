@@ -1,22 +1,53 @@
-import argparse
+from __future__ import annotations
 
-from pyk.ktool.kompile import kompile
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
+import proof_generation.proof as proof
+
+if TYPE_CHECKING:
+    import proof_generation.pattern as nf
+    from kore_transfer.kore_converter import KoreConverter
+
+ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
-def main(k_file: str, output_dir: str) -> None:
-    print(f'Kompiling target {k_file} to {output_dir}')
-    kompile(main_file=k_file, backend='llvm', output_dir=output_dir)
-    return
+class KoreDefinition(proof.ProofExp):
+    axiom_patterns: list[nf.Pattern] = []
+    claim_patterns: list[nf.Pattern] = []
+    proofs: list[ProofMethod] = []
 
+    @classmethod
+    def axioms(cls) -> list[nf.Pattern]:
+        return cls.axiom_patterns
 
-if __name__ == '__main__':
-    argparser = argparse.ArgumentParser()
-    # First argument: path to the .K file
-    argparser.add_argument('k_file', type=str)
-    # Second argument: path to the program
-    argparser.add_argument('program', type=str)
-    # Path to the output directory
-    argparser.add_argument('output_dir', type=str)
-    args = argparser.parse_args()
+    @classmethod
+    def claims(cls) -> list[nf.Pattern]:
+        return cls.claim_patterns
 
-    main(args.k_file, args.output_dir)
+    @classmethod
+    def prove_rewrite_step(cls, claim: nf.Pattern, axiom: nf.Pattern, instantiations: dict[int, nf.Pattern]) -> None:
+        """Take a single rewrite step and emit a proof for it."""
+        assert len(cls.axiom_patterns) > 0, 'No axioms to prove the rewrite step'
+        cls.claim_patterns.append(claim)
+
+        def proof_transition(proof_expr: proof.ProofExp) -> proof.Proved:
+            """Prove the transition between two configurations."""
+            for pattern in instantiations.values():
+                proof_expr.interpreter.pattern(pattern)
+            return proof_expr.interpreter.instantiate(proof_expr.load_axiom(axiom), instantiations)
+
+        cls.proofs.append(proof_transition)
+
+    @classmethod
+    def add_axiom(cls, position: int, converter: KoreConverter) -> nf.Pattern:
+        """Add an axiom to the definition."""
+        new_axiom = converter.retrieve_axiom(position)
+        cls.axiom_patterns.append(new_axiom)
+        return new_axiom
+
+    def proof_expressions(self) -> list[proof.ProvedExpression]:
+        def make_function(obj: KoreDefinition, func: ProofMethod) -> proof.ProvedExpression:
+            return lambda: func(obj)
+
+        return [make_function(self, proof_func) for proof_func in self.proofs]
