@@ -15,14 +15,13 @@ ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
 class KoreDefinition(proof.ProofExp):
-    all_axioms: list[nf.Pattern] = []
-    axiom_patterns: list[nf.Pattern] = []
+    axiom_patterns: dict[int, nf.Pattern] = {}
     claim_patterns: list[nf.Pattern] = []
     proofs: list[ProofMethod] = []
 
     @classmethod
     def axioms(cls) -> list[nf.Pattern]:
-        return cls.axiom_patterns
+        return list(cls.axiom_patterns.values())
 
     @classmethod
     def claims(cls) -> list[nf.Pattern]:
@@ -38,7 +37,10 @@ class KoreDefinition(proof.ProofExp):
             """Prove the transition between two configurations."""
             for pattern in instantiations.values():
                 proof_expr.interpreter.pattern(pattern)
-            return proof_expr.interpreter.instantiate(proof_expr.load_axiom(cls.all_axioms[ordinal]), instantiations)
+            # The axiom pattern must be a rewrite rule
+            return proof_expr.interpreter.instantiate(
+                proof_expr.load_axiom(cls.axiom_patterns[ordinal]), instantiations
+            )
 
         cls.proofs.append(proof_transition)
 
@@ -51,18 +53,17 @@ class KoreDefinition(proof.ProofExp):
 
 def compose_definition(kore_definition: kore.Definition, converter: KoreConverter) -> type[KoreDefinition]:
     """Compose the proofs for all steps."""
-    all_axioms = []
-    extracted_axioms = []
+    extracted_axioms = {}
+    ordinal = 0
     for module in kore_definition.modules:
         for axiom in module.axioms:
-            converted_axiom_pattern = _convert_axiom(axiom.pattern, converter)
-            all_axioms.append(converted_axiom_pattern)
+            pattern = axiom.pattern
             # Select only patterns below that starts with kore.Rewrites
-            if isinstance(axiom.pattern, kore.Rewrites):
-                extracted_axioms.append(converted_axiom_pattern)
+            if isinstance(pattern, kore.Rewrites):
+                extracted_axioms[ordinal] = _convert_axiom(pattern, converter)
+            ordinal += 1
 
-    KoreDefinition.all_axioms.extend(all_axioms)
-    KoreDefinition.axiom_patterns.extend(extracted_axioms)
+    KoreDefinition.axiom_patterns.update(extracted_axioms)
     return KoreDefinition
 
 
