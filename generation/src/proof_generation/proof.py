@@ -14,6 +14,8 @@ from proof_generation.proved import Proved
 from proof_generation.serializing_interpreter import MemoizingInterpreter, SerializingInterpreter
 
 if TYPE_CHECKING:
+    from typing import Mapping
+
     from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import EVar, SVar
 
@@ -102,7 +104,7 @@ class ProofExp(ABC):
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return self.interpreter.instantiate(proved, delta)
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         return self.interpreter.instantiate_pattern(pattern, delta)
 
     def load_axiom(self, axiom_term: Pattern) -> Proved:

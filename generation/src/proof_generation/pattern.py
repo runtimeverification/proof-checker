@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import frozendict
+from typing import TYPE_CHECKING
+
+from frozendict import frozendict
+
+if TYPE_CHECKING:
+    from typing import Mapping
 
 
 def match_single(
@@ -63,7 +68,7 @@ def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None
 
 
 class Pattern:
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -91,7 +96,7 @@ class Pattern:
 class EVar(Pattern):
     name: int
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -118,7 +123,7 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -145,7 +150,7 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: str
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -171,7 +176,7 @@ class Implies(Pattern):
     left: Pattern
     right: Pattern
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -193,7 +198,7 @@ class App(Pattern):
     left: Pattern
     right: Pattern
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return App(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -211,7 +216,7 @@ class Exists(Pattern):
     var: int
     subpattern: Pattern
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -239,7 +244,7 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -275,7 +280,7 @@ class MetaVar(Pattern):
         # TODO implement this function by checking constraints
         return True
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if self.name in delta:
             assert self.can_be_replaced_by(
                 delta[self.name]
@@ -303,7 +308,7 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -322,7 +327,7 @@ class SSubst(Pattern):
     var: SVar
     plug: Pattern
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -357,8 +362,8 @@ class Instantiate(Pattern):
         # TODO: This should recursively remove all notation.
         return self.simplify() == o
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        instantiated_subst = {k: v.instantiate(delta) for k, v in self.inst.items()}
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
+        instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})
         unshadowed_delta = {k: v for k, v in delta.items() if k not in self.inst}
         return Instantiate(self.pattern.instantiate(unshadowed_delta), instantiated_subst)
 
@@ -382,7 +387,7 @@ class Notation:
     format_str: str
 
     def __call__(self, *args: Pattern) -> Pattern:
-        return Instantiate(self.definition, dict(enumerate(args)))
+        return Instantiate(self.definition, frozendict(enumerate(args)))
 
     def assert_matches(self, pattern: Pattern, msg: str) -> tuple[Pattern, ...]:
         raise NotImplementedError

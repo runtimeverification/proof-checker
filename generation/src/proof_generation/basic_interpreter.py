@@ -20,6 +20,8 @@ from proof_generation.pattern import (
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
+    from typing import Mapping
+
     from proof_generation.pattern import Pattern
 
 
@@ -162,7 +164,7 @@ class BasicInterpreter:
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return Proved(proved.conclusion.instantiate(delta))
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         return pattern.instantiate(delta)
 
     def pop(self, term: Pattern | Proved) -> None:

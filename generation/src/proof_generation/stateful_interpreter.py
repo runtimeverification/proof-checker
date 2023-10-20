@@ -6,6 +6,8 @@ from proof_generation.basic_interpreter import BasicInterpreter
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
+    from typing import Mapping
+
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
@@ -150,7 +152,7 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         *self.stack, expected_pattern = self.stack
         expected_plugs = self.stack[-len(delta) :]
         self.stack = self.stack[: -len(delta)]

@@ -8,6 +8,7 @@ from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from typing import Mapping
 
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
@@ -144,7 +145,7 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write(', '.join(map(str, delta.keys())))
 
     @pretty()
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> None:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
