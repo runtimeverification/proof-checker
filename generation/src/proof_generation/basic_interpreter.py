@@ -10,7 +10,6 @@ from proof_generation.pattern import (
     Exists,
     FakeNotation,
     Implies,
-    FakeNotation,
     MetaVar,
     Mu,
     Notation,
