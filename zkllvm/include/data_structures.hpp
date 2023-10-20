@@ -113,12 +113,12 @@ public:
   }
 
   bool isDisjoint(LinkedList<T> *otherList) {
-    for (auto &item : *otherList) {
-      if (contains(item)) {
-        return true;
+    for (auto &item : *this) {
+      if (otherList->contains(item)) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   T &get(int index) {
