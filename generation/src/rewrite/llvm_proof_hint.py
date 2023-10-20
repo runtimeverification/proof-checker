@@ -90,7 +90,7 @@ class LLVMRewriteTraceParser:
         return LLVMRewriteStep(ordinal, substitution, term)
 
     def read_variable_name(self) -> str:
-        ret = str(self.read_until(b'\x00'))
+        ret = str(self.read_until(b'\x00'), 'ascii')
         self.read_constant(b'\x00')
         return ret
 
