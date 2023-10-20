@@ -53,7 +53,7 @@ The following commands will build the Proof-Checker:
 # TODO: Add instructions for building the Proof-Checker with CMake
 ```
 
-### We also have a temporary bash script that builds the Proof-Checker:
+### We also have a temporary bash script that builds and execute the Proof-Checker:
 
 First you need to set the environment variable `ZKLLVM_ROOT`:
 ```bash
@@ -61,9 +61,25 @@ echo 'export ZKLLVM_ROOT=/path/to/zkllvm' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-Then you can build the Proof-Checker:
+Then you can build and execute the Proof-Checker with real input:
 ```bash
-./build.sh src/main.cpp inputs/example.inp
+./build.sh src/main.cpp inputs/impreflex-compressed-goal.inp
+```
+
+You can also run it with g++/clang to any textual output or exception that may happen:
+```bash
+g++ -DDEBUG=1 -DDEBUG_EXECUTION=1 -std=c++20 -g src/main.cpp -o output/a.out && ./output/a.out 
+```
+
+If you want to run the Proof-Checker unit tests, you can use the followinf commands:
+For zkLLVM:
+```bash
+./build.sh src/tests.cpp inputs/example.inp
+```
+
+For g++/clang:
+```bash
+g++ -DDEBUG=1 -DDEBUG_EXECUTION=1 -std=c++20 -g src/tests.cpp -o output/a.out && ./output/a.out
 ```
 
 ### Translation from binary input to zkllvm input
