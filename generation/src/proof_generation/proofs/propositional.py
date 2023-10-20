@@ -112,7 +112,7 @@ class Propositional(ProofExp):
 
     def imp_refl(self, p: Pattern = phi0) -> Proved:
         """p -> p"""
-        pp = Implication(p, p)
+        pp = Implies(p, p)
         # fmt: off
         return self.modus_ponens(
             self.modus_ponens(
@@ -135,8 +135,8 @@ class Propositional(ProofExp):
         ----------------------
                 p -> r
         """
-        a, b = Implication.extract(self.PROVISIONAL_get_conc(phi0_imp_phi1))
-        b2, c = Implication.extract(self.PROVISIONAL_get_conc(phi1_imp_phi2))
+        a, b = Implies.extract(self.PROVISIONAL_get_conc(phi0_imp_phi1))
+        b2, c = Implies.extract(self.PROVISIONAL_get_conc(phi1_imp_phi2))
         assert b == b2
 
         return self.modus_ponens(
@@ -186,7 +186,7 @@ class Propositional(ProofExp):
 
     def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
         """(neg p) -> p -> q"""
-        bot_to_b = Implication(bot, b)
+        bot_to_b = Implies(bot, b)
 
         return self.modus_ponens(
             self.dynamic_inst(self.prop2, {0: a, 1: bot, 2: b}),
@@ -287,7 +287,7 @@ class Propositional(ProofExp):
                     },
                 ),
                 # ((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> phi0)
-                self.imp_refl(Implication(phi0, bot)),
+                self.imp_refl(Implies(phi0, bot)),
             )
 
         return self.modus_ponens(

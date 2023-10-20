@@ -157,7 +157,7 @@ class BasicInterpreter:
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion
-        l, r = Implication.extract(left_conclusion)
+        l, r = Implies.extract(left_conclusion)
         assert l == right.conclusion, str(l) + ' != ' + str(right.conclusion)
         return Proved(r)
 

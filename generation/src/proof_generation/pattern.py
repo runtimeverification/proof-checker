@@ -21,7 +21,7 @@ def match_single(
             ret[id] = instance
     elif pattern == bot and instance == bot:
         pass
-    elif (pat_imp := Implication.unwrap(pattern)) and (inst_imp := Implication.unwrap(instance)):
+    elif (pat_imp := Implies.unwrap(pattern)) and (inst_imp := Implies.unwrap(instance)):
         ret = match_single(pat_imp[0], inst_imp[0], ret)
         if not ret:
             return None
@@ -35,7 +35,7 @@ def match_single(
     elif (pat_sym := Symbol.deconstruct(pattern)) and (inst_sym := Symbol.deconstruct(instance)):
         if pat_sym != inst_sym:
             return None
-    elif (pat_app := Application.unwrap(pattern)) and (inst_app := Application.unwrap(instance)):
+    elif (pat_app := App.unwrap(pattern)) and (inst_app := App.unwrap(instance)):
         ret = match_single(pat_app[0], inst_app[0], ret)
         if not ret:
             return None
@@ -162,7 +162,7 @@ class Symbol(Pattern):
         return self
 
     @staticmethod
-    def deconstruct(pat: Pattern) -> int | None:
+    def deconstruct(pat: Pattern) -> str | None:
         if isinstance(pat, Symbol):
             return pat.name
         if isinstance(pat, Notation):
@@ -383,7 +383,7 @@ class Notation(Pattern, ABC):
         assert issubclass(cls, Notation)
         if isinstance(pattern, cls):
             return tuple([v for _, v in sorted(pattern.arguments().items())])
-        match_result = match_single(cls.definition(), pattern)
+        match_result = match_single(cls().definition(), pattern)
         if match_result is None:
             return None
         return tuple([v for _, v in sorted(match_result.items())])
