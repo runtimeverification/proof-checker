@@ -379,6 +379,9 @@ class Instantiate(Pattern):
         # and apply the ssubst to self.inst.
         return self.simplify().apply_ssubst(svar_id, plug)
 
+    def __str__(self) -> str:
+        return f'({str(self.pattern)}[{str(dict(self.inst))}])'
+
 
 @dataclass(frozen=True)
 class Notation:
