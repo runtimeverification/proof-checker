@@ -4,8 +4,6 @@
 #include <iostream>
 #include <memory>
 
-#undef EOF
-
 enum class Instruction : uint8_t {
   // Patterns
   EVar = 2,
@@ -45,7 +43,7 @@ enum class Instruction : uint8_t {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar = (uint8_t)(8 + 128),
+  CleanMetaVar = (uint8_t)(9 + 128),
   // EOF exclusive for zkLLVM
   NO_OP
 };
@@ -110,9 +108,9 @@ Instruction from(uint8_t value) {
     return Instruction::Load;
   case 30:
     return Instruction::Publish;
-  case 135:
+  case 137:
     return Instruction::CleanMetaVar;
-  case 136:
+  case 138:
     return Instruction::NO_OP;
   default:
     exit(1); // Bad instruction!
@@ -698,6 +696,7 @@ struct Pattern {
       if (pattern) {
         pattern->~Pattern();
       }
+      free(this);
     }
 
     bool operator==(const Term &rhs) const {
@@ -733,6 +732,7 @@ struct Pattern {
       if (pattern) {
         pattern->~Pattern();
       }
+      free(this);
     }
     bool operator==(const Entry &rhs) const {
       if (type != rhs.type) {
@@ -992,6 +992,4 @@ struct Pattern {
     }
     return term->pattern;
   }
-
-  
 };

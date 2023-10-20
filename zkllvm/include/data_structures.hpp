@@ -121,7 +121,7 @@ public:
     return false;
   }
 
-  T operator[](int index) {
+  T &get(int index) {
     Node<T> *curr = head;
     for (int i = 0; i < index; i++) {
       curr = curr->next;
@@ -130,14 +130,7 @@ public:
     return curr->data;
   }
 
-  T get(int index) {
-    Node<T> *curr = head;
-    for (int i = 0; i < index; i++) {
-      curr = curr->next;
-      assert(curr && "Index out of bounds.");
-    }
-    return curr->data;
-  }
+  T &operator[](int index) { return get(index); }
 
   size_t size() {
     size_t count = 0;
