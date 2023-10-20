@@ -464,7 +464,7 @@ struct Pattern {
   bool pattern_well_formed() {
     switch (inst) {
     case Instruction::MetaVar:
-      return !app_ctx_holes->isDisjoint(e_fresh);
+      return !app_ctx_holes->constainsElementOf(e_fresh);
     case Instruction::Mu:
       return subpattern->pattern_positive(id);
     case Instruction::ESubst:
