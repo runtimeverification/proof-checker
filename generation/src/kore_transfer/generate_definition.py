@@ -71,25 +71,3 @@ def _convert_axioms(kore_definition: kore.Definition, converter: KoreConverter) 
             axioms.append(converted_axiom)
 
     return axioms
-
-
-def convert_axiom(axiom: kore.Axiom, converter: KoreConverter) -> nf.Pattern:
-    pattern = axiom.pattern
-    assert isinstance(pattern, kore.Rewrites)
-    assert isinstance(pattern.left, kore.And)
-    assert isinstance(pattern.right, kore.And)
-
-    # TODO: Remove side conditions for now
-    preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-
-    return converter.convert_pattern(preprocessed_pattern)
-
-
-# TODO: This is probably wrong!!
-def convert_substitution(
-    subst: tuple[tuple[str, kore.Pattern], ...], converter: KoreConverter
-) -> tuple[nf.Pattern, ...]:
-    substitutions = []
-    for _, pattern in subst:
-        substitutions.append(converter.convert_pattern(pattern))
-    return tuple(substitutions)

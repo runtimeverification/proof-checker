@@ -100,3 +100,23 @@ class KoreConverter:
         if name not in self._metavars:
             self._metavars[name] = nf.MetaVar(name=len(self._metavars))
         return self._metavars[name]
+
+    def convert_axiom(self, axiom: kore.Axiom) -> nf.Pattern:
+        pattern = axiom.pattern
+        assert isinstance(pattern, kore.Rewrites)
+        assert isinstance(pattern.left, kore.And)
+        assert isinstance(pattern.right, kore.And)
+
+        # TODO: Remove side conditions for now
+        preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
+
+        return self.convert_pattern(preprocessed_pattern)
+
+    def convert_substitution(
+        self,
+        subst: tuple[tuple[str, kore.Pattern], ...],
+    ) -> tuple[nf.Pattern, ...]:
+        substitutions = []
+        for _, pattern in subst:
+            substitutions.append(self.convert_pattern(pattern))
+        return tuple(substitutions)

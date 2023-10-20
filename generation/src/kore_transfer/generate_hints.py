@@ -6,8 +6,6 @@ import pyk.kore.syntax as kore
 from pyk.kore.parser import KoreParser
 from pyk.ktool.krun import KRunOutput, _krun
 
-from kore_transfer.generate_definition import convert_axiom, convert_substitution
-
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
@@ -98,8 +96,8 @@ def get_proof_hints_from_rewrite_trace(
         for step in range(max_step):
             rewrite_step = llvm_proof_hint.trace[step]
             pre_config = post_config
-            axiom = convert_axiom(axioms[rewrite_step.rule_ordinal], kore_converter)
-            subst = convert_substitution(rewrite_step.substitution, kore_converter)
+            axiom = kore_converter.convert_axiom(axioms[rewrite_step.rule_ordinal])
+            subst = kore_converter.convert_substitution(rewrite_step.substitution)
             hint = KoreHint(pre_config, axiom, subst)
             post_config = kore_converter.convert_pattern(rewrite_step.post_config)
             yield hint
