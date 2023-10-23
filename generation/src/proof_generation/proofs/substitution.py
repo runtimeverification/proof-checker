@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implies, Notation, Exists
+from proof_generation.pattern import Exists, Implies, Notation
 from proof_generation.proofs.propositional import Propositional, neg, phi0
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern, EVar
-    from proof_generation.proof import ProvedExpression, Proved
+    from proof_generation.pattern import EVar, Pattern
+    from proof_generation.proof import Proved, ProvedExpression
 
 
 @dataclass(frozen=True, eq=False)
@@ -39,9 +39,7 @@ class Substitution(Propositional):
         return []
 
     def dneg_intro(self, a: Pattern) -> Proved:
-        return self.dynamic_inst(
-            lambda: self.load_axiom(self.axioms()[0]), {0: a}
-        )
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[0]), {0: a})
 
     def universal_gen(self, phi: ProvedExpression, var: EVar) -> Proved:
         """
@@ -55,9 +53,9 @@ class Substitution(Propositional):
             self.modus_ponens(
                 # phi -> (neg phi -> bot)
                 self.dneg_intro(self.PROVISIONAL_get_conc(phi)),
-                phi()
+                phi(),
             ),
-            var
+            var,
         )
 
     def functional_subst(self, phi: ProvedExpression, phi1: ProvedExpression, x: EVar) -> ProvedExpression:
