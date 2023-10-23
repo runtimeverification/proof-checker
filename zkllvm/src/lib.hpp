@@ -983,7 +983,9 @@ struct Pattern {
   static void instantiate_in_place(Pattern &p, IdList &vars,
                                    LinkedList<Pattern *> &plugs) {
     if (auto ret = instantiate_internal(p, vars, plugs)) {
-      p = *copy(ret.unwrap()); // FIXME: We shouldn't have to copy here
+      p = *copy(ret.unwrap()); // FIXME: We shouldn't have to copy here, however
+                               // zkllvm complier complains if we directly pass
+                               // the reference here.
     }
   }
 
