@@ -884,15 +884,17 @@ fn execute_instructions<'a>(
             }
             Instruction::Generalization => match pop_stack_proved(stack).as_ref() {
                 Pattern::Implies { left, right } => {
-                    // TODO: Read this from the proof stream
-                    let evar = 0;
+                    let evar_id = *iterator
+                        .next()
+                        .expect("Insufficient parameters for Generalization instruction")
+                        as Id;
 
-                    if !right.e_fresh(evar) {
+                    if !right.e_fresh(evar_id) {
                         panic!("The binding variable has to be fresh in the conclusion.");
                     }
 
                     stack.push(Term::Proved(implies(
-                        exists(evar, Rc::clone(left)),
+                        exists(evar_id, Rc::clone(left)),
                         Rc::clone(right),
                     )));
                 }
