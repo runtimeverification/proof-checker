@@ -1051,16 +1051,9 @@ struct Pattern {
     auto existence = exists(0, phi0);
 
     // Iteration through the input buffer
-    while (true) {
-      int instruction;
-      if (iterator != buffer->end()) {
-        instruction = *iterator;
-        ++iterator;
-      } else {
-        break;
-      }
-
-      Instruction instr_u32 = from(instruction);
+    while (iterator != buffer->end()) {
+      Instruction instr_u32 = from(*iterator);
+      ++iterator;
 
       switch (instr_u32) {
         // TODO: Add an abstraction for pushing these one-argument terms on

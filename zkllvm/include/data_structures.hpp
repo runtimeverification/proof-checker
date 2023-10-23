@@ -10,7 +10,7 @@ template <typename T> struct Node {
 
   bool operator==(const Node &rhs) const { return equal(*this, rhs); }
 
-  bool operator!=(const Node &rhs) { return !(this == rhs); }
+  bool operator!=(const Node &rhs) { return !(this->operator==(rhs)); }
 
   static Node *create(const T &value) {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
