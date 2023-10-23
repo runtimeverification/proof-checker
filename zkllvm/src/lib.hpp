@@ -1075,9 +1075,42 @@ struct Pattern {
       switch (instr_u32) {
         // TODO: Add an abstraction for pushing these one-argument terms on
         // stack?
-      case Instruction::EVar:
-      case Instruction::SVar:
-      case Instruction::Symbol:
+      case Instruction::EVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Expected id for the EVar to be put on stack");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, evar(*id)));
+        break;
+      }
+      case Instruction::SVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Expected id for the SVar to be put on stack");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, svar(*id)));
+        break;
+      }
+      case Instruction::Symbol: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Expected id for the Symbol to be put on stack");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, symbol(*id)));
+        break;
+      }
       case Instruction::MetaVar: {
         auto getId = iterator.next();
         if (getId == buffer->end()) {
@@ -1107,15 +1140,32 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
         break;
       }
-      case Instruction::CleanMetaVar:
+      case Instruction::CleanMetaVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error("Expected id for MetaVar instruction");
+#endif
+          exit(1);
+        }
+        auto metavar_pat = Pattern::metavar_unconstrained(*id);
+
+        // Clean metavars are always well-formed
+        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
         break;
+      }
       case Instruction::Implication: {
         auto right = pop_stack_pattern(stack);
         auto left = pop_stack_pattern(stack);
         stack->push(Term::newTerm(Term::Type::Pattern, implies(left, right)));
         break;
       }
-      case Instruction::Application:
+      case Instruction::Application: {
+        auto right = pop_stack_pattern(stack);
+        auto left = pop_stack_pattern(stack);
+        stack->push(Term::newTerm(Term::Type::Pattern, app(left, right)));
+        break;
+      }
       case Instruction::Exists:
       case Instruction::Mu:
       case Instruction::ESubst:
@@ -1159,6 +1209,8 @@ struct Pattern {
       case Instruction::Quantifier:
       case Instruction::Generalization:
       case Instruction::Existence:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(existence)));
+        break;
       case Instruction::Substitution:
         break;
       case Instruction::Instantiate: {
@@ -1196,6 +1248,7 @@ struct Pattern {
         break;
       }
       case Instruction::Pop:
+        stack->pop();
         break;
       case Instruction::Save: {
         auto term = stack->front();
@@ -1235,7 +1288,40 @@ struct Pattern {
         }
         break;
       }
-      case Instruction::Publish:
+      case Instruction::Publish: {
+        switch (phase) {
+        case ExecutionPhase::Gamma:
+          memory->push_back(
+              Entry::newEntry(Entry::Type::Proved, pop_stack_pattern(stack)));
+          break;
+        case ExecutionPhase::Claims:
+          claims->push_back(pop_stack_pattern(stack));
+          break;
+        case ExecutionPhase::Proof: {
+          auto claim = claims->pop();
+          if (claim == nullptr) {
+#if DEBUG
+            throw std::runtime_error("Insufficient claims.");
+#endif
+            exit(1);
+          }
+          auto theorem = pop_stack_proved(stack);
+          if (*claim != *theorem) {
+#if DEBUG
+            throw std::runtime_error(
+                "This proof does not prove the requested claim: " +
+                std::to_string((int)claim->inst) +
+                ", theorem: " + std::to_string((int)theorem->inst));
+#endif
+            exit(1);
+          }
+          break;
+        }
+        }
+        break;
+      }
+      case Instruction::NO_OP:
+        return;
       default: {
 #if DEBUG
         throw std::runtime_error("Unknown instruction: " +
