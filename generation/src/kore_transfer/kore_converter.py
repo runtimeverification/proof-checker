@@ -1,14 +1,34 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from enum import Enum
+from typing import TYPE_CHECKING, NamedTuple
 
 import pyk.kore.syntax as kore
 
 import proof_generation.pattern as nf
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
+import proof_generation.proofs.propositional as prop
+
+if TYPE_CHECKING:
+    from kore_transfer.generate_hints import KoreHint
 
 ProofMethod = Callable[[proof.ProofExp], proof.Proved]
+
+
+class AxiomType(Enum):
+    Unclassified = 0
+    RewriteRule = 1
+    FunctionalSymbol = 2
+
+
+class ConvertedAxiom(NamedTuple):
+    kind: AxiomType
+    pattern: nf.Pattern
+
+
+Axioms = dict[AxiomType, list[ConvertedAxiom]]
 
 
 class KoreConverter:
@@ -23,32 +43,71 @@ class KoreConverter:
 
         # TODO: Update it depending on the numbering schemes used in hints
         self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
+        self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
 
     def convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
         """Convert the given pattern to the pattern in the new format."""
         return self._convert_pattern(pattern)
 
-    def retrieve_axiom(self, position: int) -> nf.Pattern:
+    def retrieve_axioms_for_hint(self, hint: KoreHint) -> Axioms:
         """Retrieve the axiom at the given ordinal."""
-        kore_axiom = self._axioms_to_choose_from[position]
-        return self._convert_pattern(kore_axiom.pattern)
+        kore_axiom = self._axioms_to_choose_from[hint.axiom_ordinal]
+        converted = self._convert_axiom(kore_axiom)
+        related_axioms = self.collect_axioms_for_substitutions(hint.substitutions)
+
+        return self._organize_axioms([converted] + related_axioms)
+
+    def collect_axioms_for_substitutions(self, substitutions: dict[str, nf.Pattern]) -> list[ConvertedAxiom]:
+        added_axioms = []
+        for pattern in substitutions.values():
+            # TODO: Requires equality to be implemented
+            converted_pattern = nf.Exists(0, prop.And(nf.Implies(nf.EVar(0), pattern), nf.Implies(pattern, nf.EVar(0))))
+            added_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return added_axioms
+
+    def _organize_axioms(self, axioms: list[ConvertedAxiom]) -> Axioms:
+        """Organize the axioms by their type."""
+        organized_axioms: Axioms = {}
+        for axiom in axioms:
+            organized_axioms.setdefault(axiom.kind, [])
+            if axiom not in organized_axioms[axiom.kind]:
+                organized_axioms[axiom.kind].append(axiom)
+
+        return organized_axioms
+
+    def _convert_axiom(self, kore_axiom: kore.Axiom) -> ConvertedAxiom:
+        if kore_axiom in self._axioms_cache:
+            return self._axioms_cache[kore_axiom]
+
+        # Check the axiom type
+        preprocessed_pattern: kore.Pattern
+        if isinstance(kore_axiom.pattern, kore.Rewrites):
+            axiom_type = AxiomType.RewriteRule
+
+            pattern = kore_axiom.pattern
+            assert isinstance(pattern, kore.Rewrites)
+            assert isinstance(pattern.left, kore.And)
+            assert isinstance(pattern.right, kore.And)
+
+            # TODO: Remove side conditions for now
+            preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
+        else:
+            axiom_type = AxiomType.Unclassified
+            preprocessed_pattern = kore_axiom.pattern
+
+        assert isinstance(preprocessed_pattern, kore.Pattern)
+        converted_pattern = self._convert_pattern(preprocessed_pattern)
+        converted_axiom = ConvertedAxiom(axiom_type, converted_pattern)
+        self._axioms_cache[kore_axiom] = converted_axiom
+        return converted_axiom
 
     def _retrieve_axioms(self) -> list[kore.Axiom]:
         """Collect and save all axioms from the definition in Kore without converting them. This list will
         be used to resolve ordinals from hints to real axioms."""
         axioms: list[kore.Axiom] = []
-        for module in self._definition.modules:
-            # Select only patterns below that starts with kore.Rewrites
-            for axiom in (axiom for axiom in module.axioms if isinstance(axiom.pattern, kore.Rewrites)):
-                pattern = axiom.pattern
-                assert isinstance(pattern, kore.Rewrites)
-                assert isinstance(pattern.left, kore.And)
-                assert isinstance(pattern.right, kore.And)
-                # TODO: Remove side conditions for now
-                preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-
-                axioms.append(kore.Axiom(axiom.vars, preprocessed_pattern, axiom.attrs))
-
+        for kore_module in self._definition.modules:
+            for axiom in kore_module.axioms:
+                axioms.append(axiom)
         return axioms
 
     def _convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
@@ -75,18 +134,20 @@ class KoreConverter:
             case kore.App(symbol, sorts, args):
 
                 def chain_patterns(patterns: list[nf.Pattern]) -> nf.Pattern:
-                    if len(patterns) == 0:
-                        return nf.Bot()
+                    next_one, *patterns_left = patterns
+                    if len(patterns_left) == 0:
+                        return next_one
                     else:
-                        next_one, *patterns_left = patterns
                         return nf.App(next_one, chain_patterns(patterns_left))
 
                 app_symbol: nf.Pattern = self._resolve_symbol(symbol)
                 args_patterns: list[nf.Pattern] = [self._convert_pattern(arg) for arg in args]
                 sorts_patterns: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
 
-                args_chain = chain_patterns([app_symbol] + args_patterns) if len(args_patterns) > 0 else app_symbol
-                sorts_chain = chain_patterns(sorts_patterns)
+                args_chain = chain_patterns([app_symbol] + args_patterns)
+
+                # TODO: Replace it with tuples when the Notation class would allow it
+                sorts_chain = chain_patterns(sorts_patterns) if sorts_patterns else nf.Bot()
 
                 assert isinstance(args_chain, (nf.App, nf.Symbol))
                 return kl.KoreApplies(sorts_chain, args_chain)
@@ -124,14 +185,26 @@ class KoreConverter:
         else:
             return nf.FakeNotation(symbol, tuple(arguments))
 
-    def _resolve_evar(self, evar: kore.EVar) -> nf.EVar:
+    def _resolve_evar(self, name: str) -> nf.EVar:
         """Resolve the evar in the given pattern."""
-        if evar.name not in self._evars:
-            self._evars[evar.name] = nf.EVar(name=len(self._evars))
-        return self._evars[evar.name]
+        if name not in self._evars:
+            self._evars[name] = nf.EVar(name=len(self._evars))
+        return self._evars[name]
 
     def _resolve_metavar(self, name: str) -> nf.MetaVar:
         """Resolve the metavar in the given pattern."""
         if name not in self._metavars:
             self._metavars[name] = nf.MetaVar(name=len(self._metavars))
         return self._metavars[name]
+
+    def _lookup_metavar(self, name: str) -> nf.MetaVar:
+        assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
+        return self._metavars[name]
+
+    def convert_substitution(self, subst: dict[str, nf.Pattern]) -> dict[int, nf.Pattern]:
+        # TODO: Remove this function eventually, it is needed until we use EVars instead of metavars
+        substitutions = {}
+        for id, pattern in subst.items():
+            name = self._lookup_metavar(id).name
+            substitutions[name] = pattern
+        return substitutions
