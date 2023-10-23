@@ -690,6 +690,22 @@ struct Pattern {
       break;
     }
   }
+
+  class Term;
+  static void printStack(LinkedList<Term *> *stack) {
+    std::cout << "Stack: ";
+    for (Term *it : *stack) {
+      if (it->type == Term::Type::Pattern) {
+        it->pattern->print();
+        std::cout << "; ";
+      } else if (it->type == Term::Type::Proved) {
+        std::cout << "[ Proved: ";
+        it->pattern->print();
+        std::cout << " ]; ";
+      }
+    }
+    std::cout << std::endl;
+  }
 #endif
 
   class Term {
@@ -964,10 +980,12 @@ struct Pattern {
     }
   }
 
-  void instantiate_in_place(Pattern &p, IdList &vars,
-                            LinkedList<Pattern *> &plugs) {
+  static void instantiate_in_place(Pattern &p, IdList &vars,
+                                   LinkedList<Pattern *> &plugs) {
     if (auto ret = instantiate_internal(p, vars, plugs)) {
-      p = *ret.unwrap();
+      p = *copy(ret.unwrap()); // FIXME: We shouldn't have to copy here, however
+                               // zkllvm complier complains if we directly pass
+                               // the reference here.
     }
   }
 
@@ -1102,15 +1120,81 @@ struct Pattern {
       case Instruction::Mu:
       case Instruction::ESubst:
       case Instruction::SSubst:
+        break;
       case Instruction::Prop1:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(prop1)));
+        break;
       case Instruction::Prop2:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(prop2)));
+        break;
       case Instruction::Prop3:
-      case Instruction::ModusPonens:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(prop3)));
+        break;
+      case Instruction::ModusPonens: {
+        auto premise2 = pop_stack_proved(stack);
+        auto premise1 = pop_stack_proved(stack);
+
+        if (premise1->inst != Instruction::Implication) {
+#if DEBUG
+          throw std::runtime_error("Modus Ponens: expected implication on the "
+                                   "stack, got: " +
+                                   std::to_string((int)premise1->inst));
+#endif
+          exit(1);
+        }
+
+        if (premise1->left != *premise2) {
+#if DEBUG
+          throw std::runtime_error(
+              "Antecedents do not match for modus ponens.\n" +
+              std::to_string((int)premise1->left->inst) + "\n" +
+              std::to_string((int)premise2->inst));
+
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Proved, copy(premise1->right)));
+        break;
+      }
       case Instruction::Quantifier:
       case Instruction::Generalization:
       case Instruction::Existence:
       case Instruction::Substitution:
-      case Instruction::Instantiate:
+        break;
+      case Instruction::Instantiate: {
+        auto n = iterator.next();
+        if (n == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Insufficient parameters for Instantiate instruction");
+#endif
+          exit(1);
+        }
+        auto ids = LinkedList<Id>::create();
+        auto plugs = LinkedList<Pattern *>::create();
+
+        auto metaterm = pop_stack(stack);
+        for (int i = 0; i < *n; i++) {
+          ids->push(*iterator.next());
+          plugs->push(pop_stack_pattern(stack));
+        }
+
+        if (metaterm->type == Term::Type::Pattern) {
+          instantiate_in_place(*metaterm->pattern, *ids, *plugs);
+          stack->push(
+              Term::newTerm(Term::Type::Pattern, copy(metaterm->pattern)));
+        } else if (metaterm->type == Term::Type::Proved) {
+          instantiate_in_place(*metaterm->pattern, *ids, *plugs);
+          stack->push(
+              Term::newTerm(Term::Type::Proved, copy(metaterm->pattern)));
+        } else {
+#if DEBUG
+          throw std::runtime_error("Instantiate needs a term on the stack");
+#endif
+          exit(1);
+        }
+        break;
+      }
       case Instruction::Pop:
         break;
       case Instruction::Save: {
@@ -1160,6 +1244,9 @@ struct Pattern {
         exit(1);
       }
       }
+#if DEBUG
+      printStack(stack);
+#endif
     }
   }
 };
