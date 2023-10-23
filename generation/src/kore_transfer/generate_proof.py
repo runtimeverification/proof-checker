@@ -24,7 +24,7 @@ def generate_proofs(
         claim = kl.KoreRewrites(axiom.phi0, hint.configuration_before, hint.configuration_after)
 
         assert isinstance(axiom, nf.Pattern), f'The hint should contain a pattern, got {axiom}'
-        proof_expression.prove_rewrite_step(claim, axiom, hint.instantiations)
+        proof_expression.prove_rewrite_step(claim, axiom, hint.substitutions)
         claims += 1
 
     print(f'Generated {claims} claims')

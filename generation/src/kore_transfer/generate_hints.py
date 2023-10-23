@@ -18,7 +18,7 @@ class KoreHint:
         self._pre_configuration: nf.Pattern = conf_before
         self._post_configuration: nf.Pattern = conf_after
         self._axiom_ordinal: int = axiom_ordinal
-        self._instantiations: dict[int, nf.Pattern] = instantiations
+        self._substitutions: dict[int, nf.Pattern] = instantiations
 
     @property
     def configuration_before(self) -> nf.Pattern:
@@ -33,8 +33,8 @@ class KoreHint:
         return self._axiom_ordinal
 
     @property
-    def instantiations(self) -> dict[int, nf.Pattern]:
-        return self._instantiations
+    def substitutions(self) -> dict[int, nf.Pattern]:
+        return self._substitutions
 
 
 def get_proof_hints(
