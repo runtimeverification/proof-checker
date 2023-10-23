@@ -19,8 +19,6 @@ def match_single(
             if not pattern.can_be_replaced_by(instance):
                 return None
             ret[id] = instance
-    elif pattern == bot and instance == bot:
-        pass
     elif (pat_imp := Implies.unwrap(pattern)) and (inst_imp := Implies.unwrap(instance)):
         ret = match_single(pat_imp[0], inst_imp[0], ret)
         if not ret:
