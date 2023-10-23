@@ -7,8 +7,6 @@ import pytest
 from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from proof_generation.pattern import Pattern
 
 phi0 = MetaVar(0)
@@ -143,7 +141,5 @@ stack_mixed1 = lambda term: ESubst(SSubst(pattern=term, var=SVar(1), plug=EVar(1
         [SSubst(phi0, SVar(0), phi0), {0: SVar(0)}, SVar(0)],
     ],
 )
-def test_instantiate_subst(
-    pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern
-) -> None:
+def test_instantiate_subst(pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern) -> None:
     assert pattern.instantiate(plugs) == expected
