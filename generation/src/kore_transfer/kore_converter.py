@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from enum import Enum
+from typing import NamedTuple
 
 import pyk.kore.syntax as kore
 
@@ -9,6 +11,20 @@ import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
 
 ProofMethod = Callable[[proof.ProofExp], proof.Proved]
+
+
+class AxiomType(Enum):
+    Unclassified = 0
+    RewriteRule = 1
+    FunctionalSymbol = 2
+
+
+class ConvertedAxiom(NamedTuple):
+    kind: AxiomType
+    pattern: nf.Pattern
+
+
+Axioms = dict[AxiomType, list[ConvertedAxiom]]
 
 
 class KoreConverter:
@@ -22,35 +38,67 @@ class KoreConverter:
         self._notations: dict[str, type[nf.Notation]] = {}
 
         # TODO: Update it depending on the numbering schemes used in hints
-        self._axioms_to_choose_from: dict[int, kore.Axiom] = self._retrieve_axioms()
+        self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
+        self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
 
     def convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
         """Convert the given pattern to the pattern in the new format."""
         return self._convert_pattern(pattern)
 
-    def retrieve_axiom(self, position: int) -> nf.Pattern:
+    def retrieve_axiom_by_index(self, position: int) -> Axioms:
         """Retrieve the axiom at the given ordinal."""
         kore_axiom = self._axioms_to_choose_from[position]
-        return self._convert_pattern(kore_axiom.pattern)
+        converted = self._convert_axiom(kore_axiom)
+        related_axioms = self.collect_related_axioms(converted)
+        return self._organize_axioms([converted] + related_axioms)
 
-    def _retrieve_axioms(self) -> dict[int, kore.Axiom]:
+    def collect_related_axioms(self, axiom: ConvertedAxiom) -> list[ConvertedAxiom]:
+        # TODO: It goes without an implementation for now
+        return []
+
+    def _organize_axioms(self, axioms: list[ConvertedAxiom]) -> Axioms:
+        """Organize the axioms by their type."""
+        organized_axioms: Axioms = {}
+        for axiom in axioms:
+            organized_axioms.setdefault(axiom.kind, [])
+            if axiom not in organized_axioms[axiom.kind]:
+                organized_axioms[axiom.kind].append(axiom)
+
+        return organized_axioms
+
+    def _convert_axiom(self, kore_axiom: kore.Axiom) -> ConvertedAxiom:
+        if kore_axiom in self._axioms_cache:
+            return self._axioms_cache[kore_axiom]
+
+        # Check the axiom type
+        preprocessed_pattern: kore.Pattern
+        if isinstance(kore_axiom.pattern, kore.Rewrites):
+            axiom_type = AxiomType.RewriteRule
+
+            pattern = kore_axiom.pattern
+            assert isinstance(pattern, kore.Rewrites)
+            assert isinstance(pattern.left, kore.And)
+            assert isinstance(pattern.right, kore.And)
+
+            # TODO: Remove side conditions for now
+            preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
+        else:
+            axiom_type = AxiomType.Unclassified
+            preprocessed_pattern = kore_axiom.pattern
+
+        assert isinstance(preprocessed_pattern, kore.Pattern)
+        converted_pattern = self._convert_pattern(preprocessed_pattern)
+        converted_axiom = ConvertedAxiom(axiom_type, converted_pattern)
+        self._axioms_cache[kore_axiom] = converted_axiom
+        return converted_axiom
+
+    def _retrieve_axioms(self) -> list[kore.Axiom]:
         """Collect and save all axioms from the definition in Kore without converting them. This list will
         be used to resolve ordinals from hints to real axioms."""
-        axioms: dict[int, kore.Axiom] = {}
-        ordinal = 0
-        for module in self._definition.modules:
-            for axiom in module.axioms:
-                # Add an axiom only if its pattern starts with kore.Rewrites
-                if isinstance(axiom.pattern, kore.Rewrites):
-                    pattern = axiom.pattern
-                    assert isinstance(pattern, kore.Rewrites)
-                    assert isinstance(pattern.left, kore.And)
-                    assert isinstance(pattern.right, kore.And)
-                    # TODO: Remove side conditions for now
-                    preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-                    axioms[ordinal] = kore.Axiom(axiom.vars, preprocessed_pattern, axiom.attrs)
-                ordinal += 1
-
+        axioms: list[kore.Axiom] = []
+        for kore_module in self._definition.modules:
+            for axiom in kore_module.axioms:
+                axioms.append(axiom)
         return axioms
 
     def _convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:

@@ -48,7 +48,7 @@ def get_proof_hints(
     post_config = pre_config
     for rewrite_step in llvm_proof_hint.trace:
         # populate kore converter state with meta-data from rule rule_ordinal
-        kore_converter.retrieve_axiom(rewrite_step.rule_ordinal)
+        kore_converter.retrieve_axiom_by_index(rewrite_step.rule_ordinal)
 
         # generate the hint using the new format
         pre_config = post_config

@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
+from kore_transfer.kore_converter import AxiomType
 
 if TYPE_CHECKING:
     import proof_generation.pattern as nf
@@ -43,7 +44,9 @@ class KoreDefinition(proof.ProofExp):
     @classmethod
     def add_axiom(cls, position: int, converter: KoreConverter) -> nf.Pattern:
         """Add an axiom to the definition."""
-        new_axiom = converter.retrieve_axiom(position)
+        axioms = converter.retrieve_axiom_by_index(position)
+        new_axiom = axioms[AxiomType.RewriteRule][0].pattern
+
         cls.axiom_patterns[position] = new_axiom
         return new_axiom
 
