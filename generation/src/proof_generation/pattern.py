@@ -390,9 +390,11 @@ class Notation(Pattern, ABC):
     def arguments(self) -> dict[int, Pattern]:
         ret: dict[int, Pattern] = {}
 
-        for i, arg in enumerate(vars(self).values()):
+        i = 0
+        for arg in vars(self).values():
             if isinstance(arg, Pattern):
                 ret[i] = arg
+                i += 1
 
         return ret
 

@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Exists, Implies, Notation
+from proof_generation.pattern import Exists, Implies, Notation, EVar
 from proof_generation.proofs.propositional import Propositional, neg, phi0, top
 
 if TYPE_CHECKING:
@@ -31,10 +31,10 @@ class Substitution(Propositional):
 
     @staticmethod
     def claims() -> list[Pattern]:
-        return [Implies(top, Forall(0, top))]
+        return [Forall(0, top)]
 
     def proof_expressions(self) -> list[ProvedExpression]:
-        return []
+        return [self.top_univgen]
 
     def universal_gen(self, phi: ProvedExpression, var: EVar) -> Proved:
         """
@@ -53,13 +53,13 @@ class Substitution(Propositional):
             var,
         )
 
-    def top_univgen() -> Proved:
+    def top_univgen(self) -> Proved:
         """
         T
         ---
         forall x0 . T
         """
-        return self.universal_gen(lambda: self.top_intro())
+        return self.universal_gen(self.top_intro, EVar(0))
 
     def functional_subst(self, phi: ProvedExpression, phi1: ProvedExpression, x: EVar) -> ProvedExpression:
         """
