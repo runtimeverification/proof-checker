@@ -14,8 +14,8 @@ class Instruction(IntEnum):
     Symbol = 0x04
     Implies = 0x05
     App = 0x06
-    Exists = 0x07
-    Mu = 0x08
+    Mu = 0x07
+    Exists = 0x08
     # Meta Patterns
     MetaVar = 0x09
     ESubst = 0x0A
