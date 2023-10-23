@@ -41,9 +41,6 @@ class KoreConverter:
         self._metavars: dict[str, nf.MetaVar] = {}
         self._notations: dict[str, type[nf.Notation]] = {}
 
-        # TODO: We don't need this attribute. We need to collect these axioms on demand when we need them
-        self._symbol_axioms: dict[str, kore.Axiom] = {}
-
         # TODO: Update it depending on the numbering schemes used in hints
         self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
@@ -62,21 +59,9 @@ class KoreConverter:
 
     def collect_axioms_for_substitutions(self, substitutions: dict[str, nf.Pattern]) -> list[ConvertedAxiom]:
         added_axioms = []
-        for name in substitutions.keys():
-            # The line below is needed until we use metavars instead of EVars
-            self._resolve_metavar(name)
-
-            if name in self._symbol_axioms:
-                # Look up for an axiom
-                converted_pattern = self._convert_pattern(self._symbol_axioms[name].pattern)
-            else:
-                # Generate axiom if it is missing
-                evar = self._resolve_evar(name)
-
-                # TODO: We need an equality notation there
-                # TODO: Should we use Kore or NF pattern here? I am using the NF because the sort is unclear
-                converted_pattern = nf.Exists(0, prop.And(nf.Implies(nf.EVar(0), evar), nf.Implies(evar, nf.EVar(0))))
-
+        for pattern in substitutions.values():
+            # TODO: Requires equality to be implemented
+            converted_pattern = nf.Exists(0, prop.And(nf.Implies(nf.EVar(0), pattern), nf.Implies(pattern, nf.EVar(0))))
             added_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return added_axioms
 
@@ -119,31 +104,9 @@ class KoreConverter:
     def _retrieve_axioms(self) -> list[kore.Axiom]:
         """Collect and save all axioms from the definition in Kore without converting them. This list will
         be used to resolve ordinals from hints to real axioms."""
-
-        def if_functional(kore_axiom: kore.Axiom) -> bool:
-            for attr in kore_axiom.attrs:
-                if isinstance(attr, kore.App) and attr.symbol == 'functional':
-                    return True
-            return False
-
         axioms: list[kore.Axiom] = []
         for kore_module in self._definition.modules:
             for axiom in kore_module.axioms:
-                # TODO: Do we need this filtering there?
-                # Collect axioms that state existence of a EVar
-                if (
-                    if_functional(axiom)
-                    and isinstance(axiom.pattern, kore.Exists)
-                    and isinstance(axiom.pattern.pattern, kore.Equals)
-                    and isinstance(axiom.pattern.pattern.right, kore.App)
-                    and len(axiom.pattern.pattern.right.sorts) == 0
-                    and len(axiom.pattern.pattern.right.args) == 0
-                    and axiom.pattern.pattern.left == axiom.pattern.var
-                ):
-                    # self._symbol_axioms[var] = axiom
-                    symbol = axiom.pattern.pattern.right.symbol
-                    self._symbol_axioms[symbol] = axiom
-
                 axioms.append(axiom)
         return axioms
 
@@ -171,18 +134,20 @@ class KoreConverter:
             case kore.App(symbol, sorts, args):
 
                 def chain_patterns(patterns: list[nf.Pattern]) -> nf.Pattern:
-                    if len(patterns) == 0:
-                        return nf.Bot()
+                    next_one, *patterns_left = patterns
+                    if len(patterns_left) == 0:
+                        return next_one
                     else:
-                        next_one, *patterns_left = patterns
                         return nf.App(next_one, chain_patterns(patterns_left))
 
                 app_symbol: nf.Pattern = self._resolve_symbol(symbol)
                 args_patterns: list[nf.Pattern] = [self._convert_pattern(arg) for arg in args]
                 sorts_patterns: list[nf.Pattern] = [self._resolve_symbol(sort) for sort in sorts]
 
-                args_chain = chain_patterns([app_symbol] + args_patterns) if len(args_patterns) > 0 else app_symbol
-                sorts_chain = chain_patterns(sorts_patterns)
+                args_chain = chain_patterns([app_symbol] + args_patterns)
+
+                # TODO: Replace it with tuples when the Notation class would allow it
+                sorts_chain = chain_patterns(sorts_patterns) if sorts_patterns else nf.Bot()
 
                 assert isinstance(args_chain, (nf.App, nf.Symbol))
                 return kl.KoreApplies(sorts_chain, args_chain)
