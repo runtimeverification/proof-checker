@@ -8,8 +8,6 @@ if TYPE_CHECKING:
 
 
 class Instruction(IntEnum):
-    List = 0x01
-
     # Patterns
     EVar = 0x02
     SVar = 0x03

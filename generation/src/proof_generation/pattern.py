@@ -391,8 +391,8 @@ class Notation(Pattern, ABC):
         ret: dict[int, Pattern] = {}
 
         for i, arg in enumerate(vars(self).values()):
-            assert isinstance(arg, Pattern)
-            ret[i] = arg
+            if isinstance(arg, Pattern):
+                ret[i] = arg
 
         return ret
 
