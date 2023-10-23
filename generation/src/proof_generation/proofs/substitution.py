@@ -4,11 +4,11 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Exists, Implies, Notation, EVar
+from proof_generation.pattern import EVar, Exists, Notation
 from proof_generation.proofs.propositional import Propositional, neg, phi0, top
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import EVar, Pattern
+    from proof_generation.pattern import Pattern
     from proof_generation.proof import Proved, ProvedExpression
 
 
