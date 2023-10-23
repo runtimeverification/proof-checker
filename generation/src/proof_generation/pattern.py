@@ -24,6 +24,8 @@ def match_single(
         cls = type(pattern)
         pat_n = cls.unwrap(pattern)
         inst_n = cls.unwrap(instance)
+        assert pat_n is not None
+        assert inst_n is not None
         assert len(pat_n) == len(inst_n)
         for i in range(len(pat_n)):
             ret = match_single(pat_n[i], inst_n[i], ret)

@@ -145,13 +145,13 @@ def test_move_to_front(i: int) -> None:
     taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
 
     pf = taut.or_move_to_front(i, i + 1)
-    conc = pf.conclusion
+    conc = pf().conclusion
     c1, c2 = Equiv.extract(conc)
 
     print(f'Proved {str(c1)} <-> {str(c2)} \n\n')
 
     pf2 = taut.or_move_to_front(i, 100)
-    conc2 = pf2.conclusion
+    conc2 = pf2().conclusion
     c12, c22 = Equiv.extract(conc2)
 
     print(f'Proved {str(c12)} <-> {str(c22)} \n\n')
