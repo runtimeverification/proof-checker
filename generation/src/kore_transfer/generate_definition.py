@@ -13,13 +13,13 @@ ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
 class KoreDefinition(proof.ProofExp):
-    axiom_patterns: list[nf.Pattern] = []
+    axiom_patterns: dict[int, nf.Pattern] = {}
     claim_patterns: list[nf.Pattern] = []
     proofs: list[ProofMethod] = []
 
     @classmethod
     def axioms(cls) -> list[nf.Pattern]:
-        return cls.axiom_patterns
+        return list(cls.axiom_patterns.values())
 
     @classmethod
     def claims(cls) -> list[nf.Pattern]:
@@ -35,6 +35,7 @@ class KoreDefinition(proof.ProofExp):
             """Prove the transition between two configurations."""
             for pattern in instantiations.values():
                 proof_expr.interpreter.pattern(pattern)
+            # The axiom pattern must be a rewrite rule
             return proof_expr.interpreter.instantiate(proof_expr.load_axiom(axiom), instantiations)
 
         cls.proofs.append(proof_transition)
@@ -43,7 +44,7 @@ class KoreDefinition(proof.ProofExp):
     def add_axiom(cls, position: int, converter: KoreConverter) -> nf.Pattern:
         """Add an axiom to the definition."""
         new_axiom = converter.retrieve_axiom(position)
-        cls.axiom_patterns.append(new_axiom)
+        cls.axiom_patterns[position] = new_axiom
         return new_axiom
 
     def proof_expressions(self) -> list[proof.ProvedExpression]:

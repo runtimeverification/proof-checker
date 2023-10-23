@@ -22,7 +22,7 @@ class KoreConverter:
         self._notations: dict[str, type[nf.Notation]] = {}
 
         # TODO: Update it depending on the numbering schemes used in hints
-        self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
+        self._axioms_to_choose_from: dict[int, kore.Axiom] = self._retrieve_axioms()
 
     def convert_pattern(self, pattern: kore.Pattern) -> nf.Pattern:
         """Convert the given pattern to the pattern in the new format."""
@@ -33,21 +33,23 @@ class KoreConverter:
         kore_axiom = self._axioms_to_choose_from[position]
         return self._convert_pattern(kore_axiom.pattern)
 
-    def _retrieve_axioms(self) -> list[kore.Axiom]:
+    def _retrieve_axioms(self) -> dict[int, kore.Axiom]:
         """Collect and save all axioms from the definition in Kore without converting them. This list will
         be used to resolve ordinals from hints to real axioms."""
-        axioms: list[kore.Axiom] = []
+        axioms: dict[int, kore.Axiom] = {}
+        ordinal = 0
         for module in self._definition.modules:
-            # Select only patterns below that starts with kore.Rewrites
-            for axiom in (axiom for axiom in module.axioms if isinstance(axiom.pattern, kore.Rewrites)):
-                pattern = axiom.pattern
-                assert isinstance(pattern, kore.Rewrites)
-                assert isinstance(pattern.left, kore.And)
-                assert isinstance(pattern.right, kore.And)
-                # TODO: Remove side conditions for now
-                preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-
-                axioms.append(kore.Axiom(axiom.vars, preprocessed_pattern, axiom.attrs))
+            for axiom in module.axioms:
+                # Add an axiom only if its pattern starts with kore.Rewrites
+                if isinstance(axiom.pattern, kore.Rewrites):
+                    pattern = axiom.pattern
+                    assert isinstance(pattern, kore.Rewrites)
+                    assert isinstance(pattern.left, kore.And)
+                    assert isinstance(pattern.right, kore.And)
+                    # TODO: Remove side conditions for now
+                    preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
+                    axioms[ordinal] = kore.Axiom(axiom.vars, preprocessed_pattern, axiom.attrs)
+                ordinal += 1
 
         return axioms
 
@@ -135,3 +137,17 @@ class KoreConverter:
         if name not in self._metavars:
             self._metavars[name] = nf.MetaVar(name=len(self._metavars))
         return self._metavars[name]
+
+    def _lookup_metavar(self, name: str) -> nf.MetaVar:
+        assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
+        return self._metavars[name]
+
+    def convert_substitution(
+        self,
+        subst: tuple[tuple[str, kore.Pattern], ...],
+    ) -> dict[int, nf.Pattern]:
+        substitutions = {}
+        for id, pattern in subst:
+            name = self._lookup_metavar(id).name
+            substitutions[name] = self.convert_pattern(pattern)
+        return substitutions

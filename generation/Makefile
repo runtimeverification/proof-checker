@@ -31,6 +31,7 @@ k-version:
 # Target only this specific subset of programs that are currently supported:
 PROOF_HINTS=proof-hints/peano/mul_3_5.peano.hints \
 			proof-hints/single-rewrite/foo-a.single-rewrite.hints \
+			proof-hints/double-rewrite/foo-a.double-rewrite.hints \
 			proof-hints/trivial/0_rewrites.trivial.hints \
 			proof-hints/trivial/1_rewrite.trivial.hints \
 			proof-hints/trivial/2_rewrites.trivial.hints
