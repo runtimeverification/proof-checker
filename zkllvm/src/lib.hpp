@@ -464,7 +464,7 @@ struct Pattern {
   bool pattern_well_formed() {
     switch (inst) {
     case Instruction::MetaVar:
-      return !app_ctx_holes->isDisjoint(e_fresh);
+      return !app_ctx_holes->constainsElementOf(e_fresh);
     case Instruction::Mu:
       return subpattern->pattern_positive(id);
     case Instruction::ESubst:
@@ -508,6 +508,18 @@ struct Pattern {
     pattern->negative = negative;
     pattern->app_ctx_holes = IdList::create();
     ;
+    return pattern;
+  }
+
+  static Pattern *metavar(Id id, IdList *e_fresh, IdList *s_fresh,
+                          IdList *positive, IdList *negative,
+                          IdList *app_ctx_holes) {
+    auto pattern = newPattern(Instruction::MetaVar, id);
+    pattern->e_fresh = e_fresh;
+    pattern->s_fresh = s_fresh;
+    pattern->positive = positive;
+    pattern->negative = negative;
+    pattern->app_ctx_holes = app_ctx_holes;
     return pattern;
   }
 
@@ -969,9 +981,9 @@ struct Pattern {
   /// Stack utilities
   /// ---------------
 
-  Term *pop_stack(Stack *stack) { return stack->pop(); }
+  static Term *pop_stack(Stack *stack) { return stack->pop(); }
 
-  Pattern *pop_stack_pattern(Stack *stack) {
+  static Pattern *pop_stack_pattern(Stack *stack) {
     auto term = pop_stack(stack);
     if (term->type != Term::Type::Pattern) {
 #if DEBUG
@@ -982,7 +994,7 @@ struct Pattern {
     return term->pattern;
   }
 
-  Pattern *pop_stack_proved(Stack *stack) {
+  static Pattern *pop_stack_proved(Stack *stack) {
     auto term = pop_stack(stack);
     if (term->type != Term::Type::Proved) {
 #if DEBUG
@@ -991,5 +1003,163 @@ struct Pattern {
       exit(1);
     }
     return term->pattern;
+  }
+
+  /// Main implementation
+  /// -------------------
+
+  enum class ExecutionPhase { Gamma, Claims, Proof };
+
+  static LinkedList<uint8_t> *
+  read_u8_vec(LinkedList<uint8_t>::Iterator &iterator) {
+    auto size = *iterator.next();
+    auto vec = LinkedList<uint8_t>::create();
+    for (int i = 0; i < size; i++) {
+      vec->push_back(*iterator.next());
+    }
+    return vec;
+  }
+
+  static void execute_instructions(LinkedList<uint8_t> *buffer, Stack *stack,
+                                   Memory *memory, Claims *claims,
+                                   ExecutionPhase phase) {
+    // Get an iterator for the input buffer
+    auto iterator = buffer->begin();
+
+    // Metavars
+    // Phi0 = MetaVar(0)
+    // Phi1 = MetaVar(1)
+    // Phi2 = MetaVar(2)
+    auto phi0 = metavar_unconstrained(0);
+    auto phi1 = metavar_unconstrained(1);
+    auto phi2 = metavar_unconstrained(2);
+
+    // Axioms
+    // Prop1: phi0 => (phi1 => phi0)
+    // Prop2: (phi0 => (phi1 => phi2)) => ((phi0 => phi1) => (phi0 => phi2))
+    // Prop3: (~phi0 => phi0
+    auto prop1 = implies(copy(phi0), implies(copy(phi1), copy(phi0)));
+    auto prop2 =
+        implies(implies(copy(phi0), implies(copy(phi1), copy(phi2))),
+                implies(implies(copy(phi0), phi1), implies(copy(phi0), phi2)));
+    auto prop3 = implies(negate(negate(copy(phi0))), copy(phi0));
+
+    // Quantifier: forall x. phi0
+    auto quantifier = implies(esubst(copy(phi0), 0, evar(1)), exists(0, phi0));
+
+    // Existence: exists x. phi0
+    auto existence = exists(0, phi0);
+
+    // Iteration through the input buffer
+    while (iterator != buffer->end()) {
+      Instruction instr_u32 = from(*iterator.next());
+
+      switch (instr_u32) {
+        // TODO: Add an abstraction for pushing these one-argument terms on
+        // stack?
+      case Instruction::EVar:
+      case Instruction::SVar:
+      case Instruction::Symbol:
+      case Instruction::MetaVar: {
+        auto getId = iterator.next();
+        if (getId == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error("Expected id for MetaVar instruction");
+#endif
+          exit(1);
+        }
+        auto id = (Id)*getId;
+
+        auto e_fresh = read_u8_vec(iterator);
+        auto s_fresh = read_u8_vec(iterator);
+        auto positive = read_u8_vec(iterator);
+        auto negative = read_u8_vec(iterator);
+        auto app_ctx_holes = read_u8_vec(iterator);
+
+        auto metavar_pat =
+            metavar(id, e_fresh, s_fresh, positive, negative, app_ctx_holes);
+
+        if (!metavar_pat->pattern_well_formed()) {
+#if DEBUG
+          throw std::runtime_error("Constructed meta-var " +
+                                   std::to_string(id) + " is ill-formed.");
+#endif
+          exit(1);
+        }
+        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
+        break;
+      }
+      case Instruction::CleanMetaVar:
+        break;
+      case Instruction::Implication: {
+        auto right = pop_stack_pattern(stack);
+        auto left = pop_stack_pattern(stack);
+        stack->push(Term::newTerm(Term::Type::Pattern, implies(left, right)));
+        break;
+      }
+      case Instruction::Application:
+      case Instruction::Exists:
+      case Instruction::Mu:
+      case Instruction::ESubst:
+      case Instruction::SSubst:
+      case Instruction::Prop1:
+      case Instruction::Prop2:
+      case Instruction::Prop3:
+      case Instruction::ModusPonens:
+      case Instruction::Quantifier:
+      case Instruction::Generalization:
+      case Instruction::Existence:
+      case Instruction::Substitution:
+      case Instruction::Instantiate:
+      case Instruction::Pop:
+        break;
+      case Instruction::Save: {
+        auto term = stack->front();
+        if (term->type == Term::Type::Pattern) {
+          memory->push_back(
+              Entry::newEntry(Entry::Type::Pattern, copy(term->pattern)));
+        } else if (term->type == Term::Type::Proved) {
+          memory->push_back(
+              Entry::newEntry(Entry::Type::Proved, copy(term->pattern)));
+        } else {
+#if DEBUG
+          throw std::runtime_error("Save needs an entry on the stack");
+#endif
+          exit(1);
+        }
+        break;
+      }
+      case Instruction::Load: {
+        auto index = iterator.next();
+        if (index == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Insufficient parameters for Load instruction");
+#endif
+          exit(1);
+        }
+        Entry *entry = memory->get(*index);
+        if (entry->type == Entry::Type::Pattern) {
+          stack->push(Term::newTerm(Term::Type::Pattern, copy(entry->pattern)));
+        } else if (entry->type == Entry::Type::Proved) {
+          stack->push(Term::newTerm(Term::Type::Proved, copy(entry->pattern)));
+        } else {
+#if DEBUG
+          throw std::runtime_error("Load needs an entry in memory");
+#endif
+          exit(1);
+        }
+        break;
+      }
+      case Instruction::Publish:
+      default: {
+#if DEBUG
+        throw std::runtime_error("Unknown instruction: " +
+                                 std::to_string((int)instr_u32));
+#endif
+        exit(1);
+      }
+      }
+    }
   }
 };

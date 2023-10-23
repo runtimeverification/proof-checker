@@ -619,3 +619,64 @@ int test_instantiate() {
 
   return 0;
 }
+
+void execute_vector(LinkedList<uint8_t> *instrs, Pattern::Stack *stack,
+                    Pattern::Memory *memory, Pattern::Claims *claims,
+                    Pattern::ExecutionPhase phase) {
+
+  Pattern::execute_instructions(instrs, stack, memory, claims, phase);
+}
+
+void test_construct_phi_implies_phi() {
+
+  auto proof = LinkedList<uint8_t>::create();
+
+  proof->push_back((uint8_t)Instruction::MetaVar);
+  proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)Instruction::Save);
+  proof->push_back((uint8_t)Instruction::Load);
+  proof->push_back((uint8_t)0);
+  proof->push_back((uint8_t)Instruction::Implication);
+
+  Pattern::Stack *stack = Pattern::Stack::create();
+  auto memory = Pattern::Memory::create();
+  auto claims = Pattern::Claims::create();
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  auto phi0 = Pattern::metavar_unconstrained(0);
+  auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Pattern, Pattern::implies(phi0, phi0)));
+  assert(*stack == *expected_stack);
+
+  for (auto it : *stack) {
+    it->pattern->~Pattern();
+  }
+
+  for (auto it : *memory) {
+    it->pattern->~Pattern();
+  }
+
+  for (auto it : *claims) {
+    it->~Pattern();
+  }
+
+  proof->~LinkedList();
+  free(proof);
+  stack->~LinkedList();
+  free(stack);
+  memory->~LinkedList();
+  free(memory);
+  claims->~LinkedList();
+  free(claims);
+
+  expected_stack->~LinkedList();
+  free(expected_stack);
+
+  phi0->~Pattern();
+}
