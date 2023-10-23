@@ -167,10 +167,10 @@ class BasicInterpreter:
         y = EVar(1)
         return Proved(Implies(ESubst(phi, x, y), Exists(x.name, phi)))
 
-    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
-        l, r = Implies.extract(left.conclusion)
-        assert r.e_fresh(var), f'{str(var)} in FV({str(r)})'
-        return Implies(Exists(var.id, l), r)
+    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
+        l, r = Implies.extract(proved.conclusion)
+        assert r.ef(var.name), f'{str(var)} in FV({str(r)})'
+        return Proved(Implies(Exists(var.name, l), r))
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return Proved(proved.conclusion.instantiate(delta))

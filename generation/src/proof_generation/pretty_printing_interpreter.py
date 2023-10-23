@@ -144,12 +144,12 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write('ModusPonens')
 
     @pretty()
-    def exists_quantifier(self) -> Proved:
+    def exists_quantifier(self) -> None:
         self.out.write('Quantifier')
 
     @pretty()
-    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
-        self.out.write('Generalization')
+    def exists_generalization(self, proved: Proved, var: EVar) -> None:
+        self.out.write(f'Generalization {var.name}')
 
     @pretty()
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> None:

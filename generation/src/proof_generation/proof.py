@@ -97,8 +97,8 @@ class ProofExp(ABC):
     def exists_quantifier(self) -> Proved:
         return self.interpreter.exists_quantifier()
 
-    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
-        return self.interpreter.exists_generalization(left, right, var)
+    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
+        return self.interpreter.exists_generalization(proved, var)
 
     def dynamic_inst(self, proved_expr: ProvedExpression, delta: dict[int, Pattern]) -> Proved:
         for idn, p in delta.items():

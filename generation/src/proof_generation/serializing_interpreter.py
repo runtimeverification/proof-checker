@@ -120,9 +120,9 @@ class SerializingInterpreter(IOInterpreter):
         self.out.write(bytes([Instruction.Quantifier]))
         return ret
 
-    def exists_generalization(self, left: Proved, right: Proved, var: EVar) -> Proved:
-        ret = super().exists_generalization(left, right, var)
-        self.out.write(bytes([Instruction.Generalization]))
+    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
+        ret = super().exists_generalization(proved, var)
+        self.out.write(bytes([Instruction.Generalization, var.name]))
         return ret
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:

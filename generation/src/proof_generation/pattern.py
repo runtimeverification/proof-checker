@@ -65,6 +65,9 @@ def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None
 
 
 class Pattern:
+    def ef(self, name: int) -> bool:
+        raise NotImplementedError
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
@@ -98,6 +101,9 @@ class Pattern:
 class EVar(Pattern):
     name: int
 
+    def ef(self, name: int) -> bool:
+        return name != self.name
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
@@ -124,6 +130,9 @@ class EVar(Pattern):
 @dataclass(frozen=True)
 class SVar(Pattern):
     name: int
+
+    def ef(self, name: int) -> bool:
+        return True
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -152,6 +161,9 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: str
 
+    def ef(self, name: int) -> bool:
+        return True
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
@@ -178,6 +190,9 @@ class Implies(Pattern):
     left: Pattern
     right: Pattern
 
+    def ef(self, name: int) -> bool:
+        return self.left.ef(name) and self.right.ef(name)
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
 
@@ -200,6 +215,9 @@ class App(Pattern):
     left: Pattern
     right: Pattern
 
+    def ef(self, name: int) -> bool:
+        return self.left.ef(name) and self.right.ef(name)
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return App(self.left.instantiate(delta), self.right.instantiate(delta))
 
@@ -217,6 +235,9 @@ class App(Pattern):
 class Exists(Pattern):
     var: int
     subpattern: Pattern
+
+    def ef(self, name: int) -> bool:
+        return name == self.var or self.subpattern.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(delta))
@@ -245,6 +266,9 @@ class Exists(Pattern):
 class Mu(Pattern):
     var: int
     subpattern: Pattern
+
+    def ef(self, name: int) -> bool:
+        return self.subpattern.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(delta))
@@ -278,6 +302,9 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
 
+    def ef(self, name: int) -> bool:
+        return name in self.e_fresh
+
     def can_be_replaced_by(self, pat: Pattern) -> bool:
         # TODO implement this function by checking constraints
         return True
@@ -310,6 +337,13 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
+    def ef(self, name: int) -> bool:
+        if self.var == name:
+            return self.plug.ef(name)
+
+        # We assume that at least one instance will be replaced
+        return self.pattern.ef(name) and self.plug.ef(name)
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug.instantiate(delta))
 
@@ -328,6 +362,10 @@ class SSubst(Pattern):
     pattern: MetaVar | ESubst | SSubst
     var: SVar
     plug: Pattern
+
+    def ef(self, name: int) -> bool:
+        # We assume that at least one instance will be replaced
+        return self.pattern.ef(name) and self.plug.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug.instantiate(delta))
@@ -362,6 +400,9 @@ class Notation(Pattern, ABC):
 
     def conclusion(self) -> Pattern:
         return self.definition().instantiate(self.arguments())
+
+    def ef(self, name: int) -> bool:
+        return self.conclusion().ef(name)
 
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
