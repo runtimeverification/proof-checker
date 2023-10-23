@@ -1,10 +1,11 @@
 #include "../tests/unit_tests.hpp"
 #include <iostream>
+#include <array>
 
 #ifndef DEBUG
-typedef __attribute__((ext_vector_type(1))) int assumption_type;
-typedef __attribute__((ext_vector_type(1))) int claim_type;
-typedef __attribute__((ext_vector_type(1))) int proof_type;
+typedef std::array<int, 1> assumption_type;
+typedef std::array<int, 1> claim_type;
+typedef std::array<int, 1> proof_type;
 
 [[circuit]] int foo(assumption_type a, claim_type c, proof_type p) {
 
