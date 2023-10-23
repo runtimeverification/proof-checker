@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from enum import Enum
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import pyk.kore.syntax as kore
 
 import proof_generation.pattern as nf
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
+import proof_generation.proofs.propositional as prop
+
+if TYPE_CHECKING:
+    from kore_transfer.generate_hints import KoreHint
 
 ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
@@ -37,6 +41,9 @@ class KoreConverter:
         self._metavars: dict[str, nf.MetaVar] = {}
         self._notations: dict[str, type[nf.Notation]] = {}
 
+        # TODO: We don't need this attribute. We need to collect these axioms on demand when we need them
+        self._symbol_axioms: dict[str, kore.Axiom] = {}
+
         # TODO: Update it depending on the numbering schemes used in hints
         self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
@@ -45,16 +52,33 @@ class KoreConverter:
         """Convert the given pattern to the pattern in the new format."""
         return self._convert_pattern(pattern)
 
-    def retrieve_axiom_by_index(self, position: int) -> Axioms:
+    def retrieve_axioms_for_hint(self, hint: KoreHint) -> Axioms:
         """Retrieve the axiom at the given ordinal."""
-        kore_axiom = self._axioms_to_choose_from[position]
+        kore_axiom = self._axioms_to_choose_from[hint.axiom_ordinal]
         converted = self._convert_axiom(kore_axiom)
-        related_axioms = self.collect_related_axioms(converted)
+        related_axioms = self.collect_axioms_for_substitutions(hint.substitutions)
+
         return self._organize_axioms([converted] + related_axioms)
 
-    def collect_related_axioms(self, axiom: ConvertedAxiom) -> list[ConvertedAxiom]:
-        # TODO: It goes without an implementation for now
-        return []
+    def collect_axioms_for_substitutions(self, substitutions: dict[str, nf.Pattern]) -> list[ConvertedAxiom]:
+        added_axioms = []
+        for name in substitutions.keys():
+            # The line below is needed until we use metavars instead of EVars
+            self._resolve_metavar(name)
+
+            if name in self._symbol_axioms:
+                # Look up for an axiom
+                converted_pattern = self._convert_pattern(self._symbol_axioms[name].pattern)
+            else:
+                # Generate axiom if it is missing
+                evar = self._resolve_evar(name)
+
+                # TODO: We need an equality notation there
+                # TODO: Should we use Kore or NF pattern here? I am using the NF because the sort is unclear
+                converted_pattern = nf.Exists(0, prop.And(nf.Implies(nf.EVar(0), evar), nf.Implies(evar, nf.EVar(0))))
+
+            added_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return added_axioms
 
     def _organize_axioms(self, axioms: list[ConvertedAxiom]) -> Axioms:
         """Organize the axioms by their type."""
@@ -95,9 +119,31 @@ class KoreConverter:
     def _retrieve_axioms(self) -> list[kore.Axiom]:
         """Collect and save all axioms from the definition in Kore without converting them. This list will
         be used to resolve ordinals from hints to real axioms."""
+
+        def if_functional(kore_axiom: kore.Axiom) -> bool:
+            for attr in kore_axiom.attrs:
+                if isinstance(attr, kore.App) and attr.symbol == 'functional':
+                    return True
+            return False
+
         axioms: list[kore.Axiom] = []
         for kore_module in self._definition.modules:
             for axiom in kore_module.axioms:
+                # TODO: Do we need this filtering there?
+                # Collect axioms that state existence of a EVar
+                if (
+                    if_functional(axiom)
+                    and isinstance(axiom.pattern, kore.Exists)
+                    and isinstance(axiom.pattern.pattern, kore.Equals)
+                    and isinstance(axiom.pattern.pattern.right, kore.App)
+                    and len(axiom.pattern.pattern.right.sorts) == 0
+                    and len(axiom.pattern.pattern.right.args) == 0
+                    and axiom.pattern.pattern.left == axiom.pattern.var
+                ):
+                    # self._symbol_axioms[var] = axiom
+                    symbol = axiom.pattern.pattern.right.symbol
+                    self._symbol_axioms[symbol] = axiom
+
                 axioms.append(axiom)
         return axioms
 
@@ -174,11 +220,11 @@ class KoreConverter:
         else:
             return nf.FakeNotation(symbol, tuple(arguments))
 
-    def _resolve_evar(self, evar: kore.EVar) -> nf.EVar:
+    def _resolve_evar(self, name: str) -> nf.EVar:
         """Resolve the evar in the given pattern."""
-        if evar.name not in self._evars:
-            self._evars[evar.name] = nf.EVar(name=len(self._evars))
-        return self._evars[evar.name]
+        if name not in self._evars:
+            self._evars[name] = nf.EVar(name=len(self._evars))
+        return self._evars[name]
 
     def _resolve_metavar(self, name: str) -> nf.MetaVar:
         """Resolve the metavar in the given pattern."""
@@ -190,12 +236,10 @@ class KoreConverter:
         assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
         return self._metavars[name]
 
-    def convert_substitution(
-        self,
-        subst: tuple[tuple[str, kore.Pattern], ...],
-    ) -> dict[int, nf.Pattern]:
+    def convert_substitution(self, subst: dict[str, nf.Pattern]) -> dict[int, nf.Pattern]:
+        # TODO: Remove this function eventually, it is needed until we use EVars instead of metavars
         substitutions = {}
-        for id, pattern in subst:
+        for id, pattern in subst.items():
             name = self._lookup_metavar(id).name
-            substitutions[name] = self.convert_pattern(pattern)
+            substitutions[name] = pattern
         return substitutions
