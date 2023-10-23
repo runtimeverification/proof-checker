@@ -84,6 +84,7 @@ class Propositional(ProofExp):
             top,  # Top
             Implies(bot, phi0),  # Bot_elim
             Implies(neg(neg(phi0)), phi0),  # Double Negation elim
+            Implies(phi0, neg(neg(phi0))),  # Double Negation intro
             Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
             Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
         ]
@@ -94,6 +95,7 @@ class Propositional(ProofExp):
             self.top_intro,
             self.bot_elim,
             self.dneg_elim,
+            self.dneg_intro,
             self.absurd,
             self.peirce_bot,
         ]
@@ -183,6 +185,24 @@ class Propositional(ProofExp):
     def dneg_elim(self) -> Proved:
         """(neg neg p) -> p"""
         return self.prop3()
+
+    def ant_commutativity(self, pf: ProvedExpression) -> Proved:
+        """
+          p -> (q -> r)
+        ---------------
+          q -> (p -> r)
+        """
+        conc = self.PROVISIONAL_get_conc(pf)
+        p, qr = Implies.extract(conc)
+        q, r = Implies.extract(qr)
+        return self.imp_transitivity(
+            lambda: self.dynamic_inst(self.prop1, {0: q, 1: p}),
+            lambda: self.modus_ponens(self.dynamic_inst(self.prop2, {0: p, 1: q, 2: r}), pf()),
+        )
+
+    def dneg_intro(self, p: Pattern = phi0) -> Proved:
+        """p -> ~~p"""
+        return self.ant_commutativity(lambda: self.imp_refl(neg(p)))
 
     def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
         """(neg p) -> (p -> q)"""
