@@ -6,7 +6,7 @@ from proof_generation.basic_interpreter import BasicInterpreter
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
-    from typing import Mapping
+    from collections.abc import Mapping
 
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim

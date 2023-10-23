@@ -4,7 +4,7 @@ import sys
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implies, MetaVar, Notation, bot
+from proof_generation.pattern import Implies, MetaVar, Notation, bot, PrettyOptions
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -29,6 +29,10 @@ class Propositional(ProofExp):
     @staticmethod
     def axioms() -> list[Pattern]:
         return []
+
+    @staticmethod
+    def notations() -> list[Notation]:
+        return [bot, neg, top, _and, _or]
 
     @staticmethod
     def claims() -> list[Pattern]:
@@ -266,4 +270,7 @@ class Propositional(ProofExp):
 
 
 if __name__ == '__main__':
+    for claim in Propositional.claims():
+        print(claim.pretty(PrettyOptions(notations={n.definition: n for n in Propositional.notations()})))
+
     Propositional.main(sys.argv)

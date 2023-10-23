@@ -3,16 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TextIO
 
 from proof_generation.io_interpreter import IOInterpreter
-from proof_generation.pattern import App, ESubst, Exists, Implies, Instantiate, Mu, SSubst
+from proof_generation.pattern import PrettyOptions
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Mapping
+    from collections.abc import Callable, Mapping
 
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
-    from proof_generation.pattern import EVar, MetaVar, Pattern, SVar
+    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
 
 
 class PrettyPrintingInterpreter(IOInterpreter):
@@ -23,16 +22,10 @@ class PrettyPrintingInterpreter(IOInterpreter):
         claims: list[Claim] | None = None,
         claim_out: TextIO | None = None,
         proof_out: TextIO | None = None,
+        pretty_options: PrettyOptions | None = None,
     ) -> None:
         super().__init__(phase=phase, out=out, claims=claims, claim_out=claim_out, proof_out=proof_out)
-        self._notation: dict[str, Pattern] = {}
-
-    def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
-        self._notation = notation
-
-    @property
-    def notation(self) -> dict[Pattern, str]:
-        return {v: k for k, v in self._notation.items()}
+        self.pretty_options = pretty_options if pretty_options else PrettyOptions()
 
     @staticmethod
     def pretty(print_stack: bool = True) -> Callable:
@@ -176,36 +169,10 @@ class PrettyPrintingInterpreter(IOInterpreter):
     def publish_claim(self, pattern: Pattern) -> None:
         self.out.write('Publish')
 
-    def pretty_print_pattern(self, p: Pattern) -> str:
-        # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
-        # like implication while keeping notations
-        match p:
-            case Implies(left, right):
-                return f'({self.pretty_print_pattern(left)} -> {self.pretty_print_pattern(right)})'
-            case App(left, right):
-                return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
-            case Exists(var, subpattern):
-                return f'(∃ x{var} . {self.pretty_print_pattern(subpattern)})'
-            case Mu(var, subpattern):
-                return f'(μ X{var} . {self.pretty_print_pattern(p.subpattern)})'
-            case ESubst(pattern, var, plug):
-                return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
-            case SSubst(pattern, var, plug):
-                return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
-
-        return str(p)
-
     def print_stack(self) -> None:
         self.out.write('\tStack:\n')
         for i, item in enumerate(self.stack):
             if isinstance(item, Proved):
-                self.out.write(f'\t{i}: ⊢ {self.pretty_print_pattern(item.conclusion)}\n')
+                self.out.write(f'\t{i}: ⊢ {item.conclusion.pretty(self.pretty_options)}\n')
                 continue
-            self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
-
-
-class NotationlessPrettyPrinter(PrettyPrintingInterpreter):
-    def pretty_print_pattern(self, p: Pattern) -> str:
-        if isinstance(p, Instantiate):
-            return self.pretty_print_pattern(p.simplify())
-        return super().pretty_print_pattern(p)
+            self.out.write(f'\t{i}: {item.pretty(self.pretty_options)}\n')

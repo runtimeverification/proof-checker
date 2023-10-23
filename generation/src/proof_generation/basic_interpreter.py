@@ -20,7 +20,7 @@ from proof_generation.pattern import (
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
-    from typing import Mapping
+    from collections.abc import Mapping
 
     from proof_generation.pattern import Pattern
 
@@ -118,17 +118,14 @@ class BasicInterpreter:
                 self.patterns(positive)
                 self.patterns(negative)
                 self.patterns(app_ctx_holes)
-
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
-
-            case Instantiate(pattern, subst):
+            case Instantiate(subpattern, subst):
                 for inst in subst.values():
                     self.pattern(inst)
-                ret = self.pattern(pattern)
-                if not len(subst):
-                    return ret
+                if len(subst) == 0:
+                    return self.pattern(subpattern)
                 else:
-                    return self.instantiate_pattern(pattern, subst)
+                    return self.instantiate_pattern(self.pattern(subpattern), subst)
 
         raise NotImplementedError(f'{type(p)}')
 

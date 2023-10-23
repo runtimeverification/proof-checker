@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import _and, _or, neg
+from proof_generation.proofs.propositional import Propositional, _and, _or, neg
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -61,6 +61,21 @@ class KoreLemmas(ProofExp):
     @staticmethod
     def claims() -> list[Pattern]:
         return []
+
+    @staticmethod
+    def notations() -> list[Notation]:
+        return [
+            *Propositional.notations(),
+            kore_top,
+            kore_not,
+            kore_and,
+            kore_or,
+            kore_next,
+            kore_implies,
+            kore_app,
+            kore_rewrites,
+            kore_dv,
+        ]
 
     def proof_expressions(self) -> list[ProvedExpression]:
         return []
