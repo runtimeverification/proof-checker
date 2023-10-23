@@ -16,6 +16,7 @@ typedef __attribute__((ext_vector_type(1))) int proof_type;
   test_wellformedness_positive();
   test_instantiate();
   test_construct_phi_implies_phi();
+  test_phi_implies_phi_impl();
 
   return c[0];
 }
@@ -46,6 +47,10 @@ int main() {
 
   std::cout << "Executing test_construct_phi_implies_phi()" << std::endl;
   test_construct_phi_implies_phi();
+  std::cout << std::endl;
+
+  std::cout << "Executing test_phi_implies_phi_impl()" << std::endl;
+  test_phi_implies_phi_impl();
   std::cout << std::endl;
 
   return 0;
