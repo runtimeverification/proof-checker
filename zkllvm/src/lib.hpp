@@ -1313,7 +1313,7 @@ struct Pattern {
 #if DEBUG
           throw std::runtime_error("Expected id for MetaVar instruction");
 #endif
-          return 8;
+          exit(8);
         }
         auto metavar_pat = Pattern::metavar_unconstrained(*id);
 

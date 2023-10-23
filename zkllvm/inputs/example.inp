@@ -1,5 +1,5 @@
 [
-   {"vector": [{"int":0}]},
-   {"vector": [{"int":0}]},
-   {"vector": [{"int":0}]}
+   {"array": [{"int":0}]},
+   {"array": [{"int":0}]},
+   {"array": [{"int":0}]}
  ]
