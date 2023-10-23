@@ -1749,7 +1749,8 @@ fn test_phi_implies_phi_impl() {
 fn test_universal_quantification() {
     #[rustfmt::skip]
     let proof = vec![
-        Instruction::Generalization as InstByte
+        Instruction::Generalization as InstByte,
+        0
     ];
     let mut stack = vec![Term::Proved(implies(symbol(0), symbol(1)))];
     let mut memory = vec![];
