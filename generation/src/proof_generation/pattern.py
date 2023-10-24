@@ -449,12 +449,12 @@ class Notation(Pattern, ABC):
 
 
 @dataclass(frozen=True, eq=False)
-class FakeNotation(Notation):
+class NotationPlaceholder(Notation):
     symbol: Symbol
     pattern_arguments: tuple[Pattern, ...]
 
     def label(self) -> str:
-        return f'FakeNotation[{str(self.symbol)}]'
+        return f'{type(self).__name__}[{str(self.symbol)}]'
 
     def definition(self) -> Pattern:
         if len(self.pattern_arguments) == 0:
@@ -477,7 +477,7 @@ class FakeNotation(Notation):
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         args = self._instantiate_args(delta)
-        return FakeNotation(self.symbol, tuple(args))
+        return NotationPlaceholder(self.symbol, tuple(args))
 
     def __eq__(self, o: object) -> bool:
         assert isinstance(o, Pattern)

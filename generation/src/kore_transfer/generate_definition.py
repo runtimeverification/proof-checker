@@ -7,28 +7,28 @@ import proof_generation.proof as proof
 from kore_transfer.kore_converter import AxiomType
 
 if TYPE_CHECKING:
-    import proof_generation.pattern as nf
     from kore_transfer.generate_hints import KoreHint
     from kore_transfer.kore_converter import Axioms, KoreConverter
+    from proof_generation.pattern import Pattern
 
 ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
 class KoreDefinition(proof.ProofExp):
-    axiom_patterns: dict[int, nf.Pattern] = {}
-    claim_patterns: list[nf.Pattern] = []
+    axiom_patterns: dict[int, Pattern] = {}
+    claim_patterns: list[Pattern] = []
     proofs: list[ProofMethod] = []
 
     @classmethod
-    def axioms(cls) -> list[nf.Pattern]:
+    def axioms(cls) -> list[Pattern]:
         return list(cls.axiom_patterns.values())
 
     @classmethod
-    def claims(cls) -> list[nf.Pattern]:
+    def claims(cls) -> list[Pattern]:
         return cls.claim_patterns
 
     @classmethod
-    def prove_rewrite_step(cls, claim: nf.Pattern, axiom: nf.Pattern, instantiations: dict[int, nf.Pattern]) -> None:
+    def prove_rewrite_step(cls, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]) -> None:
         """Take a single rewrite step and emit a proof for it."""
         assert len(cls.axiom_patterns) > 0, 'No axioms to prove the rewrite step'
         cls.claim_patterns.append(claim)
