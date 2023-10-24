@@ -387,19 +387,8 @@ class Notation(Pattern, ABC):
     def definition(self) -> Pattern:
         raise NotImplementedError('This notation has no definition.')
 
-    def arguments(self) -> dict[int, Pattern]:
-        ret: dict[int, Pattern] = {}
-
-        i = 0
-        for arg in vars(self).values():
-            if isinstance(arg, Pattern):
-                ret[i] = arg
-                i += 1
-
-        return ret
-
     def conclusion(self) -> Pattern:
-        return self.definition().instantiate(self.arguments())
+        return self.definition().instantiate(self._arguments())
 
     def ef(self, name: int) -> bool:
         return self.conclusion().ef(name)
@@ -423,16 +412,27 @@ class Notation(Pattern, ABC):
         assert cls is not Notation
         assert issubclass(cls, Notation)
         if isinstance(pattern, cls):
-            return tuple([v for _, v in sorted(pattern.arguments().items())])
+            return tuple([v for _, v in sorted(pattern._arguments().items())])
         match_result = match_single(cls().definition(), pattern)
         if match_result is None:
             return None
         return tuple([v for _, v in sorted(match_result.items())])
 
+    def _arguments(self) -> dict[int, Pattern]:
+        ret: dict[int, Pattern] = {}
+
+        i = 0
+        for arg in vars(self).values():
+            if isinstance(arg, Pattern):
+                ret[i] = arg
+                i += 1
+
+        return ret
+
     def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
         args: list[Pattern] = []
 
-        for arg in self.arguments().values():
+        for arg in self._arguments().values():
             args.append(arg.instantiate(delta))
 
         return args
@@ -440,11 +440,11 @@ class Notation(Pattern, ABC):
     def __eq__(self, o: object) -> bool:
         assert isinstance(o, Pattern)
         if isinstance(o, Notation) and type(o) == type(self):
-            return o.arguments() == self.arguments()
+            return o._arguments() == self._arguments()
         return self.conclusion() == o
 
     def __str__(self) -> str:
-        pretty_args = ', '.join(map(str, self.arguments().values()))
+        pretty_args = ', '.join(map(str, self._arguments().values()))
         return f'{self.label()} ({pretty_args})'
 
 
@@ -467,7 +467,11 @@ class NotationPlaceholder(Notation):
                 current_callable = App(current_callable, next_one)
             return current_callable
 
-    def arguments(self) -> dict[int, Pattern]:
+    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        args = self._instantiate_args(delta)
+        return FakeNotation(self.symbol, tuple(args))
+
+    def _arguments(self) -> dict[int, Pattern]:
         ret: dict[int, Pattern] = {}
 
         for i, arg in enumerate(self.pattern_arguments):
@@ -475,14 +479,10 @@ class NotationPlaceholder(Notation):
 
         return ret
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args = self._instantiate_args(delta)
-        return NotationPlaceholder(self.symbol, tuple(args))
-
     def __eq__(self, o: object) -> bool:
         assert isinstance(o, Pattern)
         if isinstance(o, Notation) and type(o) == type(self):
-            return o.arguments() == self.arguments()
+            return o._arguments() == self._arguments()
         return self.conclusion() == o
 
 
