@@ -58,11 +58,11 @@ class KoreConverter:
             added_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return self._organize_axioms(added_axioms)
 
-    def retrieve_axiom_for_ordinal(self, oridnal: int) -> ConvertedAxiom:
+    def retrieve_axiom_for_ordinal(self, ordinal: int) -> ConvertedAxiom:
         """Retrieve the axiom for the given ordinal."""
-        assert oridnal < len(self._axioms_to_choose_from), f'Ordinal {oridnal} is out of range!'
+        assert ordinal < len(self._axioms_to_choose_from), f'Ordinal {ordinal} is out of range!'
 
-        kore_axiom = self._axioms_to_choose_from[oridnal]
+        kore_axiom = self._axioms_to_choose_from[ordinal]
         return self._convert_axiom(kore_axiom)
 
     def convert_substitutions(self, subst: dict[str, kore.Pattern]) -> dict[int, Pattern]:
