@@ -2,9 +2,9 @@
 #include <array>
 #include <iostream>
 
-#define MAX_SIZE_ASSUMPTION 2
-#define MAX_SIZE_CLAIM 9
-#define MAX_SIZE_PROOF 72
+#define MAX_SIZE_ASSUMPTION 27001
+#define MAX_SIZE_CLAIM 27001
+#define MAX_SIZE_PROOF 27001
 
 typedef std::array<int, MAX_SIZE_ASSUMPTION> assumption_type;
 typedef std::array<int, MAX_SIZE_CLAIM> claim_type;
