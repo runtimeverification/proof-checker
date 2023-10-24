@@ -22,7 +22,8 @@ phi2 = MetaVar(2)
 class Negation(Notation):
     phi0: Pattern
 
-    def definition(self) -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return Implies(phi0, bot)
 
     def __str__(self) -> str:
@@ -35,7 +36,8 @@ def neg(p: Pattern) -> Pattern:
 
 @dataclass(frozen=True, eq=False)
 class Top(Notation):
-    def definition(self) -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return neg(bot)
 
     def __str__(self) -> str:
@@ -50,7 +52,8 @@ class And(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    def definition(self) -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return neg(Implies(phi0, neg(phi1)))
 
     def __str__(self) -> str:
@@ -62,7 +65,8 @@ class Or(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    def definition(self) -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return Implies(neg(phi0), phi1)
 
     def __str__(self) -> str:

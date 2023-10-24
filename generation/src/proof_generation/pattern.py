@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
 
 
@@ -383,9 +383,13 @@ class Notation(Pattern, ABC):
     def label(self) -> str:
         return f'{type(self).__name__!r}'
 
-    @abstractmethod
-    def definition(self) -> Pattern:
-        raise NotImplementedError('This notation has no definition.')
+    # All subclasses of Notation MUST implement one of the two methods below
+    @classmethod
+    def definition(cls) -> Pattern:
+        return cls().object_definition()
+
+    def object_definition(self) -> Pattern:
+        return type(self).definition()
 
     def arguments(self) -> dict[int, Pattern]:
         ret: dict[int, Pattern] = {}
@@ -399,7 +403,7 @@ class Notation(Pattern, ABC):
         return ret
 
     def conclusion(self) -> Pattern:
-        return self.definition().instantiate(self.arguments())
+        return self.object_definition().instantiate(self.arguments())
 
     def ef(self, name: int) -> bool:
         return self.conclusion().ef(name)
@@ -424,7 +428,7 @@ class Notation(Pattern, ABC):
         assert issubclass(cls, Notation)
         if isinstance(pattern, cls):
             return tuple([v for _, v in sorted(pattern.arguments().items())])
-        match_result = match_single(cls().definition(), pattern)
+        match_result = match_single(cls.definition(), pattern)
         if match_result is None:
             return None
         return tuple([v for _, v in sorted(match_result.items())])
@@ -456,7 +460,7 @@ class FakeNotation(Notation):
     def label(self) -> str:
         return f'FakeNotation[{str(self.symbol)}]'
 
-    def definition(self) -> Pattern:
+    def object_definition(self) -> Pattern:
         if len(self.pattern_arguments) == 0:
             return self.symbol
         else:
@@ -488,7 +492,8 @@ class FakeNotation(Notation):
 
 @dataclass(frozen=True, eq=False)
 class Bot(Notation):
-    def definition(self) -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return Mu(0, SVar(0))
 
     def __str__(self) -> str:
