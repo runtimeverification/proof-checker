@@ -78,7 +78,8 @@ class Equiv(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    def definition(self) -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return And(Implies(phi0, phi1), Implies(phi1, phi0))
 
     def __str__(self) -> str:
