@@ -148,7 +148,7 @@ class KoreConverter:
                 args_chain = chain_patterns([app_symbol] + args_patterns)
 
                 # TODO: Replace it with tuples when the Notation class would allow it
-                application_sorts = sorts_patterns if sorts_patterns else [nf.Bot()]
+                application_sorts = sorts_patterns if sorts_patterns else [Bot()]
 
                 assert isinstance(args_chain, (App, Symbol))
                 return kl.KoreApplies(tuple(application_sorts), args_chain)

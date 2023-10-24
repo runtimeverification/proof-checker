@@ -477,7 +477,7 @@ class NotationPlaceholder(Notation):
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         args = self._instantiate_args(delta)
-        return FakeNotation(self.symbol, tuple(args))
+        return NotationPlaceholder(self.symbol, tuple(args))
 
     def _arguments(self) -> dict[int, Pattern]:
         ret: dict[int, Pattern] = {}
