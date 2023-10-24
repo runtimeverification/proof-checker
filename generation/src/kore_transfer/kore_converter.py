@@ -9,7 +9,7 @@ import pyk.kore.syntax as kore
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
 import proof_generation.proofs.propositional as prop
-from proof_generation.pattern import App, Bot, EVar, Exists, Implies, MetaVar, NotationPlaceholder, Symbol
+from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, NotationPlaceholder, Symbol
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
@@ -142,7 +142,7 @@ class KoreConverter:
             case kore.App(symbol, sorts, args):
 
                 def chain_patterns(patterns: list[Pattern]) -> Pattern:
-                    next_one, *patterns_left = patterns
+                    *patterns_left, next_one = patterns
                     if len(patterns_left) == 0:
                         return next_one
                     else:
@@ -154,9 +154,7 @@ class KoreConverter:
 
                 args_chain = chain_patterns([app_symbol] + args_patterns)
 
-                # TODO: Replace it with tuples when the Notation class would allow it
-                application_sorts = sorts_patterns if sorts_patterns else [Bot()]
-
+                application_sorts = sorts_patterns if sorts_patterns else [prop.Top()]
                 assert isinstance(args_chain, (App, Symbol))
                 return kl.KoreApplies(tuple(application_sorts), args_chain)
             case kore.EVar(name, _):
