@@ -9,7 +9,7 @@ import pyk.kore.syntax as kore
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
 import proof_generation.proofs.propositional as prop
-from proof_generation.pattern import App, Bot, EVar, Exists, FakeNotation, Implies, MetaVar, Symbol
+from proof_generation.pattern import App, Bot, EVar, Exists, Implies, MetaVar, NotationPlaceholder, Symbol
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
@@ -184,7 +184,7 @@ class KoreConverter:
         if name in self._notations:
             return self._notations[name](*arguments)
         else:
-            return FakeNotation(symbol, tuple(arguments))
+            return NotationPlaceholder(symbol, tuple(arguments))
 
     def _resolve_evar(self, name: str) -> EVar:
         """Resolve the evar in the given pattern."""
