@@ -139,7 +139,7 @@ class KoreConverter:
                     if len(patterns_left) == 0:
                         return next_one
                     else:
-                        return App(next_one, chain_patterns(patterns_left))
+                        return App(chain_patterns(patterns_left), next_one)
 
                 app_symbol: Pattern = self._resolve_symbol(symbol)
                 args_patterns: list[Pattern] = [self._convert_pattern(arg) for arg in args]
