@@ -14,8 +14,8 @@ class Instruction(IntEnum):
     EVar = 0x02
     SVar = 0x03
     Symbol = 0x04
-    Implication = 0x05
-    Application = 0x06
+    Implies = 0x05
+    App = 0x06
     Mu = 0x07
     Exists = 0x10
 

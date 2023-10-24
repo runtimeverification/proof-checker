@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from collections.abc import Callable
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import ExecutionPhase
@@ -22,19 +24,21 @@ PatternExpression = Callable[[], Pattern]
 ProvedExpression = Callable[[], Proved]
 
 
-class ProofExp:
+class ProofExp(ABC):
     interpreter: BasicInterpreter
 
     def __init__(self, interpreter: BasicInterpreter) -> None:
         self.interpreter = interpreter
         self.notation: dict[str, Pattern] = {}
 
-    @staticmethod
-    def axioms() -> list[Pattern]:
+    @classmethod
+    @abstractmethod
+    def axioms(cls) -> list[Pattern]:
         raise NotImplementedError
 
-    @staticmethod
-    def claims() -> list[Pattern]:
+    @classmethod
+    @abstractmethod
+    def claims(cls) -> list[Pattern]:
         raise NotImplementedError
 
     def proof_expressions(self) -> list[ProvedExpression]:
@@ -49,8 +53,8 @@ class ProofExp:
     def evar(self, id: int) -> Pattern:
         return self.interpreter.evar(id)
 
-    def symbol(self, id: int) -> Pattern:
-        return self.interpreter.symbol(id)
+    def symbol(self, name: str) -> Pattern:
+        return self.interpreter.symbol(name)
 
     def implies(self, left: Pattern, right: Pattern) -> Pattern:
         return self.interpreter.implies(left, right)
@@ -129,18 +133,21 @@ class ProofExp:
         assert self.interpreter.phase == ExecutionPhase.Gamma
         for axiom in self.axioms():
             self.publish_axiom(self.interpreter.pattern(axiom))
+        self.check_interpreting()
         self.interpreter.into_claim_phase()
 
     def execute_claims_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self.claims()):
             self.publish_claim(self.interpreter.pattern(claim))
+        self.check_interpreting()
         self.interpreter.into_proof_phase()
 
     def execute_proofs_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Proof
         for proof_expr in self.proof_expressions():
             self.publish_proof(proof_expr())
+        self.check_interpreting()
 
     def execute_full(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Gamma
@@ -149,58 +156,42 @@ class ProofExp:
         self.execute_proofs_phase()
 
     @classmethod
-    def serialize(cls, file_names: list[str]) -> None:
+    def serialize(cls, file_path: Path) -> None:
         prover = cls(
             interpreter=SerializingInterpreter(
-                phase=ExecutionPhase.Gamma, out=open(file_names[0], 'wb'), claims=list(map(Claim, cls.claims()))
+                ExecutionPhase.Gamma,
+                claims=list(map(Claim, cls.claims())),
+                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
             )
         )
+        prover.execute_full()
 
-        assert isinstance(prover.interpreter, SerializingInterpreter)
-
-        prover.execute_gamma_phase()
-        # Execute gamma phase and change output file
-        prover.interpreter.out.close()
-        prover.interpreter.out = open(file_names[1], 'wb')
-
-        # Execute claim phase and change output file
-        prover.execute_claims_phase()
-        prover.interpreter.out.close()
-        prover.interpreter.out = open(file_names[2], 'wb')
-
-        # Execute proof phase
-        prover.execute_proofs_phase()
-        prover.interpreter.out.close()
+    def check_interpreting(self) -> None:
+        if not self.interpreter.safe_interpreting:
+            print(f'Proof generation during {self.interpreter.phase.name} phase is potentially unsafe!')
+            for warning in self.interpreter.interpreting_warnings:
+                print(warning)
 
     @classmethod
-    def prettyprint(cls, file_names: list[str]) -> None:
+    def prettyprint(cls, file_path: Path) -> None:
         prover = cls(
             PrettyPrintingInterpreter(
-                phase=ExecutionPhase.Gamma, out=open(file_names[0], 'w'), claims=list(map(Claim, cls.claims()))
+                ExecutionPhase.Gamma,
+                claims=list(map(Claim, cls.claims())),
+                out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
+                claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
+                proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
             )
         )
-
-        assert isinstance(prover.interpreter, PrettyPrintingInterpreter)
-
-        prover.execute_gamma_phase()
-        # Execute gamma phase and change output file
-        prover.interpreter.out.close()
-        prover.interpreter.out = open(file_names[1], 'w')
-
-        # Execute claim phase and change output file
-        prover.execute_claims_phase()
-        prover.interpreter.out.close()
-        prover.interpreter.out = open(file_names[2], 'w')
-
-        # Execute proof phase
-        prover.execute_proofs_phase()
-        prover.interpreter.out.close()
+        prover.execute_full()
 
     @classmethod
-    def memoize(cls, file_names: list[str]) -> None:
+    def memoize(cls, file_path: Path) -> None:
         counter = cls(
             CountingInterpreter(
-                phase=ExecutionPhase.Gamma,
+                ExecutionPhase.Gamma,
                 claims=list(map(Claim, cls.claims())),
             )
         )
@@ -210,34 +201,21 @@ class ProofExp:
 
         memoizer = cls(
             MemoizingInterpreter(
-                phase=ExecutionPhase.Gamma,
+                ExecutionPhase.Gamma,
                 claims=list(map(Claim, cls.claims())),
-                out=open(file_names[0], 'wb'),
                 patterns_for_memoization=counter.interpreter.finalize(),
+                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
             )
         )
-
-        assert isinstance(memoizer.interpreter, MemoizingInterpreter)
-
-        memoizer.execute_gamma_phase()
-        memoizer.interpreter.out.close()
-        memoizer.interpreter.out = open(file_names[1], 'wb')
-
-        memoizer.execute_claims_phase()
-        memoizer.interpreter.out.close()
-        memoizer.interpreter.out = open(file_names[2], 'wb')
-
-        memoizer.execute_proofs_phase()
-        memoizer.interpreter.out.close()
+        memoizer.execute_full()
 
     @classmethod
     def main(cls, argv: list[str]) -> None:
         exe, *argv = argv
-        usage = f'Usage:\n\n python3 {exe} (binary|pretty) (claim|proof) output-file\n python3 {exe} --help\n\n'
-        examples = (
-            f'Examples:\n\npython3 {exe} binary claim a.out\n# outputs claims of ProofExp object in verifier-checkable binary format to file a.out\n\n'
-            + f'python3 {exe} pretty claim /dev/stdout\n# outputs claims of ProofExp object in human-readable format to standard output\n'
-        )
+        usage = f'Usage:\n\n python3 {exe} (binary|pretty|memo) output-folder slice-name\n python3 {exe} --help\n\n'
+        examples = f'Examples:\n\npython3 {exe} binary pi2 propositional\n# outputs the given ProofExp in verifier-checkable binary format to pi2/propositional.ml-(gamma|claim|proof)\n\n'
 
         if len(argv) == 1:
             assert argv[0] == '--help', usage
@@ -245,22 +223,17 @@ class ProofExp:
             return
 
         assert len(argv) == 3, usage
-        format, mode, output_path = argv
+        output_format, output_path, slice_name = argv
 
-        file_names = ['/dev/null', '/dev/null', '/dev/null']
+        output_dir = Path(output_path)
+        if not output_dir.exists():
+            print('Creating output directory...')
+            output_dir.mkdir()
 
-        match mode:
-            case 'gamma':
-                file_names[0] = output_path
-            case 'claim':
-                file_names[1] = output_path
-            case 'proof':
-                file_names[2] = output_path
-
-        match format:
+        match output_format:
             case 'pretty':
-                cls.prettyprint(file_names)
+                cls.prettyprint(output_dir / slice_name)
             case 'binary':
-                cls.serialize(file_names)
+                cls.serialize(output_dir / slice_name)
             case 'memo':
-                cls.memoize(file_names)
+                cls.memoize(output_dir / slice_name)

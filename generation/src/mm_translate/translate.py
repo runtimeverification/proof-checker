@@ -8,7 +8,7 @@ from mm_translate.converter.converter import MetamathConverter
 from mm_translate.converter.representation import AxiomWithAntecedents
 from mm_translate.metamath.parser import load_database
 from proof_generation.basic_interpreter import ExecutionPhase
-from proof_generation.pattern import Implication, MetaVar, Pattern
+from proof_generation.pattern import Implies, MetaVar, Pattern
 from proof_generation.proof import ProofExp
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
@@ -185,9 +185,9 @@ def convert_to_implication(antecedents: tuple[Pattern, ...], conclusion: Pattern
     (ant, *ants) = antecedents
 
     if ants:
-        return Implication(ant, convert_to_implication(tuple(ants), conclusion))
+        return Implies(ant, convert_to_implication(tuple(ants), conclusion))
 
-    return Implication(ant, conclusion)
+    return Implies(ant, conclusion)
 
 
 def main() -> None:
@@ -230,12 +230,12 @@ def main() -> None:
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
     class TranslatedProofSkeleton(ProofExp):
-        @staticmethod
-        def axioms() -> list[Pattern]:
+        @classmethod
+        def axioms(cls) -> list[Pattern]:
             return extracted_axioms
 
-        @staticmethod
-        def claims() -> list[Pattern]:
+        @classmethod
+        def claims(cls) -> list[Pattern]:
             return extracted_claims
 
         def execute_proofs_phase(self) -> None:
@@ -244,9 +244,9 @@ def main() -> None:
 
     module = os.path.splitext(os.path.basename(args.input))[0]
 
-    TranslatedProofSkeleton.main(['', 'memo', 'gamma', str(output_dir / f'{module}.ml-gamma')])
-    TranslatedProofSkeleton.main(['', 'memo', 'claim', str(output_dir / f'{module}.ml-claim')])
-    TranslatedProofSkeleton.main(['', 'memo', 'proof', str(output_dir / f'{module}.ml-proof')])
+    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
+    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
+    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
 
 
 if __name__ == '__main__':

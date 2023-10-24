@@ -1,5 +1,0 @@
-{
-  "rust-analyzer.linkedProjects": [
-    "./risc0/guest/Cargo.toml"
-  ]
-}

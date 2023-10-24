@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import partial
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implication, MetaVar, Notation, match_single
+from proof_generation.pattern import Implies, MetaVar, Notation, match_single
 from proof_generation.proofs.propositional import (
     And,
     Equiv,
@@ -107,15 +107,15 @@ class Tautology(Propositional):
     @staticmethod
     def axioms() -> list[Pattern]:
         return [
-            Implication(Implication(phi0, phi1), Implication(Implication(phi1, phi2), Implication(phi0, phi2))),
-            Implication(And(And(phi0, phi1), phi2), And(phi0, And(phi1, phi2))),
-            Implication(And(phi0, And(phi1, phi2)), And(And(phi0, phi1), phi2)),
-            Implication(Or(Or(phi0, phi1), phi2), Or(phi0, Or(phi1, phi2))),
-            Implication(Or(phi0, Or(phi1, phi2)), Or(Or(phi0, phi1), phi2)),
-            Implication(Or(And(phi0, phi1), phi2), And(Or(phi0, phi2), Or(phi1, phi2))),
-            Implication(And(Or(phi0, phi2), Or(phi1, phi2)), Or(And(phi0, phi1), phi2)),
-            Implication(Or(phi0, And(phi1, phi2)), And(Or(phi0, phi1), Or(phi0, phi2))),
-            Implication(And(Or(phi0, phi1), Or(phi0, phi2)), Or(phi0, And(phi1, phi2))),
+            Implies(Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))),
+            Implies(And(And(phi0, phi1), phi2), And(phi0, And(phi1, phi2))),
+            Implies(And(phi0, And(phi1, phi2)), And(And(phi0, phi1), phi2)),
+            Implies(Or(Or(phi0, phi1), phi2), Or(phi0, Or(phi1, phi2))),
+            Implies(Or(phi0, Or(phi1, phi2)), Or(Or(phi0, phi1), phi2)),
+            Implies(Or(And(phi0, phi1), phi2), And(Or(phi0, phi2), Or(phi1, phi2))),
+            Implies(And(Or(phi0, phi2), Or(phi1, phi2)), Or(And(phi0, phi1), phi2)),
+            Implies(Or(phi0, And(phi1, phi2)), And(Or(phi0, phi1), Or(phi0, phi2))),
+            Implies(And(Or(phi0, phi1), Or(phi0, phi2)), Or(phi0, And(phi1, phi2))),
             Equiv(And(phi0, phi1), And(phi1, phi0)),
             Equiv(Or(phi0, phi1), Or(phi1, phi0)),
         ]
@@ -131,8 +131,8 @@ class Tautology(Propositional):
         """Same as imp_transitivity but h1 is instantiated to match h2"""
         h1_conc = self.PROVISIONAL_get_conc(h1)
         h2_conc = self.PROVISIONAL_get_conc(h2)
-        _, b = Implication.extract(h1_conc)
-        c, _ = Implication.extract(h2_conc)
+        _, b = Implies.extract(h1_conc)
+        c, _ = Implies.extract(h2_conc)
         subst = match_single(b, c, {})
         assert subst is not None
         actual_subst: dict[int, Pattern] = subst
@@ -142,8 +142,8 @@ class Tautology(Propositional):
         """Same as imp_transitivity but h2 is instantiated to match h1"""
         h1_conc = self.PROVISIONAL_get_conc(h1)
         h2_conc = self.PROVISIONAL_get_conc(h2)
-        _, b = Implication.extract(h1_conc)
-        c, _ = Implication.extract(h2_conc)
+        _, b = Implies.extract(h1_conc)
+        c, _ = Implies.extract(h2_conc)
         subst = match_single(c, b, {})
         assert subst is not None
         actual_subst: dict[int, Pattern] = subst
@@ -156,7 +156,7 @@ class Tautology(Propositional):
           (p -> q) -> q
         """
         p = self.PROVISIONAL_get_conc(p_pf)
-        pq = Implication(p, q)
+        pq = Implies(p, q)
         return lambda: self.modus_ponens(
             self.modus_ponens(self.dynamic_inst(self.prop2, {0: pq, 1: p, 2: q}), self.imp_refl(pq)),
             self.imp_provable(pq, p_pf),
@@ -173,8 +173,8 @@ class Tautology(Propositional):
           q -> p -> r
         """
         conc = self.PROVISIONAL_get_conc(pf)
-        p, qr = Implication.extract(conc)
-        q, r = Implication.extract(qr)
+        p, qr = Implies.extract(conc)
+        q, r = Implies.extract(qr)
         return lambda: self.imp_transitivity(
             lambda: self.dynamic_inst(self.prop1, {0: q, 1: p}),
             lambda: self.modus_ponens(self.dynamic_inst(self.prop2, {0: p, 1: q, 2: r}), pf()),
@@ -195,7 +195,7 @@ class Tautology(Propositional):
           ~~p -> q
         """
         pq_conc = self.PROVISIONAL_get_conc(pq)
-        p, q = Implication.extract(pq_conc)
+        p, q = Implies.extract(pq_conc)
         return lambda: self.modus_ponens(self.dni_l(p, q)(), pq())
 
     def dni_r(self, p: Pattern, q: Pattern) -> ProvedExpression:
@@ -211,7 +211,7 @@ class Tautology(Propositional):
           p -> ~~q
         """
         pq_conc = self.PROVISIONAL_get_conc(pq)
-        p, q = Implication.extract(pq_conc)
+        p, q = Implies.extract(pq_conc)
         return lambda: self.modus_ponens(self.dni_r(p, q)(), pq())
 
     def dne_l(self, p: Pattern, q: Pattern) -> ProvedExpression:
@@ -225,7 +225,7 @@ class Tautology(Propositional):
             p -> q
         """
         pq_conc = self.PROVISIONAL_get_conc(pq)
-        p, q = Implication.extract(pq_conc)
+        p, q = Implies.extract(pq_conc)
         return lambda: self.modus_ponens(self.dne_l(p, q)(), pq())
 
     def dne_r(self, p: Pattern, q: Pattern) -> ProvedExpression:
@@ -242,7 +242,7 @@ class Tautology(Propositional):
            p -> q
         """
         pq_conc = self.PROVISIONAL_get_conc(pq)
-        p, q = Implication.extract(pq_conc)
+        p, q = Implies.extract(pq_conc)
         return lambda: self.modus_ponens(self.dne_r(p, q)(), pq())
 
     def helper1(self, p_pf: ProvedExpression, qr_pf: ProvedExpression) -> ProvedExpression:
@@ -252,7 +252,7 @@ class Tautology(Propositional):
           (p -> q) -> r
         """
         qr = self.PROVISIONAL_get_conc(qr_pf)
-        q, r = Implication.extract(qr)
+        q, r = Implies.extract(qr)
         return lambda: self.imp_transitivity(self.mpcom(p_pf, q), qr_pf)
 
     def a1d(self, pq: ProvedExpression, r: Pattern) -> ProvedExpression:
@@ -262,7 +262,7 @@ class Tautology(Propositional):
           p -> r -> q
         """
         pq_conc = self.PROVISIONAL_get_conc(pq)
-        p, q = Implication.extract(pq_conc)
+        p, q = Implies.extract(pq_conc)
         return lambda: self.imp_transitivity(pq, lambda: self.dynamic_inst(self.prop1, {0: q, 1: r}))
 
     def con3(self, p: Pattern, q: Pattern) -> ProvedExpression:
@@ -276,7 +276,7 @@ class Tautology(Propositional):
           ~q -> ~p
         """
         pq_conc = self.PROVISIONAL_get_conc(pq)
-        p, q = Implication.extract(pq_conc)
+        p, q = Implies.extract(pq_conc)
         return lambda: self.modus_ponens(self.con3(p, q)(), pq())
 
     def absurd2(self, pq: ProvedExpression, r: Pattern) -> ProvedExpression:
@@ -286,7 +286,7 @@ class Tautology(Propositional):
            ~q -> p -> r
         """
         pq_conc = self.PROVISIONAL_get_conc(pq)
-        p, q = Implication.extract(pq_conc)
+        p, q = Implies.extract(pq_conc)
         return lambda: self.imp_transitivity(
             lambda: self.absurd(q, r), lambda: self.modus_ponens(self.imp_trans(p, q, r)(), pq())
         )
@@ -308,7 +308,7 @@ class Tautology(Propositional):
           ~q -> p
         """
         npq = self.PROVISIONAL_get_conc(pf)
-        np, q = Implication.extract(npq)
+        np, q = Implies.extract(npq)
         p = Negation.extract(np)[0]
         return lambda: self.imp_transitivity(
             lambda: self.modus_ponens(
@@ -331,7 +331,7 @@ class Tautology(Propositional):
         """
         npq = self.PROVISIONAL_get_conc(npq_pf)
         nr = self.PROVISIONAL_get_conc(nr_pf)
-        np, q = Implication.extract(npq)
+        np, q = Implies.extract(npq)
         Negation.extract(np)[0]
         Negation.extract(nr)[0]
         return lambda: self.imp_transitivity(self.lemma1(q, nr_pf), self.con1(npq_pf))
@@ -343,7 +343,7 @@ class Tautology(Propositional):
            q -> p -> r
         """
         pnq = self.PROVISIONAL_get_conc(pnq_pf)
-        p, nq = Implication.extract(pnq)
+        p, nq = Implies.extract(pnq)
         q = Negation.extract(nq)[0]
         return lambda: self.imp_transitivity(self.dni(q), self.absurd2(pnq_pf, r))
 
@@ -375,7 +375,7 @@ class Tautology(Propositional):
         (b -> c) -> (a -> c)
         """
         ab = self.PROVISIONAL_get_conc(h)
-        a, b = Implication.extract(ab)
+        a, b = Implies.extract(ab)
         return lambda: self.modus_ponens(self.imp_trans(a, b, pat)(), h())
 
     def imim(self, h1: ProvedExpression, h2: ProvedExpression) -> ProvedExpression:
@@ -386,8 +386,8 @@ class Tautology(Propositional):
         """
         h1_conc = self.PROVISIONAL_get_conc(h1)
         h2_conc = self.PROVISIONAL_get_conc(h2)
-        a, b = Implication.extract(h1_conc)
-        c, d = Implication.extract(h2_conc)
+        a, b = Implies.extract(h1_conc)
+        c, d = Implies.extract(h2_conc)
         return lambda: self.imp_transitivity(
             self.imim_l(c, h1),
             lambda: self.modus_ponens(self.dynamic_inst(self.prop2, {0: a, 1: c, 2: d}), self.imp_provable(a, h2)),
@@ -401,8 +401,8 @@ class Tautology(Propositional):
         """
         h1_conc = self.PROVISIONAL_get_conc(h1)
         h2_conc = self.PROVISIONAL_get_conc(h2)
-        a, b = Implication.extract(h1_conc)
-        c, d = Implication.extract(h2_conc)
+        a, b = Implies.extract(h1_conc)
+        c, d = Implies.extract(h2_conc)
         return lambda: self.imp_transitivity(
             self.imim(h1, h2),
             lambda: self.modus_ponens(self.imp_trans(neg(neg(a)), a, d)(), self.dynamic_inst(self.prop3, {0: a})),
@@ -416,8 +416,8 @@ class Tautology(Propositional):
         """
         h1_conc = self.PROVISIONAL_get_conc(h1)
         h2_conc = self.PROVISIONAL_get_conc(h2)
-        a, b = Implication.extract(h1_conc)
-        c, d = Implication.extract(h2_conc)
+        a, b = Implies.extract(h1_conc)
+        c, d = Implies.extract(h2_conc)
         return lambda: self.imp_transitivity(
             lambda: self.modus_ponens(self.imp_trans(b, neg(neg(b)), c)(), self.dni(b)()), self.imim(h1, h2)
         )
@@ -615,7 +615,7 @@ class Tautology(Propositional):
     def is_propositional(self, pat: Pattern) -> bool:
         if pat == bot:
             return True
-        if pat_imp := Implication.unwrap(pat):
+        if pat_imp := Implies.unwrap(pat):
             return self.is_propositional(pat_imp[0]) and self.is_propositional(pat_imp[1])
         if isinstance(pat, MetaVar):
             return True
@@ -642,7 +642,7 @@ class Tautology(Propositional):
         if isinstance(pat, MetaVar):
             phi_imp_phi = lambda: self.imp_refl(pat)
             return ConjVar(pat.name), phi_imp_phi, phi_imp_phi
-        elif pat_imp := Implication.extract(pat):
+        elif pat_imp := Implies.extract(pat):
             pat0 = pat_imp[0]
             pat1 = pat_imp[1]
             pat1_conj, pat1_l, pat1_r = self.to_conj(pat1)
@@ -729,12 +729,12 @@ class Tautology(Propositional):
                 pf2 = self.imim_and(term_l_pf2, term_r_pf2)
                 if term.right.negated:
                     pf1_conc = self.PROVISIONAL_get_conc(pf1)
-                    pf1_l, pf1_r = Implication.extract(pf1_conc)
+                    pf1_l, pf1_r = Implies.extract(pf1_conc)
                     a1, nb1 = And.extract(pf1_l)
                     b1 = Negation.extract(nb1)[0]
                     pf1 = partial(self.imp_transitivity, self.con3_i(self.dne_r(a1, b1)), pf1)
                     pf2_conc = self.PROVISIONAL_get_conc(pf2)
-                    pf2_l, pf2_r = Implication.extract(pf2_conc)
+                    pf2_l, pf2_r = Implies.extract(pf2_conc)
                     a2, nb2 = And.extract(pf2_r)
                     b2 = Negation.extract(nb2)[0]
                     pf2 = partial(self.imp_transitivity, pf2, self.con3_i(self.dni_r(a2, b2)))
@@ -772,7 +772,7 @@ class Tautology(Propositional):
             pf1 = self.imim_or(term_l_pf1, term_r_pf1)
             pf2 = self.imim_or(term_l_pf2, term_r_pf2)
             pf1_conc = self.PROVISIONAL_get_conc(pf1)
-            Implication.extract(pf1_conc)
+            Implies.extract(pf1_conc)
             if isinstance(term_l, ConjAnd):
                 pf1 = self.imp_trans_match2(pf1, self.or_distr_r())
                 pf2 = self.imp_trans_match1(self.or_distr_r_rev(), pf2)

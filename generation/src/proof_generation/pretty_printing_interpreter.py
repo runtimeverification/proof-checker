@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
-from proof_generation.pattern import Application, ESubst, Exists, Implication, Mu, Notation, SSubst
+from proof_generation.io_interpreter import IOInterpreter
+from proof_generation.pattern import App, ESubst, Exists, Implies, Mu, Notation, SSubst
 from proof_generation.proved import Proved
-from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -14,15 +14,16 @@ if TYPE_CHECKING:
     from proof_generation.pattern import EVar, MetaVar, Pattern, SVar
 
 
-class PrettyPrintingInterpreter(StatefulInterpreter):
+class PrettyPrintingInterpreter(IOInterpreter):
     def __init__(
         self,
         phase: ExecutionPhase,
         out: TextIO,
         claims: list[Claim] | None = None,
+        claim_out: TextIO | None = None,
+        proof_out: TextIO | None = None,
     ) -> None:
-        super().__init__(phase=phase, claims=claims)
-        self.out = out
+        super().__init__(phase=phase, out=out, claims=claims, claim_out=claim_out, proof_out=proof_out)
         self._notation: dict[str, Pattern] = {}
 
     def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
@@ -63,9 +64,9 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write(str(id))
 
     @pretty()
-    def symbol(self, id: int) -> None:
+    def symbol(self, name: str) -> None:
         self.out.write('Symbol ')
-        self.out.write(str(id))
+        self.out.write(name)
 
     @pretty()
     def metavar(
@@ -97,11 +98,11 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
 
     @pretty()
     def implies(self, left: Pattern, right: Pattern) -> None:
-        self.out.write('Implication')
+        self.out.write('Implies')
 
     @pretty()
     def app(self, left: Pattern, right: Pattern) -> None:
-        self.out.write('Application')
+        self.out.write('App')
 
     @pretty()
     def exists(self, var: int, subpattern: Pattern) -> None:
@@ -183,14 +184,14 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         # TODO: Figure out how to avoid this "double" definition of pretty printing for some cases
         # like implication while keeping notations
         match p:
-            case Implication(left, right):
+            case Implies(left, right):
                 return f'({self.pretty_print_pattern(left)} -> {self.pretty_print_pattern(right)})'
-            case Application(left, right):
+            case App(left, right):
                 return f'(app ({self.pretty_print_pattern(left)}) ({self.pretty_print_pattern(right)}))'
             case Exists(var, subpattern):
-                return f'(\u2203 x{var} . {self.pretty_print_pattern(subpattern)})'
+                return f'(∃ x{var} . {self.pretty_print_pattern(subpattern)})'
             case Mu(var, subpattern):
-                return f'(\u03BC X{var} . {self.pretty_print_pattern(p.subpattern)})'
+                return f'(μ X{var} . {self.pretty_print_pattern(p.subpattern)})'
             case ESubst(pattern, var, plug):
                 return f'({self.pretty_print_pattern(pattern)}[{self.pretty_print_pattern(plug)}/{str(var)}])'
             case SSubst(pattern, var, plug):
@@ -202,7 +203,7 @@ class PrettyPrintingInterpreter(StatefulInterpreter):
         self.out.write('\tStack:\n')
         for i, item in enumerate(self.stack):
             if isinstance(item, Proved):
-                self.out.write(f'\t{i}: \u22A2 {self.pretty_print_pattern(item.conclusion)}\n')
+                self.out.write(f'\t{i}: ⊢ {self.pretty_print_pattern(item.conclusion)}\n')
                 continue
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 

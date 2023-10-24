@@ -50,27 +50,16 @@ fn main() {
     // Prove the session to produce a receipt.
     let receipt = session.prove().unwrap();
 
+    // Small fetcher that returns the next chunk of given size from journal
+    let mut current_index: usize = 0;
+    let mut next_journal_chunk = |size: usize| -> &[u8] {
+        let ret = &receipt.journal[current_index..current_index + size];
+        current_index += size;
+        return ret;
+    };
+
     // TODO: Implement code for transmitting or serializing the receipt for
     // other parties to verify here
-
-    // Get the host's size of a usize pointer
-    let size_of_usize = std::mem::size_of::<usize>();
-
-    // Create an array for holding deserialized counts
-    let mut counts: [usize; 3] = [0; 3];
-
-    // Iterate over usize chunks of the journal, deserializing and saving values
-    for (i, chunk) in receipt.journal.chunks(size_of_usize).enumerate() {
-        counts[i] = from_slice(&chunk.to_vec()).unwrap();
-    }
-
-    // print out cycle counts
-    println!("Reading files: {} cycles", counts[0]);
-    println!("Verifying the theorem: {} cycles", counts[1]);
-    println!(
-        "Overall (environment setup, reading files, and verification): {} cycles!",
-        counts[2]
-    );
 
     // Optional: Verify receipt to confirm that recipients will also be able to
     // verify your receipt
@@ -80,4 +69,14 @@ fn main() {
         "Running execution + ZK certficate generation + verification took {} s",
         now.elapsed().as_secs()
     );
+
+    // Get the host's size of a usize pointer
+    let size_of_usize = std::mem::size_of::<usize>();
+    let total_cycles: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
+    println!("Total cycles {}", total_cycles);
+
+    let gamma_length: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
+    let gamma = next_journal_chunk(gamma_length);
+    let claims = &receipt.journal[current_index..];
+    println!("There exists a proof of {:?} |- {:?}.", gamma, claims);
 }

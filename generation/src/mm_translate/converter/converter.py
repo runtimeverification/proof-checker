@@ -29,8 +29,7 @@ from mm_translate.metamath.ast import (
     Term,
     VariableStatement,
 )
-from proof_generation.pattern import Application as ApplicationPattern
-from proof_generation.pattern import ESubst, EVar, Exists, Implication, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -172,9 +171,9 @@ class MetamathConverter:
         assert isinstance(pattern, MetaVar)
         return pattern
 
-    def _add_symbol(self, var: Metavariable | str) -> None:
+    def _add_symbol(self, var: str) -> None:
         if var not in self._symbols:
-            self._symbols[var] = Symbol(len(self._symbols))
+            self._symbols[var] = Symbol(var)
 
     def _is_symbol(self, name: str) -> bool:
         return name in self._symbols
@@ -405,7 +404,7 @@ class MetamathConverter:
             self._scope.add_metavariable(var)
             self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         elif var := get_symbol(statement):
-            self._add_symbol(var)
+            self._add_symbol(var.name)
             self._fp_label_to_pattern[statement.label] = (self._resolve(self._scope, var.name),)
         elif var := get_var(statement):
             self._scope.add_variable(var)
@@ -760,14 +759,14 @@ class MetamathConverter:
             '\\app',
             ('ph0', 'ph1'),
             lambda *args: isinstance(args[0], Pattern) and isinstance(args[1], Pattern),
-            lambda *args: ApplicationPattern(args[0], args[1]),
+            lambda *args: App(args[0], args[1]),
         )
         self._scope.add_notation(application)
         imp = Notation(
             '\\imp',
             ('ph0', 'ph1'),
             lambda *args: isinstance(args[0], Pattern) and isinstance(args[1], Pattern),
-            lambda *args: Implication(args[0], args[1]),
+            lambda *args: Implies(args[0], args[1]),
         )
         self._scope.add_notation(imp)
         exists = Notation(

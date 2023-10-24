@@ -17,7 +17,7 @@ use alloc::vec::Vec;
 #[derive(Debug, Eq, PartialEq)]
 pub enum Instruction {
     // Patterns
-    EVar = 2, SVar, Symbol, Implication, Application, Exists, Mu,
+    EVar = 2, SVar, Symbol, Implies, App, Exists, Mu,
     // Meta Patterns,
     MetaVar, ESubst, SSubst,
     // Axiom Schemas,
@@ -46,8 +46,8 @@ impl Instruction {
             2 => Instruction::EVar,
             3 => Instruction::SVar,
             4 => Instruction::Symbol,
-            5 => Instruction::Implication,
-            6 => Instruction::Application,
+            5 => Instruction::Implies,
+            6 => Instruction::App,
             7 => Instruction::Mu,
             8 => Instruction::Exists,
             9 => Instruction::MetaVar,
@@ -96,11 +96,11 @@ pub enum Pattern {
     EVar(Id),
     SVar(Id),
     Symbol(Id),
-    Implication {
+    Implies {
         left: Rc<Pattern>,
         right: Rc<Pattern>,
     },
-    Application {
+    App {
         left: Rc<Pattern>,
         right: Rc<Pattern>,
     },
@@ -139,8 +139,8 @@ impl Pattern {
             Pattern::SVar(_) => true,
             Pattern::Symbol(_) => true,
             Pattern::MetaVar { e_fresh, .. } => e_fresh.contains(&evar),
-            Pattern::Implication { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
-            Pattern::Application { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
+            Pattern::Implies { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
+            Pattern::App { left, right } => left.e_fresh(evar) && right.e_fresh(evar),
             Pattern::Exists { var, subpattern } => evar == *var || subpattern.e_fresh(evar),
             Pattern::Mu { subpattern, .. } => subpattern.e_fresh(evar),
             Pattern::ESubst {
@@ -180,8 +180,8 @@ impl Pattern {
             Pattern::SVar(name) => *name != svar,
             Pattern::Symbol(_) => true,
             Pattern::MetaVar { s_fresh, .. } => s_fresh.contains(&svar),
-            Pattern::Implication { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
-            Pattern::Application { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
+            Pattern::Implies { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
+            Pattern::App { left, right } => left.s_fresh(svar) && right.s_fresh(svar),
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.s_fresh(svar),
             Pattern::ESubst { pattern, plug, .. } => {
@@ -220,8 +220,8 @@ impl Pattern {
             Pattern::SVar(_) => true,
             Pattern::Symbol(_) => true,
             Pattern::MetaVar { positive, .. } => positive.contains(&svar),
-            Pattern::Implication { left, right } => left.negative(svar) && right.positive(svar),
-            Pattern::Application { left, right } => left.positive(svar) && right.positive(svar),
+            Pattern::Implies { left, right } => left.negative(svar) && right.positive(svar),
+            Pattern::App { left, right } => left.positive(svar) && right.positive(svar),
             Pattern::Exists { subpattern, .. } => subpattern.positive(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.positive(svar),
             Pattern::ESubst { pattern, plug, .. } =>
@@ -253,8 +253,8 @@ impl Pattern {
             Pattern::SVar(name) => *name != svar,
             Pattern::Symbol(_) => true,
             Pattern::MetaVar { negative, .. } => negative.contains(&svar),
-            Pattern::Implication { left, right } => left.positive(svar) && right.negative(svar),
-            Pattern::Application { left, right } => left.negative(svar) && right.negative(svar),
+            Pattern::Implies { left, right } => left.positive(svar) && right.negative(svar),
+            Pattern::App { left, right } => left.negative(svar) && right.negative(svar),
             Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.negative(svar),
             Pattern::ESubst { pattern, plug, .. } =>
@@ -386,12 +386,12 @@ fn ssubst(pattern: Rc<Pattern>, svar_id: Id, plug: Rc<Pattern>) -> Rc<Pattern> {
 
 #[inline(always)]
 fn implies(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
-    return Rc::new(Pattern::Implication { left, right });
+    return Rc::new(Pattern::Implies { left, right });
 }
 
 #[inline(always)]
 fn app(left: Rc<Pattern>, right: Rc<Pattern>) -> Rc<Pattern> {
-    return Rc::new(Pattern::Application { left, right });
+    return Rc::new(Pattern::App { left, right });
 }
 
 // Notation
@@ -425,11 +425,11 @@ fn apply_esubst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
                 Rc::clone(pattern)
             }
         }
-        Pattern::Implication { left, right } => implies(
+        Pattern::Implies { left, right } => implies(
             apply_esubst(left, evar_id, plug),
             apply_esubst(right, evar_id, plug),
         ),
-        Pattern::Application { left, right } => app(
+        Pattern::App { left, right } => app(
             apply_esubst(left, evar_id, plug),
             apply_esubst(right, evar_id, plug),
         ),
@@ -457,11 +457,11 @@ fn apply_ssubst(pattern: &Rc<Pattern>, svar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
                 Rc::clone(pattern)
             }
         }
-        Pattern::Implication { left, right } => implies(
+        Pattern::Implies { left, right } => implies(
             apply_ssubst(left, svar_id, plug),
             apply_ssubst(right, svar_id, plug),
         ),
-        Pattern::Application { left, right } => app(
+        Pattern::App { left, right } => app(
             apply_ssubst(left, svar_id, plug),
             apply_ssubst(right, svar_id, plug),
         ),
@@ -533,7 +533,7 @@ fn instantiate_internal(
             }
             None
         }
-        Pattern::Implication { left, right } => {
+        Pattern::Implies { left, right } => {
             let mut inst_left = instantiate_internal(&left, vars, plugs);
             let mut inst_right = instantiate_internal(&right, vars, plugs);
             if inst_left.is_none() && inst_right.is_none() {
@@ -548,7 +548,7 @@ fn instantiate_internal(
                 Some(implies(inst_left.unwrap(), inst_right.unwrap()))
             }
         }
-        Pattern::Application { left, right } => {
+        Pattern::App { left, right } => {
             let mut inst_left = instantiate_internal(&left, vars, plugs);
             let mut inst_right = instantiate_internal(&right, vars, plugs);
             if inst_left.is_none() && inst_right.is_none() {
@@ -781,12 +781,12 @@ fn execute_instructions<'a>(
                 // Clean metavars are always well-formed
                 stack.push(Term::Pattern(metavar_pat));
             }
-            Instruction::Implication => {
+            Instruction::Implies => {
                 let right = pop_stack_pattern(stack);
                 let left = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(implies(left, right)))
             }
-            Instruction::Application => {
+            Instruction::App => {
                 let right = pop_stack_pattern(stack);
                 let left = pop_stack_pattern(stack);
                 stack.push(Term::Pattern(app(left, right)))
@@ -868,7 +868,7 @@ fn execute_instructions<'a>(
                 let premise2 = pop_stack_proved(stack);
                 let premise1 = pop_stack_proved(stack);
                 match premise1.as_ref() {
-                    Pattern::Implication { left, right } => {
+                    Pattern::Implies { left, right } => {
                         if *left.as_ref() != *premise2.as_ref() {
                             panic!("Antecedents do not match for modus ponens.\nleft.psi:\n{:?}\n\n right:\n{:?}\n", left.as_ref(), premise2.as_ref())
                         }
@@ -883,7 +883,7 @@ fn execute_instructions<'a>(
                 stack.push(Term::Proved(Rc::clone(&quantifier)));
             }
             Instruction::Generalization => match pop_stack_proved(stack).as_ref() {
-                Pattern::Implication { left, right } => {
+                Pattern::Implies { left, right } => {
                     // TODO: Read this from the proof stream
                     let evar = 0;
 
@@ -1056,7 +1056,7 @@ fn test_efresh() {
     assert!(!implication.e_fresh(1));
 
     let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
-    let metaapp = Pattern::Application {
+    let metaapp = Pattern::App {
         left: Rc::clone(&left),
         right: mvar,
     };
@@ -1088,13 +1088,13 @@ fn test_sfresh() {
     assert!(!implication.s_fresh(1));
 
     let mvar = metavar_s_fresh(1, 2, vec![2], vec![2]);
-    let metaapp = Pattern::Application {
+    let metaapp = Pattern::App {
         left: Rc::clone(&left),
         right: Rc::clone(&mvar),
     };
     assert!(!metaapp.s_fresh(1));
 
-    let metaapp2 = Pattern::Application {
+    let metaapp2 = Pattern::App {
         left: Rc::clone(&left),
         right: mvar,
     };
@@ -1163,7 +1163,7 @@ fn test_positivity() {
     assert!(c1.positive(2));
     assert!(c1.negative(2));
 
-    // Application
+    // App
     let appX1X2 = app(Rc::clone(&X1), Rc::clone(&X2));
     assert!(appX1X2.positive(1));
     assert!(appX1X2.positive(2));
@@ -1172,7 +1172,7 @@ fn test_positivity() {
     assert!(!appX1X2.negative(2));
     assert!(appX1X2.negative(3));
 
-    // Implication
+    // Implies
     let impliesX1X2 = implies(Rc::clone(&X1), Rc::clone(&X2));
     assert!(!impliesX1X2.positive(1));
     assert!(impliesX1X2.positive(2));
@@ -1622,7 +1622,7 @@ fn test_construct_phi_implies_phi() {
         Instruction::MetaVar as InstByte, 0, 0, 0, 0, 0, 0, // Stack: Phi
         Instruction::Save as InstByte,        // @ 0
         Instruction::Load as InstByte, 0,     // Phi ; Phi
-        Instruction::Implication as InstByte, // Phi -> Phi
+        Instruction::Implies as InstByte, // Phi -> Phi
     ];
 
     let mut stack = vec![];
@@ -1636,7 +1636,7 @@ fn test_construct_phi_implies_phi() {
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
-        vec![Term::Pattern(Rc::new(Pattern::Implication {
+        vec![Term::Pattern(Rc::new(Pattern::Implies {
             left: phi0.clone(),
             right: phi0.clone()
         }))]
@@ -1665,7 +1665,7 @@ fn test_construct_phi_implies_phi_with_constraints() {
             Instruction::Save as InstByte, // @ 0
             Instruction::Load as InstByte,
             0, // Phi1 ; Phi1
-            Instruction::Implication as InstByte,
+            Instruction::Implies as InstByte,
         ]); // Phi1 -> Phi1
 
         let mut stack = vec![];
@@ -1688,7 +1688,7 @@ fn test_construct_phi_implies_phi_with_constraints() {
 
         assert_eq!(
             stack,
-            vec![Term::Pattern(Rc::new(Pattern::Implication {
+            vec![Term::Pattern(Rc::new(Pattern::Implies {
                 left: phi1.clone(),
                 right: phi1.clone()
             }))]
@@ -1707,7 +1707,7 @@ fn test_phi_implies_phi_impl() {
         Instruction::Save as InstByte,                    // @0
         Instruction::Load as InstByte, 0,                 // Stack: $ph0; ph0
         Instruction::Load as InstByte, 0,                 // Stack: $ph0; $ph0; ph0
-        Instruction::Implication as InstByte,             // Stack: $ph0; ph0 -> ph0
+        Instruction::Implies as InstByte,             // Stack: $ph0; ph0 -> ph0
         Instruction::Save as InstByte,                    // @1
         Instruction::Prop2 as InstByte,                   // Stack: $ph0; $ph0 -> ph0; [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
         Instruction::Instantiate as InstByte, 1, 1,       // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2)) -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
@@ -1736,7 +1736,7 @@ fn test_phi_implies_phi_impl() {
     let phi0 = metavar_unconstrained(0);
     assert_eq!(
         stack,
-        vec![Term::Proved(Rc::new(Pattern::Implication {
+        vec![Term::Proved(Rc::new(Pattern::Implies {
             left: Rc::clone(&phi0),
             right: Rc::clone(&phi0)
         }))]
