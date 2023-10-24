@@ -19,37 +19,61 @@ def match_single(
             if not pattern.can_be_replaced_by(instance):
                 return None
             ret[id] = instance
-    elif (pat_imp := Implies.unwrap(pattern)) and (inst_imp := Implies.unwrap(instance)):
+        return ret
+    if pattern == bot and instance == bot:
+        return ret
+    if type(pattern) == type(instance) and issubclass(type(pattern), Notation):
+        cls = type(pattern)
+        pat_n = cls.unwrap(pattern)
+        inst_n = cls.unwrap(instance)
+        assert pat_n is not None
+        assert inst_n is not None
+        assert len(pat_n) == len(inst_n)
+        for i in range(len(pat_n)):
+            ret = match_single(pat_n[i], inst_n[i], ret)
+            if ret is None:
+                return None
+        return ret
+    if (pat_imp := Implies.unwrap(pattern)) and (inst_imp := Implies.unwrap(instance)):
         ret = match_single(pat_imp[0], inst_imp[0], ret)
-        if not ret:
+        if ret is None:
             return None
-        ret = match_single(pat_imp[1], inst_imp[1], ret)
-    elif (pat_evar := EVar.deconstruct(pattern)) and (inst_evar := EVar.deconstruct(instance)):
+        return match_single(pat_imp[1], inst_imp[1], ret)
+    # The following three cases are more verbose because a 0 returned by the
+    # deconstruct is still interpreted as False even though it is not None
+    pat_evar = EVar.deconstruct(pattern)
+    inst_evar = EVar.deconstruct(instance)
+    if (pat_evar is not None) and (inst_evar is not None):
         if pat_evar != inst_evar:
             return None
-    elif (pat_svar := SVar.deconstruct(pattern)) and (inst_svar := SVar.deconstruct(instance)):
+        return ret
+    pat_svar = SVar.deconstruct(pattern)
+    inst_svar = SVar.deconstruct(instance)
+    if (pat_svar is not None) and (inst_svar is not None):
         if pat_svar != inst_svar:
             return None
-    elif (pat_sym := Symbol.deconstruct(pattern)) and (inst_sym := Symbol.deconstruct(instance)):
+        return ret
+    pat_sym = Symbol.deconstruct(pattern)
+    inst_sym = Symbol.deconstruct(instance)
+    if (pat_sym is not None) and (inst_sym is not None):
         if pat_sym != inst_sym:
             return None
-    elif (pat_app := App.unwrap(pattern)) and (inst_app := App.unwrap(instance)):
+        return ret
+    if (pat_app := App.unwrap(pattern)) and (inst_app := App.unwrap(instance)):
         ret = match_single(pat_app[0], inst_app[0], ret)
-        if not ret:
+        if ret is None:
             return None
-        ret = match_single(pat_app[1], inst_app[1], ret)
-    elif (pat_ex := Exists.deconstruct(pattern)) and (inst_ex := Exists.deconstruct(instance)):
+        return match_single(pat_app[1], inst_app[1], ret)
+    if (pat_ex := Exists.deconstruct(pattern)) and (inst_ex := Exists.deconstruct(instance)):
         if pat_ex[0] != inst_ex[0]:
             return None
-        ret = match_single(pat_ex[1], inst_ex[1], ret)
-    elif (pat_mu := Mu.deconstruct(pattern)) and (inst_mu := Mu.deconstruct(instance)):
+        return match_single(pat_ex[1], inst_ex[1], ret)
+    if (pat_mu := Mu.deconstruct(pattern)) and (inst_mu := Mu.deconstruct(instance)):
         if pat_mu[0] != inst_mu[0]:
             return None
-        ret = match_single(pat_mu[1], inst_mu[1], ret)
+        return match_single(pat_mu[1], inst_mu[1], ret)
     # TODO Consider adding cases for ESubst/SSubst
-    else:
-        return None
-    return ret
+    return None
 
 
 def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None:
