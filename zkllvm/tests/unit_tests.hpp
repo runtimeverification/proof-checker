@@ -620,7 +620,8 @@ int test_instantiate() {
   return 0;
 }
 
-void execute_vector(LinkedList<uint8_t> *instrs, Pattern::Stack *stack,
+
+void execute_vector(std::array<int, MAX_SIZE> *instrs, Pattern::Stack *stack,
                     Pattern::Memory *memory, Pattern::Claims *claims,
                     Pattern::ExecutionPhase phase) {
 
@@ -629,25 +630,17 @@ void execute_vector(LinkedList<uint8_t> *instrs, Pattern::Stack *stack,
 
 void test_construct_phi_implies_phi() {
 
-  auto proof = LinkedList<uint8_t>::create();
-
-  proof->push_back((uint8_t)Instruction::MetaVar);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)Instruction::Save);
-  proof->push_back((uint8_t)Instruction::Load);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)Instruction::Implication);
+  // MetaVar(0,0,0,0,0,0)
+  // Save
+  // Load 0
+  // Implication
+  auto proof = std::array<int, MAX_SIZE>{9, 0, 0, 0, 0, 0, 0, 28, 29, 0, 5};
 
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();
   auto claims = Pattern::Claims::create();
 
-  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+  execute_vector(&proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
 
   auto phi0 = Pattern::metavar_unconstrained(0);
   auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
@@ -666,8 +659,6 @@ void test_construct_phi_implies_phi() {
     it->~Pattern();
   }
 
-  proof->~LinkedList();
-  free(proof);
   stack->~LinkedList();
   free(stack);
   memory->~LinkedList();
@@ -683,68 +674,39 @@ void test_construct_phi_implies_phi() {
 
 int test_phi_implies_phi_impl() {
 
-  auto proof = LinkedList<uint8_t>::create();
-  proof->push_back((uint8_t)Instruction::MetaVar);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  proof->push_back((uint8_t)0);
-  // Stack: $ph0
-  proof->push_back((uint8_t)Instruction::Save);
-  // @0
-  proof->push_back((uint8_t)Instruction::Load);
-  proof->push_back((uint8_t)0);
-  // Stack: $ph0; ph0
-  proof->push_back((uint8_t)Instruction::Load);
-  proof->push_back((uint8_t)0);
-  // Stack: $ph0; $ph0; ph0
-  proof->push_back((uint8_t)Instruction::Implication);
-  // Stack: $ph0; ph0 -> ph0
-  proof->push_back((uint8_t)Instruction::Save);
-  // @1
-  proof->push_back((uint8_t)Instruction::Prop2);
-  // Stack: $ph0; $ph0 -> ph0;
-  // [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
-  proof->push_back((uint8_t)Instruction::Instantiate);
-  proof->push_back((uint8_t)1);
-  proof->push_back((uint8_t)1);
-  // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2)) ->
-  //                     (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
-  proof->push_back((uint8_t)Instruction::Instantiate);
-  proof->push_back((uint8_t)1);
-  proof->push_back((uint8_t)2);
-  // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0)) ->
-  //               (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-  proof->push_back((uint8_t)Instruction::Load);
-  proof->push_back((uint8_t)1);
-  // Stack: p1 ; $ph0 -> ph0
-  proof->push_back((uint8_t)Instruction::Prop1);
-  // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)]
-  proof->push_back((uint8_t)Instruction::Instantiate);
-  proof->push_back((uint8_t)1);
-  proof->push_back((uint8_t)1);
-  // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
-  proof->push_back((uint8_t)Instruction::ModusPonens);
-  // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-  proof->push_back((uint8_t)Instruction::Load);
-  proof->push_back((uint8_t)0);
-  // Stack: p3 ; ph0;
-  proof->push_back((uint8_t)Instruction::Prop1);
-  // Stack: p3 ; ph0; prop1
-  proof->push_back((uint8_t)Instruction::Instantiate);
-  proof->push_back((uint8_t)1);
-  proof->push_back((uint8_t)1);
-  // Stack: p3 ; ph0 -> (ph0 -> ph0)
-  proof->push_back((uint8_t)Instruction::ModusPonens);
-  // Stack: ph0 -> ph0
-
+  auto proof = std::array<int, MAX_SIZE>{
+      (int)Instruction::MetaVar, 0, 0, 0, 0, 0, 0, // Stack: $ph0
+      (int)Instruction::Save,                      // @0
+      (int)Instruction::Load, 0,                   // Stack: $ph0; ph0
+      (int)Instruction::Load, 0,                   // Stack: $ph0; $ph0; ph0
+      (int)Instruction::Implication,               // Stack: $ph0; ph0 -> ph0
+      (int)Instruction::Save,                      // @1
+      (int)Instruction::Prop2,
+      // Stack: $ph0; $ph0 -> ph0;
+      // [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
+      (int)Instruction::Instantiate, 1, 1,
+      // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2)) ->
+      //                     (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
+      (int)Instruction::Instantiate, 1, 2,
+      // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0)) ->
+      //               (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+      (int)Instruction::Load, 1, // Stack: p1 ; $ph0 -> ph0
+      (int)Instruction::Prop1,
+      // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)]
+      (int)Instruction::Instantiate, 1, 1,
+      // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
+      (int)Instruction::ModusPonens,
+      // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+      (int)Instruction::Load, 0,           // Stack: p3 ; ph0;
+      (int)Instruction::Prop1,             // Stack: p3 ; ph0; prop1
+      (int)Instruction::Instantiate, 1, 1, // Stack: p3 ; ph0 -> (ph0 -> ph0)
+      (int)Instruction::ModusPonens        // Stack: ph0 -> ph0
+  };
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();
   auto claims = Pattern::Claims::create();
 
-  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+  execute_vector(&proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
 
   auto phi0 = Pattern::metavar_unconstrained(0);
   auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
@@ -764,8 +726,6 @@ int test_phi_implies_phi_impl() {
     it->~Pattern();
   }
 
-  proof->~LinkedList();
-  free(proof);
   stack->~LinkedList();
   free(stack);
   memory->~LinkedList();
@@ -782,22 +742,12 @@ int test_phi_implies_phi_impl() {
 }
 int test_no_remaining_claims() {
 
-  auto gamma = LinkedList<uint8_t>::create();
-  auto claims = LinkedList<uint8_t>::create();
-  auto proof = LinkedList<uint8_t>::create();
+  auto gamma = std::array<int, MAX_SIZE>{}; // Empty
+  auto claims = std::array<int, MAX_SIZE>{(int)Instruction::Symbol, 0,
+                                          (int)Instruction::Publish};
+  auto proof = std::array<int, MAX_SIZE>{}; // Empty
 
-  claims->push_back((uint8_t)Instruction::Symbol);
-  claims->push_back((uint8_t)0);
-  claims->push_back((uint8_t)Instruction::Publish);
-
-  Pattern::verify(gamma, claims, proof);
-
-  gamma->~LinkedList();
-  free(gamma);
-  claims->~LinkedList();
-  free(claims);
-  proof->~LinkedList();
-  free(proof);
+  Pattern::verify(&gamma, &claims, &proof);
 
   return 0;
 }

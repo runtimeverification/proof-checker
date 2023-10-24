@@ -1,8 +1,11 @@
 #include "../include/data_structures.hpp"
+#include <array>
 #include <cassert>
 #include <cstring>
 #include <iostream>
 #include <memory>
+
+#define MAX_SIZE 1785
 
 enum class Instruction : uint8_t {
   // Patterns
@@ -1030,20 +1033,23 @@ struct Pattern {
   enum class ExecutionPhase { Gamma, Claims, Proof };
 
   static LinkedList<uint8_t> *
-  read_u8_vec(LinkedList<uint8_t>::Iterator &iterator) {
-    auto size = *iterator.next();
+  read_u8_vec(std::array<int, MAX_SIZE>::iterator &iterator) {
+    auto size = *iterator;
+    iterator++;
     auto vec = LinkedList<uint8_t>::create();
     for (int i = 0; i < size; i++) {
-      vec->push_back(*iterator.next());
+      vec->push_back(*iterator);
+      iterator++;
     }
     return vec;
   }
 
-  static void execute_instructions(LinkedList<uint8_t> *buffer, Stack *stack,
-                                   Memory *memory, Claims *claims,
+  static void execute_instructions(std::array<int, MAX_SIZE> *buffer,
+                                   Stack *stack, Memory *memory, Claims *claims,
                                    ExecutionPhase phase) {
     // Get an iterator for the input buffer
     auto iterator = buffer->begin();
+    iterator++; // Skip the first byte, which is the size of the buffer
 
     // Metavars
     // Phi0 = MetaVar(0)
@@ -1071,13 +1077,15 @@ struct Pattern {
 
     // Iteration through the input buffer
     while (iterator != buffer->end()) {
-      Instruction instr_u32 = from(*iterator.next());
+      Instruction instr_u32 = from(*iterator);
+      iterator++;
 
       switch (instr_u32) {
         // TODO: Add an abstraction for pushing these one-argument terms on
         // stack?
       case Instruction::EVar: {
-        auto id = iterator.next();
+        auto id = iterator;
+        iterator++;
         if (id == buffer->end()) {
 #if DEBUG
           throw std::runtime_error(
@@ -1089,7 +1097,8 @@ struct Pattern {
         break;
       }
       case Instruction::SVar: {
-        auto id = iterator.next();
+        auto id = iterator;
+        iterator++;
         if (id == buffer->end()) {
 #if DEBUG
           throw std::runtime_error(
@@ -1101,7 +1110,8 @@ struct Pattern {
         break;
       }
       case Instruction::Symbol: {
-        auto id = iterator.next();
+        auto id = iterator;
+        iterator++;
         if (id == buffer->end()) {
 #if DEBUG
           throw std::runtime_error(
@@ -1113,7 +1123,8 @@ struct Pattern {
         break;
       }
       case Instruction::MetaVar: {
-        auto getId = iterator.next();
+        auto getId = iterator;
+        iterator++;
         if (getId == buffer->end()) {
 #if DEBUG
           throw std::runtime_error("Expected id for MetaVar instruction");
@@ -1153,11 +1164,22 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, app(left, right)));
         break;
       }
-      case Instruction::Exists:
-      case Instruction::Mu:
-      case Instruction::ESubst:
-      case Instruction::SSubst:
+      case Instruction::Exists: {
+        assert(false && "Not implemented yet");
         break;
+      }
+      case Instruction::Mu: {
+        assert(false && "Not implemented yet");
+        break;
+      }
+      case Instruction::ESubst: {
+        assert(false && "Not implemented yet");
+        break;
+      }
+      case Instruction::SSubst: {
+        assert(false && "Not implemented yet");
+        break;
+      }
       case Instruction::Prop1:
         stack->push(Term::newTerm(Term::Type::Proved, copy(prop1)));
         break;
@@ -1193,15 +1215,25 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Proved, copy(premise1->right)));
         break;
       }
-      case Instruction::Quantifier:
-      case Instruction::Generalization:
+      case Instruction::Quantifier: {
+        assert(false && "Not implemented yet");
+        break;
+      }
+
+      case Instruction::Generalization: {
+        assert(false && "Not implemented yet");
+        break;
+      }
       case Instruction::Existence:
         stack->push(Term::newTerm(Term::Type::Proved, copy(existence)));
         break;
-      case Instruction::Substitution:
+      case Instruction::Substitution: {
+        assert(false && "Not implemented yet");
         break;
+      }
       case Instruction::Instantiate: {
-        auto n = iterator.next();
+        auto n = iterator;
+        iterator++;
         if (n == buffer->end()) {
 #if DEBUG
           throw std::runtime_error(
@@ -1214,7 +1246,8 @@ struct Pattern {
 
         auto metaterm = pop_stack(stack);
         for (int i = 0; i < *n; i++) {
-          ids->push(*iterator.next());
+          ids->push(*iterator);
+          iterator++;
           plugs->push(pop_stack_pattern(stack));
         }
 
@@ -1254,7 +1287,8 @@ struct Pattern {
         break;
       }
       case Instruction::Load: {
-        auto index = iterator.next();
+        auto index = iterator;
+        iterator++;
         if (index == buffer->end()) {
 #if DEBUG
           throw std::runtime_error(
@@ -1308,7 +1342,8 @@ struct Pattern {
         break;
       }
       case Instruction::CleanMetaVar: {
-        auto id = iterator.next();
+        auto id = iterator;
+        iterator++;
         if (id == buffer->end()) {
 #if DEBUG
           throw std::runtime_error("Expected id for MetaVar instruction");
@@ -1332,14 +1367,14 @@ struct Pattern {
       }
       }
 #if DEBUG
-      printStack(stack);
+      // printStack(stack);
 #endif
     }
   }
 
-  static int verify(LinkedList<uint8_t> *gamma_buffer,
-                    LinkedList<uint8_t> *claims_buffer,
-                    LinkedList<uint8_t> *proof_buffer) {
+  static int verify(std::array<int, MAX_SIZE> *gamma_buffer,
+                    std::array<int, MAX_SIZE> *claims_buffer,
+                    std::array<int, MAX_SIZE> *proof_buffer) {
     auto claims = Claims::create();
     auto memory = Memory::create();
     auto stack = Stack::create();
@@ -1375,6 +1410,11 @@ struct Pattern {
       }
 #endif
       return 1;
+    } else {
+#if DEBUG
+      std::cout << "Checking finished and all claims are proved." << std::endl;
+#endif
+      return 0;
     }
 
     return 0;
