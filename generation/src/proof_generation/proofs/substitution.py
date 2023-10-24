@@ -17,7 +17,7 @@ class Forall(Notation):
     var: int
     phi0: Pattern
 
-    def definition(self) -> Pattern:
+    def object_definition(self) -> Pattern:
         return neg(Exists(self.var, neg(phi0)))
 
     def __str__(self) -> str:
