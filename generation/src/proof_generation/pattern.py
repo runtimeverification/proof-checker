@@ -396,8 +396,16 @@ class Notation(Pattern, ABC):
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args = self._instantiate_args(delta)
-        return type(self)(*args)
+        pattern_args = self._instantiate_args(delta)
+
+        final_args = []
+        for arg in vars(self).values():
+            if isinstance(arg, Pattern):
+                final_args.append(pattern_args.pop(0))
+            else:
+                final_args.append(arg)
+
+        return type(self)(*final_args)
 
     # TODO: Keep notations (without dropping them)
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
