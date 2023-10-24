@@ -50,31 +50,28 @@ class KoreConverter:
         """Convert the given pattern to the pattern in the new format."""
         return self._convert_pattern(pattern)
 
-    def retrieve_axioms_for_hint(self, hint: KoreHint) -> Axioms:
-        """Retrieve the axiom at the given ordinal."""
-        kore_axiom = self._axioms_to_choose_from[hint.axiom_ordinal]
-        converted = self._convert_axiom(kore_axiom)
-        related_axioms = self.collect_axioms_for_substitutions(hint.substitutions)
-
-        return self._organize_axioms([converted] + related_axioms)
-
-    def collect_axioms_for_substitutions(self, substitutions: dict[str, Pattern]) -> list[ConvertedAxiom]:
+    def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
         added_axioms = []
-        for pattern in substitutions.values():
+        for pattern in hint.substitutions.values():
             # TODO: Requires equality to be implemented
             converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
             added_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
-        return added_axioms
+        return self._organize_axioms(added_axioms)
 
-    def _organize_axioms(self, axioms: list[ConvertedAxiom]) -> Axioms:
-        """Organize the axioms by their type."""
-        organized_axioms: Axioms = {}
-        for axiom in axioms:
-            organized_axioms.setdefault(axiom.kind, [])
-            if axiom not in organized_axioms[axiom.kind]:
-                organized_axioms[axiom.kind].append(axiom)
+    def retrieve_axiom_for_ordinal(self, ordinal: int) -> ConvertedAxiom:
+        """Retrieve the axiom for the given ordinal."""
+        assert ordinal < len(self._axioms_to_choose_from), f'Ordinal {ordinal} is out of range!'
 
-        return organized_axioms
+        kore_axiom = self._axioms_to_choose_from[ordinal]
+        return self._convert_axiom(kore_axiom)
+
+    def convert_substitutions(self, subst: dict[str, kore.Pattern]) -> dict[int, Pattern]:
+        substitutions = {}
+        for id, kore_pattern in subst.items():
+            # TODO: Replace it with the EVar later
+            name = self._lookup_metavar(id).name
+            substitutions[name] = self._convert_pattern(kore_pattern)
+        return substitutions
 
     def _convert_axiom(self, kore_axiom: kore.Axiom) -> ConvertedAxiom:
         if kore_axiom in self._axioms_cache:
@@ -101,6 +98,16 @@ class KoreConverter:
         converted_axiom = ConvertedAxiom(axiom_type, converted_pattern)
         self._axioms_cache[kore_axiom] = converted_axiom
         return converted_axiom
+
+    def _organize_axioms(self, axioms: list[ConvertedAxiom]) -> Axioms:
+        """Organize the axioms by their type."""
+        organized_axioms: Axioms = {}
+        for axiom in axioms:
+            organized_axioms.setdefault(axiom.kind, [])
+            if axiom not in organized_axioms[axiom.kind]:
+                organized_axioms[axiom.kind].append(axiom)
+
+        return organized_axioms
 
     def _retrieve_axioms(self) -> list[kore.Axiom]:
         """Collect and save all axioms from the definition in Kore without converting them. This list will
@@ -201,11 +208,3 @@ class KoreConverter:
     def _lookup_metavar(self, name: str) -> MetaVar:
         assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
         return self._metavars[name]
-
-    def convert_substitution(self, subst: dict[str, Pattern]) -> dict[int, Pattern]:
-        # TODO: Remove this function eventually, it is needed until we use EVars instead of metavars
-        substitutions = {}
-        for id, pattern in subst.items():
-            name = self._lookup_metavar(id).name
-            substitutions[name] = pattern
-        return substitutions
