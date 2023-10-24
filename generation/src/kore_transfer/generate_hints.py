@@ -5,27 +5,27 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    import proof_generation.pattern as nf
     from kore_transfer.kore_converter import KoreConverter
+    from proof_generation.pattern import Pattern
     from rewrite.llvm_proof_hint import LLVMRewriteTrace
 
 
 class KoreHint:
     def __init__(
-        self, conf_before: nf.Pattern, conf_after: nf.Pattern, axiom_ordinal: int, substitutions: dict[str, nf.Pattern]
+        self, conf_before: Pattern, conf_after: Pattern, axiom_ordinal: int, substitutions: dict[str, Pattern]
     ) -> None:
         # TODO: Change interface according to the real hint format
-        self._pre_configuration: nf.Pattern = conf_before
-        self._post_configuration: nf.Pattern = conf_after
+        self._pre_configuration: Pattern = conf_before
+        self._post_configuration: Pattern = conf_after
         self._axiom_ordinal: int = axiom_ordinal
-        self._substitutions: dict[str, nf.Pattern] = substitutions
+        self._substitutions: dict[str, Pattern] = substitutions
 
     @property
-    def configuration_before(self) -> nf.Pattern:
+    def configuration_before(self) -> Pattern:
         return self._pre_configuration
 
     @property
-    def configuration_after(self) -> nf.Pattern:
+    def configuration_after(self) -> Pattern:
         return self._post_configuration
 
     @property
@@ -33,7 +33,7 @@ class KoreHint:
         return self._axiom_ordinal
 
     @property
-    def substitutions(self) -> dict[str, nf.Pattern]:
+    def substitutions(self) -> dict[str, Pattern]:
         return self._substitutions
 
 

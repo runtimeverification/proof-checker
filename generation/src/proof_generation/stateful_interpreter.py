@@ -196,7 +196,9 @@ class StatefulInterpreter(BasicInterpreter):
     def publish_proof(self, proved: Proved) -> None:
         super().publish_proof(proved)
         expected_claim, *self.claims = self.claims
-        assert proved.conclusion == expected_claim.pattern, f'{proved.conclusion, expected_claim.pattern}'
+        assert (
+            proved.conclusion == expected_claim.pattern
+        ), f'{str(proved.conclusion)} != {str(expected_claim.pattern)} \n {str(self.stack)}'
         assert self.stack[-1] == proved, f'{str(self.stack[-1])} != {str(proved)} \n {str(self.stack)}'
 
     def publish_axiom(self, axiom: Pattern) -> None:
