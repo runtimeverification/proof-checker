@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implication, bot, imp
+from proof_generation.pattern import Implies, bot, imp
 from proof_generation.proofs.propositional import And, Equiv, Or, neg, phi0, phi1, phi2, top
 from proof_generation.tautology import (
     ConjAnd,
@@ -95,8 +95,8 @@ def test_tautology_prover(p: Pattern) -> None:
             return
     assert pf2 is not None
     res = conj_to_pattern(p_conj)
-    l1, r1 = Implication.extract(pf1().conclusion)
-    l2, r2 = Implication.extract(pf2().conclusion)
+    l1, r1 = Implies.extract(pf1().conclusion)
+    l2, r2 = Implies.extract(pf2().conclusion)
     assert_eq_pat(l1, r2)
     assert_eq_pat(r1, l2)
     assert_eq_pat(l1, p)
@@ -107,8 +107,8 @@ def test_tautology_prover(p: Pattern) -> None:
     # Testing propag_neg
     p_conj2, pf_neg_1, pf_neg_2 = taut.propag_neg(p_conj)
     res2 = conj_to_pattern(p_conj2)
-    l1_neg, r1_neg = Implication.extract(pf_neg_1().conclusion)
-    l2_neg, r2_neg = Implication.extract(pf_neg_2().conclusion)
+    l1_neg, r1_neg = Implies.extract(pf_neg_1().conclusion)
+    l2_neg, r2_neg = Implies.extract(pf_neg_2().conclusion)
     assert_eq_pat(l1_neg, r2_neg)
     assert_eq_pat(r1_neg, l2_neg)
     assert_eq_pat(l1_neg, res)
@@ -119,8 +119,8 @@ def test_tautology_prover(p: Pattern) -> None:
     # Testing to_cnf
     p_cnf, pf_cnf_1, pf_cnf_2 = taut.to_cnf(p_conj2)
     res3 = conj_to_pattern(p_cnf)
-    l1_cnf, r1_cnf = Implication.extract(pf_cnf_1().conclusion)
-    l2_cnf, r2_cnf = Implication.extract(pf_cnf_2().conclusion)
+    l1_cnf, r1_cnf = Implies.extract(pf_cnf_1().conclusion)
+    l2_cnf, r2_cnf = Implies.extract(pf_cnf_2().conclusion)
     assert_eq_pat(l1_cnf, r2_cnf)
     assert_eq_pat(r1_cnf, l2_cnf)
     assert_eq_pat(l1_cnf, res2)
@@ -131,8 +131,8 @@ def test_tautology_prover(p: Pattern) -> None:
     # Testing to_clauses
     p_cl, pf_cl_1, pf_cl_2 = taut.to_clauses(p_cnf)
     res4 = clause_list_to_pattern(p_cl)
-    l1_cl, r1_cl = Implication.extract(pf_cl_1().conclusion)
-    l2_cl, r2_cl = Implication.extract(pf_cl_2().conclusion)
+    l1_cl, r1_cl = Implies.extract(pf_cl_1().conclusion)
+    l2_cl, r2_cl = Implies.extract(pf_cl_2().conclusion)
     assert_eq_pat(l1_cl, r2_cl)
     assert_eq_pat(r1_cl, l2_cl)
     assert_eq_pat(l1_cl, res3)

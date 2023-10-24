@@ -4,6 +4,64 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 
+def match_single(
+    pattern: Pattern, instance: Pattern, extend: dict[int, Pattern] | None = None
+) -> dict[int, Pattern] | None:
+    ret: dict[int, Pattern] | None
+    ret = extend if extend else {}
+
+    if isinstance(pattern, MetaVar):
+        id = pattern.name
+        if id in ret:
+            if ret[id] != instance:
+                return None
+        else:
+            if not pattern.can_be_replaced_by(instance):
+                return None
+            ret[id] = instance
+    elif (pat_imp := Implies.unwrap(pattern)) and (inst_imp := Implies.unwrap(instance)):
+        ret = match_single(pat_imp[0], inst_imp[0], ret)
+        if not ret:
+            return None
+        ret = match_single(pat_imp[1], inst_imp[1], ret)
+    elif (pat_evar := EVar.deconstruct(pattern)) and (inst_evar := EVar.deconstruct(instance)):
+        if pat_evar != inst_evar:
+            return None
+    elif (pat_svar := SVar.deconstruct(pattern)) and (inst_svar := SVar.deconstruct(instance)):
+        if pat_svar != inst_svar:
+            return None
+    elif (pat_sym := Symbol.deconstruct(pattern)) and (inst_sym := Symbol.deconstruct(instance)):
+        if pat_sym != inst_sym:
+            return None
+    elif (pat_app := App.unwrap(pattern)) and (inst_app := App.unwrap(instance)):
+        ret = match_single(pat_app[0], inst_app[0], ret)
+        if not ret:
+            return None
+        ret = match_single(pat_app[1], inst_app[1], ret)
+    elif (pat_ex := Exists.deconstruct(pattern)) and (inst_ex := Exists.deconstruct(instance)):
+        if pat_ex[0] != inst_ex[0]:
+            return None
+        ret = match_single(pat_ex[1], inst_ex[1], ret)
+    elif (pat_mu := Mu.deconstruct(pattern)) and (inst_mu := Mu.deconstruct(instance)):
+        if pat_mu[0] != inst_mu[0]:
+            return None
+        ret = match_single(pat_mu[1], inst_mu[1], ret)
+    # TODO Consider adding cases for ESubst/SSubst
+    else:
+        return None
+    return ret
+
+
+def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None:
+    ret: dict[int, Pattern] = {}
+    for pattern, instance in equations:
+        submatch = match_single(pattern, instance, ret)
+        if not submatch:
+            return None
+        ret = submatch
+    return ret
+
+
 class Pattern:
     def ef(self, name: int) -> bool:
         raise NotImplementedError
@@ -113,6 +171,14 @@ class Symbol(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self
 
+    @staticmethod
+    def deconstruct(pat: Pattern) -> str | None:
+        if isinstance(pat, Symbol):
+            return pat.name
+        if isinstance(pat, Notation):
+            return Symbol.deconstruct(pat.conclusion())
+        return None
+
     def __str__(self) -> str:
         return f'\u03c3{self.name}'
 
@@ -138,6 +204,10 @@ class Implies(Pattern):
         return f'({str(self.left)} -> {str(self.right)})'
 
 
+def imp(p1: Pattern, p2: Pattern) -> Pattern:
+    return Implies(p1, p2)
+
+
 @dataclass(frozen=True)
 class App(Pattern):
     left: Pattern
@@ -156,7 +226,7 @@ class App(Pattern):
         return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'(app ({str(self.left)}) ({str(self.right)}))'
+        return f'app({str(self.left)}, {str(self.right)})'
 
 
 @dataclass(frozen=True)
@@ -337,7 +407,7 @@ class Notation(Pattern, ABC):
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args = self.instantiate(delta)
+        args = self._instantiate_args(delta)
         return type(self)(*args)
 
     # TODO: Keep notations (without dropping them)
@@ -347,6 +417,31 @@ class Notation(Pattern, ABC):
     # TODO: Keep notations (without dropping them)
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self.conclusion().apply_ssubst(svar_id, plug)
+
+    @classmethod
+    def unwrap(cls, pattern: Pattern) -> tuple[Pattern, ...] | None:
+        assert cls is not Notation
+        assert issubclass(cls, Notation)
+        if isinstance(pattern, cls):
+            return tuple([v for _, v in sorted(pattern.arguments().items())])
+        match_result = match_single(cls().definition(), pattern)
+        if match_result is None:
+            return None
+        return tuple([v for _, v in sorted(match_result.items())])
+
+    def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
+        args: list[Pattern] = []
+
+        for arg in self.arguments().values():
+            args.append(arg.instantiate(delta))
+
+        return args
+
+    def __eq__(self, o: object) -> bool:
+        assert isinstance(o, Pattern)
+        if isinstance(o, Notation) and type(o) == type(self):
+            return o.arguments() == self.arguments()
+        return self.conclusion() == o
 
     def __str__(self) -> str:
         pretty_args = ', '.join(map(str, self.arguments().values()))
@@ -381,7 +476,7 @@ class FakeNotation(Notation):
         return ret
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
-        args = self.instantiate(delta)
+        args = self._instantiate_args(delta)
         return FakeNotation(self.symbol, tuple(args))
 
     def __eq__(self, o: object) -> bool:
