@@ -139,7 +139,7 @@ class KoreConverter:
                     if len(patterns_left) == 0:
                         return next_one
                     else:
-                        return App(next_one, chain_patterns(patterns_left))
+                        return App(chain_patterns(patterns_left), next_one)
 
                 app_symbol: Pattern = self._resolve_symbol(symbol)
                 args_patterns: list[Pattern] = [self._convert_pattern(arg) for arg in args]
@@ -148,10 +148,10 @@ class KoreConverter:
                 args_chain = chain_patterns([app_symbol] + args_patterns)
 
                 # TODO: Replace it with tuples when the Notation class would allow it
-                sorts_chain = chain_patterns(sorts_patterns) if sorts_patterns else Bot()
+                application_sorts = sorts_patterns if sorts_patterns else [Bot()]
 
                 assert isinstance(args_chain, (App, Symbol))
-                return kl.KoreApplies(sorts_chain, args_chain)
+                return kl.KoreApplies(tuple(application_sorts), args_chain)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return self._resolve_evar(pattern)
