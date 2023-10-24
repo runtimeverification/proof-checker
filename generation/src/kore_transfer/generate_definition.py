@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
-from kore_transfer.kore_converter import AxiomType
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
@@ -15,13 +14,13 @@ ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
 class KoreDefinition(proof.ProofExp):
-    axiom_patterns: dict[int, Pattern] = {}
+    axiom_patterns: list[Pattern] = []
     claim_patterns: list[Pattern] = []
     proofs: list[ProofMethod] = []
 
     @classmethod
     def axioms(cls) -> list[Pattern]:
-        return list(cls.axiom_patterns.values())
+        return list(cls.axiom_patterns)
 
     @classmethod
     def claims(cls) -> list[Pattern]:
@@ -45,9 +44,9 @@ class KoreDefinition(proof.ProofExp):
     @classmethod
     def add_axioms(cls, hint: KoreHint, converter: KoreConverter) -> Axioms:
         """Add an axiom to the definition."""
-        axioms = converter.retrieve_axioms_for_hint(hint)
-        rewrite_axiom = axioms[AxiomType.RewriteRule][0].pattern
-        cls.axiom_patterns[hint.axiom_ordinal] = rewrite_axiom
+        axioms = converter.collect_functional_axioms(hint)
+        axioms.setdefault(hint.axiom.kind, []).append(hint.axiom)
+        cls.axiom_patterns.append(hint.axiom.pattern)
         return axioms
 
     def proof_expressions(self) -> list[proof.ProvedExpression]:

@@ -5,20 +5,20 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from kore_transfer.kore_converter import KoreConverter
+    from kore_transfer.kore_converter import ConvertedAxiom, KoreConverter
     from proof_generation.pattern import Pattern
     from rewrite.llvm_proof_hint import LLVMRewriteTrace
 
 
 class KoreHint:
     def __init__(
-        self, conf_before: Pattern, conf_after: Pattern, axiom_ordinal: int, substitutions: dict[str, Pattern]
+        self, conf_before: Pattern, conf_after: Pattern, axiom: ConvertedAxiom, substitutions: dict[int, Pattern]
     ) -> None:
         # TODO: Change interface according to the real hint format
         self._pre_configuration: Pattern = conf_before
         self._post_configuration: Pattern = conf_after
-        self._axiom_ordinal: int = axiom_ordinal
-        self._substitutions: dict[str, Pattern] = substitutions
+        self._axiom: ConvertedAxiom = axiom
+        self._substitutions: dict[int, Pattern] = substitutions
 
     @property
     def configuration_before(self) -> Pattern:
@@ -29,11 +29,11 @@ class KoreHint:
         return self._post_configuration
 
     @property
-    def axiom_ordinal(self) -> int:
-        return self._axiom_ordinal
+    def axiom(self) -> ConvertedAxiom:
+        return self._axiom
 
     @property
-    def substitutions(self) -> dict[str, Pattern]:
+    def substitutions(self) -> dict[int, Pattern]:
         return self._substitutions
 
 
@@ -50,8 +50,9 @@ def get_proof_hints(
         # generate the hint using the new format
         pre_config = post_config
         post_config = kore_converter.convert_pattern(rewrite_step.post_config)
-        substitutions = {
-            name: kore_converter.convert_pattern(pattern) for name, pattern in dict(rewrite_step.substitution).items()
-        }
-        hint = KoreHint(pre_config, post_config, rewrite_step.rule_ordinal, substitutions)
+
+        axiom = kore_converter.retrieve_axiom_for_ordinal(rewrite_step.rule_ordinal)
+        substitutions = kore_converter.convert_substitutions(dict(rewrite_step.substitution))
+
+        hint = KoreHint(pre_config, post_config, axiom, substitutions)
         yield hint

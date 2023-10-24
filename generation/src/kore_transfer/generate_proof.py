@@ -23,9 +23,8 @@ def generate_proofs(
         rewrite_axiom = axioms[AxiomType.RewriteRule][0].pattern
         assert isinstance(rewrite_axiom, kl.KoreRewrites), f'The hint should contain a pattern, got {rewrite_axiom}'
         claim = kl.KoreRewrites(rewrite_axiom.phi0, hint.configuration_before, hint.configuration_after)
-        substitutions = kore_converter.convert_substitution(hint.substitutions)
 
-        proof_expression.prove_rewrite_step(claim, rewrite_axiom, substitutions)
+        proof_expression.prove_rewrite_step(claim, rewrite_axiom, hint.substitutions)
         claims += 1
 
     print(f'Generated {claims} claims')
