@@ -148,7 +148,7 @@ def test_move_last_to_front(i: int, is_last: bool) -> None:
     len = i + 1 if is_last else 100
 
     pf = taut.or_move_to_front(i, len)
-    conc = pf().conclusion
+    conc = pf.conclusion
     c1, c2 = Equiv.extract(conc)
 
     print(f'Proved {str(c1)} <-> {str(c2)} \n\n')
