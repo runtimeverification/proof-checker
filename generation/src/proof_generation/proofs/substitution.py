@@ -4,8 +4,8 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import EVar, Exists, Notation
-from proof_generation.proofs.propositional import Propositional, neg, phi0, top
+from proof_generation.pattern import EVar, Exists, Notation, ESubst
+from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1, top
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -61,12 +61,14 @@ class Substitution(Propositional):
         """
         return self.universal_gen(self.top_intro, EVar(0))
 
-    def functional_subst(self, phi: ProvedExpression, phi1: ProvedExpression, x: EVar) -> ProvedExpression:
+    def functional_subst(self, phi: ProvedExpression, psi: ProvedExpression, x: EVar) -> ProvedExpression:
         """
         --------------------------------------
-        (exists x . phi1 = x) -> ((forall x. phi) -> phi[phi1/x])
+        (exists x . psi = x) -> ((forall x. phi) -> phi[psi/x])
         """
-        raise NotImplementedError
+        return self.load_axiom(
+            Implies(Exists(0, phi0), Forall(0, phi0), phi0)
+        )
 
 
 if __name__ == '__main__':
