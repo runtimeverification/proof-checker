@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
-from kore_transfer.kore_converter import AxiomType
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
@@ -15,23 +14,23 @@ ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
 class KoreDefinition(proof.ProofExp):
-    axiom_patterns: dict[int, Pattern] = {}
-    claim_patterns: list[Pattern] = []
+    prove_step_axioms: list[Pattern] = []
+    prove_step_claims: list[Pattern] = []
     proofs: list[ProofMethod] = []
 
     @classmethod
     def axioms(cls) -> list[Pattern]:
-        return list(cls.axiom_patterns.values())
+        return list(cls.prove_step_axioms)
 
     @classmethod
     def claims(cls) -> list[Pattern]:
-        return cls.claim_patterns
+        return cls.prove_step_claims
 
     @classmethod
     def prove_rewrite_step(cls, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]) -> None:
         """Take a single rewrite step and emit a proof for it."""
-        assert len(cls.axiom_patterns) > 0, 'No axioms to prove the rewrite step'
-        cls.claim_patterns.append(claim)
+        assert len(cls.prove_step_axioms) > 0, 'No axioms to prove the rewrite step'
+        cls.prove_step_claims.append(claim)
 
         def proof_transition(proof_expr: proof.ProofExp) -> proof.Proved:
             """Prove the transition between two configurations."""
@@ -45,9 +44,9 @@ class KoreDefinition(proof.ProofExp):
     @classmethod
     def add_axioms(cls, hint: KoreHint, converter: KoreConverter) -> Axioms:
         """Add an axiom to the definition."""
-        axioms = converter.retrieve_axioms_for_hint(hint)
-        rewrite_axiom = axioms[AxiomType.RewriteRule][0].pattern
-        cls.axiom_patterns[hint.axiom_ordinal] = rewrite_axiom
+        axioms = converter.collect_functional_axioms(hint)
+        axioms.setdefault(hint.axiom.kind, []).append(hint.axiom)
+        cls.prove_step_axioms.append(hint.axiom.pattern)
         return axioms
 
     def proof_expressions(self) -> list[proof.ProvedExpression]:

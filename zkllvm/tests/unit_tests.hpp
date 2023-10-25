@@ -506,13 +506,13 @@ int test_instantiate() {
   auto internal6 = Pattern::instantiate_internal(*muX0phi0, *vars0, *plugsx0);
   auto internal7 = Pattern::instantiate_internal(*muX0phi0, *vars1, *plugsx0);
 
-  assert(*internal0 == *x0_implies_x0);
+  assert(internal0.unwrap()->operator==(*x0_implies_x0));
   assert(*internal1 == nullptr);
-  assert(*internal2 == *appx0x0);
+  assert(internal2.unwrap()->operator==(*appx0x0));
   assert(*internal3 == nullptr);
-  assert(*internal4 == *existsx0x0);
+  assert(internal4.unwrap()->operator==(*existsx0x0));
   assert(*internal5 == nullptr);
-  assert(*internal6 == *muX0x0);
+  assert(internal6.unwrap()->operator==(*muX0x0));
   assert(*internal7 == nullptr);
 
   // Simultaneous instantiations
@@ -541,8 +541,8 @@ int test_instantiate() {
   auto internal9 =
       Pattern::instantiate_internal(*muX0phi0, *vars10, *plugsx0X0);
 
-  assert(*internal8 == *existsx0X0);
-  assert(*internal9 == *muX0X0);
+  assert(internal8.unwrap()->operator==(*existsx0X0));
+  assert(internal9.unwrap()->operator==(*muX0X0));
 
 #if DEBUG
   x0->print();
@@ -777,6 +777,27 @@ int test_phi_implies_phi_impl() {
   free(expected_stack);
 
   phi0->~Pattern();
+
+  return 0;
+}
+int test_no_remaining_claims() {
+
+  auto gamma = LinkedList<uint8_t>::create();
+  auto claims = LinkedList<uint8_t>::create();
+  auto proof = LinkedList<uint8_t>::create();
+
+  claims->push_back((uint8_t)Instruction::Symbol);
+  claims->push_back((uint8_t)0);
+  claims->push_back((uint8_t)Instruction::Publish);
+
+  Pattern::verify(gamma, claims, proof);
+
+  gamma->~LinkedList();
+  free(gamma);
+  claims->~LinkedList();
+  free(claims);
+  proof->~LinkedList();
+  free(proof);
 
   return 0;
 }

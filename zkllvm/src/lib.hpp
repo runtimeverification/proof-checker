@@ -43,7 +43,8 @@ enum class Instruction : uint8_t {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar = (uint8_t)(9 + 128),
+  CleanMetaVar, // For some reason setting CleanMetaVar = (uint8_t)(9 + 128)
+                // isn't working with zkLLVM
   // EOF exclusive for zkLLVM
   NO_OP
 };
@@ -154,6 +155,7 @@ struct Pattern {
     return pattern;
   }
 
+  // Equality operator
   bool operator==(const Pattern &rhs) const {
     if (inst != rhs.inst || id != rhs.id) {
       return false;
@@ -230,7 +232,6 @@ struct Pattern {
     return true;
   }
 
-  bool operator==(const Pattern *other) const { return *this == *other; }
   bool operator!=(const Pattern &rhs) { return !(*this == rhs); }
 
   // Copy constructor
@@ -1140,20 +1141,6 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
         break;
       }
-      case Instruction::CleanMetaVar: {
-        auto id = iterator.next();
-        if (id == buffer->end()) {
-#if DEBUG
-          throw std::runtime_error("Expected id for MetaVar instruction");
-#endif
-          exit(1);
-        }
-        auto metavar_pat = Pattern::metavar_unconstrained(*id);
-
-        // Clean metavars are always well-formed
-        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
-        break;
-      }
       case Instruction::Implication: {
         auto right = pop_stack_pattern(stack);
         auto left = pop_stack_pattern(stack);
@@ -1193,7 +1180,7 @@ struct Pattern {
           exit(1);
         }
 
-        if (premise1->left != *premise2) {
+        if (*premise1->left != *premise2) {
 #if DEBUG
           throw std::runtime_error(
               "Antecedents do not match for modus ponens.\n" +
@@ -1320,6 +1307,20 @@ struct Pattern {
         }
         break;
       }
+      case Instruction::CleanMetaVar: {
+        auto id = iterator.next();
+        if (id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error("Expected id for MetaVar instruction");
+#endif
+          exit(8);
+        }
+        auto metavar_pat = Pattern::metavar_unconstrained(*id);
+
+        // Clean metavars are always well-formed
+        stack->push(Term::newTerm(Term::Type::Pattern, metavar_pat));
+        break;
+      }
       case Instruction::NO_OP:
         return;
       default: {
@@ -1334,5 +1335,48 @@ struct Pattern {
       printStack(stack);
 #endif
     }
+  }
+
+  static int verify(LinkedList<uint8_t> *gamma_buffer,
+                    LinkedList<uint8_t> *claims_buffer,
+                    LinkedList<uint8_t> *proof_buffer) {
+    auto claims = Claims::create();
+    auto memory = Memory::create();
+    auto stack = Stack::create();
+
+    execute_instructions(gamma_buffer,
+                         stack,  // stack is empty initially.
+                         memory, // memory is empty initially.
+                         claims, // claims is unused in this phase.
+                         ExecutionPhase::Gamma);
+
+    stack->clear();
+
+    execute_instructions(claims_buffer,
+                         stack,  // stack is empty initially.
+                         memory, // reuse memory
+                         claims, // claims populated in this phase
+                         ExecutionPhase::Claims);
+
+    stack->clear();
+
+    execute_instructions(proof_buffer,
+                         stack,  // stack is empty initially.
+                         memory, // axioms are used as initial memory
+                         claims, // claims are consumed by publish instruction
+                         ExecutionPhase::Proof);
+    if (!claims->empty()) {
+#if DEBUG
+      std::cout << "Checking finished but there are claims left unproved:"
+                << std::endl;
+      for (auto it : *claims) {
+        it->print();
+        std::cout << std::endl;
+      }
+#endif
+      return 1;
+    }
+
+    return 0;
   }
 };

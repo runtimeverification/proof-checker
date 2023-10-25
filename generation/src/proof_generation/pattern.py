@@ -410,7 +410,7 @@ class Notation(Pattern, ABC):
     # All subclasses of Notation MUST implement one of the two methods below
     @classmethod
     def definition(cls) -> Pattern:
-        return cls().object_definition()
+        raise NotImplementedError
 
     def object_definition(self) -> Pattern:
         return type(self).definition()
