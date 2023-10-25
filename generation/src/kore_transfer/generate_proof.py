@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import proof_generation.pattern as nf
 import proof_generation.proofs.kore_lemmas as kl
+from kore_transfer.kore_converter import AxiomType
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -18,13 +18,13 @@ def generate_proofs(
 ) -> None:
     claims = 0
     for hint in hints:
-        axiom = proof_expression.add_axiom(hint.axiom_ordinal, kore_converter)
+        axioms = proof_expression.add_axioms(hint, kore_converter)
 
-        assert isinstance(axiom, kl.KoreRewrites), f'The hint should contain a rewriting rule, got {str(axiom)}'
-        claim = kl.KoreRewrites(axiom.phi0, hint.configuration_before, hint.configuration_after)
+        rewrite_axiom = axioms[AxiomType.RewriteRule][0].pattern
+        assert isinstance(rewrite_axiom, kl.KoreRewrites), f'The hint should contain a pattern, got {rewrite_axiom}'
+        claim = kl.KoreRewrites(rewrite_axiom.phi0, hint.configuration_before, hint.configuration_after)
 
-        assert isinstance(axiom, nf.Pattern), f'The hint should contain a pattern, got {axiom}'
-        proof_expression.prove_rewrite_step(claim, axiom, hint.instantiations)
+        proof_expression.prove_rewrite_step(claim, rewrite_axiom, hint.substitutions)
         claims += 1
 
     print(f'Generated {claims} claims')

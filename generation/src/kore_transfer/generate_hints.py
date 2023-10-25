@@ -5,36 +5,36 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    import proof_generation.pattern as nf
-    from kore_transfer.kore_converter import KoreConverter
+    from kore_transfer.kore_converter import ConvertedAxiom, KoreConverter
+    from proof_generation.pattern import Pattern
     from rewrite.llvm_proof_hint import LLVMRewriteTrace
 
 
 class KoreHint:
     def __init__(
-        self, conf_before: nf.Pattern, conf_after: nf.Pattern, axiom_ordinal: int, instantiations: dict[int, nf.Pattern]
+        self, conf_before: Pattern, conf_after: Pattern, axiom: ConvertedAxiom, substitutions: dict[int, Pattern]
     ) -> None:
         # TODO: Change interface according to the real hint format
-        self._pre_configuration: nf.Pattern = conf_before
-        self._post_configuration: nf.Pattern = conf_after
-        self._axiom_ordinal: int = axiom_ordinal
-        self._instantiations: dict[int, nf.Pattern] = instantiations
+        self._pre_configuration: Pattern = conf_before
+        self._post_configuration: Pattern = conf_after
+        self._axiom: ConvertedAxiom = axiom
+        self._substitutions: dict[int, Pattern] = substitutions
 
     @property
-    def configuration_before(self) -> nf.Pattern:
+    def configuration_before(self) -> Pattern:
         return self._pre_configuration
 
     @property
-    def configuration_after(self) -> nf.Pattern:
+    def configuration_after(self) -> Pattern:
         return self._post_configuration
 
     @property
-    def axiom_ordinal(self) -> int:
-        return self._axiom_ordinal
+    def axiom(self) -> ConvertedAxiom:
+        return self._axiom
 
     @property
-    def instantiations(self) -> dict[int, nf.Pattern]:
-        return self._instantiations
+    def substitutions(self) -> dict[int, Pattern]:
+        return self._substitutions
 
 
 def get_proof_hints(
@@ -47,12 +47,12 @@ def get_proof_hints(
     # Note that no hints will be generated if the trace is empty
     post_config = pre_config
     for rewrite_step in llvm_proof_hint.trace:
-        # populate kore converter state with meta-data from rule rule_ordinal
-        kore_converter.retrieve_axiom(rewrite_step.rule_ordinal)
-
         # generate the hint using the new format
         pre_config = post_config
         post_config = kore_converter.convert_pattern(rewrite_step.post_config)
-        subst = kore_converter.convert_substitution(rewrite_step.substitution)
-        hint = KoreHint(pre_config, post_config, rewrite_step.rule_ordinal, subst)
+
+        axiom = kore_converter.retrieve_axiom_for_ordinal(rewrite_step.rule_ordinal)
+        substitutions = kore_converter.convert_substitutions(dict(rewrite_step.substitution))
+
+        hint = KoreHint(pre_config, post_config, axiom, substitutions)
         yield hint

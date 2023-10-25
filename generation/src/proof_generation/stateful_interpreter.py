@@ -144,6 +144,18 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
+    def exists_quantifier(self) -> Proved:
+        ret = super().exists_quantifier()
+        self.stack.append(ret)
+        return ret
+
+    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
+        *self.stack, expected = self.stack
+        assert expected == proved, f'expected: {expected}\ngot: {proved}'
+        ret = super().exists_generalization(proved, var)
+        self.stack.append(ret)
+        return ret
+
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         *self.stack, expected_proved = self.stack
         expected_plugs = self.stack[-len(delta) :]
@@ -184,8 +196,10 @@ class StatefulInterpreter(BasicInterpreter):
     def publish_proof(self, proved: Proved) -> None:
         super().publish_proof(proved)
         expected_claim, *self.claims = self.claims
-        assert proved.conclusion == expected_claim.pattern, f'{proved.conclusion, expected_claim.pattern}'
-        assert self.stack[-1] == proved
+        assert (
+            proved.conclusion == expected_claim.pattern
+        ), f'{str(proved.conclusion)} != {str(expected_claim.pattern)} \n {str(self.stack)}'
+        assert self.stack[-1] == proved, f'{str(self.stack[-1])} != {str(proved)} \n {str(self.stack)}'
 
     def publish_axiom(self, axiom: Pattern) -> None:
         self.memory.append(Proved(axiom))

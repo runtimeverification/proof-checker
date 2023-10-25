@@ -26,8 +26,8 @@ kore_dv_symbol = Symbol('kore_dv')
 class KoreTop(Notation):
     phi0: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return App(inhabitant_symbol, phi0)
 
     def __str__(self) -> str:
@@ -39,8 +39,8 @@ class KoreNot(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return And(Negation(phi1), KoreTop(phi0))
 
     def __str__(self) -> str:
@@ -53,8 +53,8 @@ class KoreAnd(Notation):
     phi1: Pattern
     phi2: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return And(phi1, phi2)
 
     def __str__(self) -> str:
@@ -67,8 +67,8 @@ class KoreOr(Notation):
     phi1: Pattern
     phi2: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return Or(phi1, phi2)
 
     def __str__(self) -> str:
@@ -80,8 +80,8 @@ class KoreNext(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return App(kore_next_symbol, phi1)
 
     def __str__(self) -> str:
@@ -94,8 +94,8 @@ class KoreImplies(Notation):
     phi1: Pattern
     phi2: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return KoreOr(phi0, KoreNot(phi0, phi1), phi2)
 
     def __str__(self) -> str:
@@ -104,19 +104,19 @@ class KoreImplies(Notation):
 
 @dataclass(frozen=True, eq=False)
 class KoreApplies(Notation):
-    phi0: Pattern  # For sorts
-    phi1: Pattern  # For arguments
+    sorts: tuple[Pattern, ...]  # For sorts
+    phi0: Pattern  # For arguments
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         # TODO: We just drop the sort for now
         # In the Kore we can have an application of a symbol to none or several arguments. We chain them manually
         # in a single pattern and then save it to phi1. We can't guarantee that there are two or more args as in
         # the normal application.
-        return phi1
+        return phi0
 
     def __str__(self) -> str:
-        return f'(kapp({str(self.phi0)}) ({str(self.phi1)})'
+        return f'(kapp({str(self.sorts)}) ({str(self.phi0)})'
 
 
 @dataclass(frozen=True, eq=False)
@@ -125,8 +125,8 @@ class KoreRewrites(Notation):
     phi1: Pattern
     phi2: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return KoreImplies(phi0, phi1, KoreNext(phi0, phi2))
 
     def __str__(self) -> str:
@@ -138,8 +138,8 @@ class KoreDv(Notation):
     phi0: Pattern
     phi1: Pattern
 
-    @staticmethod
-    def definition() -> Pattern:
+    @classmethod
+    def definition(cls) -> Pattern:
         return App(App(kore_dv_symbol, phi0), phi1)
 
 

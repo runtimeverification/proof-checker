@@ -8,11 +8,11 @@ from proof_generation.pattern import (
     ESubst,
     EVar,
     Exists,
-    FakeNotation,
     Implies,
     MetaVar,
     Mu,
     Notation,
+    NotationPlaceholder,
     SSubst,
     SVar,
     Symbol,
@@ -126,7 +126,7 @@ class BasicInterpreter:
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
         if isinstance(p, Notation):
-            if isinstance(p, FakeNotation):
+            if isinstance(p, NotationPlaceholder):
                 self.mark_generation_unsafe(f'Using fake notation for symbol {str(p.symbol)}')
             return self.add_notation(p)
 
@@ -160,6 +160,17 @@ class BasicInterpreter:
         l, r = Implies.extract(left_conclusion)
         assert l == right.conclusion, str(l) + ' != ' + str(right.conclusion)
         return Proved(r)
+
+    def exists_quantifier(self) -> Proved:
+        phi = MetaVar(0)
+        x = EVar(0)
+        y = EVar(1)
+        return Proved(Implies(ESubst(phi, x, y), Exists(x.name, phi)))
+
+    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
+        l, r = Implies.extract(proved.conclusion)
+        assert r.ef(var.name), f'{str(var)} in FV({str(r)})'
+        return Proved(Implies(Exists(var.name, l), r))
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         return Proved(proved.conclusion.instantiate(delta))
