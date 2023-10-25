@@ -748,41 +748,6 @@ struct Pattern {
     bool operator!=(const Term &rhs) const { return !(*this == rhs); }
   };
 
-  class Entry {
-  public:
-    enum class Type { Pattern, Proved };
-    Type type;
-    Pattern *pattern;
-    Entry(Type type, Pattern *pattern) : type(type), pattern(pattern) {}
-    static Entry *newEntry(Type type, Pattern *pattern) {
-      auto entry = static_cast<Entry *>(malloc(sizeof(Entry)));
-      entry->type = type;
-      entry->pattern = pattern;
-      return entry;
-    }
-    ~Entry() {
-      if (pattern) {
-        pattern->~Pattern();
-      }
-      free(this);
-    }
-    bool operator==(const Entry &rhs) const {
-      if (type != rhs.type) {
-        return false;
-      }
-      if (pattern == nullptr && rhs.pattern != nullptr ||
-          pattern != nullptr && rhs.pattern == nullptr) {
-        return false;
-      }
-      if (pattern != nullptr && rhs.pattern != nullptr &&
-          *pattern != *rhs.pattern) {
-        return false;
-      }
-      return true;
-    }
-    bool operator!=(const Entry &rhs) const { return !(*this == rhs); }
-  };
-
   // Notation
   static Pattern *bot() { return mu(0, svar(0)); }
 
@@ -998,7 +963,7 @@ struct Pattern {
 
   typedef LinkedList<Term *> Stack;
   typedef LinkedList<Pattern *> Claims;
-  typedef LinkedList<Entry *> Memory;
+  typedef LinkedList<Term *> Memory;
 
   /// Stack utilities
   /// ---------------
@@ -1274,13 +1239,13 @@ struct Pattern {
         auto term = stack->front();
         if (term->type == Term::Type::Pattern) {
           memory->push_back(
-              Entry::newEntry(Entry::Type::Pattern, copy(term->pattern)));
+              Term::newTerm(Term::Type::Pattern, copy(term->pattern)));
         } else if (term->type == Term::Type::Proved) {
           memory->push_back(
-              Entry::newEntry(Entry::Type::Proved, copy(term->pattern)));
+              Term::newTerm(Term::Type::Proved, copy(term->pattern)));
         } else {
 #if DEBUG
-          throw std::runtime_error("Save needs an entry on the stack");
+          throw std::runtime_error("Save needs an Term on the stack");
 #endif
           exit(1);
         }
@@ -1296,14 +1261,14 @@ struct Pattern {
 #endif
           exit(1);
         }
-        Entry *entry = memory->get(*index);
-        if (entry->type == Entry::Type::Pattern) {
-          stack->push(Term::newTerm(Term::Type::Pattern, copy(entry->pattern)));
-        } else if (entry->type == Entry::Type::Proved) {
-          stack->push(Term::newTerm(Term::Type::Proved, copy(entry->pattern)));
+        Term *Term = memory->get(*index);
+        if (Term->type == Term::Type::Pattern) {
+          stack->push(Term::newTerm(Term::Type::Pattern, copy(Term->pattern)));
+        } else if (Term->type == Term::Type::Proved) {
+          stack->push(Term::newTerm(Term::Type::Proved, copy(Term->pattern)));
         } else {
 #if DEBUG
-          throw std::runtime_error("Load needs an entry in memory");
+          throw std::runtime_error("Load needs an Term in memory");
 #endif
           exit(1);
         }
@@ -1313,7 +1278,7 @@ struct Pattern {
         switch (phase) {
         case ExecutionPhase::Gamma:
           memory->push_back(
-              Entry::newEntry(Entry::Type::Proved, pop_stack_pattern(stack)));
+              Term::newTerm(Term::Type::Proved, pop_stack_pattern(stack)));
           break;
         case ExecutionPhase::Claims:
           claims->push_back(pop_stack_pattern(stack));
@@ -1367,7 +1332,7 @@ struct Pattern {
       }
       }
 #if DEBUG
-      // printStack(stack);
+      printStack(stack);
 #endif
     }
   }

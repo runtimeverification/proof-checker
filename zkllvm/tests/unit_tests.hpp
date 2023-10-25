@@ -662,7 +662,7 @@ void test_construct_phi_implies_phi() {
   }
 
   for (auto it : *memory) {
-    it->~Entry();
+    it->~Term();
   }
 
   for (auto it : *claims) {
@@ -762,7 +762,7 @@ int test_phi_implies_phi_impl() {
   }
 
   for (auto it : *memory) {
-    it->~Entry();
+    it->~Term();
   }
 
   for (auto it : *claims) {
