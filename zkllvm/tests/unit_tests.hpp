@@ -620,7 +620,6 @@ int test_instantiate() {
   return 0;
 }
 
-
 void execute_vector(std::array<int, MAX_SIZE> *instrs, Pattern::Stack *stack,
                     Pattern::Memory *memory, Pattern::Claims *claims,
                     Pattern::ExecutionPhase phase) {
@@ -630,11 +629,20 @@ void execute_vector(std::array<int, MAX_SIZE> *instrs, Pattern::Stack *stack,
 
 void test_construct_phi_implies_phi() {
 
-  // MetaVar(0,0,0,0,0,0)
-  // Save
-  // Load 0
-  // Implication
-  auto proof = std::array<int, MAX_SIZE>{9, 0, 0, 0, 0, 0, 0, 28, 29, 0, 5};
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 12; // Size
+  proof[1] = (int)Instruction::MetaVar;
+  proof[2] = 0;
+  proof[3] = 0;
+  proof[4] = 0;
+  proof[5] = 0;
+  proof[6] = 0;
+  proof[7] = 0;                              // MetaVar(0,0,0,0,0,0)
+  proof[8] = (int)Instruction::Save;         // Save
+  proof[9] = (int)Instruction::Load;         //
+  proof[10] = 0;                             // Load 0
+  proof[11] = (int)Instruction::Implication; // Implication
+  proof[12] = (int)138;                      // NO_OP
 
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();
@@ -644,20 +652,29 @@ void test_construct_phi_implies_phi() {
 
   auto phi0 = Pattern::metavar_unconstrained(0);
   auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
-      Pattern::Term::Type::Pattern, Pattern::implies(phi0, phi0)));
+      Pattern::Term::Type::Pattern,
+      Pattern::implies(Pattern::copy(phi0), Pattern::copy(phi0))));
+  ;
   assert(*stack == *expected_stack);
 
   for (auto it : *stack) {
-    it->pattern->~Pattern();
+    it->~Term();
   }
 
   for (auto it : *memory) {
-    it->pattern->~Pattern();
+    it->~Entry();
   }
 
   for (auto it : *claims) {
     it->~Pattern();
   }
+
+  for (auto it : *expected_stack) {
+    it->~Term();
+  }
+
+  expected_stack->~LinkedList();
+  free(expected_stack);
 
   stack->~LinkedList();
   free(stack);
@@ -665,76 +682,104 @@ void test_construct_phi_implies_phi() {
   free(memory);
   claims->~LinkedList();
   free(claims);
-
-  expected_stack->~LinkedList();
-  free(expected_stack);
 
   phi0->~Pattern();
 }
 
 int test_phi_implies_phi_impl() {
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 36; // Size
+  proof[1] = (int)Instruction::MetaVar;
+  proof[2] = 0;
+  proof[3] = 0;
+  proof[4] = 0;
+  proof[5] = 0;
+  proof[6] = 0;
+  proof[7] = 0;
+  // Stack: $ph0
+  proof[8] = (int)Instruction::Save;
+  // @0
+  proof[9] = (int)Instruction::Load;
+  proof[10] = 0;
+  // Stack: $ph0; ph0
+  proof[11] = (int)Instruction::Load;
+  proof[12] = 0;
+  // Stack: $ph0; $ph0; ph0
+  proof[13] = (int)Instruction::Implication;
+  // Stack: $ph0; ph0 -> ph0
+  proof[14] = (int)Instruction::Save;
+  // @1
+  proof[15] = (int)Instruction::Prop2;
+  // Stack: $ph0; $ph0 -> ph0;
+  //        [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
+  proof[16] = (int)Instruction::Instantiate;
+  proof[17] = 1;
+  proof[18] = 1;
+  // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2))
+  //                -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
+  proof[19] = (int)Instruction::Instantiate;
+  proof[20] = 1;
+  proof[21] = 2;
+  // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0))
+  //          -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+  proof[22] = (int)Instruction::Load;
+  proof[23] = 1;
+  // Stack: p1 ; $ph0 -> ph0
+  proof[24] = (int)Instruction::Prop1;
+  // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)]
+  proof[25] = (int)Instruction::Instantiate;
+  proof[26] = 1;
+  proof[27] = 1;
+  // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
+  proof[28] = (int)Instruction::ModusPonens;
+  // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+  proof[29] = (int)Instruction::Load;
+  proof[30] = 0;
+  // Stack: p3 ; ph0;
+  proof[31] = (int)Instruction::Prop1;
+  // Stack: p3 ; ph0; prop1
+  proof[32] = (int)Instruction::Instantiate;
+  proof[33] = 1;
+  proof[34] = 1;
+  // Stack: p3 ; ph0 -> (ph0 -> ph0)
+  proof[35] = (int)Instruction::ModusPonens;
+  // Stack: ph0 -> ph0
+  proof[36] = (int)138; // NO_OP
 
-  auto proof = std::array<int, MAX_SIZE>{
-      (int)Instruction::MetaVar, 0, 0, 0, 0, 0, 0, // Stack: $ph0
-      (int)Instruction::Save,                      // @0
-      (int)Instruction::Load, 0,                   // Stack: $ph0; ph0
-      (int)Instruction::Load, 0,                   // Stack: $ph0; $ph0; ph0
-      (int)Instruction::Implication,               // Stack: $ph0; ph0 -> ph0
-      (int)Instruction::Save,                      // @1
-      (int)Instruction::Prop2,
-      // Stack: $ph0; $ph0 -> ph0;
-      // [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
-      (int)Instruction::Instantiate, 1, 1,
-      // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2)) ->
-      //                     (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
-      (int)Instruction::Instantiate, 1, 2,
-      // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0)) ->
-      //               (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-      (int)Instruction::Load, 1, // Stack: p1 ; $ph0 -> ph0
-      (int)Instruction::Prop1,
-      // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)]
-      (int)Instruction::Instantiate, 1, 1,
-      // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
-      (int)Instruction::ModusPonens,
-      // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-      (int)Instruction::Load, 0,           // Stack: p3 ; ph0;
-      (int)Instruction::Prop1,             // Stack: p3 ; ph0; prop1
-      (int)Instruction::Instantiate, 1, 1, // Stack: p3 ; ph0 -> (ph0 -> ph0)
-      (int)Instruction::ModusPonens        // Stack: ph0 -> ph0
-  };
   Pattern::Stack *stack = Pattern::Stack::create();
   auto memory = Pattern::Memory::create();
   auto claims = Pattern::Claims::create();
 
   execute_vector(&proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
-
   auto phi0 = Pattern::metavar_unconstrained(0);
   auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
-      Pattern::Term::Type::Proved, Pattern::implies(phi0, phi0)));
-
+      Pattern::Term::Type::Proved,
+      Pattern::implies(Pattern::copy(phi0), Pattern::copy(phi0))));
   assert(*stack == *expected_stack);
 
   for (auto it : *stack) {
-    it->pattern->~Pattern();
+    it->~Term();
   }
 
   for (auto it : *memory) {
-    it->pattern->~Pattern();
+    it->~Entry();
   }
 
   for (auto it : *claims) {
     it->~Pattern();
   }
 
+  for (auto it : *expected_stack) {
+    it->~Term();
+  }
+  expected_stack->~LinkedList();
+  free(expected_stack);
   stack->~LinkedList();
   free(stack);
   memory->~LinkedList();
   free(memory);
   claims->~LinkedList();
   free(claims);
-
-  expected_stack->~LinkedList();
-  free(expected_stack);
 
   phi0->~Pattern();
 
@@ -742,10 +787,18 @@ int test_phi_implies_phi_impl() {
 }
 int test_no_remaining_claims() {
 
-  auto gamma = std::array<int, MAX_SIZE>{}; // Empty
-  auto claims = std::array<int, MAX_SIZE>{(int)Instruction::Symbol, 0,
-                                          (int)Instruction::Publish};
-  auto proof = std::array<int, MAX_SIZE>{}; // Empty
+  std::array<int, MAX_SIZE> gamma; // Empty
+  gamma[0] = 1;                    // Size
+  gamma[1] = 138;                  // NO_OP
+  std::array<int, MAX_SIZE> claims;
+  claims[0] = 3; // Size
+  claims[1] = (int)Instruction::Symbol;
+  claims[2] = 0;
+  claims[3] = (int)Instruction::Publish;
+  claims[4] = 138;                 // NO_OP
+  std::array<int, MAX_SIZE> proof; // Empty
+  proof[0] = 1;                    // Size
+  proof[1] = 138;                  // NO_OP
 
   Pattern::verify(&gamma, &claims, &proof);
 
