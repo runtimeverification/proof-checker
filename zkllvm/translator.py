@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 
 max_len = 27001
 
-
 def generate_zkllvm_input_from_file(file_path: str) -> (int, str):
     int_list = []
 
@@ -52,9 +51,9 @@ def main() -> None:
 
     input_str = (
                   f'[\n'
-                  f'  {{"vector": [{assumption_arr}]}},\n'
-                  f'  {{"vector": [{claim_arr}]}},\n'
-                  f'  {{"vector": [{proof_arr}]}}\n'
+                  f'  {{"array": [{assumption_arr}]}},\n'
+                  f'  {{"array": [{claim_arr}]}},\n'
+                  f'  {{"array": [{proof_arr}]}}\n'
                   f']'
                 )
 
