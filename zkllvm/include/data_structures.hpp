@@ -6,13 +6,13 @@ template <typename T> struct Node {
   T data;
   Node *next;
 
-  Node(const T &value) : data(value), next(nullptr) {}
+  Node(const T &value) noexcept : data(value), next(nullptr) {}
 
-  bool operator==(const Node &rhs) const { return equal(*this, rhs); }
+  bool operator==(const Node &rhs) const noexcept { return equal(*this, rhs); }
 
-  bool operator!=(const Node &rhs) { return !(this->operator==(rhs)); }
+  bool operator!=(const Node &rhs) noexcept { return !(this->operator==(rhs)); }
 
-  static Node *create(const T &value) {
+  static Node *create(const T &value) noexcept {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
     newNode->data = value;
     newNode->next = nullptr;
@@ -20,7 +20,8 @@ template <typename T> struct Node {
   }
 };
 
-template <typename T> bool equal(const Node<T> &lhs, const Node<T> &rhs) {
+template <typename T>
+bool equal(const Node<T> &lhs, const Node<T> &rhs) noexcept {
 
   if (!lhs.data && !rhs.data) {
     return true;
@@ -30,7 +31,8 @@ template <typename T> bool equal(const Node<T> &lhs, const Node<T> &rhs) {
   return lhs.data->operator==(*rhs.data) && lhs.next == rhs.next;
 }
 
-template <> bool equal(const Node<uint8_t> &lhs, const Node<uint8_t> &rhs) {
+template <>
+bool equal(const Node<uint8_t> &lhs, const Node<uint8_t> &rhs) noexcept {
 
   if (!lhs.data && !rhs.data) {
     return true;
@@ -44,18 +46,19 @@ template <typename T> class LinkedList {
 public:
   Node<T> *head = nullptr;
 
-  LinkedList() : head(nullptr) {}
+  LinkedList() noexcept : head(nullptr) {}
 
-  ~LinkedList() {
+  ~LinkedList() noexcept {
     Node<T> *curr = head;
     while (curr) {
       Node<T> *next = curr->next;
+      curr->~Node();
       std::free(curr);
       curr = next;
     }
   }
 
-  bool operator==(const LinkedList &rhs) const {
+  bool operator==(const LinkedList &rhs) const noexcept {
     if (!head && !rhs.head) {
       return true;
     } else if (!head || !rhs.head) {
@@ -64,9 +67,9 @@ public:
     return (*head == *rhs.head);
   }
 
-  bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }
+  bool operator!=(const LinkedList &rhs) noexcept { return !(*this == rhs); }
 
-  void push(const T &value) {
+  void push(const T &value) noexcept {
     Node<T> *newNode = Node<T>::create(value);
 
     // If the list is empty, set the new node as the head
@@ -79,7 +82,7 @@ public:
     }
   }
 
-  void push_back(const T &value) {
+  void push_back(const T &value) noexcept {
     Node<T> *newNode = Node<T>::create(value);
 
     // If the list is empty, set the new node as the head
@@ -95,7 +98,7 @@ public:
     }
   }
 
-  T pop() {
+  T pop() noexcept {
     assert(head && "Insufficient stack items.");
     T value = head->data;
 
@@ -107,30 +110,32 @@ public:
     return value;
   }
 
-  void clear() {
+  void clear() noexcept {
     while (head) {
-      pop();
+      Node<T> *next = head->next;
+      std::free(head);
+      head = next;
     }
   }
 
-  T front() {
+  T front() noexcept {
     assert(head && "Insufficient stack items.");
     return head->data;
   }
 
-  static LinkedList *create() {
+  static LinkedList *create() noexcept {
     auto newList = static_cast<LinkedList *>(std::malloc(sizeof(LinkedList)));
     newList->head = nullptr;
     return newList;
   }
 
-  static LinkedList *create(const T &value) {
+  static LinkedList *create(const T &value) noexcept {
     LinkedList *list = create();
     list->push(value);
     return list;
   }
 
-  bool contains(const T &value) {
+  bool contains(const T &value) noexcept {
     Node<T> *curr = head;
     while (curr) {
       if (curr->data == value) {
@@ -141,7 +146,7 @@ public:
     return false;
   }
 
-  bool constainsElementOf(LinkedList<T> *otherList) {
+  bool constainsElementOf(LinkedList<T> *otherList) noexcept {
     for (auto &item : *this) {
       if (otherList->contains(item)) {
         return true;
@@ -150,7 +155,7 @@ public:
     return false;
   }
 
-  T &get(int index) {
+  T &get(int index) noexcept {
     Node<T> *curr = head;
     for (int i = 0; i < index; i++) {
       curr = curr->next;
@@ -159,9 +164,9 @@ public:
     return curr->data;
   }
 
-  T &operator[](int index) { return get(index); }
+  T &operator[](int index) noexcept { return get(index); }
 
-  size_t size() {
+  size_t size() noexcept {
     size_t count = 0;
     Node<T> *curr = head;
     while (curr) {
@@ -171,37 +176,64 @@ public:
     return count;
   }
 
-  bool empty() { return head == nullptr; }
+  bool empty() noexcept { return head == nullptr; }
 
   class Iterator {
   private:
     Node<T> *current;
 
   public:
-    Iterator(Node<T> *head) : current(head) {}
+    Iterator(Node<T> *head) noexcept : current(head) {}
 
-    T &operator*() { return current->data; }
-    T *operator->() { return &current->data; }
-    bool operator==(const Iterator &other) { return current == other.current; }
-    bool operator!=(const Iterator &other) { return current != other.current; }
+    T &operator*() noexcept { return current->data; }
+    T *operator->() noexcept { return &current->data; }
+    bool operator==(const Iterator &other) noexcept {
+      return current == other.current;
+    }
+    bool operator!=(const Iterator &other) noexcept {
+      return current != other.current;
+    }
 
-    Iterator &operator++() {
+    Iterator &operator++() noexcept {
       current = current->next;
       return *this;
     }
 
-    Iterator next() {
+    Iterator next() noexcept {
       Iterator tmp = *this;
       ++(*this);
       return tmp;
     }
+
+    Node<T> *getCurrent() noexcept { return current; }
   };
 
-  Iterator begin() { return Iterator(head); }
-  Iterator end() { return Iterator(nullptr); }
+  Iterator begin() noexcept { return Iterator(head); }
+  Iterator end() noexcept { return Iterator(nullptr); }
+
+  // Implement find function
+  Iterator find(const T &value) noexcept {
+    Node<T> *curr = head;
+    while (curr) {
+      if (curr->data == value) {
+        return Iterator(curr);
+      }
+      curr = curr->next;
+    }
+    return Iterator(nullptr);
+  }
+
+  void clear(Iterator it) noexcept {
+    Node<T> *curr = it.getCurrent();
+    while (curr) {
+      Node<T> *next = curr->next;
+      std::free(curr);
+      curr = next;
+    }
+  }
 
 #ifdef DEBUG
-  void print() {
+  void print() noexcept {
     if (!head) {
       std::cout << "[]";
       return;
