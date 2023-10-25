@@ -69,6 +69,7 @@ test_patterns = [
     imp(imp(phi0, phi0), phi0),
     neg(imp(phi1, imp(bot, bot))),
     Or(imp(phi0, phi1), neg(phi2)),
+    imp(Or(phi0, phi2), phi0),
     neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2))))),
     neg(neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2)))))),
 ]
