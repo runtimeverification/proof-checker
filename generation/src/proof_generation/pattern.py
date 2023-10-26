@@ -328,7 +328,7 @@ class MetaVar(Pattern):
         return EVar(name) in self.e_fresh
 
     def sf(self, name: int) -> bool:
-        return EVar(name) in self.s_fresh
+        return SVar(name) in self.s_fresh
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
         # TODO implement this function by checking constraints
