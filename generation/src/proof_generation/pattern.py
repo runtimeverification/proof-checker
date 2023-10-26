@@ -106,7 +106,7 @@ class EVar(Pattern):
         return name != self.name
 
     def sf(self, name: int) -> bool:
-        raise True
+        return True
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -139,7 +139,7 @@ class SVar(Pattern):
         return True
 
     def sf(self, name: int) -> bool:
-        raise name != self.name
+        return name != self.name
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -172,7 +172,7 @@ class Symbol(Pattern):
         return True
 
     def sf(self, name: int) -> bool:
-        raise True
+        return True
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -204,7 +204,7 @@ class Implies(Pattern):
         return self.left.ef(name) and self.right.ef(name)
 
     def sf(self, name: int) -> bool:
-        raise self.left.sf(name) and self.right.sf(name)
+        return self.left.sf(name) and self.right.sf(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
@@ -232,7 +232,7 @@ class App(Pattern):
         return self.left.ef(name) and self.right.ef(name)
 
     def sf(self, name: int) -> bool:
-        raise self.left.sf(name) and self.right.sf(name)
+        return self.left.sf(name) and self.right.sf(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return App(self.left.instantiate(delta), self.right.instantiate(delta))
