@@ -244,7 +244,7 @@ class App(Pattern):
         return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'app({str(self.left)}, {str(self.right)})'
+        return f'({str(self.left)} · {str(self.right)})'
 
 
 @dataclass(frozen=True)
