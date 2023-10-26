@@ -43,10 +43,9 @@ module IMP5
 
   syntax KResult ::= Int | Bool
 
-  configuration <T color="yellow">
-                  <k color="green"> $PGM:Pgm </k>
-                  <s color="red"> ( 0 , 0 , 0 , 0 , 0 , 0 ):Vars5 </s>
-                </T>
+  configuration <k color="green"> $PGM:Pgm </k>
+                <s color="red"> ( 0 , 0 , 0 , 0 , 0 , 0 ):Vars5 </s>
+
 
   rule <k> x1 => I ...</k> <s> I , _ , _ , _ , _ , _ </s>
   rule <k> x2 => I ...</k> <s> _ , I , _ , _ , _ , _ </s>
