@@ -173,6 +173,8 @@ class BasicInterpreter:
         return Proved(Implies(Exists(var.name, l), r))
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
+        if not delta:
+            return proved
         return Proved(proved.conclusion.instantiate(delta))
 
     def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
