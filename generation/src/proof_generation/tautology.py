@@ -84,13 +84,16 @@ def conj_to_pattern(term: ConjTerm) -> Pattern:
     return pat
 
 
+def id_to_metavar(id: int) -> Pattern:
+    assert id != 0
+    if id < 0:
+        return neg(MetaVar(-(id + 1)))
+    return MetaVar(id - 1)
+
+
 def clause_to_pattern(l: list[int]) -> Pattern:
     assert len(l) > 0
-    assert l[0] != 0
-    if l[0] < 0:
-        pat = neg(MetaVar(-(l[0] + 1)))
-    else:
-        pat = MetaVar(l[0] - 1)
+    pat = id_to_metavar(l[0])
     if len(l) > 1:
         pat = Or(pat, clause_to_pattern(l[1:]))
     return pat
@@ -118,7 +121,6 @@ class Tautology(Propositional):
             Implies(Or(phi0, And(phi1, phi2)), And(Or(phi0, phi1), Or(phi0, phi2))),
             Implies(And(Or(phi0, phi1), Or(phi0, phi2)), Or(phi0, And(phi1, phi2))),
             Equiv(And(phi0, phi1), And(phi1, phi0)),
-            Equiv(Or(phi0, phi1), Or(phi1, phi0)),
         ]
 
     def imp_trans_match1(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
@@ -369,6 +371,14 @@ class Tautology(Propositional):
             lambda: self.modus_ponens(self.dynamic_inst(self.prop2, {0: a, 1: c, 2: d}), self.imp_provable(a, h2)),
         )
 
+    def imim_r(self, pat: Pattern, h: ProvedExpression) -> Proved:
+        """
+              a -> b
+        ---------------------
+        (c -> a) -> (c -> b)
+        """
+        return self.imim(lambda: self.imp_refl(pat), h)
+
     def imim_nnr(self, h1: ProvedExpression, h2: ProvedExpression) -> Proved:
         """
         (a -> b)    (c -> d)
@@ -504,9 +514,13 @@ class Tautology(Propositional):
         """p /\\ q <-> q /\\ p"""
         return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[9]), {0: p, 1: q})
 
+    def or_comm_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
+        """p \\/ q -> q \\/ p"""
+        return self.imp_transitivity(lambda: self.imp_trans(neg(p), q, bot), lambda: self.dne_r(neg(q), p))
+
     def or_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
         """p \\/ q <-> q \\/ p"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[10]), {0: p, 1: q})
+        return self.and_intro(lambda: self.or_comm_imp(p, q), lambda: self.or_comm_imp(q, p))
 
     def and_l_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
         """p /\\ q -> p"""
@@ -590,6 +604,43 @@ class Tautology(Propositional):
         return self.and_intro(
             (lambda: self.imim_or((lambda: self.and_l(pf1)), (lambda: self.and_l(pf2)))),
             (lambda: self.imim_or((lambda: self.and_r(pf1)), (lambda: self.and_r(pf2)))),
+        )
+
+    def resolution(self, p: Pattern = phi0, a: Pattern = phi1, b: Pattern = phi2) -> Proved:
+        """~p \\/ a -> p \\/ b -> a \\/ b"""
+        return self.imp_transitivity(lambda: self.or_comm_imp(neg(p), a), lambda: self.imp_trans(neg(a), neg(p), b))
+
+    def resolution_r(self, p: Pattern = phi0, b: Pattern = phi1) -> Proved:
+        """~p -> p \\/ b -> b"""
+        return self.ant_commutativity(lambda: self.imp_refl(Or(p, b)))
+
+    def resolution_l(self, p: Pattern = phi0, a: Pattern = phi1) -> Proved:
+        """~p \\/ a -> p -> a"""
+        return self.imim_l(a, lambda: self.dneg_intro(p))
+
+    def resolution_base(self, p: Pattern = phi0) -> Proved:
+        """~p -> p -> bot"""
+        return self.imp_refl(neg(p))
+
+    def resolution_step(self, ab_pf: ProvedExpression, ac_pf: ProvedExpression, bcd_pf: ProvedExpression) -> Proved:
+        """
+          a -> b    a -> c    b -> c -> d
+        -----------------------------------
+                      a -> d
+        """
+        ab = self.PROVISIONAL_get_conc(ab_pf)
+        a, b = Implies.extract(ab)
+        ac = self.PROVISIONAL_get_conc(ac_pf)
+        a2, c = Implies.extract(ac)
+        assert a == a2
+        bcd = self.PROVISIONAL_get_conc(bcd_pf)
+        b2, cd = Implies.extract(bcd)
+        assert b == b2
+        c2, d = Implies.extract(cd)
+        assert c == c2
+        return self.modus_ponens(
+            self.modus_ponens(self.dynamic_inst(self.prop2, {0: a, 1: c, 2: d}), self.imp_transitivity(ab_pf, bcd_pf)),
+            ac_pf(),
         )
 
     def is_propositional(self, pat: Pattern) -> bool:
@@ -913,3 +964,25 @@ class Tautology(Propositional):
 
     def and_move_to_front(self, pos: int, len: int) -> Proved:
         return self.AC_move_to_front(pos, len, self.and_assoc, self.and_comm, self.and_cong, And)
+
+    def reduce_duplicates_at_front(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
+        """p \\/ (p \\/ q) <-> p \\/ q"""
+        return self.equiv_transitivity(
+            lambda: self.or_assoc(p, p, q),
+            lambda: self.and_intro(
+                lambda: self.imim_or_l(q, lambda: self.dynamic_inst(self.peirce_bot, {0: p})),
+                lambda: self.imim_or_l(q, lambda: self.dynamic_inst(self.prop1, {0: p, 1: neg(p)})),
+            ),
+        )
+
+    def reduce_n_duplicates_at_front(self, n: int, p_id: int, q_id: int) -> Proved:
+        """p \\/ (p  ... (p \\/ q)) <-> p \\/ q"""
+        p = id_to_metavar(p_id)
+        q = id_to_metavar(q_id)
+        if n == 0:
+            return self.equiv_refl(Or(p, q))
+        pf = partial(self.reduce_duplicates_at_front, p, q)
+        for i in range(1, n):
+            pat = clause_to_pattern(([p_id] * i) + [q_id])
+            pf = partial(self.equiv_transitivity, partial(self.reduce_duplicates_at_front, p, pat), pf)
+        return pf()
