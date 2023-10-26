@@ -485,13 +485,13 @@ class Notation(Pattern, ABC):
         return type(self)(*final_args)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        for (argname, arg) in vars(self).items():
+        for argname, arg in vars(self).items():
             if isinstance(arg, Pattern):
                 self.__setattr__(argname, arg.apply_esubst(evar_id, plug))
         return self
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        for (argname, arg) in vars(self).items():
+        for argname, arg in vars(self).items():
             if isinstance(arg, Pattern):
                 self.__setattr__(argname, arg.apply_ssubst(svar_id, plug))
         return self

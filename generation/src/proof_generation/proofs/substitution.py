@@ -4,8 +4,8 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import EVar, Exists, Notation, ESubst
-from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1, top, Equiv
+from proof_generation.pattern import ESubst, EVar, Exists, Implies, Notation
+from proof_generation.proofs.propositional import Equiv, Propositional, neg, phi0, phi1, top
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -24,10 +24,12 @@ class Forall(Notation):
         return f'(∀ x{self.var} . {str(self.phi0)})'
 
 
+x = EVar(0)
+
+
 class Substitution(Propositional):
     @staticmethod
     def axioms() -> list[Pattern]:
-        x = EVar(0)
         return [
             # TODO: Replace Equiv with =
             Implies(Exists(x.name, Equiv(phi1, x)), Implies(Forall(x.name, phi0), ESubst(phi0, x, phi1)))
@@ -65,15 +67,22 @@ class Substitution(Propositional):
         """
         return self.universal_gen(self.top_intro, EVar(0))
 
-    def functional_subst(self, phi: ProvedExpression, psi: ProvedExpression, x: EVar) -> ProvedExpression:
+    def functional_subst(self, psi: Pattern = phi1, phi: Pattern = phi0, x: EVar = x) -> Proved:
         """
         ------------------------------------------------------
-        (exists x . psi = x) -> ((forall x. phi) -> phi[psi/x])
+        (exists x . psi <-> x) -> ((forall x. phi) -> phi[psi/x])
         """
-        return self.dynamic_inst(
-            self.load_axiom(self.axioms()[0]),
-            {0: phi, 1: psi}
-        )
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[0]), {0: phi, 1: psi})
+
+    def apply_subst(self, psi_func_pr: ProvedExpression, phi_pr: ProvedExpression) -> Proved:
+        """
+        (exists x . psi <-> x)                  (forall x. phi)
+        ------------------------------------------------------
+        phi[psi/x]
+        """
+        psi = self.PROVISIONAL_get_conc(psi_func_pr)
+        phi = self.PROVISIONAL_get_conc(phi_pr)
+        return self.modus_ponens(self.modus_ponens(self.functional_subst(psi, phi), psi_func_pr()), phi_pr())
 
 
 if __name__ == '__main__':
