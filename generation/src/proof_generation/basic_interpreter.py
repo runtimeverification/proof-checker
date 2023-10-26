@@ -124,6 +124,10 @@ class BasicInterpreter:
                 self.patterns(app_ctx_holes)
 
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
+            case ESubst(pattern, var, plug):
+                self.esubst(var.name, pattern, plug)
+            case SSubst(pattern, var, plug):
+                self.ssubst(var.name, pattern, plug)
 
         if isinstance(p, Notation):
             if isinstance(p, NotationPlaceholder):
