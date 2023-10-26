@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, EVar, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import And, Negation, Or
 
@@ -141,6 +141,59 @@ class KoreDv(Notation):
     @classmethod
     def definition(cls) -> Pattern:
         return App(App(kore_dv_symbol, phi0), phi1)
+
+
+@dataclass(frozen=True, eq=False)
+class Cell(Notation):
+    phi0: Symbol  # Symbol for the outer cell
+    phi1: Pattern  # The value of the cell
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return App(phi0, phi1)
+
+    def __str__(self) -> str:
+        return f'<{str(self.phi0.name)}> {str(self.phi1)} </{str(self.phi0.name)}>'
+
+
+@dataclass(frozen=True, eq=False)
+class KoreNestedCells(Notation):
+    phi0: Symbol  # Symbol for the outer cell
+    phi1: App  # Application chain for inner cells
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return App(phi0, phi1)
+
+    def __str__(self) -> str:
+        # We have a chain of cells applied to each other. We need to recover them.
+        # App(App(cell1, cell2), cell3) -> <cell1> </cell1> <cell2> </cell2> <cell3> </cell3>
+        recovered_cells = []
+        # TODO: Remove the Metavar from the typecheck
+        todo: Pattern | None = self.phi1
+        while todo is not None:
+            match todo:
+                case App(left, right):
+                    recovered_cells.append(right)
+                    todo = left
+                case KoreNestedCells(_, _):
+                    recovered_cells.append(todo)
+                    todo = None
+                case Cell(_, _):
+                    recovered_cells.append(todo)
+                    todo = None
+                case MetaVar(_):
+                    recovered_cells.append(todo)
+                    todo = None
+                case EVar(_):
+                    recovered_cells.append(todo)
+                    todo = None
+                case _:
+                    raise ValueError(f'Unexpected pattern {todo}')
+
+        reversed_recovered_cells = reversed(recovered_cells)
+        recovered_cells_str = ' '.join([str(cell) for cell in reversed_recovered_cells])
+        return f'<{str(self.phi0.name)}> {recovered_cells_str} </{str(self.phi0.name)}>'
 
 
 # TODO: Add kore-transitivity
