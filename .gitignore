@@ -12,3 +12,6 @@
 
 # MacOS files
 .DS_Store
+
+# Kompiled folders
+*-kompiled
