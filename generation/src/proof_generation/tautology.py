@@ -111,7 +111,6 @@ class Tautology(Propositional):
     @staticmethod
     def axioms() -> list[Pattern]:
         return [
-            Implies(Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))),
             Implies(And(And(phi0, phi1), phi2), And(phi0, And(phi1, phi2))),
             Implies(And(phi0, And(phi1, phi2)), And(And(phi0, phi1), phi2)),
             Implies(Or(Or(phi0, phi1), phi2), Or(phi0, Or(phi1, phi2))),
@@ -157,10 +156,6 @@ class Tautology(Propositional):
             self.modus_ponens(self.dynamic_inst(self.prop2, {0: pq, 1: p, 2: q}), self.imp_refl(pq)),
             self.imp_provable(pq, p_pf),
         )
-
-    def imp_trans(self, p: Pattern = phi0, q: Pattern = phi1, r: Pattern = phi2) -> Proved:
-        """(p -> q) -> (q -> r) -> p -> r"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[0]), {0: p, 1: q, 2: r})
 
     def dni_l(self, p: Pattern, q: Pattern) -> Proved:
         """(p -> q) -> (~~p -> q)"""
@@ -470,35 +465,35 @@ class Tautology(Propositional):
 
     def and_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """(a /\\ b) /\\ c -> a /\\ (b /\\ c)"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[1]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[0]), {0: pat1, 1: pat2, 2: pat3})
 
     def and_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """a /\\ (b /\\ c) -> (a /\\ b) /\\ c"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[2]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[1]), {0: pat1, 1: pat2, 2: pat3})
 
     def or_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """(a \\/ b) \\/ c -> a \\/ (b \\/ c)"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[3]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[2]), {0: pat1, 1: pat2, 2: pat3})
 
     def or_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """a \\/ (b \\/ c) -> (a \\/ b) \\/ c"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[4]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[3]), {0: pat1, 1: pat2, 2: pat3})
 
     def or_distr_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """(a /\\ b) \\/ c -> (a \\/ c) /\\ (b \\/ c)"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[5]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[4]), {0: pat1, 1: pat2, 2: pat3})
 
     def or_distr_r_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """(a \\/ c) /\\ (b \\/ c) -> (a /\\ b) \\/ c"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[6]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[5]), {0: pat1, 1: pat2, 2: pat3})
 
     def or_distr_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """a \\/ (b /\\ c) -> (a \\/ b) /\\ (a \\/ c)"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[7]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[6]), {0: pat1, 1: pat2, 2: pat3})
 
     def or_distr_l_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """(a \\/ b) /\\ (a \\/ c) -> a \\/ (b /\\ c)"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[8]), {0: pat1, 1: pat2, 2: pat3})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[7]), {0: pat1, 1: pat2, 2: pat3})
 
     def and_assoc(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> Proved:
         """a /\\ (b /\\ c) <-> (a /\\ b) /\\ c"""
@@ -512,7 +507,7 @@ class Tautology(Propositional):
 
     def and_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
         """p /\\ q <-> q /\\ p"""
-        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[9]), {0: p, 1: q})
+        return self.dynamic_inst(lambda: self.load_axiom(self.axioms()[8]), {0: p, 1: q})
 
     def or_comm_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> Proved:
         """p \\/ q -> q \\/ p"""

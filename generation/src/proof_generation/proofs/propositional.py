@@ -101,6 +101,7 @@ class Propositional(ProofExp):
             top,  # Top
             Implies(bot, phi0),  # Bot_elim
             Implies(neg(neg(phi0)), phi0),  # Double Negation elim
+            Implies(Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))),  # Imp Transitivity axiom
             Implies(phi0, neg(neg(phi0))),  # Double Negation intro
             Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
             Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
@@ -112,6 +113,7 @@ class Propositional(ProofExp):
             self.top_intro,
             self.bot_elim,
             self.dneg_elim,
+            self.imp_trans,
             self.dneg_intro,
             self.absurd,
             self.peirce_bot,
@@ -215,6 +217,15 @@ class Propositional(ProofExp):
         return self.imp_transitivity(
             lambda: self.dynamic_inst(self.prop1, {0: q, 1: p}),
             lambda: self.modus_ponens(self.dynamic_inst(self.prop2, {0: p, 1: q, 2: r}), pf()),
+        )
+
+    def imp_trans(self, p: Pattern = phi0, q: Pattern = phi1, r: Pattern = phi2) -> Proved:
+        """(p -> q) -> (q -> r) -> (p -> r)"""
+        return self.ant_commutativity(
+            lambda: self.imp_transitivity(
+                lambda: self.dynamic_inst(self.prop1, {0: Implies(q, r), 1: p}),
+                lambda: self.dynamic_inst(self.prop2, {0: p, 1: q, 2: r}),
+            )
         )
 
     def dneg_intro(self, p: Pattern = phi0) -> Proved:
