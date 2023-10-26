@@ -9,6 +9,7 @@ import pyk.kore.syntax as kore
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
 import proof_generation.proofs.propositional as prop
+from kore_transfer.generate_hints import FunEvent, HookEvent
 from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, NotationPlaceholder, Symbol
 
 if TYPE_CHECKING:
@@ -22,6 +23,8 @@ class AxiomType(Enum):
     Unclassified = 0
     RewriteRule = 1
     FunctionalSymbol = 2
+    FunctionEvent = 3
+    HookEvent = 4
 
 
 class ConvertedAxiom(NamedTuple):
@@ -56,6 +59,20 @@ class KoreConverter:
             # TODO: Requires equality to be implemented
             converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
             added_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return self._organize_axioms(added_axioms)
+
+    def construct_event_axioms(self, hint: KoreHint) -> Axioms:
+        added_axioms = []
+        for event in hint.functional_events:
+            pattern: Pattern
+            if isinstance(event, FunEvent):
+                # TODO: construct the proper axiom using event.name, event.relative_position
+                pattern = Implies(EVar(0), EVar(0))
+                added_axioms.append(ConvertedAxiom(AxiomType.FunctionEvent, pattern))
+            if isinstance(event, HookEvent):
+                # TODO: construct the proper axiom using event.name, event.args, and event.result
+                pattern = Implies(EVar(0), EVar(0))
+                added_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
         return self._organize_axioms(added_axioms)
 
     def retrieve_axiom_for_ordinal(self, ordinal: int) -> ConvertedAxiom:

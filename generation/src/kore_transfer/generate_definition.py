@@ -15,6 +15,7 @@ ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 class KoreDefinition(proof.ProofExp):
     prove_step_axioms: list[Pattern] = []
+    whitelist_axioms: list[Pattern] = []
     prove_step_claims: list[Pattern] = []
     proofs: list[ProofMethod] = []
 
@@ -47,6 +48,13 @@ class KoreDefinition(proof.ProofExp):
         axioms = converter.collect_functional_axioms(hint)
         axioms.setdefault(hint.axiom.kind, []).append(hint.axiom)
         cls.prove_step_axioms.append(hint.axiom.pattern)
+        return axioms
+
+    @classmethod
+    def add_whitelist_axioms(cls, hint: KoreHint, converter: KoreConverter) -> Axioms:
+        """Add a hook call as a whitelist axiom to the definition."""
+        axioms = converter.construct_event_axioms(hint)
+        cls.whitelist_axioms.extend([a.pattern for alist in axioms.values() for a in alist])
         return axioms
 
     def proof_expressions(self) -> list[proof.ProvedExpression]:

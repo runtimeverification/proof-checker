@@ -18,6 +18,7 @@ def generate_proofs(
 ) -> None:
     claims = 0
     for hint in hints:
+        proof_expression.add_whitelist_axioms(hint, kore_converter)
         axioms = proof_expression.add_axioms(hint, kore_converter)
 
         rewrite_axiom = axioms[AxiomType.RewriteRule][0].pattern
