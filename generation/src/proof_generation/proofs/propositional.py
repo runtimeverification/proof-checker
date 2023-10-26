@@ -73,6 +73,19 @@ class Or(Notation):
         return f'({self.phi0} ∨ {self.phi1})'
 
 
+@dataclass(frozen=True, eq=False)
+class Equiv(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return And(Implies(phi0, phi1), Implies(phi1, phi0))
+
+    def __str__(self) -> str:
+        return f'({str(self.phi0)}) <-> ({str(self.phi1)})'
+
+
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
         super().__init__(interpreter)
@@ -135,14 +148,14 @@ class Propositional(ProofExp):
         q = self.PROVISIONAL_get_conc(q_pf)
         return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
 
-    def imp_transitivity(self, phi0_imp_phi1: ProvedExpression, phi1_imp_phi2: ProvedExpression) -> Proved:
+    def imp_transitivity(self, pq_pf: ProvedExpression, qr_pf: ProvedExpression) -> Proved:
         """
            p -> q    q -> r
         ----------------------
                 p -> r
         """
-        a, b = Implies.extract(self.PROVISIONAL_get_conc(phi0_imp_phi1))
-        b2, c = Implies.extract(self.PROVISIONAL_get_conc(phi1_imp_phi2))
+        a, b = Implies.extract(self.PROVISIONAL_get_conc(pq_pf))
+        b2, c = Implies.extract(self.PROVISIONAL_get_conc(qr_pf))
         assert b == b2
 
         return self.modus_ponens(
@@ -151,9 +164,9 @@ class Propositional(ProofExp):
                 # (a -> (b -> c)) -> ((a -> b) -> (a -> c))
                 self.dynamic_inst(self.prop2, {0: a, 1: b, 2: c}),
                 #  a -> (b -> c)
-                self.imp_provable(a, phi1_imp_phi2),
+                self.imp_provable(a, qr_pf),
             ),
-            phi0_imp_phi1(),
+            pq_pf(),
         )
 
     def top_intro(self) -> Proved:

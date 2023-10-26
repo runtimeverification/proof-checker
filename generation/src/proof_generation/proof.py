@@ -101,6 +101,8 @@ class ProofExp(ABC):
         return self.interpreter.exists_generalization(proved, var)
 
     def dynamic_inst(self, proved_expr: ProvedExpression, delta: dict[int, Pattern]) -> Proved:
+        if not delta:
+            return proved_expr()
         for idn, p in delta.items():
             delta[idn] = self.interpreter.pattern(p)
         return self.interpreter.instantiate(proved_expr(), delta)
