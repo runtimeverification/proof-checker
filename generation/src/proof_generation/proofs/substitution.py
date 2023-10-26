@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import EVar, Exists, Notation, ESubst
-from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1, top
+from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1, top, Equiv
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -27,7 +27,11 @@ class Forall(Notation):
 class Substitution(Propositional):
     @staticmethod
     def axioms() -> list[Pattern]:
-        return []
+        x = EVar(0)
+        return [
+            # TODO: Replace Equiv with =
+            Implies(Exists(x.name, Equiv(phi1, x)), Implies(Forall(x.name, phi0), ESubst(phi0, x, phi1)))
+        ]
 
     @staticmethod
     def claims() -> list[Pattern]:
@@ -38,8 +42,8 @@ class Substitution(Propositional):
 
     def universal_gen(self, phi: ProvedExpression, var: EVar) -> Proved:
         """
-        phi
-        --------------------------------------
+               phi
+        ------------------
         forall {var} . phi
         """
         # (exists {var} (neg phi)) -> bot == forall {var} phi
@@ -55,19 +59,20 @@ class Substitution(Propositional):
 
     def top_univgen(self) -> Proved:
         """
-        T
-        ---
+              T
+        -------------
         forall x0 . T
         """
         return self.universal_gen(self.top_intro, EVar(0))
 
     def functional_subst(self, phi: ProvedExpression, psi: ProvedExpression, x: EVar) -> ProvedExpression:
         """
-        --------------------------------------
+        ------------------------------------------------------
         (exists x . psi = x) -> ((forall x. phi) -> phi[psi/x])
         """
-        return self.load_axiom(
-            Implies(Exists(0, phi0), Forall(0, phi0), phi0)
+        return self.dynamic_inst(
+            self.load_axiom(self.axioms()[0]),
+            {0: phi, 1: psi}
         )
 
 
