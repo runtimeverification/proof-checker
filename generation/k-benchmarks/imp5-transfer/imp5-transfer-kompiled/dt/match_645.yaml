@@ -1,0 +1,47 @@
+default: null
+specializations:
+- - Lbl'-LT-'generatedTop'-GT-'{}
+  - default: null
+    specializations:
+    - - Lbl'-LT-'k'-GT-'{}
+      - default: fail
+        specializations:
+        - - kseq{}
+          - default: fail
+            specializations:
+            - - inj{SortStmt{}, SortKItem{}}
+              - default: fail
+                specializations:
+                - - Lblwhile'LParUndsRParUndsUnds'IMP5-TRANSFER-SYNTAX'Unds'Stmt'Unds'BExp'Unds'Block{}
+                  - action:
+                    - 645
+                    - - - ['1', '0', '0', '1']
+                        - STRING.String
+                      - - ['1', '1']
+                        - STRING.String
+                      - - ['2', '1']
+                        - STRING.String
+                      - - ['0', '0', '0', '0', '1']
+                        - STRING.String
+                      - - ['0', '0', '0', '0', '0', '1']
+                        - STRING.String
+                      - - ['1', '0', '0', '0', '0', '1']
+                        - STRING.String
+                  - [STRING.String, STRING.String]
+                sort: STRING.String
+                occurrence: ['0', '0', '0', '0', '1']
+              - [STRING.String]
+            - - inj{SortBlock{}, SortKItem{}}
+              - fail
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['0', '0', '0', '1']
+          - [STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '0', '1']
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']
