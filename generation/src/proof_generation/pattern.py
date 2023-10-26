@@ -462,12 +462,12 @@ class Notation(Pattern, ABC):
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         for arg in vars(self).keys():
-            self[arg] = arg.apply_esubst(evar_id, plug)
+            self.__setattr__(arg, apply_esubst(evar_id, plug))
         return self
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         for arg in vars(self).keys():
-            self[arg] = arg.apply_ssubst(svar_id, plug)
+            self.__setattr__(arg, apply_ssubst(svar_id, plug))
         return self
 
     @classmethod
