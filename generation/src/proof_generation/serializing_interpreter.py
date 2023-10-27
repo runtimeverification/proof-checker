@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from io import BytesIO
 from typing import TYPE_CHECKING, Any, BinaryIO
 
 from proof_generation.instruction import Instruction
 from proof_generation.io_interpreter import IOInterpreter
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import ExecutionPhase
+    from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.io_interpreter import IO
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
@@ -14,6 +15,10 @@ if TYPE_CHECKING:
 
 
 class SerializingInterpreter(IOInterpreter):
+    simulator_out: BytesIO
+    simulator_claim_out: BytesIO
+    simulator_proof_out: BytesIO
+
     def __init__(
         self,
         phase: ExecutionPhase,
@@ -21,8 +26,19 @@ class SerializingInterpreter(IOInterpreter):
         claims: list[Claim] | None = None,
         claim_out: IO[Any] | None = None,
         proof_out: IO[Any] | None = None,
+        simulator: bool = False,
     ) -> None:
-        super().__init__(phase, out, claims, claim_out, proof_out)
+        if simulator:
+            assert claim_out is None
+            assert proof_out is None
+            self.simulator_out = BytesIO()
+            self.simulator_claim_out = BytesIO()
+            self.simulator_proof_out = BytesIO()
+            super().__init__(
+                phase, self.simulator_out, claims, self.simulator_claim_out, self.simulator_proof_out, simulator
+            )
+        else:
+            super().__init__(phase, out, claims, claim_out, proof_out, simulator)
         self._symbol_identifiers: dict[str, int] = {}
 
     def evar(self, id: int) -> Pattern:
@@ -161,6 +177,21 @@ class SerializingInterpreter(IOInterpreter):
         super().publish_claim(pattern)
         self.out.write(bytes([Instruction.Publish]))
 
+    def _gen_simulator(self) -> SerializingInterpreter:
+        return SerializingInterpreter(self.phase, BytesIO(), simulator=True)
+
+    def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        # TODO Consider phase changes
+        assert isinstance(i, SerializingInterpreter)
+        assert i.simulator
+        ret = super()._apply_simulation(i, conc)
+        self.out.write(i.simulator_out.getvalue())
+        if self.claim_out is not None:
+            self.claim_out.write(i.simulator_claim_out.getvalue())
+        if self.proof_out is not None:
+            self.proof_out.write(i.simulator_proof_out.getvalue())
+        return ret
+
 
 class MemoizingInterpreter(SerializingInterpreter):
     def __init__(
@@ -171,8 +202,9 @@ class MemoizingInterpreter(SerializingInterpreter):
         patterns_for_memoization: set[Pattern] | None = None,
         claim_out: BinaryIO | None = None,
         proof_out: BinaryIO | None = None,
+        simulator: bool = False,
     ) -> None:
-        super().__init__(phase, out, claims, claim_out, proof_out)
+        super().__init__(phase, out, claims, claim_out, proof_out, simulator)
         self._patterns_for_memoization: set[Pattern]
         if patterns_for_memoization is None:
             self._patterns_for_memoization = set()
@@ -189,3 +221,11 @@ class MemoizingInterpreter(SerializingInterpreter):
             return ret
         else:
             return super().pattern(p)
+
+    def _gen_simulator(self) -> MemoizingInterpreter:
+        return MemoizingInterpreter(self.phase, BytesIO(), None, self._patterns_for_memoization, None, None, True)
+
+    def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        ret = super()._apply_simulation(i, conc)
+        assert isinstance(i, MemoizingInterpreter)
+        return ret

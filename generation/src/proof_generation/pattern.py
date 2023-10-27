@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC
 from dataclasses import dataclass
 
 
@@ -20,9 +19,9 @@ def match_single(
                 return None
             ret[id] = instance
         return ret
-    if pattern == bot and instance == bot:
+    if pattern == bot and instance == bot:  # Added for optimization
         return ret
-    if type(pattern) == type(instance) and issubclass(type(pattern), Notation):
+    if type(pattern) == type(instance) and issubclass(type(pattern), Notation):  # Added for optimization
         cls = type(pattern)
         pat_n = cls.unwrap(pattern)
         inst_n = cls.unwrap(instance)
@@ -403,7 +402,7 @@ class SSubst(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation(Pattern, ABC):
+class Notation(Pattern):
     def label(self) -> str:
         return f'{type(self).__name__!r}'
 

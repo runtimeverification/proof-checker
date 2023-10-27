@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter
+from proof_generation.claim import Claim
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
     from proof_generation.basic_interpreter import ExecutionPhase
-    from proof_generation.claim import Claim
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
 
 
@@ -20,15 +20,16 @@ class StatefulInterpreter(BasicInterpreter):
     stack: list[Pattern | Proved]
     memory: list[Pattern | Proved]
 
-    def __init__(
-        self,
-        phase: ExecutionPhase,
-        claims: list[Claim] | None = None,
-    ) -> None:
+    simulator: bool
+    actual_claims: list[Claim]
+
+    def __init__(self, phase: ExecutionPhase, claims: list[Claim] | None = None, simulator: bool = False) -> None:
         super().__init__(phase=phase)
         self.stack = []
         self.memory = []
         self.claims = claims if claims else []
+        self.simulator = simulator
+        self.actual_claims = []
 
     def into_claim_phase(self) -> None:
         self.stack = []
@@ -194,6 +195,9 @@ class StatefulInterpreter(BasicInterpreter):
         super().load(id, term)
 
     def publish_proof(self, proved: Proved) -> None:
+        if self.simulator:
+            self.actual_claims.append(Claim(proved.conclusion))
+            return
         super().publish_proof(proved)
         expected_claim, *self.claims = self.claims
         assert (
@@ -209,3 +213,17 @@ class StatefulInterpreter(BasicInterpreter):
     def publish_claim(self, pattern: Pattern) -> None:
         super().publish_claim(pattern)
         assert self.stack[-1] == pattern
+
+    def _gen_simulator(self) -> StatefulInterpreter:
+        return StatefulInterpreter(self.phase, None, True)
+
+    def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        # TODO consider phase changes
+        assert isinstance(i, StatefulInterpreter)
+        assert i.simulator
+        ret = super()._apply_simulation(i, conc)
+        self.stack = self.stack + i.stack
+        self.memory = self.memory + i.memory
+        for claim in i.actual_claims:
+            self.publish_proof(Proved(claim.pattern))
+        return ret
