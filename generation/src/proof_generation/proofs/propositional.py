@@ -4,11 +4,11 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import Implies, MetaVar, Notation, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
+    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProvedExpression
     from proof_generation.proved import Proved
@@ -117,15 +117,6 @@ class Propositional(ProofExp):
             self.peirce_bot,
         ]
 
-    # TODO This function should not exist anymore once we
-    # have support for Lemmas in the binary format
-    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern:  # noqa: N802
-        i = self.interpreter
-        self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
-        conc = p().conclusion
-        self.interpreter = i
-        return conc
-
     # Proofs
     # ======
 
@@ -145,7 +136,7 @@ class Propositional(ProofExp):
         ----------
           p -> q
         """
-        q = self.PROVISIONAL_get_conc(q_pf)
+        q_pf, q = self._get_conclusion(q_pf)
         return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
 
     def imp_transitivity(self, pq_pf: ProvedExpression, qr_pf: ProvedExpression) -> Proved:
@@ -154,8 +145,10 @@ class Propositional(ProofExp):
         ----------------------
                 p -> r
         """
-        a, b = Implies.extract(self.PROVISIONAL_get_conc(pq_pf))
-        b2, c = Implies.extract(self.PROVISIONAL_get_conc(qr_pf))
+        pq_pf, pq = self._get_conclusion(pq_pf)
+        qr_pf, qr = self._get_conclusion(qr_pf)
+        a, b = Implies.extract(pq)
+        b2, c = Implies.extract(qr)
         assert b == b2
 
         return self.modus_ponens(
@@ -209,7 +202,7 @@ class Propositional(ProofExp):
         ---------------
           q -> (p -> r)
         """
-        conc = self.PROVISIONAL_get_conc(pf)
+        pf, conc = self._get_conclusion(pf)
         p, qr = Implies.extract(conc)
         q, r = Implies.extract(qr)
         return self.imp_transitivity(

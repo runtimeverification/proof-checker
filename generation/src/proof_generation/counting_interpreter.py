@@ -8,7 +8,7 @@ from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import ExecutionPhase
+    from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
 
@@ -204,6 +204,13 @@ class CountingInterpreter(StatefulInterpreter):
         ret = super().instantiate_pattern(pattern, delta)
         self._collect_patterns(ret)
         return ret
+
+    def _gen_simulator(self) -> CountingInterpreter:
+        raise NotImplementedError
+
+    def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        assert isinstance(i, CountingInterpreter)
+        raise NotImplementedError
 
     def _collect_patterns(self, p: Pattern) -> None:
         children: list[Pattern] = []

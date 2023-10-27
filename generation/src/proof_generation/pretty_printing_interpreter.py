@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from io import StringIO
 from typing import TYPE_CHECKING, TextIO
 
 from proof_generation.io_interpreter import IOInterpreter
@@ -9,12 +10,16 @@ from proof_generation.proved import Proved
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.basic_interpreter import ExecutionPhase
+    from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.pattern import EVar, MetaVar, Pattern, SVar
 
 
 class PrettyPrintingInterpreter(IOInterpreter):
+    simulator_out: StringIO
+    simulator_claim_out: StringIO
+    simulator_proof_out: StringIO
+
     def __init__(
         self,
         phase: ExecutionPhase,
@@ -22,8 +27,24 @@ class PrettyPrintingInterpreter(IOInterpreter):
         claims: list[Claim] | None = None,
         claim_out: TextIO | None = None,
         proof_out: TextIO | None = None,
+        simulator: bool = False,
     ) -> None:
-        super().__init__(phase=phase, out=out, claims=claims, claim_out=claim_out, proof_out=proof_out)
+        if simulator:
+            assert claim_out is None
+            assert proof_out is None
+            self.simulator_out = StringIO()
+            self.simulator_claim_out = StringIO()
+            self.simulator_proof_out = StringIO()
+            super().__init__(
+                phase=phase,
+                out=self.simulator_out,
+                claims=claims,
+                claim_out=self.simulator_claim_out,
+                proof_out=self.simulator_proof_out,
+                simulator=simulator,
+            )
+        else:
+            super().__init__(phase=phase, out=out, claims=claims, claim_out=claim_out, proof_out=proof_out)
         self._notation: dict[str, Pattern] = {}
 
     def plug_in_notation(self, notation: dict[str, Pattern]) -> None:
@@ -214,6 +235,19 @@ class PrettyPrintingInterpreter(IOInterpreter):
                 self.out.write(f'\t{i}: ⊢ {self.pretty_print_pattern(item.conclusion)}\n')
                 continue
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
+
+    def _gen_simulator(self) -> PrettyPrintingInterpreter:
+        return PrettyPrintingInterpreter(self.phase, StringIO(), simulator=True)
+
+    def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        assert isinstance(i, PrettyPrintingInterpreter)
+        assert i.simulator
+        self.out.write(i.simulator_out.getvalue())
+        if self.claim_out is not None:
+            self.claim_out.write(i.simulator_claim_out.getvalue())
+        if self.proof_out is not None:
+            self.proof_out.write(i.simulator_proof_out.getvalue())
+        return super()._apply_simulation(i, conc)
 
 
 class NotationlessPrettyPrinter(PrettyPrintingInterpreter):

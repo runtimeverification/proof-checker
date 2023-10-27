@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC
 from dataclasses import dataclass
 
 
@@ -403,7 +402,7 @@ class SSubst(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation(Pattern, ABC):
+class Notation(Pattern):
     def label(self) -> str:
         return f'{type(self).__name__!r}'
 

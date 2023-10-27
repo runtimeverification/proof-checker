@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -160,6 +161,14 @@ class ProofExp(ABC):
         self.execute_gamma_phase()
         self.execute_claims_phase()
         self.execute_proofs_phase()
+
+    def _get_conclusion(self, pf: ProvedExpression) -> tuple[ProvedExpression, Pattern]:
+        orig_interpreter = self.interpreter
+        sim = self.interpreter._gen_simulator()
+        self.interpreter = sim
+        conc = pf().conclusion
+        self.interpreter = orig_interpreter
+        return partial(self.interpreter._apply_simulation, sim, conc), conc
 
     @classmethod
     def serialize(cls, file_path: Path) -> None:
