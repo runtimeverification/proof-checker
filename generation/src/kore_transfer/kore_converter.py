@@ -93,10 +93,10 @@ class KoreConverter:
         subst_axioms = []
         for pattern in hint.substitutions.values():
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            assert isinstance(pattern, kl.KoreApplies), f'Expected application of a Kore symbol, got {str(pattern)}'
+            assert isinstance(pattern, kl.KoreApplies | kl.Cell), f'Expected application of a Kore symbol, got {str(pattern)}'
             if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
                 assert pattern.phi0.left in self._functional_symbols
-            elif isinstance(pattern.phi0, Symbol):
+            elif isinstance(pattern.phi0, Symbol | kl.Cell):
                 assert pattern.phi0 in self._functional_symbols
             else:
                 raise NotImplementedError(f'Pattern {pattern} is not supported')
@@ -206,9 +206,12 @@ class KoreConverter:
                         """Converts a cell to a pattern."""
                         cell_name = is_cell(kore_application)
                         assert cell_name, f'Application {kore_application} is not a cell!'
-                        self._cell_symbols.add(kore_application.symbol)
 
                         cell_symbol: Symbol = self._resolve_symbol(cell_name)
+                        self._cell_symbols.add(kore_application.symbol)
+                        if kore_application.symbol in self._raw_functional_symbols:
+                            self._functional_symbols.add(cell_symbol)
+
                         if len(kore_application.args) == 0:
                             print(f'Cell {cell_name} has nothing to store!')
                             return cell_symbol
