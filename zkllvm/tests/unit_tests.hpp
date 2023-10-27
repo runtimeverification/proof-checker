@@ -99,6 +99,26 @@ int test_sfresh(int a, int b) {
   return 0;
 }
 
+int test_wellformedness_fresh() {
+  auto phi0_s_fresh_0 =
+      Pattern::metavar_s_fresh(0, 0, IdList::create(0), IdList::create(0));
+  assert(phi0_s_fresh_0->pattern_well_formed());
+
+  auto phi1_e_fresh = IdList::create();
+  phi1_e_fresh->push_back(1);
+  phi1_e_fresh->push_back(2);
+  phi1_e_fresh->push_back(0); 
+  auto phi1 =
+      Pattern::metavar(1, phi1_e_fresh, IdList::create(), IdList::create(),
+          IdList::create(), IdList::create());
+  assert(phi1->pattern_well_formed());
+
+  phi0_s_fresh_0->~Pattern();
+  phi1->~Pattern();
+
+  return 0;
+}
+
 int test_positivity() {
 
   auto X0 = Pattern::svar(0);
@@ -523,6 +543,85 @@ void execute_vector(std::array<int, MAX_SIZE> &instrs, Pattern::Stack &stack,
   Pattern::execute_instructions(instrs, stack, memory, claims, phase);
 }
 
+void test_publish() {
+
+  auto proof = LinkedList<uint8_t>::create();
+
+  proof->push_back((uint8_t)Instruction::Publish);
+
+  auto stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Pattern, Pattern::symbol(0)));
+  auto memory = Pattern::Memory::create();
+  auto claims = Pattern::Claims::create();
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Gamma);
+  auto expected_stack = Pattern::Stack::create();
+  auto expected_claims = Pattern::Claims::create();
+  auto expected_memory = Pattern::Memory::create(Pattern::Entry::newEntry(
+      Pattern::Entry::Type::Proved, Pattern::symbol(0)));
+  assert(*stack == *expected_stack);
+  assert(*memory == *expected_memory);
+  assert(*claims == *expected_claims);
+
+  stack->~LinkedList();
+  free(stack);
+  memory->~LinkedList();
+  free(memory);
+  claims->~LinkedList();
+  free(claims);
+  expected_claims->~LinkedList();
+  free(expected_claims);
+  expected_memory->~LinkedList();
+  free(expected_memory);
+
+  stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Pattern, Pattern::symbol(0)));
+  memory = Pattern::Memory::create();
+  claims = Pattern::Claims::create();
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Claims);
+  expected_memory = Pattern::Memory::create();
+  expected_claims = Pattern::Claims::create(Pattern::symbol(0));
+  assert(*stack == *expected_stack);
+  assert(*memory == *expected_memory);
+  assert(*claims == *expected_claims);
+
+  stack->~LinkedList();
+  free(stack);
+  memory->~LinkedList();
+  free(memory);
+  claims->~LinkedList();
+  free(claims);
+  expected_claims->~LinkedList();
+  free(expected_claims);
+  expected_memory->~LinkedList();
+  free(expected_memory);
+
+  stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Proved, Pattern::symbol(0)));
+  memory = Pattern::Memory::create();
+  claims = Pattern::Claims::create(Pattern::symbol(0));
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+  expected_memory = Pattern::Memory::create();
+  expected_claims = Pattern::Claims::create();
+  assert(*stack == *expected_stack);
+  assert(*memory == *expected_memory);
+  assert(*claims == *expected_claims);
+
+  proof->~LinkedList();
+  free(proof);
+  stack->~LinkedList();
+  free(stack);
+  memory->~LinkedList();
+  free(memory);
+  claims->~LinkedList();
+  free(claims);
+  expected_stack->~LinkedList();
+  free(expected_stack);
+  expected_claims->~LinkedList();
+  free(expected_claims);
+  expected_memory->~LinkedList();
+  free(expected_memory);
+}
+
 void test_construct_phi_implies_phi() {
 
   // MetaVar(0,0,0,0,0,0)
@@ -638,6 +737,45 @@ int test_phi_implies_phi_impl() {
       Pattern::Term::Proved_(Pattern::implies(phi0.clone(), phi0.clone())));
 
   assert(stack == expected_stack);
+
+  return 0;
+}
+
+int test_universal_quantification() {
+
+  auto proof = LinkedList<uint8_t>::create();
+
+  proof->push_back((uint8_t)Instruction::Generalization);
+  proof->push_back((uint8_t)0);
+
+  auto stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Proved, Pattern::implies(Pattern::symbol(0), Pattern::symbol(1))));
+  auto memory = Pattern::Memory::create();
+  auto claims = Pattern::Claims::create();
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
+      Pattern::Term::Type::Proved, Pattern::implies(Pattern::exists(0, Pattern::symbol(0)), Pattern::symbol(1))));
+  auto expected_memory = Pattern::Memory::create();
+  auto expected_claims = Pattern::Claims::create();
+  assert(*stack == *expected_stack);
+  assert(*memory == *expected_memory);
+  assert(*claims == *expected_claims);
+
+  proof->~LinkedList();
+  free(proof);
+  stack->~LinkedList();
+  free(stack);
+  memory->~LinkedList();
+  free(memory);
+  claims->~LinkedList();
+  free(claims);
+  expected_stack->~LinkedList();
+  free(expected_stack);
+  expected_claims->~LinkedList();
+  free(expected_claims);
+  expected_memory->~LinkedList();
+  free(expected_memory);
 
   return 0;
 }
