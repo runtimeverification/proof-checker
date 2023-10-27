@@ -43,7 +43,7 @@ class KoreDefinition(proof.ProofExp):
 
     @classmethod
     def add_axioms(cls, hint: KoreHint, converter: KoreConverter) -> Axioms:
-        """Add an axiom to the definition."""
+        """Add axioms to the definition."""
         axioms = converter.collect_functional_axioms(hint)
         axioms.setdefault(hint.axiom.kind, []).append(hint.axiom)
         cls.prove_step_axioms.append(hint.axiom.pattern)
