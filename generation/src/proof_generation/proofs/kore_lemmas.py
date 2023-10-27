@@ -9,6 +9,8 @@ from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import And, Negation, Or
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProvedExpression
 
@@ -168,30 +170,19 @@ class KoreNestedCells(Notation):
     def __str__(self) -> str:
         # We have a chain of cells applied to each other. We need to recover them.
         # App(App(cell1, cell2), cell3) -> <cell1> </cell1> <cell2> </cell2> <cell3> </cell3>
-        recovered_cells = []
-        # TODO: Remove the Metavar from the typecheck
-        todo: Pattern | None = self.phi1
-        while todo is not None:
-            match todo:
-                case App(left, right):
-                    recovered_cells.append(right)
-                    todo = left
-                case KoreNestedCells(_, _):
-                    recovered_cells.append(todo)
-                    todo = None
-                case Cell(_, _):
-                    recovered_cells.append(todo)
-                    todo = None
-                case MetaVar(_):
-                    recovered_cells.append(todo)
-                    todo = None
-                case EVar(_):
-                    recovered_cells.append(todo)
-                    todo = None
-                case _:
-                    raise ValueError(f'Unexpected pattern {todo}')
+        def recover_cells(todo: Pattern | None) -> Iterable[Pattern]:
+            if isinstance(todo, App):
+                # We have a chain of cells
+                yield todo.right
+                yield from recover_cells(todo.left)
+            # TODO: Remove the Metavar from the typecheck
+            elif isinstance(todo, Cell | KoreNestedCells | MetaVar | EVar):
+                # We have a single cell
+                yield todo
+            else:
+                raise ValueError(f'Unexpected pattern {todo}')
 
-        reversed_recovered_cells = reversed(recovered_cells)
+        reversed_recovered_cells = reversed(list(recover_cells(self.phi1)))
         recovered_cells_str = ' '.join([str(cell) for cell in reversed_recovered_cells])
         return f'<{str(self.phi0.name)}> {recovered_cells_str} </{str(self.phi0.name)}>'
 
