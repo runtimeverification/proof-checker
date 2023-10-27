@@ -170,20 +170,19 @@ class KoreNestedCells(Notation):
     def __str__(self) -> str:
         # We have a chain of cells applied to each other. We need to recover them.
         # App(App(cell1, cell2), cell3) -> <cell1> </cell1> <cell2> </cell2> <cell3> </cell3>
-        def recover_cells(todo: Pattern | None) -> Iterable[Pattern]:
+        def recover_cells(todo: Pattern | None) -> Iterable[str]:
             if isinstance(todo, App):
                 # We have a chain of cells
-                yield todo.right
+                yield str(todo.right)
                 yield from recover_cells(todo.left)
             # TODO: Remove the Metavar from the typecheck
             elif isinstance(todo, Cell | KoreNestedCells | MetaVar | EVar):
                 # We have a single cell
-                yield todo
+                yield str(todo)
             else:
                 raise ValueError(f'Unexpected pattern {todo}')
 
-        reversed_recovered_cells = reversed(list(recover_cells(self.phi1)))
-        recovered_cells_str = ' '.join([str(cell) for cell in reversed_recovered_cells])
+        recovered_cells_str = ' '.join(reversed(list(recover_cells(self.phi1))))
         return f'<{str(self.phi0.name)}> {recovered_cells_str} </{str(self.phi0.name)}>'
 
 
