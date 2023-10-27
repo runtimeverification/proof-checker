@@ -39,45 +39,26 @@ class KoreConverter:
     def __init__(self, kore_definition: kore.Definition) -> None:
         self._definition = kore_definition
 
+        # Attributes for caching new format objects
         self._symbols: dict[str, Symbol] = {}
         self._evars: dict[str, EVar] = {}
         self._svars: dict[str, SVar] = {}
         self._metavars: dict[str, MetaVar] = {}
         self._notations: dict[str, type[Notation]] = {}
 
-        # TODO: Update it depending on the numbering schemes used in hints
+        # Kore object cache
         self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
+        self._functional_symbols: set[str] = set()
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
         return self._convert_pattern(pattern)
 
     def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
-        added_axioms = self.construct_subst_axioms(hint)
-        added_axioms.extend(self.construct_event_axioms(hint))
+        added_axioms = self._construct_subst_axioms(hint)
+        added_axioms.extend(self._construct_event_axioms(hint))
         return self._organize_axioms(added_axioms)
-
-    def construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
-        subst_axioms = []
-        for pattern in hint.substitutions.values():
-            # TODO: Requires equality to be implemented
-            converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
-            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
-        return subst_axioms
-
-    def construct_event_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
-        event_axioms = []
-        for event in hint.functional_events:
-            if isinstance(event, FunEvent):
-                # TODO: construct the proper axiom using event.name, event.relative_position
-                pattern = Implies(EVar(0), EVar(0))
-                event_axioms.append(ConvertedAxiom(AxiomType.FunctionEvent, pattern))
-            if isinstance(event, HookEvent):
-                # TODO: construct the proper axiom using event.name, event.args, and event.result
-                pattern = Implies(EVar(0), EVar(0))
-                event_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
-        return event_axioms
 
     def retrieve_axiom_for_ordinal(self, ordinal: int) -> ConvertedAxiom:
         """Retrieve the axiom for the given ordinal."""
@@ -93,6 +74,27 @@ class KoreConverter:
             name = self._lookup_metavar(id).name
             substitutions[name] = self._convert_pattern(kore_pattern)
         return substitutions
+
+    def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
+        subst_axioms = []
+        for pattern in hint.substitutions.values():
+            # TODO: Requires equality to be implemented
+            converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
+            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return subst_axioms
+
+    def _construct_event_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
+        event_axioms = []
+        for event in hint.functional_events:
+            if isinstance(event, FunEvent):
+                # TODO: construct the proper axiom using event.name, event.relative_position
+                pattern = Implies(EVar(0), EVar(0))
+                event_axioms.append(ConvertedAxiom(AxiomType.FunctionEvent, pattern))
+            if isinstance(event, HookEvent):
+                # TODO: construct the proper axiom using event.name, event.args, and event.result
+                pattern = Implies(EVar(0), EVar(0))
+                event_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
+        return event_axioms
 
     def _convert_axiom(self, kore_axiom: kore.Axiom) -> ConvertedAxiom:
         if kore_axiom in self._axioms_cache:
