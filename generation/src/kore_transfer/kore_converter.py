@@ -93,7 +93,9 @@ class KoreConverter:
         subst_axioms = []
         for pattern in hint.substitutions.values():
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            assert isinstance(pattern, kl.KoreApplies | kl.Cell), f'Expected application of a Kore symbol, got {str(pattern)}'
+            assert isinstance(
+                pattern, kl.KoreApplies | kl.Cell
+            ), f'Expected application of a Kore symbol, got {str(pattern)}'
             if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
                 assert pattern.phi0.left in self._functional_symbols
             elif isinstance(pattern.phi0, Symbol | kl.Cell):
@@ -228,7 +230,7 @@ class KoreConverter:
 
                             # TODO: This is hacky, we will have a trouble if all cells are EVars or Metavars
                             cells_chained = chain_patterns(chained_cell_patterns)
-                            if any(x for x in chained_cell_patterns if isinstance(x, kl.Cell | kl.KoreNestedCells)):
+                            if any(x for x in chained_cell_patterns if isinstance(x, kl.Cell)):
                                 assert isinstance(cells_chained, App)
                                 return kl.KoreNestedCells(cell_symbol, cells_chained)
                             else:

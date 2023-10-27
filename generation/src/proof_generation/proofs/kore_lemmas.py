@@ -159,13 +159,9 @@ class Cell(Notation):
 
 
 @dataclass(frozen=True, eq=False)
-class KoreNestedCells(Notation):
+class KoreNestedCells(Cell):
     phi0: Symbol  # Symbol for the outer cell
-    phi1: App  # Application chain for inner cells
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return App(phi0, phi1)
+    phi1: Pattern  # Application chain for inner cells
 
     def __str__(self) -> str:
         # We have a chain of cells applied to each other. We need to recover them.
@@ -176,7 +172,7 @@ class KoreNestedCells(Notation):
                 yield str(todo.right)
                 yield from recover_cells(todo.left)
             # TODO: Remove the Metavar from the typecheck
-            elif isinstance(todo, Cell | KoreNestedCells | MetaVar | EVar):
+            elif isinstance(todo, Cell | MetaVar | EVar):
                 # We have a single cell
                 yield str(todo)
             else:
