@@ -49,7 +49,8 @@ class KoreConverter:
         # Kore object cache
         self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
-        self._functional_symbols: set[str] = set()
+        self._raw_functional_symbols: set[str] = self._collect_functional_symbols()
+        self._functional_symbols: set[Symbol] = set()
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
@@ -75,9 +76,26 @@ class KoreConverter:
             substitutions[name] = self._convert_pattern(kore_pattern)
         return substitutions
 
+    def _collect_functional_symbols(self) -> set[str]:
+        """Collect all functional symbols from the definition."""
+        functional_symbols: set[str] = set()
+        for kore_module in self._definition.modules:
+            for symbol_declaration in kore_module.symbol_decls:
+                if any(attr.symbol == 'functional' for attr in symbol_declaration.attrs if isinstance(attr, kore.App)):
+                    functional_symbols.add(symbol_declaration.symbol.name)
+        return functional_symbols
+
     def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
         subst_axioms = []
         for pattern in hint.substitutions.values():
+            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+            assert isinstance(pattern, kl.KoreApplies), f'Expected application of a Kore symbol, got {str(pattern)}'
+            if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
+                assert pattern.phi0.left in self._functional_symbols
+            elif isinstance(pattern.phi0, Symbol):
+                assert pattern.phi0 in self._functional_symbols
+            else:
+                raise NotImplementedError(f'Pattern {pattern} is not supported')
             # TODO: Requires equality to be implemented
             converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
             subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
@@ -199,6 +217,8 @@ class KoreConverter:
         if isinstance(pattern, str):
             if pattern not in self._symbols:
                 self._symbols[pattern] = Symbol('kore_' + pattern)
+                if pattern in self._raw_functional_symbols:
+                    self._functional_symbols.add(self._symbols[pattern])
             return self._symbols[pattern]
         elif isinstance(pattern, kore.Sort):
             if pattern.name not in self._symbols:
