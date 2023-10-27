@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from enum import Enum
+from re import match
 from typing import TYPE_CHECKING, NamedTuple
 
 import pyk.kore.syntax as kore
@@ -36,6 +37,8 @@ Axioms = dict[AxiomType, list[ConvertedAxiom]]
 
 
 class KoreConverter:
+    GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
+
     def __init__(self, kore_definition: kore.Definition) -> None:
         self._definition = kore_definition
 
@@ -51,6 +54,7 @@ class KoreConverter:
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
         self._raw_functional_symbols: set[str] = self._collect_functional_symbols()
         self._functional_symbols: set[Symbol] = set()
+        self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
@@ -89,10 +93,12 @@ class KoreConverter:
         subst_axioms = []
         for pattern in hint.substitutions.values():
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            assert isinstance(pattern, kl.KoreApplies), f'Expected application of a Kore symbol, got {str(pattern)}'
+            assert isinstance(
+                pattern, kl.KoreApplies | kl.Cell
+            ), f'Expected application of a Kore symbol, got {str(pattern)}'
             if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
                 assert pattern.phi0.left in self._functional_symbols
-            elif isinstance(pattern.phi0, Symbol):
+            elif isinstance(pattern.phi0, Symbol | kl.Cell):
                 assert pattern.phi0 in self._functional_symbols
             else:
                 raise NotImplementedError(f'Pattern {pattern} is not supported')
@@ -189,15 +195,61 @@ class KoreConverter:
                     else:
                         return App(chain_patterns(patterns_left), next_one)
 
-                app_symbol: Pattern = self._resolve_symbol(symbol)
-                args_patterns: list[Pattern] = [self._convert_pattern(arg) for arg in args]
-                sorts_patterns: list[Pattern] = [self._resolve_symbol(sort) for sort in sorts]
+                if symbol in self._cell_symbols:
 
-                args_chain = chain_patterns([app_symbol] + args_patterns)
+                    def is_cell(kore_application: kore.Pattern) -> str | None:
+                        """Returns the cell name if the given application is a cell, None otherwise."""
+                        if isinstance(kore_application, kore.App):
+                            if comparison := match(r"Lbl'-LT-'(.+)'-GT-'", kore_application.symbol):
+                                return comparison.group(1)
+                        return None
 
-                application_sorts = sorts_patterns if sorts_patterns else [prop.Top()]
-                assert isinstance(args_chain, (App, Symbol))
-                return kl.KoreApplies(tuple(application_sorts), args_chain)
+                    def convert_cell(kore_application: kore.App) -> Pattern:
+                        """Converts a cell to a pattern."""
+                        cell_name = is_cell(kore_application)
+                        assert cell_name, f'Application {kore_application} is not a cell!'
+
+                        cell_symbol: Symbol = self._resolve_symbol(cell_name)
+                        self._cell_symbols.add(kore_application.symbol)
+                        if kore_application.symbol in self._raw_functional_symbols:
+                            self._functional_symbols.add(cell_symbol)
+
+                        if len(kore_application.args) == 0:
+                            print(f'Cell {cell_name} has nothing to store!')
+                            return cell_symbol
+                        else:
+                            chained_cell_patterns: list[Pattern] = []
+                            for kore_pattern in kore_application.args:
+                                if is_cell(kore_pattern):
+                                    assert isinstance(kore_pattern, kore.App)
+                                    converted_cell: Pattern = convert_cell(kore_pattern)
+                                    chained_cell_patterns.append(converted_cell)
+                                else:
+                                    converted_value = self._convert_pattern(kore_pattern)
+                                    chained_cell_patterns.append(converted_value)
+
+                            # TODO: This is hacky, we will have a trouble if all cells are EVars or Metavars
+                            cells_chained = chain_patterns(chained_cell_patterns)
+                            if any(x for x in chained_cell_patterns if isinstance(x, kl.Cell)):
+                                assert isinstance(cells_chained, App)
+                                return kl.KoreNestedCells(cell_symbol, cells_chained)
+                            else:
+                                return kl.Cell(cell_symbol, cells_chained)
+
+                    # Process cells
+                    # We need them to be converted to a sequence: App (App(kcell, 1)) (App(scell, 2))
+                    # Nested cells have a specific notation: Nested(tcell, App (App(kcell, 1)) (App(scell, 2)))
+                    return convert_cell(pattern)
+                else:
+                    app_symbol: Pattern = self._resolve_symbol(symbol)
+                    args_patterns: list[Pattern] = [self._convert_pattern(arg) for arg in args]
+                    sorts_patterns: list[Pattern] = [self._resolve_symbol(sort) for sort in sorts]
+
+                    args_chain = chain_patterns([app_symbol] + args_patterns)
+
+                    application_sorts = sorts_patterns if sorts_patterns else [prop.Top()]
+                    assert isinstance(args_chain, (App, Symbol))
+                    return kl.KoreApplies(tuple(application_sorts), args_chain)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return self._resolve_evar(pattern)
