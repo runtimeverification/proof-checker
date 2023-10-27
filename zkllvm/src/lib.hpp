@@ -1029,6 +1029,7 @@ struct Pattern {
         stack.push(Term::Pattern_(app(left, right)));
         break;
       }
+
       case Instruction::Exists: {
 #if DEBUG
          throw std::runtime_error("Expected var_id for the exists binder");
@@ -1040,6 +1041,7 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, exists(*id, subpattern)));
         break;
       }
+
       case Instruction::Mu: {
         auto id = iterator.next();
         if (id == buffer->end()) {
@@ -1061,6 +1063,7 @@ struct Pattern {
         stack->push(Term::newTerm(Term::Type::Pattern, mu_pat));
         break;
       }
+
       case Instruction::ESubst: {
         auto evar_id = iterator.next();
         if (evar_id == buffer->end()) {
@@ -1091,6 +1094,7 @@ struct Pattern {
         }
         break;
       }
+
       case Instruction::SSubst: {
         auto svar_id = iterator.next();
         if (svar_id == buffer->end()) {
@@ -1156,22 +1160,76 @@ struct Pattern {
         stack.push(Term::Proved_(premise1->right.clone()));
         break;
       }
-      case Instruction::Quantifier: {
-        assert(false && "Not implemented yet");
+
+      case Instruction::Quantifier:
+        stack->push(Term::newTerm(Term::Type::Proved, copy(quantifier)));
+        break;
+
+      case Instruction::Generalization: {
+        auto proved_pat = pop_stack_proved(stack);
+
+        if (proved_pat->inst == Instruction::Implication) {
+          auto evar_id = iterator.next();
+          if (evar_id == buffer->end()) {
+#if DEBUG
+            throw std::runtime_error("Insufficient parameters for Generalization instruction");
+#endif
+            exit(1);
+          }
+
+          if (!proved_pat->right->pattern_e_fresh(*evar_id)) {
+#if DEBUG
+            throw std::runtime_error("The binding variable has to be fresh in the conclusion.");
+#endif
+            exit(1);
+          }
+
+          stack->push(Term::newTerm(Term::Type::Proved, implies(exists(*evar_id, copy(proved_pat->left)),
+                                                                copy(proved_pat->right))));
+        } else {
+#if DEBUG
+          throw std::runtime_error("Expected an implication as a first parameter.");
+#endif
+          exit(1);
+        }
         break;
       }
 
-      case Instruction::Generalization: {
-        assert(false && "Not implemented yet");
-        break;
-      }
       case Instruction::Existence:
         stack.push(Term::Proved_(existence.clone()));
         break;
+
       case Instruction::Substitution: {
-        assert(false && "Not implemented yet");
+        auto svar_id = iterator.next();
+        if (svar_id == buffer->end()) {
+#if DEBUG
+          throw std::runtime_error("Insufficient parameters for Substitution instruction");
+#endif
+          exit(1);
+        }
+
+        auto plug = pop_stack_pattern(stack);
+        auto pattern = pop_stack_pattern(stack);
+        Instruction pattern_inst = pattern->inst;
+        if (!(pattern_inst == Instruction::MetaVar ||
+              pattern_inst == Instruction::ESubst  ||
+              pattern_inst == Instruction::SSubst)) {
+#if DEBUG
+          throw std::runtime_error("Cannot apply SSubst on concrete term!");
+#endif
+          exit(1);
+        }
+
+        auto ssubst_pat = ssubst(copy(pattern), *svar_id, plug);
+        if (!ssubst_pat->pattern_well_formed()) {
+          // The substitution is redundant, we don't apply it.
+          stack->push(Term::newTerm(Term::Type::Proved, pattern));
+        } else {
+          stack->push(Term::newTerm(Term::Type::Proved, ssubst_pat));
+        }
         break;
       }
+
       case Instruction::Instantiate: {
         auto n = iterator;
         iterator++;
