@@ -162,13 +162,16 @@ class ProofExp(ABC):
         self.execute_claims_phase()
         self.execute_proofs_phase()
 
+    def _apply_sim_on_curr_interpreter(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        return self.interpreter._apply_simulation(i, conc)
+
     def _get_conclusion(self, pf: ProvedExpression) -> tuple[ProvedExpression, Pattern]:
         orig_interpreter = self.interpreter
         sim = self.interpreter._gen_simulator()
         self.interpreter = sim
         conc = pf().conclusion
         self.interpreter = orig_interpreter
-        return partial(self.interpreter._apply_simulation, sim, conc), conc
+        return partial(self._apply_sim_on_curr_interpreter, sim, conc), conc
 
     @classmethod
     def serialize(cls, file_path: Path) -> None:

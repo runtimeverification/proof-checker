@@ -218,10 +218,12 @@ class StatefulInterpreter(BasicInterpreter):
         return StatefulInterpreter(self.phase, None, True)
 
     def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        # TODO consider phase changes
         assert isinstance(i, StatefulInterpreter)
         assert i.simulator
+        ret = super()._apply_simulation(i, conc)
         self.stack = self.stack + i.stack
         self.memory = self.memory + i.memory
         for claim in i.actual_claims:
             self.publish_proof(Proved(claim.pattern))
-        return super()._apply_simulation(i, conc)
+        return ret

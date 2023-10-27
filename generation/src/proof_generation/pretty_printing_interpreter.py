@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from io import StringIO
+from io import BytesIO, StringIO
 from typing import TYPE_CHECKING, TextIO
 
+from proof_generation.deserialize import deserialize_instructions
 from proof_generation.io_interpreter import IOInterpreter
 from proof_generation.pattern import App, ESubst, Exists, Implies, Mu, Notation, SSubst
 from proof_generation.proved import Proved
+from proof_generation.serializing_interpreter import SerializingInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -236,18 +238,24 @@ class PrettyPrintingInterpreter(IOInterpreter):
                 continue
             self.out.write(f'\t{i}: {self.pretty_print_pattern(item)}\n')
 
-    def _gen_simulator(self) -> PrettyPrintingInterpreter:
-        return PrettyPrintingInterpreter(self.phase, StringIO(), simulator=True)
+    def _gen_simulator(self) -> SerializingInterpreter:
+        return SerializingInterpreter(self.phase, BytesIO(), simulator=True)
 
+    # NOTE! Because of the way this system works it could be the case that this function applies
+    # the changes to a nested SerializingInterpreter rather than the original PrettyPrintingInterpreter.
+    # Fortunately this does not cause any issues, but it's something to keep in mind if changing
+    # any of this code (MirceaS)
     def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
-        assert isinstance(i, PrettyPrintingInterpreter)
+        assert isinstance(i, SerializingInterpreter)
         assert i.simulator
-        self.out.write(i.simulator_out.getvalue())
-        if self.claim_out is not None:
-            self.claim_out.write(i.simulator_claim_out.getvalue())
-        if self.proof_out is not None:
-            self.proof_out.write(i.simulator_proof_out.getvalue())
-        return super()._apply_simulation(i, conc)
+        deserialize_instructions(i.simulator_out.getvalue(), self)
+        if self.claim_out is not None and len(i.simulator_claim_out.getvalue()) > 0:
+            self.into_claim_phase()
+            deserialize_instructions(i.simulator_claim_out.getvalue(), self)
+        if self.proof_out is not None and len(i.simulator_proof_out.getvalue()) > 0:
+            self.into_proof_phase()
+            deserialize_instructions(i.simulator_proof_out.getvalue(), self)
+        return Proved(conc)
 
 
 class NotationlessPrettyPrinter(PrettyPrintingInterpreter):

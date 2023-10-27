@@ -181,14 +181,16 @@ class SerializingInterpreter(IOInterpreter):
         return SerializingInterpreter(self.phase, BytesIO(), simulator=True)
 
     def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        # TODO Consider phase changes
         assert isinstance(i, SerializingInterpreter)
         assert i.simulator
+        ret = super()._apply_simulation(i, conc)
         self.out.write(i.simulator_out.getvalue())
         if self.claim_out is not None:
             self.claim_out.write(i.simulator_claim_out.getvalue())
         if self.proof_out is not None:
             self.proof_out.write(i.simulator_proof_out.getvalue())
-        return super()._apply_simulation(i, conc)
+        return ret
 
 
 class MemoizingInterpreter(SerializingInterpreter):
@@ -224,5 +226,6 @@ class MemoizingInterpreter(SerializingInterpreter):
         return MemoizingInterpreter(self.phase, BytesIO(), None, self._patterns_for_memoization, None, None, True)
 
     def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
+        ret = super()._apply_simulation(i, conc)
         assert isinstance(i, MemoizingInterpreter)
-        return super()._apply_simulation(i, conc)
+        return ret

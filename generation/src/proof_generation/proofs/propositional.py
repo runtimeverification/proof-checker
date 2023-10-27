@@ -99,6 +99,7 @@ class Propositional(ProofExp):
         return [
             Implies(phi0, phi0),  # Reflexivity
             top,  # Top
+            Implies(phi0, top),  # Anything implies Top
             Implies(bot, phi0),  # Bot_elim
             Implies(neg(neg(phi0)), phi0),  # Double Negation elim
             Implies(phi0, neg(neg(phi0))),  # Double Negation intro
@@ -110,6 +111,7 @@ class Propositional(ProofExp):
         return [
             self.imp_refl,
             self.top_intro,
+            self.imp_top,
             self.bot_elim,
             self.dneg_elim,
             self.dneg_intro,
@@ -188,7 +190,7 @@ class Propositional(ProofExp):
         """
         return self.imp_provable(top, p_pf)
 
-    def imp_top(self, p: Pattern) -> Proved:
+    def imp_top(self, p: Pattern = phi0) -> Proved:
         """p -> T"""
         return self.imp_provable(p, self.top_intro)
 
