@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, MetaVar, Notation, Symbol, EVar
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import And, Negation, Or
 
@@ -155,6 +155,18 @@ class KoreLemmas(ProofExp):
 
     def proof_expressions(self) -> list[ProvedExpression]:
         return []
+
+
+@dataclass(frozen=True, eq=False)
+class KoreCell(Notation):
+    sym: Symbol
+    cell_contents: Pattern
+
+    def object_definition(cls) -> Pattern:
+        return App(self.symbol, cell_contents)
+
+    def __str__(self) -> str:
+        return f'<{self.sym.name}>{str(self.cell_contents)}</{self.sym.name}>'
 
 
 if __name__ == '__main__':

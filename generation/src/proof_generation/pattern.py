@@ -90,6 +90,9 @@ class Pattern:
     def ef(self, name: int) -> bool:
         raise NotImplementedError
 
+    def sf(self, name: int) -> bool:
+        raise NotImplementedError
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
@@ -126,6 +129,9 @@ class EVar(Pattern):
     def ef(self, name: int) -> bool:
         return name != self.name
 
+    def sf(self, name: int) -> bool:
+        return True
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
@@ -155,6 +161,9 @@ class SVar(Pattern):
 
     def ef(self, name: int) -> bool:
         return True
+
+    def sf(self, name: int) -> bool:
+        return name != self.name
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
@@ -186,6 +195,9 @@ class Symbol(Pattern):
     def ef(self, name: int) -> bool:
         return True
 
+    def sf(self, name: int) -> bool:
+        return True
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self
 
@@ -215,6 +227,9 @@ class Implies(Pattern):
     def ef(self, name: int) -> bool:
         return self.left.ef(name) and self.right.ef(name)
 
+    def sf(self, name: int) -> bool:
+        return self.left.sf(name) and self.right.sf(name)
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
 
@@ -240,6 +255,9 @@ class App(Pattern):
     def ef(self, name: int) -> bool:
         return self.left.ef(name) and self.right.ef(name)
 
+    def sf(self, name: int) -> bool:
+        return self.left.sf(name) and self.right.sf(name)
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return App(self.left.instantiate(delta), self.right.instantiate(delta))
 
@@ -250,7 +268,7 @@ class App(Pattern):
         return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def __str__(self) -> str:
-        return f'app({str(self.left)}, {str(self.right)})'
+        return f'({str(self.left)} · {str(self.right)})'
 
 
 @dataclass(frozen=True)
@@ -260,6 +278,9 @@ class Exists(Pattern):
 
     def ef(self, name: int) -> bool:
         return name == self.var or self.subpattern.ef(name)
+
+    def sf(self, name: int) -> bool:
+        return self.subpattern.sf(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Exists(self.var, self.subpattern.instantiate(delta))
@@ -291,6 +312,9 @@ class Mu(Pattern):
 
     def ef(self, name: int) -> bool:
         return self.subpattern.ef(name)
+
+    def sf(self, name: int) -> bool:
+        return name == self.var or self.subpattern.sf(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return Mu(self.var, self.subpattern.instantiate(delta))
@@ -325,7 +349,10 @@ class MetaVar(Pattern):
     app_ctx_holes: tuple[EVar, ...] = ()
 
     def ef(self, name: int) -> bool:
-        return name in self.e_fresh
+        return EVar(name) in self.e_fresh
+
+    def sf(self, name: int) -> bool:
+        return SVar(name) in self.s_fresh
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
         # TODO implement this function by checking constraints
@@ -340,12 +367,12 @@ class MetaVar(Pattern):
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        if EVar(evar_id) in self.e_fresh:
+        if self.ef(evar_id):
             return self
         return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        if SVar(svar_id) in self.s_fresh:
+        if self.sf(svar_id):
             return self
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
@@ -366,13 +393,21 @@ class ESubst(Pattern):
         # We assume that at least one instance will be replaced
         return self.pattern.ef(name) and self.plug.ef(name)
 
+    def sf(self, name: int) -> bool:
+        # We assume that at least one instance will be replaced
+        return self.pattern.sf(name) and self.plug.sf(name)
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
+        if self.ef(evar_id):
+            return self
         return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        if self.sf(svar_id):
+            return self
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def __str__(self) -> str:
@@ -389,13 +424,24 @@ class SSubst(Pattern):
         # We assume that at least one instance will be replaced
         return self.pattern.ef(name) and self.plug.ef(name)
 
+    def sf(self, name: int) -> bool:
+        if self.var == name:
+            return self.plug.ef(name)
+
+        # We assume that at least one instance will be replaced
+        return self.pattern.sf(name) and self.plug.sf(name)
+
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
         return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
+        if self.ef(evar_id):
+            return self
         return ESubst(pattern=self, var=EVar(evar_id), plug=plug)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        if self.sf(svar_id):
+            return self
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def __str__(self) -> str:
@@ -421,6 +467,9 @@ class Notation(Pattern, ABC):
     def ef(self, name: int) -> bool:
         return self.conclusion().ef(name)
 
+    def sf(self, name: int) -> bool:
+        return self.conclusion().sf(name)
+
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
@@ -435,13 +484,17 @@ class Notation(Pattern, ABC):
 
         return type(self)(*final_args)
 
-    # TODO: Keep notations (without dropping them)
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_esubst(evar_id, plug)
+        for argname, arg in vars(self).items():
+            if isinstance(arg, Pattern):
+                self.__setattr__(argname, arg.apply_esubst(evar_id, plug))
+        return self
 
-    # TODO: Keep notations (without dropping them)
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        return self.conclusion().apply_ssubst(svar_id, plug)
+        for argname, arg in vars(self).items():
+            if isinstance(arg, Pattern):
+                self.__setattr__(argname, arg.apply_ssubst(svar_id, plug))
+        return self
 
     @classmethod
     def unwrap(cls, pattern: Pattern) -> tuple[Pattern, ...] | None:
