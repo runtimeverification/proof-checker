@@ -202,16 +202,6 @@ class KoreConverter:
                                 return comparison.group(1)
                         return None
 
-                    def cell_name_from_evar(kore_evar: kore.EVar) -> str:
-                        # TODO; Any other solutions for this?
-                        sort = kore_evar.sort
-                        assert isinstance(sort, kore.SortApp)
-                        sort_name = sort.name
-                        name = sort_name.replace('Sort', '')
-                        name = name.replace('Cell', '')
-                        name = name.lower()
-                        return name
-
                     def convert_cell(kore_application: kore.App) -> Pattern:
                         """Converts a cell to a pattern."""
                         cell_name = is_cell(kore_application)
