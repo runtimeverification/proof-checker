@@ -22,6 +22,7 @@ class StatefulInterpreter(BasicInterpreter):
 
     simulator: bool
     actual_claims: list[Claim]
+    load_misses: list[Pattern | Proved]
 
     def __init__(self, phase: ExecutionPhase, claims: list[Claim] | None = None, simulator: bool = False) -> None:
         super().__init__(phase=phase)
@@ -30,6 +31,7 @@ class StatefulInterpreter(BasicInterpreter):
         self.claims = claims if claims else []
         self.simulator = simulator
         self.actual_claims = []
+        self.load_misses = []
 
     def into_claim_phase(self) -> None:
         self.stack = []
@@ -190,7 +192,8 @@ class StatefulInterpreter(BasicInterpreter):
         super().save(id, term)
 
     def load(self, id: str, term: Pattern | Proved) -> None:
-        assert term in self.memory
+        if term not in self.memory:
+            self.load_misses.append(term)
         self.stack.append(term)
         super().load(id, term)
 
@@ -223,7 +226,9 @@ class StatefulInterpreter(BasicInterpreter):
         assert i.simulator
         ret = super()._apply_simulation(i, conc)
         self.stack = self.stack + i.stack
-        self.memory = self.memory + i.memory
         for claim in i.actual_claims:
             self.publish_proof(Proved(claim.pattern))
+        for term in i.load_misses:
+            assert term in self.memory
+        self.memory = self.memory + i.memory
         return ret
