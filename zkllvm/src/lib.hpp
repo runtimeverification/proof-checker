@@ -512,13 +512,13 @@ struct Pattern {
   void print() noexcept {
     switch (inst) {
     case Instruction::EVar:
-      std::cout << "EVar(" << (int)id << ")";
+      std::cout << "EVar(" << (uint8_t)id << ")";
       break;
     case Instruction::SVar:
-      std::cout << "SVar(" << (int)id << ")";
+      std::cout << "SVar(" << (uint8_t)id << ")";
       break;
     case Instruction::Symbol:
-      std::cout << "Symbol(" << (int)id << ")";
+      std::cout << "Symbol(" << (uint8_t)id << ")";
       break;
     case Instruction::Implication:
       /* std::cout << "Implication(";
@@ -540,18 +540,18 @@ struct Pattern {
       std::cout << ")";
       break;
     case Instruction::Exists:
-      std::cout << "Exists(" << (int)id << ", ";
+      std::cout << "Exists(" << (uint8_t)id << ", ";
       subpattern->print();
       std::cout << ")";
       break;
     case Instruction::Mu:
-      std::cout << "Mu(" << (int)id << ", ";
+      std::cout << "Mu(" << (uint8_t)id << ", ";
       subpattern->print();
       std::cout << ")";
       break;
     case Instruction::MetaVar:
-      // std::cout << "phi" << (int)id;
-      std::cout << "MetaVar(" << (int)id;
+      // std::cout << "phi" << (uint8_t)id;
+      std::cout << "MetaVar(" << (uint8_t)id;
       if (e_fresh->head) {
         std::cout << ", ";
         e_fresh->print();
@@ -577,14 +577,14 @@ struct Pattern {
     case Instruction::ESubst:
       std::cout << "ESubst(";
       subpattern->print();
-      std::cout << ", " << (int)id << ", ";
+      std::cout << ", " << (uint8_t)id << ", ";
       plug->print();
       std::cout << ")";
       break;
     case Instruction::SSubst:
       std::cout << "SSubst(";
       subpattern->print();
-      std::cout << ", " << (int)id << ", ";
+      std::cout << ", " << (uint8_t)id << ", ";
       plug->print();
       std::cout << ")";
       break;
@@ -900,13 +900,13 @@ struct Pattern {
 
   enum class ExecutionPhase { Gamma, Claims, Proof };
 
-  static LinkedList<uint8_t> *
+  static IdList *
   read_u8_vec(std::array<int, MAX_SIZE>::iterator &iterator) noexcept {
     auto size = *iterator;
     iterator++;
-    auto vec = LinkedList<uint8_t>::create();
-    for (int i = 0; i < size; i++) {
-      vec->push_back(*iterator);
+    auto vec = IdList::create();
+    for (uint8_t i = 0; i < size; i++) {
+      vec->push_back(static_cast<uint8_t>(*iterator));
       iterator++;
     }
     return vec;
@@ -947,7 +947,7 @@ struct Pattern {
 
     // Iteration through the input buffer
     while (iterator != buffer.end()) {
-      Instruction instr_u32 = from(*iterator);
+      Instruction instr_u32 = from(static_cast<uint8_t>(*iterator));
       iterator++;
 
       switch (instr_u32) {
@@ -963,7 +963,7 @@ struct Pattern {
 #endif
           exit(1);
         }
-        stack.push(Term::Pattern_(evar(*id)));
+        stack.push(Term::Pattern_(evar(static_cast<Id>(*id))));
         break;
       }
       case Instruction::SVar: {
@@ -976,7 +976,7 @@ struct Pattern {
 #endif
           exit(1);
         }
-        stack.push(Term::Pattern_(svar(*id)));
+        stack.push(Term::Pattern_(svar(static_cast<Id>(*id))));
         break;
       }
       case Instruction::Symbol: {
@@ -989,7 +989,7 @@ struct Pattern {
 #endif
           exit(1);
         }
-        stack.push(Term::Pattern_(symbol(*id)));
+        stack.push(Term::Pattern_(symbol(static_cast<Id>(*id))));
         break;
       }
       case Instruction::MetaVar: {
@@ -1001,7 +1001,7 @@ struct Pattern {
 #endif
           exit(1);
         }
-        auto id = (Id)*getId;
+        auto id = static_cast<Id>(*getId);
 
         auto e_fresh = read_u8_vec(iterator);
         auto s_fresh = read_u8_vec(iterator);
@@ -1067,7 +1067,7 @@ struct Pattern {
 #if DEBUG
           throw std::runtime_error("Modus Ponens: expected implication on the "
                                    "stack, got: " +
-                                   std::to_string((int)premise1->inst));
+                                   std::to_string((uint8_t)premise1->inst));
 #endif
           exit(1);
         }
@@ -1076,8 +1076,8 @@ struct Pattern {
 #if DEBUG
           throw std::runtime_error(
               "Antecedents do not match for modus ponens.\n" +
-              std::to_string((int)premise1->left->inst) + "\n" +
-              std::to_string((int)premise2->inst));
+              std::to_string((uint8_t)premise1->left->inst) + "\n" +
+              std::to_string((uint8_t)premise2->inst));
 
 #endif
           exit(1);
@@ -1115,8 +1115,8 @@ struct Pattern {
         auto plugs = LinkedList<Rc<Pattern>>();
 
         Term metaterm = pop_stack(stack);
-        for (int i = 0; i < *n; i++) {
-          ids.push(*iterator);
+        for (uint8_t i = 0; i < static_cast<uint8_t>(*n); i++) {
+          ids.push(static_cast<Id>(*iterator));
           iterator++;
           plugs.push(pop_stack_pattern(stack));
         }
@@ -1160,7 +1160,7 @@ struct Pattern {
 #endif
           exit(1);
         }
-        Term term = memory.get(*index);
+        Term term = memory.get(static_cast<uint8_t>(*index));
         if (term.type == Term::Type::Pattern) {
           stack.push(Term::Pattern_(term.pattern.clone()));
         } else if (term.type == Term::Type::Proved) {
@@ -1194,8 +1194,8 @@ struct Pattern {
 #if DEBUG
             throw std::runtime_error(
                 "This proof does not prove the requested claim: " +
-                std::to_string((int)claim->inst) +
-                ", theorem: " + std::to_string((int)theorem->inst));
+                std::to_string((uint8_t)claim->inst) +
+                ", theorem: " + std::to_string((uint8_t)theorem->inst));
 #endif
             exit(1);
           }
@@ -1214,7 +1214,7 @@ struct Pattern {
 #endif
           exit(8);
         }
-        auto metavar_pat = Pattern::metavar_unconstrained(*id);
+        auto metavar_pat = Pattern::metavar_unconstrained(static_cast<Id>(*id));
 
         // Clean metavars are always well-formed
         stack.push(Term::Pattern_(metavar_pat));
@@ -1226,7 +1226,7 @@ struct Pattern {
       default: {
 #if DEBUG
         throw std::runtime_error("Unknown instruction: " +
-                                 std::to_string((int)instr_u32));
+                                 std::to_string((uint8_t)instr_u32));
 #endif
         exit(1);
       }
