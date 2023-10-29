@@ -1,34 +1,27 @@
 #include "../src/lib.hpp"
 
 int test_efresh(int a, int b) {
-  GarbageCollector *gc = newGarbageCollector();
 
-  const auto evar = Pattern::evar(a);
+  auto evar = Pattern::evar(a);
 
-  auto left = Pattern::exists(a, Pattern::copy(evar, *gc));
+  auto left = Pattern::exists(a, evar.clone());
   assert(left->pattern_e_fresh(a));
 
-  auto right = Pattern::exists(b, Pattern::copy(evar, *gc));
+  auto right = Pattern::exists(b, evar.clone());
   assert(!right->pattern_e_fresh(a));
 
-  auto implication =
-      Pattern::implies(Pattern::copy(left, *gc), Pattern::copy(right, *gc));
+  auto implication = Pattern::implies(left.clone(), right.clone());
   assert(!implication->pattern_e_fresh(a));
 
   auto mvar =
       Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
-  auto metaapp =
-      Pattern::app(Pattern::copy(left, *gc), Pattern::copy(mvar, *gc));
+  auto metaapp = Pattern::app(left.clone(), mvar.clone());
   assert(!metaapp->pattern_e_fresh(b));
 
-  auto esubst =
-      Pattern::esubst(Pattern::copy(right, *gc), a, Pattern::copy(left,
-      *gc));
+  auto esubst = Pattern::esubst(right.clone(), a, left.clone());
   assert(esubst->pattern_e_fresh(a));
 
-  auto ssubst =
-      Pattern::ssubst(Pattern::copy(right, *gc), a, Pattern::copy(left,
-      *gc));
+  auto ssubst = Pattern::ssubst(right.clone(), a, left.clone());
   assert(!ssubst->pattern_e_fresh(a));
 
 #if DEBUG
@@ -51,54 +44,35 @@ int test_efresh(int a, int b) {
 
 #endif
 
-  gc->deleteAllReferences();
-  gc->~GarbageCollector();
-  mvar->~Pattern();
-  implication->~Pattern();
-  left->~Pattern();
-  right->~Pattern();
-  evar->~Pattern();
-  metaapp->~Pattern();
-  esubst->~Pattern();
-  ssubst->~Pattern();
-
   return 0;
 }
 
 int test_sfresh(int a, int b) {
-  GarbageCollector *gc = newGarbageCollector();
 
-  const auto svar = Pattern::svar(a);
+  auto svar = Pattern::svar(a);
 
-  auto left = Pattern::mu(a, Pattern::copy(svar, *gc));
+  auto left = Pattern::mu(a, svar.clone());
   assert(left->pattern_s_fresh(a));
 
-  auto right = Pattern::mu(b, Pattern::copy(svar, *gc));
+  auto right = Pattern::mu(b, svar.clone());
   assert(!right->pattern_s_fresh(a));
 
-  auto implication =
-      Pattern::implies(Pattern::copy(left, *gc), Pattern::copy(right, *gc));
+  auto implication = Pattern::implies(left.clone(), right.clone());
   assert(!implication->pattern_s_fresh(a));
 
   auto mvar =
       Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
 
-  auto metaapp =
-      Pattern::app(Pattern::copy(left, *gc), Pattern::copy(mvar, *gc));
+  auto metaapp = Pattern::app(left.clone(), mvar.clone());
   assert(!metaapp->pattern_s_fresh(a));
 
-  auto metaapp2 =
-      Pattern::app(Pattern::copy(left, *gc), Pattern::copy(mvar, *gc));
+  auto metaapp2 = Pattern::app(left.clone(), mvar.clone());
   assert(metaapp2->pattern_s_fresh(b));
 
-  auto esubst =
-      Pattern::esubst(Pattern::copy(right, *gc), a, Pattern::copy(left,
-      *gc));
+  auto esubst = Pattern::esubst(right.clone(), a, left.clone());
   assert(!esubst->pattern_s_fresh(a));
 
-  auto ssubst =
-      Pattern::ssubst(Pattern::copy(right, *gc), a, Pattern::copy(left,
-      *gc));
+  auto ssubst = Pattern::ssubst(right.clone(), a, left.clone());
   assert(ssubst->pattern_s_fresh(a));
 
 #if DEBUG
@@ -122,30 +96,16 @@ int test_sfresh(int a, int b) {
   std::cout << std::endl;
 #endif
 
-  gc->deleteAllReferences();
-  gc->~GarbageCollector();
-
-  svar->~Pattern();
-  left->~Pattern();
-  right->~Pattern();
-  implication->~Pattern();
-  mvar->~Pattern();
-  metaapp->~Pattern();
-  metaapp2->~Pattern();
-  esubst->~Pattern();
-  ssubst->~Pattern();
-
   return 0;
 }
 
 int test_positivity() {
-  GarbageCollector *gc = newGarbageCollector();
 
   auto X0 = Pattern::svar(0);
   auto X1 = Pattern::svar(1);
   auto X2 = Pattern::svar(2);
   auto c1 = Pattern::symbol(1);
-  auto neg_X1 = Pattern::negate(Pattern::copy(X1, *gc));
+  auto neg_X1 = Pattern::negate(X1.clone());
 
   // EVar
   auto evar1 = Pattern::evar(1);
@@ -167,8 +127,8 @@ int test_positivity() {
   assert(c1->pattern_negative(2));
 
   // Application
-  auto appX1X2 = Pattern::app(Pattern::copy(X1, *gc), Pattern::copy(X2,
-  *gc)); assert(appX1X2->pattern_positive(1));
+  auto appX1X2 = Pattern::app(X1.clone(), X2.clone());
+  assert(appX1X2->pattern_positive(1));
   assert(appX1X2->pattern_positive(2));
   assert(appX1X2->pattern_positive(3));
   assert(!appX1X2->pattern_negative(1));
@@ -176,8 +136,7 @@ int test_positivity() {
   assert(appX1X2->pattern_negative(3));
 
   // Implication
-  auto impliesX1X2 =
-      Pattern::implies(Pattern::copy(X1, *gc), Pattern::copy(X2, *gc));
+  auto impliesX1X2 = Pattern::implies(X1.clone(), X2.clone());
   assert(!impliesX1X2->pattern_positive(1));
   assert(impliesX1X2->pattern_positive(2));
   assert(impliesX1X2->pattern_positive(3));
@@ -185,13 +144,12 @@ int test_positivity() {
   assert(!impliesX1X2->pattern_negative(2));
   assert(impliesX1X2->pattern_negative(3));
 
-  auto impliesX1X1 =
-      Pattern::implies(Pattern::copy(X1, *gc), Pattern::copy(X1, *gc));
+  auto impliesX1X1 = Pattern::implies(X1.clone(), X1.clone());
   assert(!impliesX1X1->pattern_positive(1));
   assert(!impliesX1X1->pattern_negative(1));
 
   // Exists
-  auto existsX1X2 = Pattern::exists(1, Pattern::copy(X2, *gc));
+  auto existsX1X2 = Pattern::exists(1, X2.clone());
   assert(existsX1X2->pattern_positive(1));
   assert(existsX1X2->pattern_positive(2));
   assert(existsX1X2->pattern_positive(3));
@@ -200,19 +158,19 @@ int test_positivity() {
   assert(existsX1X2->pattern_negative(3));
 
   // Mu
-  auto muX1x1 = Pattern::mu(1, Pattern::copy(evar1, *gc));
+  auto muX1x1 = Pattern::mu(1, evar1.clone());
   assert(muX1x1->pattern_positive(1));
   assert(muX1x1->pattern_positive(2));
   assert(muX1x1->pattern_negative(1));
   assert(muX1x1->pattern_negative(2));
 
-  auto muX1X1 = Pattern::mu(1, Pattern::copy(X1, *gc));
+  auto muX1X1 = Pattern::mu(1, X1.clone());
   assert(muX1X1->pattern_positive(1));
   assert(muX1X1->pattern_negative(1));
 
-  auto muX1X2 = Pattern::mu(1, Pattern::copy(X2, *gc));
-  auto muX1impliesX2X1 = Pattern::mu(
-      1, Pattern::implies(Pattern::copy(X2, *gc), Pattern::copy(X1, *gc)));
+  auto muX1X2 = Pattern::mu(1, X2.clone());
+  auto muX1impliesX2X1 =
+      Pattern::mu(1, Pattern::implies(X2.clone(), X1.clone()));
   assert(muX1X2->pattern_positive(1));
   assert(muX1X2->pattern_positive(2));
   assert(muX1X2->pattern_positive(3));
@@ -249,13 +207,13 @@ int test_positivity() {
   assert(!metavarSFresh11__->pattern_negative(2));
 
   // ESubst
-  auto esubstMetaVarUnconsX0 = Pattern::esubst(
-      Pattern::metavar_unconstrained(0), 0, Pattern::copy(X0, *gc));
+  auto esubstMetaVarUnconsX0 =
+      Pattern::esubst(Pattern::metavar_unconstrained(0), 0, X0.clone());
   auto esubstMetaVarSFreshX1 = Pattern::esubst(
       Pattern::metavar_s_fresh(0, 1, IdList::create(1), IdList::create()), 0,
-      Pattern::copy(X1, *gc));
-  auto esubstMetaVarUnconsX1 = Pattern::esubst(
-      Pattern::metavar_unconstrained(0), 0, Pattern::copy(X1, *gc));
+      X1.clone());
+  auto esubstMetaVarUnconsX1 =
+      Pattern::esubst(Pattern::metavar_unconstrained(0), 0, X1.clone());
 
   assert(!esubstMetaVarUnconsX0->pattern_positive(0));
   assert(!esubstMetaVarUnconsX1->pattern_positive(0));
@@ -265,13 +223,13 @@ int test_positivity() {
   assert(!esubstMetaVarUnconsX1->pattern_negative(0));
 
   // SSubst
-  auto ssubstMetaVarUnconsX0 = Pattern::ssubst(
-      Pattern::metavar_unconstrained(0), 0, Pattern::copy(X0, *gc));
-  auto ssubstMetaVarUnconsX1 = Pattern::ssubst(
-      Pattern::metavar_unconstrained(0), 0, Pattern::copy(X1, *gc));
+  auto ssubstMetaVarUnconsX0 =
+      Pattern::ssubst(Pattern::metavar_unconstrained(0), 0, X0.clone());
+  auto ssubstMetaVarUnconsX1 =
+      Pattern::ssubst(Pattern::metavar_unconstrained(0), 0, X1.clone());
   auto ssubstMetaVarSFreshX1 = Pattern::ssubst(
       Pattern::metavar_s_fresh(0, 1, IdList::create(1), IdList::create()), 0,
-      Pattern::copy(X1, *gc));
+      X1.clone());
 
   assert(!ssubstMetaVarUnconsX0->pattern_positive(0));
   assert(ssubstMetaVarUnconsX1->pattern_positive(0));
@@ -287,16 +245,13 @@ int test_positivity() {
   assert(neg_X1->pattern_negative(1));
   assert(neg_X1->pattern_negative(2));
 
-  auto negX1_implies_negX1 =
-      Pattern::implies(Pattern::copy(neg_X1, *gc), Pattern::copy(neg_X1,
-      *gc));
+  auto negX1_implies_negX1 = Pattern::implies(neg_X1.clone(), neg_X1.clone());
   assert(!negX1_implies_negX1->pattern_positive(1));
   assert(negX1_implies_negX1->pattern_positive(2));
   assert(!negX1_implies_negX1->pattern_negative(1));
   assert(negX1_implies_negX1->pattern_negative(2));
 
-  auto negX1_implies_X1 =
-      Pattern::implies(Pattern::copy(neg_X1, *gc), Pattern::copy(X1, *gc));
+  auto negX1_implies_X1 = Pattern::implies(neg_X1.clone(), X1.clone());
   assert(negX1_implies_X1->pattern_positive(1));
   assert(!negX1_implies_X1->pattern_negative(1));
 
@@ -358,77 +313,46 @@ int test_positivity() {
 
 #endif
 
-  gc->deleteAllReferences();
-  gc->~GarbageCollector();
-  X0->~Pattern();
-  X1->~Pattern();
-  X2->~Pattern();
-  c1->~Pattern();
-  neg_X1->~Pattern();
-  evar1->~Pattern();
-  appX1X2->~Pattern();
-  impliesX1X2->~Pattern();
-  impliesX1X1->~Pattern();
-  existsX1X2->~Pattern();
-  muX1x1->~Pattern();
-  muX1X1->~Pattern();
-  muX1X2->~Pattern();
-  muX1impliesX2X1->~Pattern();
-  metavarUncons1->~Pattern();
-  metavarSFresh11__->~Pattern();
-  metavarSFresh1111->~Pattern();
-  metavarSFresh111_->~Pattern();
-  metavarSFresh11_1->~Pattern();
-  esubstMetaVarUnconsX0->~Pattern();
-  esubstMetaVarUnconsX1->~Pattern();
-  esubstMetaVarSFreshX1->~Pattern();
-  ssubstMetaVarUnconsX0->~Pattern();
-  ssubstMetaVarUnconsX1->~Pattern();
-  ssubstMetaVarSFreshX1->~Pattern();
-  negX1_implies_negX1->~Pattern();
-  negX1_implies_X1->~Pattern();
-
   return 0;
 }
 
 int test_wellformedness_positive() {
-  GarbageCollector *gc = newGarbageCollector();
 
   auto svar = Pattern::svar(1);
-  auto mux_x = Pattern::mu(1, Pattern::copy(svar, *gc));
+  auto mux_x = Pattern::mu(1, svar.clone());
   assert(mux_x->pattern_well_formed());
 
-  auto mux_x2 = Pattern::mu(2, Pattern::negate(Pattern::copy(svar, *gc)));
+  auto mux_x2 = Pattern::mu(2, Pattern::negate(svar.clone()));
   assert(mux_x2->pattern_well_formed());
 
   auto mux_x3 = Pattern::mu(2, Pattern::negate(Pattern::symbol(1)));
   assert(mux_x3->pattern_well_formed());
 
-  auto mux_x4 = Pattern::mu(1, Pattern::negate(Pattern::copy(svar, *gc)));
+  auto mux_x4 = Pattern::mu(1, Pattern::negate(svar.clone()));
   assert(!mux_x4->pattern_well_formed());
 
   auto phi =
       Pattern::metavar_s_fresh(97, 2, IdList::create(), IdList::create());
-  auto mux_phi = Pattern::mu(1, Pattern::copy(phi, *gc));
+  auto mux_phi = Pattern::mu(1, phi.clone());
   assert(!mux_phi->pattern_well_formed());
 
   // Even though freshness implies positivity, we do not want to do any
   // additional reasoning and let everything on the prover
   auto phi2 =
       Pattern::metavar_s_fresh(98, 1, IdList::create(), IdList::create());
-  auto mux_phi2 = Pattern::mu(1, Pattern::copy(phi2, *gc));
+  auto mux_phi2 = Pattern::mu(1, phi2.clone());
   assert(!mux_phi2->pattern_well_formed());
 
   // It's ok if 2 is negative, the only thing we care about is that 2 is
   // guaranteed to be positive (we can instantiate without this variable)
   auto phi3 =
       Pattern::metavar_s_fresh(99, 1, IdList::create(2), IdList::create(2));
-  auto mux_phi3 = Pattern::mu(2, Pattern::copy(phi3, *gc));
+  auto mux_phi3 = Pattern::mu(2, phi3.clone());
   assert(mux_phi3->pattern_well_formed());
 
   auto phi4 =
       Pattern::metavar_s_fresh(100, 1, IdList::create(2), IdList::create());
-  auto mux_phi4 = Pattern::mu(2, Pattern::copy(phi4, *gc));
+  auto mux_phi4 = Pattern::mu(2, phi4.clone());
   assert(mux_phi4->pattern_well_formed());
 
 #if DEBUG
@@ -460,130 +384,95 @@ int test_wellformedness_positive() {
   std::cout << std::endl;
 #endif
 
-  gc->deleteAllReferences();
-  gc->~GarbageCollector();
-
-  svar->~Pattern();
-  mux_x->~Pattern();
-  mux_x2->~Pattern();
-  mux_x3->~Pattern();
-  mux_x4->~Pattern();
-  phi->~Pattern();
-  mux_phi->~Pattern();
-  phi2->~Pattern();
-  mux_phi2->~Pattern();
-  phi3->~Pattern();
-  mux_phi3->~Pattern();
-  phi4->~Pattern();
-  mux_phi4->~Pattern();
-
   return 0;
 }
 
 int test_instantiate() {
-  GarbageCollector *gc = newGarbageCollector();
-  typedef LinkedList<Pattern *> Patterns;
+  typedef LinkedList<Rc<Pattern>> Patterns;
   auto x0 = Pattern::evar(0);
   auto X0 = Pattern::svar(0);
   auto c0 = Pattern::symbol(0);
-  auto x0_implies_x0 =
-      Pattern::implies(Pattern::copy(x0, *gc), Pattern::copy(x0, *gc));
-  auto appx0x0 = Pattern::app(Pattern::copy(x0, *gc), Pattern::copy(x0, *gc));
-  auto existsx0x0 = Pattern::exists(0, Pattern::copy(x0, *gc));
-  auto muX0x0 = Pattern::mu(0, Pattern::copy(x0, *gc));
+  auto x0_implies_x0 = Pattern::implies(x0.clone(), x0.clone());
+  auto appx0x0 = Pattern::app(x0.clone(), x0.clone());
+  auto existsx0x0 = Pattern::exists(0, x0.clone());
+  auto muX0x0 = Pattern::mu(0, x0.clone());
 
-  // // Concrete patterns are unaffected by instantiate
-
-  IdList *vars0 = IdList::create(0);
-  IdList *vars1 = IdList::create(1);
-  Patterns *plugsX0 = Patterns::create(Pattern::copy(X0, *gc));
-  Patterns *plugsx0 = Patterns::create(Pattern::copy(x0, *gc));
-  assert(*Pattern::instantiate_internal(*x0, *vars0, *plugsX0, *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*x0, *vars1, *plugsX0, *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*X0, *vars0, *plugsx0, *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*X0, *vars1, *plugsx0, *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*c0, *vars0, *plugsx0, *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*c0, *vars1, *plugsx0, *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*x0_implies_x0, *vars0, *plugsx0,
-                                        *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*x0_implies_x0, *vars1, *plugsx0,
-                                        *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*appx0x0, *vars0, *plugsx0, *gc) ==
-         nullptr);
-  assert(*Pattern::instantiate_internal(*appx0x0, *vars1, *plugsx0, *gc) ==
-         nullptr);
-  assert(*Pattern::instantiate_internal(*existsx0x0, *vars0, *plugsX0, *gc) ==
-         nullptr);
-  assert(*Pattern::instantiate_internal(*existsx0x0, *vars1, *plugsX0, *gc) ==
-         nullptr);
-  assert(*Pattern::instantiate_internal(*muX0x0, *vars0, *plugsx0, *gc) ==
-         nullptr);
-  assert(*Pattern::instantiate_internal(*muX0x0, *vars1, *plugsx0, *gc) ==
-         nullptr);
+  // Concrete patterns are unaffected by instantiate
+  IdList vars0 = IdList();
+  vars0.push_back(0);
+  IdList vars1 = IdList();
+  vars1.push_back(1);
+  Patterns plugsX0 = Patterns();
+  plugsX0.push_back(X0.clone());
+  Patterns plugsx0 = Patterns();
+  plugsx0.push_back(x0.clone());
+  assert(!Pattern::instantiate_internal(x0, vars0, plugsX0));
+  assert(!Pattern::instantiate_internal(x0, vars1, plugsX0));
+  assert(!Pattern::instantiate_internal(X0, vars0, plugsx0));
+  assert(!Pattern::instantiate_internal(X0, vars1, plugsx0));
+  assert(!Pattern::instantiate_internal(c0, vars0, plugsx0));
+  assert(!Pattern::instantiate_internal(c0, vars1, plugsx0));
+  assert(!Pattern::instantiate_internal(x0_implies_x0, vars0, plugsx0));
+  assert(!Pattern::instantiate_internal(x0_implies_x0, vars1, plugsx0));
+  assert(!Pattern::instantiate_internal(appx0x0, vars0, plugsx0));
+  assert(!Pattern::instantiate_internal(appx0x0, vars1, plugsx0));
+  assert(!Pattern::instantiate_internal(existsx0x0, vars0, plugsX0));
+  assert(!Pattern::instantiate_internal(existsx0x0, vars1, plugsX0));
+  assert(!Pattern::instantiate_internal(muX0x0, vars0, plugsx0));
+  assert(!Pattern::instantiate_internal(muX0x0, vars1, plugsx0));
 
   auto phi0 = Pattern::metavar_unconstrained(0);
-  auto phi0_implies_phi0 =
-      Pattern::implies(Pattern::copy(phi0, *gc), Pattern::copy(phi0, *gc));
-  auto appphi0phi0 =
-      Pattern::app(Pattern::copy(phi0, *gc), Pattern::copy(phi0, *gc));
-  auto existsx0phi0 = Pattern::exists(0, Pattern::copy(phi0, *gc));
-  auto muX0phi0 = Pattern::mu(0, Pattern::copy(phi0, *gc));
-  auto existsx0X0 = Pattern::exists(0, Pattern::copy(X0, *gc));
+  auto phi0_implies_phi0 = Pattern::implies(phi0.clone(), phi0.clone());
+  auto appphi0phi0 = Pattern::app(phi0.clone(), phi0.clone());
+  auto existsx0phi0 = Pattern::exists(0, phi0.clone());
+  auto muX0phi0 = Pattern::mu(0, phi0.clone());
+  auto existsx0X0 = Pattern::exists(0, X0.clone());
 
   auto internal0 =
-      Pattern::instantiate_internal(*phi0_implies_phi0, *vars0, *plugsx0, *gc);
+      Pattern::instantiate_internal(phi0_implies_phi0, vars0, plugsx0);
   auto internal1 =
-      Pattern::instantiate_internal(*phi0_implies_phi0, *vars1, *plugsx0, *gc);
-  auto internal2 =
-      Pattern::instantiate_internal(*appphi0phi0, *vars0, *plugsx0, *gc);
-  auto internal3 =
-      Pattern::instantiate_internal(*appphi0phi0, *vars1, *plugsx0, *gc);
-  auto internal4 =
-      Pattern::instantiate_internal(*existsx0phi0, *vars0, *plugsx0, *gc);
-  auto internal5 =
-      Pattern::instantiate_internal(*existsx0phi0, *vars1, *plugsx0, *gc);
-  auto internal6 =
-      Pattern::instantiate_internal(*muX0phi0, *vars0, *plugsx0, *gc);
-  auto internal7 =
-      Pattern::instantiate_internal(*muX0phi0, *vars1, *plugsx0, *gc);
+      Pattern::instantiate_internal(phi0_implies_phi0, vars1, plugsx0);
+  auto internal2 = Pattern::instantiate_internal(appphi0phi0, vars0, plugsx0);
+  auto internal3 = Pattern::instantiate_internal(appphi0phi0, vars1, plugsx0);
+  auto internal4 = Pattern::instantiate_internal(existsx0phi0, vars0, plugsx0);
+  auto internal5 = Pattern::instantiate_internal(existsx0phi0, vars1, plugsx0);
+  auto internal6 = Pattern::instantiate_internal(muX0phi0, vars0, plugsx0);
+  auto internal7 = Pattern::instantiate_internal(muX0phi0, vars1, plugsx0);
 
-  assert(internal0.unwrap()->operator==(*x0_implies_x0));
-  assert(*internal1 == nullptr);
-  assert(internal2.unwrap()->operator==(*appx0x0));
-  assert(*internal3 == nullptr);
-  assert(internal4.unwrap()->operator==(*existsx0x0));
-  assert(*internal5 == nullptr);
-  assert(internal6.unwrap()->operator==(*muX0x0));
-  assert(*internal7 == nullptr);
+  assert(internal0.unwrap().operator==(x0_implies_x0));
+  assert(!internal1);
+  assert(internal2.unwrap().operator==(appx0x0));
+  assert(!internal3);
+  assert(internal4.unwrap().operator==(existsx0x0));
+  assert(!internal5);
+  assert(internal6.unwrap().operator==(muX0x0));
+  assert(!internal7);
 
   // Simultaneous instantiations
-  auto vars12 = IdList::create();
-  vars12->push_back(1);
-  vars12->push_back(2);
-  auto plugsx0X0 = Patterns::create();
-  plugsx0X0->push_back(Pattern::copy(x0, *gc));
-  plugsx0X0->push_back(Pattern::copy(X0, *gc));
+  auto vars12 = IdList();
+  vars12.push_back(1);
+  vars12.push_back(2);
+  auto plugsx0X0 = Patterns();
+  plugsx0X0.push_back(x0.clone());
+  plugsx0X0.push_back(X0.clone());
   auto phi1 = Pattern::metavar_unconstrained(1);
-  auto muX0phi1 = Pattern::mu(0, Pattern::copy(phi1, *gc));
-  auto muX0X0 = Pattern::mu(0, Pattern::copy(X0, *gc));
+  auto muX0phi1 = Pattern::mu(0, phi1.clone());
+  auto muX0X0 = Pattern::mu(0, X0.clone());
 
   // Empty substs have no effect
-  assert(*Pattern::instantiate_internal(*existsx0phi0, *vars12, *plugsx0X0,
-                                        *gc) == nullptr);
-  assert(*Pattern::instantiate_internal(*muX0phi0, *vars12, *plugsx0X0, *gc) ==
-         nullptr);
+  assert(!Pattern::instantiate_internal(existsx0phi0, vars12, plugsx0X0));
+  assert(!Pattern::instantiate_internal(muX0phi0, vars12, plugsx0X0));
 
   // Order matters if corresponding value is not moved
-  auto vars10 = IdList::create();
-  vars10->push_back(1);
-  vars10->push_back(0);
+  auto vars10 = IdList();
+  vars10.push_back(1);
+  vars10.push_back(0);
   auto internal8 =
-      Pattern::instantiate_internal(*existsx0phi0, *vars10, *plugsx0X0, *gc);
-  auto internal9 =
-      Pattern::instantiate_internal(*muX0phi0, *vars10, *plugsx0X0, *gc);
+      Pattern::instantiate_internal(existsx0phi0, vars10, plugsx0X0);
+  auto internal9 = Pattern::instantiate_internal(muX0phi0, vars10, plugsx0X0);
 
-  assert(internal8.unwrap()->operator==(*existsx0X0));
-  assert(internal9.unwrap()->operator==(*muX0X0));
+  assert(internal8.unwrap().operator==(existsx0X0));
+  assert(internal9.unwrap().operator==(muX0X0));
 
 #if DEBUG
   x0->print();
@@ -625,256 +514,150 @@ int test_instantiate() {
 
 #endif
 
-  gc->deleteAllReferences();
-  gc->~GarbageCollector();
+  return 0;
+}
+void execute_vector(std::array<int, MAX_SIZE> &instrs, Pattern::Stack &stack,
+                    Pattern::Memory &memory, Pattern::Claims &claims,
+                    Pattern::ExecutionPhase phase) {
 
-  x0->~Pattern();
-  X0->~Pattern();
-  c0->~Pattern();
-  x0_implies_x0->~Pattern();
-  appx0x0->~Pattern();
-  existsx0x0->~Pattern();
-  muX0x0->~Pattern();
-  vars0->~LinkedList();
-  free(vars0);
-  vars1->~LinkedList();
-  free(vars1);
-  Pattern::destroyPatterns(plugsX0);
-  Pattern::destroyPatterns(plugsx0);
-  phi0->~Pattern();
-  phi0_implies_phi0->~Pattern();
-  appphi0phi0->~Pattern();
-  existsx0phi0->~Pattern();
-  muX0phi0->~Pattern();
-  existsx0X0->~Pattern();
-  internal0.unwrap()->~Pattern();
-  internal2.unwrap()->~Pattern();
-  internal4.unwrap()->~Pattern();
-  internal6.unwrap()->~Pattern();
-  vars12->~LinkedList();
-  free(vars12);
-  Pattern::destroyPatterns(plugsx0X0);
-  phi1->~Pattern();
-  muX0phi1->~Pattern();
-  muX0X0->~Pattern();
-  vars10->~LinkedList();
-  free(vars10);
-  internal8.unwrap()->~Pattern();
-  internal9.unwrap()->~Pattern();
+  Pattern::execute_instructions(instrs, stack, memory, claims, phase);
+}
+
+void test_construct_phi_implies_phi() {
+
+  // MetaVar(0,0,0,0,0,0)
+  // Save
+  // Load 0
+  // Implication
+  // NO_OP
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 12; // Size
+  proof[1] = (int)Instruction::MetaVar;
+  proof[2] = 0;
+  proof[3] = 0;
+  proof[4] = 0;
+  proof[5] = 0;
+  proof[6] = 0;
+  proof[7] = 0;
+  proof[8] = (int)Instruction::Save;
+  proof[9] = (int)Instruction::Load;
+  proof[10] = 0;
+  proof[11] = (int)Instruction::Implication;
+  proof[12] = (int)138; // NO_OP
+
+  auto stack = Pattern::Stack();
+  auto memory = Pattern::Memory();
+  auto claims = Pattern::Claims();
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  auto phi0 = Pattern::metavar_unconstrained(0);
+  auto expected_stack = Pattern::Stack();
+  expected_stack.push_back(
+      Pattern::Term::Pattern_(Pattern::implies(phi0.clone(), phi0.clone())));
+  assert(stack == expected_stack);
+}
+
+int test_phi_implies_phi_impl() {
+
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 36; // Size
+  proof[1] = (int)Instruction::MetaVar;
+  proof[2] = 0;
+  proof[3] = 0;
+  proof[4] = 0;
+  proof[5] = 0;
+  proof[6] = 0;
+  proof[7] = 0;
+  // Stack: $ph0
+  proof[8] = (int)Instruction::Save;
+  // @0
+  proof[9] = (int)Instruction::Load;
+  proof[10] = 0;
+  // Stack: $ph0; ph0
+  proof[11] = (int)Instruction::Load;
+  proof[12] = 0;
+  // Stack: $ph0; $ph0; ph0
+  proof[13] = (int)Instruction::Implication;
+  // Stack: $ph0; ph0 -> ph0
+  proof[14] = (int)Instruction::Save;
+  // @1
+  proof[15] = (int)Instruction::Prop2;
+  // Stack: $ph0; $ph0 -> ph0;
+  //        [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
+  proof[16] = (int)Instruction::Instantiate;
+  proof[17] = 1;
+  proof[18] = 1;
+  // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2))
+  //                -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
+  proof[19] = (int)Instruction::Instantiate;
+  proof[20] = 1;
+  proof[21] = 2;
+  // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0))
+  //          -> (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+  proof[22] = (int)Instruction::Load;
+  proof[23] = 1;
+  // Stack: p1 ; $ph0 -> ph0
+  proof[24] = (int)Instruction::Prop1;
+  // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)]
+  proof[25] = (int)Instruction::Instantiate;
+  proof[26] = 1;
+  proof[27] = 1;
+  // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
+  proof[28] = (int)Instruction::ModusPonens;
+  // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
+  proof[29] = (int)Instruction::Load;
+  proof[30] = 0;
+  // Stack: p3 ; ph0;
+  proof[31] = (int)Instruction::Prop1;
+  // Stack: p3 ; ph0; prop1
+  proof[32] = (int)Instruction::Instantiate;
+  proof[33] = 1;
+  proof[34] = 1;
+  // Stack: p3 ; ph0 -> (ph0 ->ph0)
+  proof[35] = (int)Instruction::ModusPonens;
+  // Stack: ph0 -> ph0
+  proof[36] = (int)138; // NO_OP
+
+  auto stack = Pattern::Stack();
+  auto memory = Pattern::Memory();
+  auto claims = Pattern::Claims();
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+#if DEBUG
+  std::cout << "Stack size: " << stack.size() << std::endl;
+  for (auto it : stack) {
+    it.pattern->print();
+    std::cout << std::endl;
+  }
+#endif
+
+  auto phi0 = Pattern::metavar_unconstrained(0);
+  auto expected_stack = Pattern::Stack();
+  expected_stack.push_back(
+      Pattern::Term::Proved_(Pattern::implies(phi0.clone(), phi0.clone())));
+
+  assert(stack == expected_stack);
 
   return 0;
 }
 
-// void execute_vector(std::array<int, MAX_SIZE> *instrs, Pattern::Stack *stack,
-//                     Pattern::Memory *memory, Pattern::Claims *claims,
-//                     Pattern::ExecutionPhase phase) {
+int test_no_remaining_claims() {
 
-//   Pattern::execute_instructions(instrs, stack, memory, claims, phase);
-// }
+  auto gamma = std::array<int, MAX_SIZE>();
+  gamma[0] = 1;        // Size
+  gamma[1] = (int)138; // NO_OP
+  auto claims = std::array<int, MAX_SIZE>();
+  claims[0] = 4; // Size
+  claims[1] = (int)Instruction::Symbol;
+  claims[2] = 0;
+  claims[3] = (int)Instruction::Publish;
+  claims[4] = (int)138;
+  auto proof = std::array<int, MAX_SIZE>();
+  proof[0] = 1;        // Size
+  proof[1] = (int)138; // NO_OP
 
-// void test_construct_phi_implies_phi() {
+  Pattern::verify(gamma, claims, proof);
 
-//   // MetaVar(0,0,0,0,0,0)
-//   // Save
-//   // Load 0
-//   // Implication
-//   // NO_OP
-//   std::array<int, MAX_SIZE> proof;
-//   proof[0] = 12; // Size
-//   proof[1] = (int)Instruction::MetaVar;
-//   proof[2] = 0;
-//   proof[3] = 0;
-//   proof[4] = 0;
-//   proof[5] = 0;
-//   proof[6] = 0;
-//   proof[7] = 0;
-//   proof[8] = (int)Instruction::Save;
-//   proof[9] = (int)Instruction::Load;
-//   proof[10] = 0;
-//   proof[11] = (int)Instruction::Implication;
-//   proof[12] = (int)138; // NO_OP
-
-//   Pattern::Stack *stack = Pattern::Stack::create();
-//   auto memory = Pattern::Memory::create();
-//   auto claims = Pattern::Claims::create();
-
-//   execute_vector(&proof, stack, memory, claims,
-//   Pattern::ExecutionPhase::Proof);
-
-//   GarbageCollector *gc = newGarbageCollector();
-//   auto phi0 = Pattern::metavar_unconstrained(0);
-//   auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
-//       Pattern::Term::Type::Pattern,
-//       Pattern::implies(Pattern::copy(phi0, *gc), Pattern::copy(phi0, *gc))));
-//   assert(*stack == *expected_stack);
-
-//   for (auto it : *stack) {
-//     it->~Term();
-//   }
-
-//   for (auto it : *memory) {
-//     it->~Entry();
-//   }
-
-//   for (auto it : *claims) {
-//     it->~Pattern();
-//   }
-
-//   for (auto it : *expected_stack) {
-//     it->~Term();
-//   }
-
-//   gc->deleteAllReferences();
-//   gc->~GarbageCollector();
-
-//   expected_stack->~LinkedList();
-//   free(expected_stack);
-
-//   stack->~LinkedList();
-//   free(stack);
-//   memory->~LinkedList();
-//   free(memory);
-//   claims->~LinkedList();
-//   free(claims);
-
-//   phi0->~Pattern();
-// }
-
-// int test_phi_implies_phi_impl() {
-
-//   // auto proof = std::array<int, MAX_SIZE>{
-//   //     (int)Instruction::MetaVar, 0, 0, 0, 0, 0, 0, // Stack: $ph0
-//   //     (int)Instruction::Save,                      // @0
-//   //     (int)Instruction::Load, 0,                   // Stack: $ph0; ph0
-//   //     (int)Instruction::Load, 0,                   // Stack: $ph0; $ph0;
-//   ph0
-//   //     (int)Instruction::Implication,               // Stack: $ph0; ph0 ->
-//   ph0
-//   //     (int)Instruction::Save,                      // @1
-//   //     (int)Instruction::Prop2,
-//   //     // Stack: $ph0; $ph0 -> ph0;
-//   //     // [prop2: (ph0 -> (ph1 -> ph2)) -> ((ph0 -> ph1) -> (ph0 -> ph2))]
-//   //     (int)Instruction::Instantiate, 1, 1,
-//   //     // Stack: $ph0; [p1: (ph0 -> ((ph0 -> ph0) -> ph2)) ->
-//   //     //                     (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph2)]
-//   //     (int)Instruction::Instantiate, 1, 2,
-//   //     // Stack: [p1: (ph0 -> ((ph0 -> ph0) -> ph0)) ->
-//   //     //               (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-//   //     (int)Instruction::Load, 1, // Stack: p1 ; $ph0 -> ph0
-//   //     (int)Instruction::Prop1,
-//   //     // Stack: p1 ; $ph0 -> ph0; [prop1: ph0 -> (ph1 -> ph0)]
-//   //     (int)Instruction::Instantiate, 1, 1,
-//   //     // Stack: p1 ; [p2: (ph0 -> (ph0 -> ph0) -> ph0) ]
-//   //     (int)Instruction::ModusPonens,
-//   //     // Stack: [p3: (ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0)]
-//   //     (int)Instruction::Load, 0,           // Stack: p3 ; ph0;
-//   //     (int)Instruction::Prop1,             // Stack: p3 ; ph0; prop1
-//   //     (int)Instruction::Instantiate, 1, 1, // Stack: p3 ; ph0 -> (ph0 ->
-//   ph0)
-//   //     (int)Instruction::ModusPonens        // Stack: ph0 -> ph0
-//   // };
-
-//   std::array<int, MAX_SIZE> proof;
-//   proof[0] = 36; // Size
-//   proof[1] = (int)Instruction::MetaVar;
-//   proof[2] = 0;
-//   proof[3] = 0;
-//   proof[4] = 0;
-//   proof[5] = 0;
-//   proof[6] = 0;
-//   proof[7] = 0;
-//   proof[8] = (int)Instruction::Save;
-//   proof[9] = (int)Instruction::Load;
-//   proof[10] = 0;
-//   proof[11] = (int)Instruction::Load;
-//   proof[12] = 0;
-//   proof[13] = (int)Instruction::Implication;
-//   proof[14] = (int)Instruction::Save;
-//   proof[15] = (int)Instruction::Prop2;
-//   proof[16] = (int)Instruction::Instantiate;
-//   proof[17] = 1;
-//   proof[18] = 1;
-//   // proof[19] = (int)Instruction::Instantiate;
-//   // proof[20] = 1;
-//   // proof[21] = 2;
-//   // proof[22] = (int)Instruction::Load;
-//   // proof[23] = 1;
-//   // proof[24] = (int)Instruction::Prop1;
-//   // proof[25] = (int)Instruction::Instantiate;
-//   // proof[26] = 1;
-//   // proof[27] = 1;
-//   // proof[28] = (int)Instruction::ModusPonens;
-//   // proof[29] = (int)Instruction::Load;
-//   // proof[30] = 0;
-//   // proof[31] = (int)Instruction::Prop1;
-//   // proof[32] = (int)Instruction::Instantiate;
-//   // proof[33] = 1;
-//   // proof[34] = 1;
-//   // proof[35] = (int)Instruction::ModusPonens;
-//   proof[19] = (int)138; // NO_OP
-
-//   Pattern::Stack *stack = Pattern::Stack::create();
-//   auto memory = Pattern::Memory::create();
-//   auto claims = Pattern::Claims::create();
-
-//   execute_vector(&proof, stack, memory, claims,
-//   Pattern::ExecutionPhase::Proof);
-// #if DEBUG
-//   std::cout << "Stack size: " << stack->size() << std::endl;
-//   for (auto it : *stack) {
-//     it->pattern->print();
-//     std::cout << std::endl;
-//   }
-// #endif
-
-//   auto phi0 = Pattern::metavar_unconstrained(0);
-//   GarbageCollector *gc = newGarbageCollector();
-//   auto expected_stack = Pattern::Stack::create(Pattern::Term::newTerm(
-//       Pattern::Term::Type::Proved,
-//       Pattern::implies(Pattern::copy(phi0, *gc), Pattern::copy(phi0, *gc))));
-
-//   // assert(*stack == *expected_stack);
-
-//   for (auto it : *stack) {
-//     it->~Term();
-//   }
-
-//   for (auto it : *memory) {
-//     it->~Entry();
-//   }
-
-//   for (auto it : *claims) {
-//     it->~Pattern();
-//   }
-
-//   for (auto it : *expected_stack) {
-//     it->~Term();
-//   }
-
-//   gc->deleteAllReferences();
-//   gc->~GarbageCollector();
-
-//   expected_stack->~LinkedList();
-//   free(expected_stack);
-//   stack->~LinkedList();
-//   free(stack);
-//   memory->~LinkedList();
-//   free(memory);
-//   claims->~LinkedList();
-//   free(claims);
-
-//   phi0->~Pattern();
-
-//   return 0;
-// }
-// int test_no_remaining_claims() {
-
-//   auto gamma = std::array<int, MAX_SIZE>{}; // Empty
-//   auto claims = std::array<int, MAX_SIZE>{(int)Instruction::Symbol, 0,
-//                                           (int)Instruction::Publish};
-//   auto proof = std::array<int, MAX_SIZE>{}; // Empty
-
-//   Pattern::verify(&gamma, &claims, &proof);
-
-//   return 0;
-// }
+  return 0;
+}

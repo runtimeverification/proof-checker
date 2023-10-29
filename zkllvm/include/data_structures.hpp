@@ -2,6 +2,17 @@
 #include <cstdlib>
 #include <iostream>
 
+void *my_memset(void *ptr, uint8_t value, size_t num) {
+  unsigned char *byte_ptr = (unsigned char *)ptr;
+  unsigned char byte_value = (unsigned char)value;
+
+  for (size_t i = 0; i < num; i++) {
+    byte_ptr[i] = byte_value;
+  }
+
+  return ptr;
+}
+
 template <typename T> struct Node {
   T data;
   Node *next;
@@ -14,6 +25,7 @@ template <typename T> struct Node {
 
   static Node *create(const T &value) noexcept {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
+    my_memset(newNode, 0, sizeof(Node));
     newNode->data = value;
     newNode->next = nullptr;
     return newNode;
@@ -23,12 +35,7 @@ template <typename T> struct Node {
 template <typename T>
 bool equal(const Node<T> &lhs, const Node<T> &rhs) noexcept {
 
-  if (!lhs.data && !rhs.data) {
-    return true;
-  } else if (!lhs.data || !rhs.data) {
-    return false;
-  }
-  return lhs.data->operator==(*rhs.data) && lhs.next == rhs.next;
+  return lhs.data.operator==(rhs.data) && lhs.next == rhs.next;
 }
 
 template <>
@@ -155,16 +162,16 @@ public:
     return false;
   }
 
-  T &get(int index) noexcept {
+  T &get(uint8_t index) noexcept {
     Node<T> *curr = head;
-    for (int i = 0; i < index; i++) {
+    for (uint8_t i = 0; i < index; i++) {
       curr = curr->next;
       assert(curr && "Index out of bounds.");
     }
     return curr->data;
   }
 
-  T &operator[](int index) noexcept { return get(index); }
+  T &operator[](uint8_t index) noexcept { return get(index); }
 
   size_t size() noexcept {
     size_t count = 0;
@@ -240,7 +247,7 @@ public:
     }
     Node<T> *curr = head;
     while (curr) {
-      std::cout << (int)curr->data << " ";
+      std::cout << (uint8_t)curr->data << " ";
       curr = curr->next;
     }
   }

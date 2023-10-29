@@ -2,47 +2,18 @@
 #include <array>
 #include <iostream>
 
-#define MAX_SIZE_ASSUMPTION 1162
-#define MAX_SIZE_CLAIM 18
-#define MAX_SIZE_PROOF 1785
-
 typedef std::array<int, MAX_SIZE> assumption_type;
 typedef std::array<int, MAX_SIZE> claim_type;
 typedef std::array<int, MAX_SIZE> proof_type;
 
-void read_input_assumption(assumption_type &arr, LinkedList<uint8_t> *input) {
-  int arr_size = arr[0];
-  for (int i = 1; i <= arr_size; i++) {
-    input->push_back((uint8_t)arr[i]);
-  }
-}
-
-void read_input_claim(claim_type &arr, LinkedList<uint8_t> *input) {
-  int arr_size = arr[0];
-  for (int i = 1; i <= arr_size; i++) {
-    input->push_back((uint8_t)arr[i]);
-  }
-}
-
-void read_input_proof(proof_type &arr, LinkedList<uint8_t> *input) {
-  int arr_size = arr[0];
-  for (int i = 1; i <= arr_size; i++) {
-    input->push_back((uint8_t)arr[i]);
-  }
-}
-
 #ifndef DEBUG
-[[circuit]] int foo(assumption_type a, claim_type c, proof_type p) {
+[[circuit]] int foo(assumption_type a, claim_type c, proof_type p) noexcept {
 
   auto gamma = LinkedList<uint8_t>::create();
   auto claim = LinkedList<uint8_t>::create();
   auto proof = LinkedList<uint8_t>::create();
 
-  // read_input_assumption(a, gamma);
-  // read_input_claim(c, claim);
-  // read_input_proof(p, proof);
-
-  return Pattern::verify(&a, &c, &p);
+  return Pattern::verify(a, c, p);
   // return 0;
 }
 #else
@@ -436,15 +407,8 @@ int main() {
       3,    2,   1,   0,   29,  196, 21,  29,  195, 21,  29,  194, 21,  29,
       83,   21,  29,  192, 21,  30,  138};
 
-  auto gamma = LinkedList<uint8_t>::create();
-  auto claims = LinkedList<uint8_t>::create();
-  auto proof = LinkedList<uint8_t>::create();
 
-  read_input_assumption(assumption, gamma);
-  read_input_claim(claim_gamma, claims);
-  read_input_proof(proof_gamma, proof);
-
-  int result = Pattern::verify(&assumption, &claim_gamma, &proof_gamma);
+  int result = Pattern::verify(assumption, claim_gamma, proof_gamma);
   std::cout << result << std::endl;
   return 0;
 }
