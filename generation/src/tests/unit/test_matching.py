@@ -8,12 +8,12 @@ def test_match() -> None:
     assert match_single(phi0, phi0) == {0: phi0}
     assert match_single(phi0, phi1) == {0: phi1}
     assert match_single(phi0, Implies(phi0, phi1)) == {0: Implies(phi0, phi1)}
+    # The following fails because the provided substitution conflicts with the
+    # one induced by the input patterns
     assert match_single(phi0, phi0, extend={0: phi2}) == None
 
     assert match_single(Implies(phi0, phi1), phi0) == None
     assert match_single(Implies(phi0, phi1), App(phi1, phi2)) == None
-    assert match_single(Implies(phi0, phi1), App(phi1, phi2)) == None
-    assert match_single(Implies(phi0, phi1), Implies(phi1, phi2)) == {0: phi1, 1: phi2}
     assert match_single(Implies(phi0, phi1), Implies(phi1, phi2)) == {0: phi1, 1: phi2}
     assert match_single(Implies(phi0, phi0), Implies(phi1, phi2)) == None
     assert match_single(Implies(phi0, phi2), Implies(phi1, phi2)) == {0: phi1, 2: phi2}
@@ -22,10 +22,9 @@ def test_match() -> None:
 
     assert match_single(App(phi0, phi1), phi0) == None
     assert match_single(App(phi0, phi1), Implies(phi1, phi2)) == None
-    assert match_single(App(phi0, phi1), Implies(phi1, phi2)) == None
-    assert match_single(App(phi0, phi1), App(phi1, phi2)) == {0: phi1, 1: phi2}
     assert match_single(App(phi0, phi1), App(phi1, phi2)) == {0: phi1, 1: phi2}
     assert match_single(App(phi0, phi0), App(phi1, phi2)) == None
+    # The 2 -> phi2 is required because the metavars might have different constrains
     assert match_single(App(phi0, phi2), App(phi1, phi2)) == {0: phi1, 2: phi2}
     assert match_single(App(EVar(0), phi0), App(EVar(1), phi2)) == None
     assert match_single(App(phi0, EVar(2)), App(phi1, EVar(1))) == None
