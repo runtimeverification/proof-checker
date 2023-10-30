@@ -79,28 +79,25 @@ def test_prove_imp_refl() -> None:
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implies(phi0, phi0)
     prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out))
-    proved = prop.publish_proof(prop.imp_refl())
+    proved = prop.publish_proof(prop.imp_refl()())
     assert proved.conclusion == phi0_implies_phi0
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         *uncons_metavar_instrs(0),             # Stack: ph0
-        *uncons_metavar_instrs(0),             # Stack: ph0, ph0
-        *uncons_metavar_instrs(0),             # Stack: ph0, ph0, ph0
-        Instruction.Implies,               # Stack: ph0, ph0 -> ph0
-        *uncons_metavar_instrs(0),             # Stack: ph0, ph0 -> ph0; ph0
-        Instruction.Prop2,                     # Stack: ph0, ph0 -> ph0; ph0; prop2
-        Instruction.Instantiate, 3, 2, 1, 0,   # Stack: p1=[(ph0 -> ((ph0 -> ph0) -> ph0)) -> ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))]
+        *uncons_metavar_instrs(0),             # Stack: ph0; ph0
+        Instruction.Implies,                   # Stack: ph0 -> ph0
+        *uncons_metavar_instrs(0),             # Stack: ph0 -> ph0; ph0
+        Instruction.Prop2,                     # Stack: ph0 -> ph0; ph0; prop2
+        Instruction.Instantiate, 2, 2, 1,      # Stack: p1=[(ph0 -> ((ph0 -> ph0) -> ph0)) -> ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))]
         *uncons_metavar_instrs(0),             # Stack: p1; ph0;
         *uncons_metavar_instrs(0),             # Stack: p1; ph0; ph0;
-        *uncons_metavar_instrs(0),             # Stack: p1; ph0; ph0; ph0;
-        Instruction.Implies,               # Stack: p1; ph0; ph0 -> ph0;
-        Instruction.Prop1,                     # Stack: p1; ph0; ph0 -> ph0; prop1
-        Instruction.Instantiate, 2, 1, 0,      # Stack: p1; [p2: (ph0 -> ((ph0 -> ph0) -> ph0)) ]
+        Instruction.Implies,                   # Stack: p1; ph0 -> ph0;
+        Instruction.Prop1,                     # Stack: p1; ph0 -> ph0; prop1
+        Instruction.Instantiate, 1, 1,         # Stack: p1; [p2: (ph0 -> ((ph0 -> ph0) -> ph0)) ]
         Instruction.ModusPonens,               # Stack: [p3: ((ph0 -> (ph0 -> ph0)) -> (ph0 -> ph0))
         *uncons_metavar_instrs(0),             # Stack: p3; ph0;
-        *uncons_metavar_instrs(0),             # Stack: p3; ph0; ph0;
-        Instruction.Prop1,                     # Stack: p3; ph0; ph0; prop1
-        Instruction.Instantiate, 2, 1, 0,      # Stack: p3; ph0 -> (ph0 -> ph0)
+        Instruction.Prop1,                     # Stack: p3; ph0; prop1
+        Instruction.Instantiate, 1, 1,         # Stack: p3; ph0 -> (ph0 -> ph0)
         Instruction.ModusPonens,               # Stack: phi0 -> phi0
         Instruction.Publish,
     ])
@@ -110,7 +107,7 @@ def test_prove_imp_refl() -> None:
 # Construct a mock ProofExp to extract the claim and proof names
 mock_prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, out=BytesIO()))
 
-proofs = [(method.__name__, ExecutionPhase.Proof) for method in mock_prop.proof_expressions()]
+proofs = [(method._name, ExecutionPhase.Proof) for method in mock_prop.proof_expressions()]
 
 
 @pytest.mark.parametrize('test', proofs)
@@ -119,7 +116,7 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
     interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
-    _ = Propositional(interpreter_ser).__getattribute__(target)()
+    _ = Propositional(interpreter_ser).__getattribute__(target)()()
     out_ser_deser = StringIO()
     interpreter_ser_deser = NotationlessPrettyPrinter(phase=phase, out=out_ser_deser)
     deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
@@ -127,7 +124,7 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
     interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
-    _ = Propositional(interpreter_pretty).__getattribute__(target)()
+    _ = Propositional(interpreter_pretty).__getattribute__(target)()()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
 

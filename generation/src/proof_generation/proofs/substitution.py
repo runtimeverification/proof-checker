@@ -5,11 +5,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import EVar, Exists, Notation
+from proof_generation.proof import ProofThunk
 from proof_generation.proofs.propositional import Propositional, neg, phi0, top
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
-    from proof_generation.proof import Proved, ProvedExpression
 
 
 @dataclass(frozen=True, eq=False)
@@ -33,35 +33,40 @@ class Substitution(Propositional):
     def claims() -> list[Pattern]:
         return [Forall(0, top)]
 
-    def proof_expressions(self) -> list[ProvedExpression]:
-        return [self.top_univgen]
+    def proof_expressions(self) -> list[ProofThunk]:
+        return [self.top_univgen()]
 
-    def universal_gen(self, phi: ProvedExpression, var: EVar) -> Proved:
+    def universal_gen(self, phi: ProofThunk, var: EVar) -> ProofThunk:
         """
         phi
         --------------------------------------
         forall {var} . phi
         """
         # (exists {var} (neg phi)) -> bot == forall {var} phi
-        return self.exists_generalization(
-            # neg phi -> bot
-            self.modus_ponens(
-                # phi -> (neg phi -> bot)
-                self.dneg_intro(self.PROVISIONAL_get_conc(phi)),
-                phi(),
+        return ProofThunk(
+            (
+                lambda: self.exists_generalization(
+                    # neg phi -> bot
+                    self.mp(
+                        # phi -> (neg phi -> bot)
+                        self.dneg_intro(phi.conc),
+                        phi,
+                    )(),
+                    var,
+                )
             ),
-            var,
+            Forall(var.name, phi.conc),
         )
 
-    def top_univgen(self) -> Proved:
+    def top_univgen(self) -> ProofThunk:
         """
         T
         ---
         forall x0 . T
         """
-        return self.universal_gen(self.top_intro, EVar(0))
+        return self.universal_gen(self.top_intro(), EVar(0))
 
-    def functional_subst(self, phi: ProvedExpression, phi1: ProvedExpression, x: EVar) -> ProvedExpression:
+    def functional_subst(self, phi: ProofThunk, phi1: ProofThunk, x: EVar) -> ProofThunk:
         """
         --------------------------------------
         (exists x . phi1 = x) -> ((forall x. phi) -> phi[phi1/x])

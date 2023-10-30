@@ -79,7 +79,6 @@ def main(
     kore_converter = KoreConverter(kore_definition)
 
     # print('Intialize hint stream ... ')
-    # TODO: Fix with the real hints
     hints_iterator = get_proof_hints(read_proof_hint(hints_file), kore_converter)
 
     print('Begin generating proofs ... ')

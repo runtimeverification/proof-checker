@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from functools import partial
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
+from proof_generation.pattern import MetaVar
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
@@ -43,14 +45,13 @@ class KoreDefinition(proof.ProofExp):
 
     @classmethod
     def add_axioms(cls, hint: KoreHint, converter: KoreConverter) -> Axioms:
-        """Add an axiom to the definition."""
+        """Add axioms to the definition."""
         axioms = converter.collect_functional_axioms(hint)
         axioms.setdefault(hint.axiom.kind, []).append(hint.axiom)
         cls.prove_step_axioms.append(hint.axiom.pattern)
         return axioms
 
-    def proof_expressions(self) -> list[proof.ProvedExpression]:
-        def make_function(obj: KoreDefinition, func: ProofMethod) -> proof.ProvedExpression:
-            return lambda: func(obj)
-
-        return [make_function(self, proof_func) for proof_func in self.proofs]
+    def proof_expressions(self) -> list[proof.ProofThunk]:
+        return [
+            proof.ProofThunk(partial(proof_func, self), MetaVar(0), disable_conc=True) for proof_func in self.proofs
+        ]

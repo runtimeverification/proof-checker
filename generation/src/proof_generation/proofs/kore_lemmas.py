@@ -4,13 +4,15 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, EVar, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import And, Negation, Or
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from proof_generation.pattern import Pattern
-    from proof_generation.proof import ProvedExpression
+    from proof_generation.proof import ProofThunk
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
@@ -143,6 +145,43 @@ class KoreDv(Notation):
         return App(App(kore_dv_symbol, phi0), phi1)
 
 
+@dataclass(frozen=True, eq=False)
+class Cell(Notation):
+    phi0: Symbol  # Symbol for the outer cell
+    phi1: Pattern  # The value of the cell
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return App(phi0, phi1)
+
+    def __str__(self) -> str:
+        return f'<{str(self.phi0.name)}> {str(self.phi1)} </{str(self.phi0.name)}>'
+
+
+@dataclass(frozen=True, eq=False)
+class KoreNestedCells(Cell):
+    phi0: Symbol  # Symbol for the outer cell
+    phi1: Pattern  # Application chain for inner cells
+
+    def __str__(self) -> str:
+        # We have a chain of cells applied to each other. We need to recover them.
+        # App(App(cell1, cell2), cell3) -> <cell1> </cell1> <cell2> </cell2> <cell3> </cell3>
+        def recover_cells(todo: Pattern | None) -> Iterable[str]:
+            if isinstance(todo, App):
+                # We have a chain of cells
+                yield str(todo.right)
+                yield from recover_cells(todo.left)
+            # TODO: Remove the Metavar from the typecheck
+            elif isinstance(todo, Cell | MetaVar | EVar):
+                # We have a single cell
+                yield str(todo)
+            else:
+                raise ValueError(f'Unexpected pattern {todo}')
+
+        recovered_cells_str = ' '.join(reversed(list(recover_cells(self.phi1))))
+        return f'<{str(self.phi0.name)}> {recovered_cells_str} </{str(self.phi0.name)}>'
+
+
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     @staticmethod
@@ -153,7 +192,7 @@ class KoreLemmas(ProofExp):
     def claims() -> list[Pattern]:
         return []
 
-    def proof_expressions(self) -> list[ProvedExpression]:
+    def proof_expressions(self) -> list[ProofThunk]:
         return []
 
 
