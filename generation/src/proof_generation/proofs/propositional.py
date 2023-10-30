@@ -121,6 +121,7 @@ class Propositional(ProofExp):
     # Proofs
     # ======
 
+    # NOTE To be used only in a propositional logic context
     def build_subst(self, p: Pattern = phi0, q: Pattern = phi1, r: Pattern = phi2) -> dict[int, Pattern]:
         ret = {}
         if p != phi0:
@@ -131,8 +132,12 @@ class Propositional(ProofExp):
             ret[2] = r
         return ret
 
-    def load_ax(self, i: int) -> ProofThunk:
-        return ProofThunk(partial(self.load_axiom, self.axioms()[i]), self.axioms()[i])
+    def load_ax(self, i: int, p: Pattern = phi0, q: Pattern = phi1, r: Pattern = phi2) -> ProofThunk:
+        subst = self.build_subst(p, q, r)
+        return ProofThunk(
+            partial(self.dynamic_inst, partial(self.load_axiom, self.axioms()[i]), subst),
+            self.axioms()[i].instantiate(subst),
+        )
 
     def p1(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         return ProofThunk(partial(self.dynamic_inst, self.prop1, self.build_subst(p, q)), Implies(p, Implies(q, p)))
