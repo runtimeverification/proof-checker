@@ -333,7 +333,7 @@ class MetaVar(Pattern):
     app_ctx_holes: tuple[EVar, ...] = ()
 
     def ef(self, name: int) -> bool:
-        return name in self.e_fresh
+        return EVar(name) in self.e_fresh
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
         # TODO implement this function by checking constraints
@@ -373,7 +373,7 @@ class ESubst(Pattern):
     plug: Pattern
 
     def ef(self, name: int) -> bool:
-        if self.var == name:
+        if self.var.name == name:
             return self.plug.ef(name)
 
         # We assume that at least one instance will be replaced
