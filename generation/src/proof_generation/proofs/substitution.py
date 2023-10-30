@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import EVar, Exists, Notation
@@ -12,16 +11,8 @@ if TYPE_CHECKING:
     from proof_generation.proof import ProofThunk
 
 
-@dataclass(frozen=True, eq=False)
-class Forall(Notation):
-    var: int
-    phi0: Pattern
-
-    def object_definition(self) -> Pattern:
-        return neg(Exists(self.var, neg(phi0)))
-
-    def __str__(self) -> str:
-        return f'(∀ x{self.var} . {str(self.phi0)})'
+def forall(var: int) -> Notation:
+    return Notation(f'forall_{var}', neg(Exists(var, neg(phi0))), f'(∀ x{var} . {{0}})')
 
 
 class Substitution(Propositional):
@@ -31,7 +22,7 @@ class Substitution(Propositional):
 
     @staticmethod
     def claims() -> list[Pattern]:
-        return [Forall(0, top)]
+        return [forall(0)(top())]
 
     def proof_expressions(self) -> list[ProofThunk]:
         return [self.top_univgen()]

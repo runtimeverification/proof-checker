@@ -3,15 +3,17 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from frozendict import frozendict
+
 from proof_generation.pattern import (
     App,
     ESubst,
     EVar,
     Exists,
     Implies,
+    Instantiate,
     MetaVar,
     Mu,
-    Notation,
     SSubst,
     SVar,
     Symbol,
@@ -20,6 +22,8 @@ from proof_generation.pattern import (
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from proof_generation.pattern import Pattern
 
 
@@ -93,11 +97,6 @@ class BasicInterpreter:
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(var, subpattern)
 
-    def add_notation(self, notation: Pattern) -> Pattern:
-        if isinstance(notation, Notation):
-            self.pattern(notation.conclusion())
-        return notation
-
     def pattern(self, p: Pattern) -> Pattern:
         match p:
             case EVar(name):
@@ -121,11 +120,11 @@ class BasicInterpreter:
                 self.patterns(positive)
                 self.patterns(negative)
                 self.patterns(app_ctx_holes)
-
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
-
-        if isinstance(p, Notation):
-            return self.add_notation(p)
+            case Instantiate(subpattern, subst):
+                for inst in subst.values():
+                    self.pattern(inst)
+                return self.instantiate_pattern(self.pattern(subpattern), subst)
 
         raise NotImplementedError(f'{type(p)}')
 
@@ -150,7 +149,7 @@ class BasicInterpreter:
 
     def prop3(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
-        return Proved(Implies(Implies(Implies(phi0, bot), bot), phi0))
+        return Proved(Implies(Implies(Implies(phi0, bot()), bot()), phi0))
 
     def modus_ponens(self, left: Proved, right: Proved) -> Proved:
         left_conclusion = left.conclusion
@@ -174,8 +173,8 @@ class BasicInterpreter:
             return proved
         return Proved(proved.conclusion.instantiate(delta))
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
-        return pattern.instantiate(delta)
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+        return Instantiate(pattern, frozendict(delta))
 
     def pop(self, term: Pattern | Proved) -> None:
         ...

@@ -3,14 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from frozendict import frozendict
 
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
+phi2 = MetaVar(2)
 sigma0 = Symbol('s0')
 sigma1 = Symbol('s1')
 sigma2 = Symbol('s2')
@@ -52,6 +54,13 @@ sigma2 = Symbol('s2')
             0,
             sigma1,
             ESubst(SSubst(phi0, SVar(0), sigma1), EVar(0), sigma1),
+        ],
+        # Instantiate/Notation
+        [
+            Instantiate(App(phi0, phi1), frozendict({0: phi2})),
+            0,
+            sigma1,
+            App(ESubst(phi2, EVar(0), sigma1), ESubst(phi1, EVar(0), sigma1)),
         ],
     ],
 )
@@ -96,6 +105,13 @@ def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: P
             sigma1,
             SSubst(SSubst(phi0, SVar(0), sigma1), SVar(0), sigma1),
         ],
+        # Instantiate/Notation
+        [
+            Instantiate(App(phi0, phi1), frozendict({0: phi2})),
+            0,
+            sigma1,
+            App(SSubst(phi2, SVar(0), sigma1), SSubst(phi1, SVar(0), sigma1)),
+        ],
     ],
 )
 def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: Pattern) -> None:
@@ -139,6 +155,9 @@ stack_mixed1 = lambda term: ESubst(SSubst(pattern=term, var=SVar(1), plug=EVar(1
         [stack_mixed1(phi0), {0: SVar(2)}, SVar(2)],
         # This fails if metavar instantiations are not propagated into the plug
         [SSubst(phi0, SVar(0), phi0), {0: SVar(0)}, SVar(0)],
+        [Instantiate(phi0, frozendict({0: phi1})), {1: sigma1}, sigma1],
+        [Instantiate(phi0, frozendict({0: phi0})), {0: sigma1}, sigma1],
+        [Instantiate(phi0, frozendict({0: phi1})), {0: sigma1}, Instantiate(phi0, frozendict({0: phi1}))],
     ],
 )
 def test_instantiate_subst(pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern) -> None:
