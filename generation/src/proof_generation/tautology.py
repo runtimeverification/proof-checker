@@ -81,13 +81,16 @@ def conj_to_pattern(term: ConjTerm) -> Pattern:
     return pat
 
 
+def id_to_metavar(id: int) -> Pattern:
+    assert id != 0
+    if id < 0:
+        return neg(MetaVar(-(id + 1)))
+    return MetaVar(id - 1)
+
+
 def clause_to_pattern(l: list[int]) -> Pattern:
     assert len(l) > 0
-    assert l[0] != 0
-    if l[0] < 0:
-        pat = neg(MetaVar(-(l[0] + 1)))
-    else:
-        pat = MetaVar(l[0] - 1)
+    pat = id_to_metavar(l[0])
     if len(l) > 1:
         pat = Or(pat, clause_to_pattern(l[1:]))
     return pat
@@ -114,7 +117,6 @@ class Tautology(Propositional):
             Implies(Or(phi0, And(phi1, phi2)), And(Or(phi0, phi1), Or(phi0, phi2))),
             Implies(And(Or(phi0, phi1), Or(phi0, phi2)), Or(phi0, And(phi1, phi2))),
             Equiv(And(phi0, phi1), And(phi1, phi0)),
-            Equiv(Or(phi0, phi1), Or(phi1, phi0)),
         ]
 
     def imp_trans_match1(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
@@ -320,6 +322,14 @@ class Tautology(Propositional):
         c, d = Implies.extract(h2.conc)
         return self.imp_transitivity(self.imim_l(c, h1), self.mp(self.p2(a, c, d), self.imp_provable(a, h2)))
 
+    def imim_r(self, pat: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+              a -> b
+        ---------------------
+        (c -> a) -> (c -> b)
+        """
+        return self.imim(self.imp_refl(pat), h)
+
     def imim_nnr(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
         """
         (a -> b)    (c -> d)
@@ -441,9 +451,13 @@ class Tautology(Propositional):
         """p /\\ q <-> q /\\ p"""
         return self.load_ax(8, p, q)
 
+    def or_comm_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """p \\/ q -> q \\/ p"""
+        return self.imp_transitivity(self.imp_trans(neg(p), q, bot), self.dne_r(neg(q), p))
+
     def or_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ q <-> q \\/ p"""
-        return self.load_ax(9, p, q)
+        return self.and_intro(self.or_comm_imp(p, q), self.or_comm_imp(q, p))
 
     def and_l_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p /\\ q -> p"""
@@ -528,6 +542,37 @@ class Tautology(Propositional):
             self.imim_or(self.and_l(pf1), self.and_l(pf2)),
             self.imim_or(self.and_r(pf1), self.and_r(pf2)),
         )
+
+    def resolution(self, p: Pattern = phi0, a: Pattern = phi1, b: Pattern = phi2) -> ProofThunk:
+        """~p \\/ a -> p \\/ b -> a \\/ b"""
+        return self.imp_transitivity(self.or_comm_imp(neg(p), a), self.imp_trans(neg(a), neg(p), b))
+
+    def resolution_r(self, p: Pattern = phi0, b: Pattern = phi1) -> ProofThunk:
+        """~p -> p \\/ b -> b"""
+        return self.ant_commutativity(self.imp_refl(Or(p, b)))
+
+    def resolution_l(self, p: Pattern = phi0, a: Pattern = phi1) -> ProofThunk:
+        """~p \\/ a -> p -> a"""
+        return self.imim_l(a, self.dneg_intro(p))
+
+    def resolution_base(self, p: Pattern = phi0) -> ProofThunk:
+        """~p -> p -> bot"""
+        return self.imp_refl(neg(p))
+
+    def resolution_step(self, ab_pf: ProofThunk, ac_pf: ProofThunk, bcd_pf: ProofThunk) -> ProofThunk:
+        """
+          a -> b    a -> c    b -> c -> d
+        -----------------------------------
+                      a -> d
+        """
+        a, b = Implies.extract(ab_pf.conc)
+        a2, c = Implies.extract(ac_pf.conc)
+        assert a == a2
+        b2, cd = Implies.extract(bcd_pf.conc)
+        assert b == b2
+        c2, d = Implies.extract(cd)
+        assert c == c2
+        return self.mp(self.mp(self.p2(a, c, d), self.imp_transitivity(ab_pf, bcd_pf)), ac_pf)
 
     def is_propositional(self, pat: Pattern) -> bool:
         if pat == bot:
