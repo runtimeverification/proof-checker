@@ -180,12 +180,6 @@ class BasicInterpreter:
     def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return pattern.instantiate(delta)
 
-    def _gen_simulator(self) -> BasicInterpreter:
-        return self
-
-    def _apply_simulation(self, i: BasicInterpreter, conc: Pattern) -> Proved:
-        return Proved(conc)
-
     def pop(self, term: Pattern | Proved) -> None:
         ...
 

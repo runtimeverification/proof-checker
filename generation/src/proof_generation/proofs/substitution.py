@@ -36,20 +36,19 @@ class Substitution(Propositional):
     def proof_expressions(self) -> list[ProvedExpression]:
         return [self.top_univgen]
 
-    def universal_gen(self, p_pf: ProvedExpression, var: EVar) -> Proved:
+    def universal_gen(self, phi: ProvedExpression, var: EVar) -> Proved:
         """
-        p
+        phi
         --------------------------------------
-        forall {var} . p
+        forall {var} . phi
         """
-        p_pf, p = self._get_conclusion(p_pf)
         # (exists {var} (neg phi)) -> bot == forall {var} phi
         return self.exists_generalization(
             # neg phi -> bot
             self.modus_ponens(
                 # phi -> (neg phi -> bot)
-                self.dneg_intro(p),
-                p_pf(),
+                self.dneg_intro(self.PROVISIONAL_get_conc(phi)),
+                phi(),
             ),
             var,
         )

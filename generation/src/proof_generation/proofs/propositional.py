@@ -4,11 +4,11 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import Implies, MetaVar, Notation, bot
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProvedExpression
     from proof_generation.proved import Proved
@@ -99,7 +99,6 @@ class Propositional(ProofExp):
         return [
             Implies(phi0, phi0),  # Reflexivity
             top,  # Top
-            Implies(phi0, top),  # Anything implies Top
             Implies(bot, phi0),  # Bot_elim
             Implies(neg(neg(phi0)), phi0),  # Double Negation elim
             Implies(phi0, neg(neg(phi0))),  # Double Negation intro
@@ -111,13 +110,21 @@ class Propositional(ProofExp):
         return [
             self.imp_refl,
             self.top_intro,
-            self.imp_top,
             self.bot_elim,
             self.dneg_elim,
             self.dneg_intro,
             self.absurd,
             self.peirce_bot,
         ]
+
+    # TODO This function should not exist anymore once we
+    # have support for Lemmas in the binary format
+    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern:  # noqa: N802
+        i = self.interpreter
+        self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
+        conc = p().conclusion
+        self.interpreter = i
+        return conc
 
     # Proofs
     # ======
@@ -138,7 +145,7 @@ class Propositional(ProofExp):
         ----------
           p -> q
         """
-        q_pf, q = self._get_conclusion(q_pf)
+        q = self.PROVISIONAL_get_conc(q_pf)
         return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
 
     def imp_transitivity(self, pq_pf: ProvedExpression, qr_pf: ProvedExpression) -> Proved:
@@ -147,10 +154,8 @@ class Propositional(ProofExp):
         ----------------------
                 p -> r
         """
-        pq_pf, pq = self._get_conclusion(pq_pf)
-        qr_pf, qr = self._get_conclusion(qr_pf)
-        a, b = Implies.extract(pq)
-        b2, c = Implies.extract(qr)
+        a, b = Implies.extract(self.PROVISIONAL_get_conc(pq_pf))
+        b2, c = Implies.extract(self.PROVISIONAL_get_conc(qr_pf))
         assert b == b2
 
         return self.modus_ponens(
@@ -190,7 +195,7 @@ class Propositional(ProofExp):
         """
         return self.imp_provable(top, p_pf)
 
-    def imp_top(self, p: Pattern = phi0) -> Proved:
+    def imp_top(self, p: Pattern) -> Proved:
         """p -> T"""
         return self.imp_provable(p, self.top_intro)
 
@@ -204,7 +209,7 @@ class Propositional(ProofExp):
         ---------------
           q -> (p -> r)
         """
-        pf, conc = self._get_conclusion(pf)
+        conc = self.PROVISIONAL_get_conc(pf)
         p, qr = Implies.extract(conc)
         q, r = Implies.extract(qr)
         return self.imp_transitivity(
