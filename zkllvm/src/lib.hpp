@@ -410,7 +410,7 @@ struct Pattern {
     pattern->positive = IdList::create();
     pattern->negative = IdList::create();
     pattern->app_ctx_holes = IdList::create();
-    return Rc<Pattern>(pattern);
+    return pattern;
   }
 
   static Rc<Pattern> metavar_s_fresh(Id id, Id s_fresh, IdList *positive,
@@ -731,7 +731,7 @@ struct Pattern {
         pos++;
       }
       return Optional<Rc<Pattern>>();
-    } // Até aqui funcionou
+    }
     case Instruction::Implication: {
       auto left = Rc<Pattern>(p->left);
       auto right = Rc<Pattern>(p->right);
