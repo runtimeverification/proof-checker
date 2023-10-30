@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from functools import partial
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
@@ -50,7 +51,4 @@ class KoreDefinition(proof.ProofExp):
         return axioms
 
     def proof_expressions(self) -> list[proof.ProvedExpression]:
-        def make_function(obj: KoreDefinition, func: ProofMethod) -> proof.ProvedExpression:
-            return lambda: func(obj)
-
-        return [make_function(self, proof_func) for proof_func in self.proofs]
+        return [partial(proof_func, self) for proof_func in self.proofs]
