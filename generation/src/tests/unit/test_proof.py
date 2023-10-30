@@ -124,7 +124,7 @@ def test_deserialize_proof(test: tuple[str, ExecutionPhase]) -> None:
     # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
     interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
-    _ = Propositional(interpreter_pretty).__getattribute__(target)()
+    _ = Propositional(interpreter_pretty).__getattribute__(target)()()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
 
