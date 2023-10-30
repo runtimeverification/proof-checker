@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import partial
 from typing import TYPE_CHECKING
+from collections.abc import Callable
 
 from proof_generation.pattern import Implies, MetaVar, Notation, match_single
 from proof_generation.proof import ProofThunk
@@ -673,3 +674,220 @@ class Tautology(Propositional):
                 )
         else:
             raise AssertionError(f'Unexpected pattern! Expected a propositional pattern but got:\n{str(pat)}\n')
+
+    def propag_neg(self, term: ConjTerm) -> tuple[ConjTerm, ProofThunk, ProofThunk]:
+        """Assumes `term` is made up only of OR nodes and vars (+ single negations)"""
+        if isinstance(term, ConjVar):
+            pat: Pattern = MetaVar(term.id)
+            if term.negated:
+                pat = neg(pat)
+            phi_imp_phi = self.imp_refl(pat)
+            return term, phi_imp_phi, phi_imp_phi
+        elif isinstance(term, ConjOr):
+            if term.negated:
+                term.left.negated = not term.left.negated
+                term.right.negated = not term.right.negated
+                term_l, term_l_pf1, term_l_pf2 = self.propag_neg(term.left)
+                term_r, term_r_pf1, term_r_pf2 = self.propag_neg(term.right)
+                if not term.left.negated:
+                    term_l_pf1 = self.dni_l_i(term_l_pf1)
+                    term_l_pf2 = self.dni_r_i(term_l_pf2)
+                pf1 = self.imim_and(term_l_pf1, term_r_pf1)
+                pf2 = self.imim_and(term_l_pf2, term_r_pf2)
+                if term.right.negated:
+                    pf1_l, _ = Implies.extract(pf1.conc)
+                    a1, nb1 = And.extract(pf1_l)
+                    b1 = Negation.extract(nb1)[0]
+                    pf1 = self.imp_transitivity(self.con3_i(self.dne_r(a1, b1)), pf1)
+                    _, pf2_r = Implies.extract(pf2.conc)
+                    a2, nb2 = And.extract(pf2_r)
+                    b2 = Negation.extract(nb2)[0]
+                    pf2 = self.imp_transitivity(pf2, self.con3_i(self.dni_r(a2, b2)))
+                return ConjAnd(term_l, term_r), pf1, pf2
+            else:
+                term_l, term_l_pf1, term_l_pf2 = self.propag_neg(term.left)
+                term_r, term_r_pf1, term_r_pf2 = self.propag_neg(term.right)
+                return (
+                    ConjOr(term_l, term_r),
+                    self.imim_or(term_l_pf1, term_r_pf1),
+                    self.imim_or(term_l_pf2, term_r_pf2),
+                )
+        else:
+            raise AssertionError(
+                f'Unexpected pattern! Expected a term with only Or, And and Not but got:\n{str(term)}\n'
+            )
+
+    def to_cnf(self, term: ConjTerm) -> tuple[ConjTerm, ProofThunk, ProofThunk]:
+        """Assumes negation has been fully propagated through the term"""
+        if isinstance(term, ConjVar):
+            pat: Pattern = MetaVar(term.id)
+            if term.negated:
+                pat = neg(pat)
+            phi_imp_phi = self.imp_refl(pat)
+            return term, phi_imp_phi, phi_imp_phi
+        elif isinstance(term, ConjAnd):
+            term_l, term_l_pf1, term_l_pf2 = self.to_cnf(term.left)
+            term_r, term_r_pf1, term_r_pf2 = self.to_cnf(term.right)
+            pf1 = self.imim_and(term_l_pf1, term_r_pf1)
+            pf2 = self.imim_and(term_l_pf2, term_r_pf2)
+            return ConjAnd(term_l, term_r), pf1, pf2
+        elif isinstance(term, ConjOr):
+            term_l, term_l_pf1, term_l_pf2 = self.to_cnf(term.left)
+            term_r, term_r_pf1, term_r_pf2 = self.to_cnf(term.right)
+            pf1 = self.imim_or(term_l_pf1, term_r_pf1)
+            pf2 = self.imim_or(term_l_pf2, term_r_pf2)
+            Implies.extract(pf1.conc)
+            if isinstance(term_l, ConjAnd):
+                pf1 = self.imp_trans_match2(pf1, self.or_distr_r())
+                pf2 = self.imp_trans_match1(self.or_distr_r_rev(), pf2)
+                new_term, pf1_, pf2_ = self.to_cnf(ConjAnd(ConjOr(term_l.left, term_r), ConjOr(term_l.right, term_r)))
+                pf1 = self.imp_transitivity(pf1, pf1_)
+                pf2 = self.imp_transitivity(pf2_, pf2)
+                return new_term, pf1, pf2
+            elif isinstance(term_r, ConjAnd):
+                pf1 = self.imp_trans_match2(pf1, self.or_distr_l())
+                pf2 = self.imp_trans_match1(self.or_distr_l_rev(), pf2)
+                new_term, pf1_, pf2_ = self.to_cnf(ConjAnd(ConjOr(term_l, term_r.left), ConjOr(term_l, term_r.right)))
+                pf1 = self.imp_transitivity(pf1, pf1_)
+                pf2 = self.imp_transitivity(pf2_, pf2)
+                return new_term, pf1, pf2
+            else:
+                return ConjOr(term_l, term_r), pf1, pf2
+        else:
+            raise AssertionError(f'Unexpected pattern! Expected a term with only Or and And but got:\n{str(term)}\n')
+
+    def to_clauses(self, term: ConjTerm) -> tuple[list[list[int]], ProofThunk, ProofThunk]:
+        """Assumes term is in CNF form"""
+        if isinstance(term, ConjVar):
+            if term.negated:
+                id = -(term.id + 1)
+            else:
+                id = term.id + 1
+            pat: Pattern = MetaVar(term.id)
+            if term.negated:
+                pat = neg(pat)
+            phi_imp_phi = self.imp_refl(pat)
+            return [[id]], phi_imp_phi, phi_imp_phi
+        elif isinstance(term, ConjAnd):
+            term_l, term_l_pf1, term_l_pf2 = self.to_clauses(term.left)
+            term_r, term_r_pf1, term_r_pf2 = self.to_clauses(term.right)
+            pf1 = self.imim_and(term_l_pf1, term_r_pf1)
+            pf2 = self.imim_and(term_l_pf2, term_r_pf2)
+            l = len(term_l)
+            assert l > 0
+            if l > 1:
+                shift_right: ProofThunk = self.and_assoc_r()
+                shift_left: ProofThunk = self.and_assoc_l()
+                for i in range(0, l - 2):
+                    shift_right = self.imp_trans_match1(
+                        self.and_assoc_r(), self.imim_and_r(MetaVar(i + 3), shift_right)
+                    )
+                    shift_left = self.imp_trans_match2(self.imim_and_r(MetaVar(i + 3), shift_left), self.and_assoc_l())
+                pf1 = self.imp_trans_match2(pf1, shift_right)
+                pf2 = self.imp_trans_match1(shift_left, pf2)
+            return term_l + term_r, pf1, pf2
+        elif isinstance(term, ConjOr):
+            term_l, term_l_pf1, term_l_pf2 = self.to_clauses(term.left)
+            term_r, term_r_pf1, term_r_pf2 = self.to_clauses(term.right)
+            pf1 = self.imim_or(term_l_pf1, term_r_pf1)
+            pf2 = self.imim_or(term_l_pf2, term_r_pf2)
+            assert len(term_l) == 1
+            assert len(term_r) == 1
+            l = len(term_l[0])
+            assert l > 0
+            if l > 1:
+                shift_right = self.or_assoc_r()
+                shift_left = self.or_assoc_l()
+                for i in range(0, l - 2):
+                    shift_right = self.imp_trans_match1(self.or_assoc_r(), self.imim_or_r(MetaVar(i + 3), shift_right))
+                    shift_left = self.imp_trans_match2(self.imim_or_r(MetaVar(i + 3), shift_left), self.or_assoc_l())
+                pf1 = self.imp_trans_match2(pf1, shift_right)
+                pf2 = self.imp_trans_match1(shift_left, pf2)
+            return [term_l[0] + term_r[0]], pf1, pf2
+        else:
+            raise AssertionError(
+                f'Unexpected pattern! Expected a term with only Or, And and Negations but got:\n{str(term)}\n'
+            )
+
+    def AC_move_to_front(  # noqa: N802
+        self,
+        pos: int,
+        len: int,
+        assoc: ProofThunk,
+        comm: ProofThunk,
+        cong: Callable[[ProofThunk, ProofThunk], ProofThunk],
+        op: Callable[[Pattern, Pattern], Pattern],
+    ) -> ProofThunk:
+        """
+        Produces a proof of
+        p0 . (p1 . (p2 . (... px . (... . pn)))) <-> px . (p0 . (p1 . (... px-1 . (px+1 . (... . pn)))))
+        assoc is of the form: phi0 . (phi1 . phi2) <-> (phi0 . phi1) . phi2
+        comm is of the form: phi0 . phi1 <-> phi1 . phi0
+        cong is of the form:
+            p <-> q   r <-> s
+          ---------------------
+            p . r <-> q . s
+        """
+        if pos == 0:
+            return self.equiv_refl()
+        assoc_rev = self.equiv_sym(assoc)
+        is_last: bool = pos == len - 1
+        if is_last:
+            if pos == 1:
+                return comm
+            pos -= 1
+        term: Pattern = MetaVar(pos + 1)
+        for i in range(pos, 1, -1):
+            term = op(MetaVar(i), term)
+        subst: dict[int, Pattern] = {2: term}
+        shift_left = ProofThunk(partial(self.dynamic_inst, assoc, subst), assoc.conc.instantiate(subst))
+        for _ in range(pos - 1):
+            shift_left = self.equiv_trans_match2(shift_left, assoc)
+        if is_last:
+            pf: ProofThunk = self.equiv_trans_match2(shift_left, comm)
+        else:
+            pf = self.equiv_trans_match2(shift_left, cong(comm, self.equiv_refl(phi2)))
+            pf = self.equiv_trans_match2(pf, assoc_rev)
+        if pos > 1:
+            for_phi0: Pattern = MetaVar(0)
+            for i in range(1, pos - 1):
+                for_phi0 = op(for_phi0, MetaVar(i))
+            if is_last:
+                for_phi2 = MetaVar(pos)
+            else:
+                for_phi2 = MetaVar(pos + 1)
+            subst = {0: for_phi0, 1: MetaVar(pos - 1), 2: for_phi2}
+            shift_right = ProofThunk(partial(self.dynamic_inst, assoc_rev, subst), assoc_rev.conc.instantiate(subst))
+            for _ in range(pos - 2):
+                shift_right = self.equiv_trans_match2(shift_right, assoc_rev)
+            if is_last:
+                left_term = MetaVar(pos + 1)
+            else:
+                left_term = MetaVar(pos)
+            return self.equiv_transitivity(pf, cong(self.equiv_refl(left_term), shift_right))
+        return pf
+
+    def or_move_to_front(self, pos: int, len: int) -> ProofThunk:
+        return self.AC_move_to_front(pos, len, self.or_assoc(), self.or_comm(), self.or_cong, Or)
+
+    def and_move_to_front(self, pos: int, len: int) -> ProofThunk:
+        return self.AC_move_to_front(pos, len, self.and_assoc(), self.and_comm(), self.and_cong, And)
+
+    def reduce_duplicates_at_front(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """p \\/ (p \\/ q) <-> p \\/ q"""
+        return self.equiv_transitivity(
+            self.or_assoc(p, p, q),
+            self.and_intro(self.imim_or_l(q, self.peirce_bot(p)), self.imim_or_l(q, self.p1(p, neg(p)))),
+        )
+
+    def reduce_n_duplicates_at_front(self, n: int, p_id: int, q_id: int) -> ProofThunk:
+        """p \\/ (p  ... (p \\/ q)) <-> p \\/ q"""
+        p = id_to_metavar(p_id)
+        q = id_to_metavar(q_id)
+        if n == 0:
+            return self.equiv_refl(Or(p, q))
+        pf = self.reduce_duplicates_at_front(p, q)
+        for i in range(1, n):
+            pat = clause_to_pattern(([p_id] * i) + [q_id])
+            pf = self.equiv_transitivity(self.reduce_duplicates_at_front(p, pat), pf)
+        return pf
