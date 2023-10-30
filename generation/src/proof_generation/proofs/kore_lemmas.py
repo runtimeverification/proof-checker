@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from proof_generation.pattern import Pattern
-    from proof_generation.proof import ProvedExpression
+    from proof_generation.proof import ProofThunk
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
@@ -192,7 +192,7 @@ class KoreLemmas(ProofExp):
     def claims() -> list[Pattern]:
         return []
 
-    def proof_expressions(self) -> list[ProvedExpression]:
+    def proof_expressions(self) -> list[ProofThunk]:
         return []
 
 

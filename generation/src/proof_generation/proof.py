@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
@@ -24,6 +24,37 @@ PatternExpression = Callable[[], Pattern]
 ProvedExpression = Callable[[], Proved]
 
 
+class ProofThunk:
+    _expr: ProvedExpression
+    conc: Pattern
+    # As of the time of writing this, this field is only used by
+    # the test script for some automation
+    _name: str
+    # TODO get rid of this once it's no longer needed
+    _disable_conc: bool
+
+    def __init__(self, expr: ProvedExpression, conc: Pattern, name: str = '', disable_conc: bool = False):
+        self._expr = expr
+        self.conc = conc
+        self._name = name
+        self._disable_conc = disable_conc
+
+    def __call__(self) -> Proved:
+        proved = self._expr()
+        # TODO Check is this call to equality is causing performance issues
+        assert self._disable_conc or proved.conclusion == self.conc
+        return proved
+
+
+def name_proof_dec(func: Callable[..., ProofThunk]) -> Callable[..., ProofThunk]:
+    def wrapper(*args: Any, **kwargs: Any) -> ProofThunk:
+        pt = func(*args, **kwargs)
+        pt._name = func.__name__
+        return pt
+
+    return wrapper
+
+
 class ProofExp(ABC):
     interpreter: BasicInterpreter
 
@@ -41,7 +72,7 @@ class ProofExp(ABC):
     def claims(cls) -> list[Pattern]:
         raise NotImplementedError
 
-    def proof_expressions(self) -> list[ProvedExpression]:
+    def proof_expressions(self) -> list[ProofThunk]:
         raise NotImplementedError
 
     # Patterns

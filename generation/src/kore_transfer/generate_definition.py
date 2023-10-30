@@ -5,6 +5,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
+from proof_generation.pattern import MetaVar
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
@@ -50,5 +51,7 @@ class KoreDefinition(proof.ProofExp):
         cls.prove_step_axioms.append(hint.axiom.pattern)
         return axioms
 
-    def proof_expressions(self) -> list[proof.ProvedExpression]:
-        return [partial(proof_func, self) for proof_func in self.proofs]
+    def proof_expressions(self) -> list[proof.ProofThunk]:
+        return [
+            proof.ProofThunk(partial(proof_func, self), MetaVar(0), disable_conc=True) for proof_func in self.proofs
+        ]
