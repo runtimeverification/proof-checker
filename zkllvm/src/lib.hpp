@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 
-#define MAX_SIZE 1785
+#define MAX_SIZE 27001 // For Simple transfer 1785 is enough
 
 enum class Instruction : uint8_t {
   // Patterns

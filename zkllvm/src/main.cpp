@@ -407,7 +407,6 @@ int main() {
       3,    2,   1,   0,   29,  196, 21,  29,  195, 21,  29,  194, 21,  29,
       83,   21,  29,  192, 21,  30,  138};
 
-
   int result = Pattern::verify(assumption, claim_gamma, proof_gamma);
   std::cout << result << std::endl;
   return 0;

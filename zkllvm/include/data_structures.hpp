@@ -25,7 +25,7 @@ template <typename T> struct Node {
 
   static Node *create(const T &value) noexcept {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
-      memset_(newNode, 0, sizeof(Node));
+    memset_(newNode, 0, sizeof(Node));
     newNode->data = value;
     newNode->next = nullptr;
     return newNode;
@@ -206,7 +206,6 @@ public:
       current = current->next;
       return *this;
     }
-
   };
 
   Iterator begin() noexcept { return Iterator(head); }
