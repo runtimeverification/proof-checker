@@ -1,6 +1,6 @@
 #include "../tests/unit_tests.hpp"
-#include <iostream>
 #include <array>
+#include <iostream>
 
 #ifndef DEBUG
 typedef std::array<int, 1> assumption_type;
