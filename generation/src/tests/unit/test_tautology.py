@@ -14,6 +14,7 @@ from proof_generation.tautology import (
     ConjVar,
     Tautology,
     clause_list_to_pattern,
+    clause_to_pattern,
     conj_to_pattern,
 )
 
@@ -153,3 +154,33 @@ def test_move_last_to_front(i: int, is_last: bool) -> None:
     c1, c2 = Equiv.extract(conc)
 
     print(f'Proved {str(c1)} <-> {str(c2)} \n\n')
+
+
+simplify_clause_test_cases = [
+    ([2, 1, 1, 3], []),
+    ([1], [0]),
+    ([2], [0]),
+    ([1, 2, 2], [0]),
+    ([2, 1], [1]),
+    ([1, 2, 3, 1], [0, 3]),
+    ([1, 2, 3, 2], [1, 3]),
+    ([2, 2, 1, 3, 1, 1], [2, 4, 5]),
+]
+
+
+@pytest.mark.parametrize('test_case', simplify_clause_test_cases)
+def test_simplify_clause(test_case: tuple[list[int], list[int]]) -> None:
+    cl, positions = test_case
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    final_cl, pf = taut.simplify_clause(cl, positions)
+    conc = pf().conclusion
+    pf_l, pf_r = Equiv.extract(conc)
+    assert clause_to_pattern(cl) == pf_l
+    assert clause_to_pattern(final_cl) == pf_r
+    if not positions:
+        assert cl == final_cl
+        return
+    id = cl[positions[0]]
+    assert final_cl[0] == id
+    for i in final_cl[1:]:
+        assert i != id

@@ -1,3 +1,7 @@
+# NOTE that the resolution algorithm can be made more efficient by only computing
+# a proof of implication rather than equivalence in some of the proof procedures.
+# But we favoured a set of utility functions that can be used in other contexts as well.
+
 from __future__ import annotations
 
 from functools import partial
@@ -511,6 +515,20 @@ class Tautology(Propositional):
             self.imp_transitivity(self.and_r(qr_pf), self.and_r(pq_pf)),
         )
 
+    def equiv_match_l(self, h: ProofThunk, p: Pattern) -> ProofThunk:
+        a, b = Equiv.extract(h.conc)
+        subst = match_single(a, p, {})
+        assert subst is not None
+        actual_subst: dict[int, Pattern] = subst
+        return ProofThunk(partial(self.dynamic_inst, h, actual_subst), h.conc.instantiate(actual_subst))
+
+    def equiv_match_r(self, h: ProofThunk, p: Pattern) -> ProofThunk:
+        a, b = Equiv.extract(h.conc)
+        subst = match_single(b, p, {})
+        assert subst is not None
+        actual_subst: dict[int, Pattern] = subst
+        return ProofThunk(partial(self.dynamic_inst, h, actual_subst), h.conc.instantiate(actual_subst))
+
     def equiv_trans_match1(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
         """Same as equiv_transitivity but h1 is instantiated to match h2"""
         _, b = Equiv.extract(h1.conc)
@@ -810,6 +828,8 @@ class Tautology(Propositional):
                 f'Unexpected pattern! Expected a term with only Or, And and Negations but got:\n{str(term)}\n'
             )
 
+    # NOTE This can be optimized by returning a proof of a concrete term equivalence
+    # so that it doesn't need to be instantiated after it's generated
     def AC_move_to_front(  # noqa: N802
         self,
         pos: int,
@@ -874,6 +894,15 @@ class Tautology(Propositional):
     def and_move_to_front(self, pos: int, len: int) -> ProofThunk:
         return self.AC_move_to_front(pos, len, self.and_assoc(), self.and_comm(), self.and_cong, And)
 
+    def or_move_n_to_front(self, positions: list[int], l: int) -> ProofThunk:
+        """Assumes positions is sorted decreasingly"""
+        if not positions:
+            return self.equiv_refl()
+        pf = self.or_move_to_front(positions[0], l)
+        for i in range(1, len(positions)):
+            pf = self.equiv_trans_match2(pf, self.or_move_to_front((positions[i] + i), l))
+        return pf
+
     def reduce_duplicates_at_front(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ (p \\/ q) <-> p \\/ q"""
         return self.equiv_transitivity(
@@ -881,14 +910,31 @@ class Tautology(Propositional):
             self.and_intro(self.imim_or_l(q, self.peirce_bot(p)), self.imim_or_l(q, self.p1(p, neg(p)))),
         )
 
-    def reduce_n_duplicates_at_front(self, n: int, p_id: int, q_id: int) -> ProofThunk:
-        """p \\/ (p  ... (p \\/ q)) <-> p \\/ q"""
-        p = id_to_metavar(p_id)
-        q = id_to_metavar(q_id)
+    def reduce_n_duplicates_at_front(self, n: int) -> ProofThunk:
+        """phi0 \\/ (phi0  ... (phi0 \\/ phi1)) <-> phi0 \\/ phi1"""
+        p = phi0
+        q = phi1
         if n == 0:
-            return self.equiv_refl(Or(p, q))
+            return self.equiv_refl(phi0)
         pf = self.reduce_duplicates_at_front(p, q)
         for i in range(1, n):
-            pat = clause_to_pattern(([p_id] * i) + [q_id])
+            pat = clause_to_pattern(([1] * i) + [2])
             pf = self.equiv_transitivity(self.reduce_duplicates_at_front(p, pat), pf)
         return pf
+
+    def simplify_clause(self, cl: list[int], positions: list[int]) -> tuple[list[int], ProofThunk]:
+        cl = cl[:]
+        if not positions:
+            return cl, self.equiv_refl(clause_to_pattern(cl))
+        positions = sorted(positions, reverse=True)
+        pat = clause_to_pattern(cl)
+        pf = self.or_move_n_to_front(positions, len(cl))
+        pf = self.equiv_match_l(pf, pat)
+        pf2 = self.reduce_n_duplicates_at_front(len(positions) - 1)
+        pf = self.equiv_trans_match2(pf, pf2)
+        id = cl[positions[0]]
+        for pos in positions:
+            assert cl[pos] == id
+            del cl[pos]
+        cl = [id] + cl
+        return cl, pf
