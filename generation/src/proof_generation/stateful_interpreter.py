@@ -169,8 +169,10 @@ class StatefulInterpreter(BasicInterpreter):
 
     def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         *self.stack, expected_pattern = self.stack
-        expected_plugs = self.stack[-len(delta) :]
-        self.stack = self.stack[: -len(delta)]
+        expected_plugs : list[Pattern] = []
+        if len(delta):
+            expected_plugs = self.stack[-len(delta) :]
+            self.stack = self.stack[: -len(delta)]
 
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
