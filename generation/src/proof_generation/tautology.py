@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from functools import partial
 from typing import TYPE_CHECKING
-from collections.abc import Callable
 
 from proof_generation.pattern import Implies, MetaVar, Notation, match_single
 from proof_generation.proof import ProofThunk
@@ -21,6 +20,8 @@ from proof_generation.proofs.propositional import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from proof_generation.pattern import Pattern
 
 
