@@ -35,7 +35,8 @@ PROOF_HINTS=proof-hints/peano/mul_3_5.peano.hints \
 			proof-hints/trivial/0_rewrites.trivial.hints \
 			proof-hints/trivial/1_rewrite.trivial.hints \
 			proof-hints/trivial/2_rewrites.trivial.hints \
-			proof-hints/imp5/empty.imp5.hints
+			proof-hints/imp5/empty.imp5.hints \
+			proof-hints/imp5-rewrite/transfer.imp5-rewrite.hints
 
 # Eventually, we want to support all input programs using something like the following:
 # ALL_K_FILES=$(wildcard k-benchmarks/*/*)
