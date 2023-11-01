@@ -893,7 +893,7 @@ struct Pattern {
   /// Main implementation
   /// -------------------
 
-  enum class ExecutionPhase { Gamma, Claims, Proof };
+  enum class ExecutionPhase { Gamma, Claim, Proof };
 
   static IdList *
   read_u8_vec(std::array<int, MAX_SIZE>::iterator &iterator) noexcept {
@@ -1031,6 +1031,9 @@ struct Pattern {
       }
 
       case Instruction::Exists: {
+        auto id = iterator;
+        iterator++;
+        if (id == buffer.end()) {
 #if DEBUG
          throw std::runtime_error("Expected var_id for the exists binder");
 #endif
@@ -1038,13 +1041,14 @@ struct Pattern {
         }
 
         auto subpattern = pop_stack_pattern(stack);
-        stack->push(Term::newTerm(Term::Type::Pattern, exists(*id, subpattern)));
+        stack.push(Term::Pattern_(exists(static_cast<Id>(*id), subpattern)));
         break;
       }
 
       case Instruction::Mu: {
-        auto id = iterator.next();
-        if (id == buffer->end()) {
+        auto id = iterator;
+        iterator++;
+        if (id == buffer.end()) {
 #if DEBUG
           throw std::runtime_error("Expected var_id for the mu binder");
 #endif
@@ -1052,7 +1056,7 @@ struct Pattern {
         }
 
         auto subpattern = pop_stack_pattern(stack);
-        auto mu_pat = mu(*id, subpattern);
+        auto mu_pat = mu(static_cast<Id>(*id), subpattern);
         if (!mu_pat->pattern_well_formed()) {
 #if DEBUG
           throw std::runtime_error("Constructed mu-pattern " +
@@ -1060,13 +1064,14 @@ struct Pattern {
 #endif
           exit(1);
         }
-        stack->push(Term::newTerm(Term::Type::Pattern, mu_pat));
+        stack.push(Term::Pattern_(mu_pat));
         break;
       }
 
       case Instruction::ESubst: {
-        auto evar_id = iterator.next();
-        if (evar_id == buffer->end()) {
+        auto evar_id = iterator;
+        iterator++;
+        if (evar_id == buffer.end()) {
 #if DEBUG
           throw std::runtime_error("Insufficient parameters for ESubst instruction");
 #endif
@@ -1085,19 +1090,20 @@ struct Pattern {
           exit(1);
         }
 
-        auto esubst_pat = esubst(copy(pattern), *evar_id, plug);
+        auto esubst_pat = esubst(pattern.clone(), static_cast<Id>(*evar_id), plug);
         if (esubst_pat->pattern_well_formed()) {
           // The substitution is redundant, we don't apply it.
-          stack->push(Term::newTerm(Term::Type::Pattern, pattern));
+          stack.push(Term::Pattern_(pattern));
         } else {
-          stack->push(Term::newTerm(Term::Type::Pattern, esubst_pat));
+          stack.push(Term::Pattern_(esubst_pat));
         }
         break;
       }
 
       case Instruction::SSubst: {
-        auto svar_id = iterator.next();
-        if (svar_id == buffer->end()) {
+        auto svar_id = iterator;
+        iterator++;
+        if (svar_id == buffer.end()) {
 #if DEBUG
           throw std::runtime_error("Insufficient parameters for SSubst instruction");
 #endif
@@ -1116,15 +1122,16 @@ struct Pattern {
           exit(1);
         }
 
-        auto ssubst_pat = ssubst(copy(pattern), *svar_id, plug);
+        auto ssubst_pat = ssubst(pattern.clone(), static_cast<Id>(*svar_id), plug);
         if (!ssubst_pat->pattern_well_formed()) {
           // The substitution is redundant, we don't apply it.
-          stack->push(Term::newTerm(Term::Type::Pattern, pattern));
+          stack.push(Term::Pattern_(pattern));
         } else {
-          stack->push(Term::newTerm(Term::Type::Pattern, ssubst_pat));
+          stack.push(Term::Pattern_(ssubst_pat));
         }
         break;
       }
+
       case Instruction::Prop1:
         stack.push(Term::Proved_(prop1.clone()));
         break;
@@ -1162,15 +1169,16 @@ struct Pattern {
       }
 
       case Instruction::Quantifier:
-        stack->push(Term::newTerm(Term::Type::Proved, copy(quantifier)));
+        stack.push(Term::Proved_(quantifier.clone()));
         break;
 
       case Instruction::Generalization: {
         auto proved_pat = pop_stack_proved(stack);
 
         if (proved_pat->inst == Instruction::Implication) {
-          auto evar_id = iterator.next();
-          if (evar_id == buffer->end()) {
+          auto evar_id = iterator;
+          iterator++;
+          if (evar_id == buffer.end()) {
 #if DEBUG
             throw std::runtime_error("Insufficient parameters for Generalization instruction");
 #endif
@@ -1184,8 +1192,8 @@ struct Pattern {
             exit(1);
           }
 
-          stack->push(Term::newTerm(Term::Type::Proved, implies(exists(*evar_id, copy(proved_pat->left)),
-                                                                copy(proved_pat->right))));
+          stack.push(Term::Proved_(implies(exists(static_cast<Id>(*evar_id), proved_pat->left.clone()),
+                                                                             proved_pat->right.clone())));
         } else {
 #if DEBUG
           throw std::runtime_error("Expected an implication as a first parameter.");
@@ -1200,8 +1208,9 @@ struct Pattern {
         break;
 
       case Instruction::Substitution: {
-        auto svar_id = iterator.next();
-        if (svar_id == buffer->end()) {
+        auto svar_id = iterator;
+        iterator++;
+        if (svar_id == buffer.end()) {
 #if DEBUG
           throw std::runtime_error("Insufficient parameters for Substitution instruction");
 #endif
@@ -1209,7 +1218,7 @@ struct Pattern {
         }
 
         auto plug = pop_stack_pattern(stack);
-        auto pattern = pop_stack_pattern(stack);
+        auto pattern = pop_stack_proved(stack);
         Instruction pattern_inst = pattern->inst;
         if (!(pattern_inst == Instruction::MetaVar ||
               pattern_inst == Instruction::ESubst  ||
@@ -1220,12 +1229,12 @@ struct Pattern {
           exit(1);
         }
 
-        auto ssubst_pat = ssubst(copy(pattern), *svar_id, plug);
+        auto ssubst_pat = ssubst(pattern.clone(), static_cast<Id>(*svar_id), plug);
         if (!ssubst_pat->pattern_well_formed()) {
           // The substitution is redundant, we don't apply it.
-          stack->push(Term::newTerm(Term::Type::Proved, pattern));
+          stack.push(Term::Proved_(pattern));
         } else {
-          stack->push(Term::newTerm(Term::Type::Proved, ssubst_pat));
+          stack.push(Term::Proved_(ssubst_pat));
         }
         break;
       }
@@ -1307,7 +1316,7 @@ struct Pattern {
         case ExecutionPhase::Gamma:
           memory.push_back(Term::Proved_(pop_stack_pattern(stack)));
           break;
-        case ExecutionPhase::Claims:
+        case ExecutionPhase::Claim:
           claims.push_back(pop_stack_pattern(stack));
           break;
         case ExecutionPhase::Proof: {
@@ -1385,7 +1394,7 @@ struct Pattern {
                          stack,  // stack is empty initially.
                          memory, // reuse memory
                          claims, // claims populated in this phase
-                         ExecutionPhase::Claims);
+                         ExecutionPhase::Claim);
 
     stack.clear();
 
