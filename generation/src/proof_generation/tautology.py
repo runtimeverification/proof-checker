@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from itertools import combinations
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implies, MetaVar, Notation, match_single, phi0, phi1, phi2
@@ -116,6 +117,17 @@ def clause_to_pattern(l: Clause) -> Pattern:
 def clause_list_to_pattern(l: ClauseConjunction) -> Pattern:
     return foldr_op(And, [clause_to_pattern(cl) for cl in l])
 
+class ResolutionHintSource:
+    left_set: frozenset(int)
+    right_set: frozenset(int)
+    resolvant: int
+    def __init__(self, left_set: frozenset(int), right_set: frozenset(int), resolvant: int) -> None:
+        self.left_set = left_set
+        self.right_set = right_set
+        self.resolvant = resolvant
+
+
+ResolutionHint = dict[frozenset, ResolutionHintSource | int]
 
 class Tautology(ProofExp):
     prop: Propositional
@@ -559,6 +571,16 @@ class Tautology(ProofExp):
                 f'Unexpected pattern! Expected a term with only Or, And and Negations but got:\n{str(term)}\n'
             )
 
+    def conjunction_implies_nth(self, term: Pattern, n: int, l: int) -> ProofThunk:
+        """p0 /\\ (p1 /\\ (... /\\ pl)) -> pn"""
+        assert 0 <= n < l
+        if l == 1:
+            return self.imp_refl(term)
+        head, term = And.extract(term)
+        if n == 0:
+            return self.and_l_imp(head, term)
+        return self.imp_transitivity(self.and_r_imp(head, term), self.conjunction_implies_nth(term, n - 1, l - 1))
+
     def ac_move_to_front(  # noqa: N802
         self,
         positions: Clause,  # Sorted list of unique indices in the range [0, len(terms))
@@ -680,3 +702,111 @@ class Tautology(ProofExp):
             pf, self.reduce_n_or_duplicates_at_front(n_pos - 1, [id_to_metavar(id) for id in intermed_cl])
         )
         return ([resolvent] + stripped_cl), pf
+
+    # Returns None if the sets cannot be resolved.
+    # Otherwise it returns the resolvent of the two sets
+    # which may be negative if the order of the sets needs to be swapped
+    # as well as the resulting clause
+    def resolvable(self, c1: frozenset[int], c2: frozenset[int]) -> tuple[int, frozenset[int]] | None:
+        common = {-x for x in c1}.intersection(c2)
+        if len(common) != 1:
+            return None
+        [resolvent] = common
+        c1 = c1.difference({-resolvent})
+        c2 = c2.difference({resolvent})
+        return resolvent, c1.union(c2)
+
+    def merge_clauses(self, term_l: Pattern, len_l: int, term_r: Pattern) -> ProofThunk:
+        if len_l == 1:
+            return self.equiv_refl(Or(term_l, term_r))
+        l1, l2 = Or.extract(term_l)
+        if len_l == 2:
+            return self.or_assoc_r(l1, l2, term_r)
+        return self.equiv_transitivity(
+            self.equiv_sym(self.or_assoc(l1, l2, term_r)),
+            self.or_cong(self.equiv_refl(l1), self.merge_clauses(l2, len_l-1, term_r))
+        )
+
+    def resolution_algorithm(self, hint: ResolutionHint, l: list[frozenset(int)]) -> bool:
+        for cl1 in l:
+            for cl2 in l:
+                if cl2 == cl1:
+                    break
+                res = self.resolvable(cl1, cl2)
+                if res is None:
+                    continue
+                resolvant, res_set = res
+                if not res_set in hint:
+                    if resolvant < 0:
+                        cl1, cl2 = cl2, cl1
+                        resolvant = -resolvant
+                    hint[res_set] = ResolutionHintSource(cl1, cl2, resolvant)
+                    if not res_set:
+                        return True
+                    l.append(res_set)
+        return False
+    
+    def is_trivial_clause(cl: frozenset(int)):
+        l = list(cl)
+        for x1, x2 in combinations(l, 2):
+            if x1 + x2 == 0:
+                return True
+        return False
+
+    def build_proof_from_hint(self, hint: ResolutionHint, cl: frozenset(int), terms: list[list[int]]) -> tuple[list(int), ProofThunk]:
+        res = hint[cl]
+        if isinstance(res, ResolutionHintSource):
+            resolvant = res.resolvant
+            resolvant_term = id_to_metavar(resolvant)
+            term_l, pf_l = self.build_proof_from_hint(hint, res.left_set, terms)
+            term_r, pf_r = self.build_proof_from_hint(hint, res.right_set, terms)
+            term_l, simplify_l = self.simplify_clause(term_l, resolvant)
+            term_r, simplify_r = self.simplify_clause(term_r, resolvant)
+            assert term_l[0] == -resolvant
+            assert term_l[0] == resolvant
+            final_term = term_l[1:] + term_r[1:]
+            assert frozenset(final_term) == cl
+            pf_l = self.imp_transitivity(
+                pf_l,
+                self.and_l(simplify_l)
+            )
+            pf_r = self.imp_transitivity(
+                pf_r,
+                self.and_l(simplify_r)
+            )
+            match (len(term_l) == 1), (len(term_r) == 1):
+                case False, False:
+                    pf = self.resolution(resolvant_term, foldr_op(Or, term_l), foldr_op(Or, term_r))
+                    pf = self.imp_transitivity(
+                        pf,
+                        self.and_l(self.merge_clauses(foldr_op(Or, term_l), len(term_l), foldr_op(Or, term_r)))
+                    )
+                case False, True:
+                    pf = self.resolution_l(resolvant_term, foldr_op(Or, term_l))
+                case True, False:
+                    pf = self.resolution_r(resolvant_term, foldr_op(Or, term_r))
+                case True, True:
+                    pf = self.resolution_base(resolvant_term)
+            pf = self.resolution_step(pf_l, pf_r, pf)
+            return final_term, pf
+        term = clause_list_to_pattern(terms)
+        return terms[res], self.conjunction_implies_nth(term, res, len(terms))
+
+    # The returned boolean represents whether the proof is a proof of the original formula (True) or its negation (False)
+    def start_resolution_algorithm(self, clauses: list[list[int]]) -> tuple[bool, ProofThunk] | None:
+        resolution_list = [frozenset(cl) for cl in clauses]
+        hint: ResolutionHint = {}
+        for index, cl_set in enumerate(resolution_list):
+            if not self.is_trivial_clause(cl_set):
+                hint[cl_set] = index
+        if not hint:
+            raise NotImplementedError
+            #  TODO This means that the original pattern is a tautology
+        if not self.resolution_algorithm(hint, list(hint.keys())):
+            # Inconclusive result, the original pattern is most likely not
+            # a tautology and nor is its negation
+            return None
+        ret_bool = True
+        ret_list, pf = self.build_proof_from_hint(hint, {}, clauses)
+        assert not ret_list
+        return ret_bool, pf
