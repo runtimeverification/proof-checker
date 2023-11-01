@@ -94,22 +94,6 @@ def id_to_metavar(id: int) -> Pattern:
     return MetaVar(id - 1)
 
 
-def clause_to_pattern(l: list[int]) -> Pattern:
-    assert len(l) > 0
-    pat = id_to_metavar(l[0])
-    if len(l) > 1:
-        pat = Or(pat, clause_to_pattern(l[1:]))
-    return pat
-
-
-def clause_list_to_pattern(l: list[list[int]]) -> Pattern:
-    assert len(l) > 0
-    pat = clause_to_pattern(l[0])
-    if len(l) > 1:
-        pat = And(pat, clause_list_to_pattern(l[1:]))
-    return pat
-
-
 def foldl_op(op: Callable[[Pattern, Pattern], Pattern], l: list[Pattern], start: int = 0, end: int = -1) -> Pattern:
     if end < 0:
         end = end + len(l)
@@ -124,6 +108,14 @@ def foldr_op(op: Callable[[Pattern, Pattern], Pattern], l: list[Pattern], start:
     if start < end:
         return op(l[start], foldr_op(op, l, start + 1, end))
     return l[start]
+
+
+def clause_to_pattern(l: list[int]) -> Pattern:
+    return foldr_op(Or, [id_to_metavar(id) for id in l])
+
+
+def clause_list_to_pattern(l: list[list[int]]) -> Pattern:
+    return foldr_op(And, [clause_to_pattern(cl) for cl in l])
 
 
 class Tautology(Propositional):
@@ -844,7 +836,7 @@ class Tautology(Propositional):
                 f'Unexpected pattern! Expected a term with only Or, And and Negations but got:\n{str(term)}\n'
             )
 
-    def AC_move_to_front(  # noqa: N802
+    def ac_move_to_front(  # noqa: N802
         self,
         positions: list[int],  # Sorted list of unique indices in the range [0, len(terms))
         terms: list[Pattern],
@@ -856,14 +848,17 @@ class Tautology(Propositional):
     ) -> ProofThunk:
         """
         Produces a proof of
-        p0 . (p1 . (p2 . (... px . (... . pn)))) <-> px . (p0 . (p1 . (... px-1 . (px+1 . (... . pn)))))
+        p0 . (p1 . (p2 . (... px1 .  (... pxn . (... . pn)))) <->
+        px1 . (px2 . (... . (pxn . (p0 . (p1 . (... px-1 . (px+1 . (... . pn)))))))
         where . represents the binary operation op
+        positions is a list of unique indices in the range(len(terms)) that should be swapped to the front
         assoc is of the form: p . (q . r) <-> (p . q) . r
         comm is of the form: p . q <-> q . p
         cong is of the form:
             p <-> q   r <-> s
           ---------------------
             p . r <-> q . s
+        extract_op breaks an op application into its two children
         """
         assoc_rev = lambda a, b, c: self.equiv_sym(assoc(a, b, c))
 
@@ -909,19 +904,16 @@ class Tautology(Propositional):
         return unroll(terms[0], foldr_op(op, terms, 1), sorted_pos, len(terms))
 
     def or_move_to_front(self, pos: list[int], terms: list[Pattern]) -> ProofThunk:
-        return self.AC_move_to_front(pos, terms, self.or_assoc, self.or_comm, self.or_cong, Or, Or.extract)
+        return self.ac_move_to_front(pos, terms, self.or_assoc, self.or_comm, self.or_cong, Or, Or.extract)
 
     def and_move_to_front(self, pos: list[int], terms: list[Pattern]) -> ProofThunk:
-        return self.AC_move_to_front(pos, terms, self.and_assoc, self.and_comm, self.and_cong, And, And.extract)
+        return self.ac_move_to_front(pos, terms, self.and_assoc, self.and_comm, self.and_cong, And, And.extract)
 
     def or_idem(self, p: Pattern = phi0) -> ProofThunk:
         """p \\/ p <-> p"""
-        return self.and_intro(
-            self.peirce_bot(p),
-            self.p1(p, neg(p))
-        )
+        return self.and_intro(self.peirce_bot(p), self.p1(p, neg(p)))
 
-    def reduce_duplicates_at_front(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+    def reduce_or_duplicates_at_front(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ (p \\/ q) <-> p \\/ q"""
         return self.equiv_transitivity(
             self.or_assoc(p, p, q),
@@ -930,36 +922,36 @@ class Tautology(Propositional):
 
     def reduce_n_or_duplicates_at_front(self, n: int, terms: list[Pattern]) -> ProofThunk:
         """p \\/ (p  ... (p \\/ q)) <-> p \\/ q"""
-        assert len(terms) > 0
-        if len(terms) == 1:
-            assert n == 0
-            return self.equiv_refl(terms[0])
+        assert 0 <= n < len(terms)
         if n == 0:
             return self.equiv_refl(foldr_op(Or, terms))
+        p = terms[0]
         if len(terms) == n + 1:
-            q = terms[0]
-            pf = self.or_idem(terms[0])
+            q = p
+            pf = self.or_idem(p)
         else:
-            q = foldr_op(Or, terms, n+1)
-            pf = self.reduce_duplicates_at_front(terms[0], q)
-            q = Or(terms[0], q)
-        for i in range(1, n):
-            pf = self.equiv_transitivity(self.reduce_duplicates_at_front(terms[0], q), pf)
-            q = Or(terms[0], q)
+            q = foldr_op(Or, terms, n + 1)
+            pf = self.reduce_or_duplicates_at_front(p, q)
+            q = Or(p, q)
+        for _ in range(n - 1):
+            pf = self.equiv_transitivity(self.reduce_or_duplicates_at_front(p, q), pf)
+            q = Or(p, q)
         return pf
 
-    def simplify_clause(self, cl: list[int], positions: list[int]) -> tuple[list[int], ProofThunk]:
-        cl = cl[:]
+    def simplify_clause(self, cl: list[int], resolvent: int) -> tuple[list[int], ProofThunk]:
+        positions = []
+        stripped_cl = []
+        for i in range(len(cl)):
+            if cl[i] == resolvent:
+                positions.append(i)
+            else:
+                stripped_cl.append(cl[i])
         if not positions:
             return cl, self.equiv_refl(clause_to_pattern(cl))
-        pf = self.or_move_to_front(positions[:], [id_to_metavar(id) for id in cl])
-        id = cl[positions[0]]
-        new_pos = sorted(positions, reverse=True)
-        for pos in new_pos:
-            assert cl[pos] == id
-            del cl[pos]
-        cl2 = ([id] * len(positions))+ cl
-        pf2 = self.reduce_n_or_duplicates_at_front(len(positions) - 1, [id_to_metavar(id) for id in cl2])
-        pf = self.equiv_transitivity(pf, pf2)
-        cl = [id] + cl
-        return cl, pf
+        n_pos = len(positions)
+        pf = self.or_move_to_front(positions, [id_to_metavar(id) for id in cl])
+        intermed_cl = ([resolvent] * n_pos) + stripped_cl
+        pf = self.equiv_transitivity(
+            pf, self.reduce_n_or_duplicates_at_front(n_pos - 1, [id_to_metavar(id) for id in intermed_cl])
+        )
+        return ([resolvent] + stripped_cl), pf
