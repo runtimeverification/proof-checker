@@ -64,19 +64,22 @@ module IMP5-REWRITE
 
   syntax KResult ::= Nat | IBool
 
-  syntax Vars5 ::= Nat "," Nat "," Nat "," Nat "," Nat "," Nat
-
   configuration <T>
                   <k color="green"> $PGM:Pgm </k>
-                  <s color="red"> (0 , 0 , 0 , 0 , 0 , 0):Vars5 </s>
+                  <x1  color="red"> 0:Nat </x1>
+                  <x2  color="red"> 0:Nat </x2>
+                  <x3  color="red"> 0:Nat </x3>
+                  <x4  color="red"> 0:Nat </x4>
+                  <x5  color="red"> 0:Nat </x5>
+                  <ret color="red"> 0:Nat </ret>
                 </T>
 
-  rule <k> x1 => I ...</k> <s> I , _ , _ , _ , _ , _ </s>
-  rule <k> x2 => I ...</k> <s> _ , I , _ , _ , _ , _ </s>
-  rule <k> x3 => I ...</k> <s> _ , _ , I , _ , _ , _ </s>
-  rule <k> x4 => I ...</k> <s> _ , _ , _ , I , _ , _ </s>
-  rule <k> x5 => I ...</k> <s> _ , _ , _ , _ , I , _ </s>
-  rule <k> ret => I ...</k> <s> _ , _ , _ , _ , _ , I </s>
+  rule <k> x1  => I ...</k> <x1>  I </x1>
+  rule <k> x2  => I ...</k> <x2>  I </x2>
+  rule <k> x3  => I ...</k> <x3>  I </x3>
+  rule <k> x4  => I ...</k> <x4>  I </x4>
+  rule <k> x5  => I ...</k> <x5>  I </x5>
+  rule <k> ret => I ...</k> <ret> I </ret>
 
   rule I1 + I2 => I1 +Nat I2
   rule I1 - I2 => I1 -Nat I2
@@ -86,12 +89,12 @@ module IMP5-REWRITE
   rule {} => .
   rule {S} => S
 
-  rule <k> x1 = I:Nat; => . ...</k> <s> ( _ => I ) , _ , _ , _ , _ , _ </s>
-  rule <k> x2 = I:Nat; => . ...</k> <s> _ , ( _ => I ) , _ , _ , _ , _ </s>
-  rule <k> x3 = I:Nat; => . ...</k> <s> _ , _ , ( _ => I ) , _ , _ , _ </s>
-  rule <k> x4 = I:Nat; => . ...</k> <s> _ , _ , _ , ( _ => I ) , _  , _ </s>
-  rule <k> x5 = I:Nat; => . ...</k> <s> _ , _ , _ , _ , ( _ => I ) , _ </s>
-  rule <k> ret = I:Nat; => . ...</k> <s> _ , _ , _ , _ , _ , ( _ => I ) </s>
+  rule <k> x1  = I:Nat; => . ...</k> <x1>  ( _ => I ) </x1>
+  rule <k> x2  = I:Nat; => . ...</k> <x2>  ( _ => I ) </x2>
+  rule <k> x3  = I:Nat; => . ...</k> <x3>  ( _ => I ) </x3>
+  rule <k> x4  = I:Nat; => . ...</k> <x4>  ( _ => I ) </x4>
+  rule <k> x5  = I:Nat; => . ...</k> <x5>  ( _ => I ) </x5>
+  rule <k> ret = I:Nat; => . ...</k> <ret> ( _ => I ) </ret>
 
   rule S1:Stmt S2:Stmt => S1 ~> S2
   rule if (true)  S else _ => S
