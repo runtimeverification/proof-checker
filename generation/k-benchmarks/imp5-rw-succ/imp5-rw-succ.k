@@ -35,7 +35,7 @@ module INTERNAL-DOMAIN
   rule s(N:Nat) >Nat s(M:Nat) => N >Nat M
 endmodule
 
-module IMP5-REWRITE-SYNTAX
+module IMP5-RW-SUCC-SYNTAX
   imports INTERNAL-DOMAIN-SYNTAX
 
   syntax Id2 ::= "x1" | "x2" | "x3" | "x4" | "x5" | "ret"
@@ -58,8 +58,8 @@ module IMP5-REWRITE-SYNTAX
 
 endmodule
 
-module IMP5-REWRITE
-  imports IMP5-REWRITE-SYNTAX
+module IMP5-RW-SUCC
+  imports IMP5-RW-SUCC-SYNTAX
   imports INTERNAL-DOMAIN
 
   syntax KResult ::= Nat | IBool
