@@ -110,6 +110,22 @@ def clause_list_to_pattern(l: list[list[int]]) -> Pattern:
     return pat
 
 
+def foldl_op(op: Callable[[Pattern, Pattern], Pattern], l: list[Pattern], start: int = 0, end: int = -1) -> Pattern:
+    if end < 0:
+        end = end + len(l)
+    if start < end:
+        return op(foldl_op(op, l, start, end - 1), l[end])
+    return l[start]
+
+
+def foldr_op(op: Callable[[Pattern, Pattern], Pattern], l: list[Pattern], start: int = 0, end: int = -1) -> Pattern:
+    if end < 0:
+        end = end + len(l)
+    if start < end:
+        return op(l[start], foldr_op(op, l, start + 1, end))
+    return l[start]
+
+
 class Tautology(Propositional):
     @staticmethod
     def axioms() -> list[Pattern]:
@@ -828,80 +844,82 @@ class Tautology(Propositional):
                 f'Unexpected pattern! Expected a term with only Or, And and Negations but got:\n{str(term)}\n'
             )
 
-    # NOTE This can be optimized by returning a proof of a concrete term equivalence
-    # so that it doesn't need to be instantiated after it's generated
     def AC_move_to_front(  # noqa: N802
         self,
-        pos: int,
-        len: int,
-        assoc: ProofThunk,
-        comm: ProofThunk,
+        positions: list[int],  # Sorted list of unique indices in the range [0, len(terms))
+        terms: list[Pattern],
+        assoc: Callable[[Pattern, Pattern, Pattern], ProofThunk],
+        comm: Callable[[Pattern, Pattern], ProofThunk],
         cong: Callable[[ProofThunk, ProofThunk], ProofThunk],
         op: Callable[[Pattern, Pattern], Pattern],
+        extract_op: Callable[[Pattern], tuple[Pattern, ...]],
     ) -> ProofThunk:
         """
         Produces a proof of
         p0 . (p1 . (p2 . (... px . (... . pn)))) <-> px . (p0 . (p1 . (... px-1 . (px+1 . (... . pn)))))
-        assoc is of the form: phi0 . (phi1 . phi2) <-> (phi0 . phi1) . phi2
-        comm is of the form: phi0 . phi1 <-> phi1 . phi0
+        where . represents the binary operation op
+        assoc is of the form: p . (q . r) <-> (p . q) . r
+        comm is of the form: p . q <-> q . p
         cong is of the form:
             p <-> q   r <-> s
           ---------------------
             p . r <-> q . s
         """
-        if pos == 0:
-            return self.equiv_refl()
-        assoc_rev = self.equiv_sym(assoc)
-        is_last: bool = pos == len - 1
-        if is_last:
-            if pos == 1:
-                return comm
-            pos -= 1
-        term: Pattern = MetaVar(pos + 1)
-        for i in range(pos, 1, -1):
-            term = op(MetaVar(i), term)
-        subst: dict[int, Pattern] = {2: term}
-        shift_left = ProofThunk(partial(self.dynamic_inst, assoc, subst), assoc.conc.instantiate(subst))
-        for _ in range(pos - 1):
-            shift_left = self.equiv_trans_match2(shift_left, assoc)
-        if is_last:
-            pf: ProofThunk = self.equiv_trans_match2(shift_left, comm)
-        else:
-            pf = self.equiv_trans_match2(shift_left, cong(comm, self.equiv_refl(phi2)))
-            pf = self.equiv_trans_match2(pf, assoc_rev)
-        if pos > 1:
-            for_phi0: Pattern = MetaVar(0)
-            for i in range(1, pos - 1):
-                for_phi0 = op(for_phi0, MetaVar(i))
-            if is_last:
-                for_phi2 = MetaVar(pos)
-            else:
-                for_phi2 = MetaVar(pos + 1)
-            subst = {0: for_phi0, 1: MetaVar(pos - 1), 2: for_phi2}
-            shift_right = ProofThunk(partial(self.dynamic_inst, assoc_rev, subst), assoc_rev.conc.instantiate(subst))
-            for _ in range(pos - 2):
-                shift_right = self.equiv_trans_match2(shift_right, assoc_rev)
-            if is_last:
-                left_term = MetaVar(pos + 1)
-            else:
-                left_term = MetaVar(pos)
-            return self.equiv_transitivity(pf, cong(self.equiv_refl(left_term), shift_right))
-        return pf
+        assoc_rev = lambda a, b, c: self.equiv_sym(assoc(a, b, c))
 
-    def or_move_to_front(self, pos: int, len: int) -> ProofThunk:
-        return self.AC_move_to_front(pos, len, self.or_assoc(), self.or_comm(), self.or_cong, Or)
+        def unroll(term_l: Pattern, term_r: Pattern, positions: list[int], l: int, unrolling: int = 0) -> ProofThunk:
+            if not positions:
+                return self.equiv_refl(op(term_l, term_r))
+            pos = positions[0]
+            assert unrolling + 1 < l
+            assert pos < l
+            if pos <= unrolling:
+                if unrolling == 0:
+                    if l == 2:
+                        return self.equiv_refl(op(term_l, term_r))
+                    mid, term_r = extract_op(term_r)
+                    rec_pf = unroll(mid, term_r, positions[1:], l - 1)
+                    return cong(self.equiv_refl(term_l), rec_pf)
+                term_l, mid = extract_op(term_l)
+                if pos == unrolling:
+                    pf = cong(comm(term_l, mid), self.equiv_refl(term_r))
+                    pf = self.equiv_transitivity(pf, assoc_rev(mid, term_l, term_r))
+                    rec_pf = unroll(term_l, term_r, positions[1:], l - 1, unrolling - 1)
+                    return self.equiv_transitivity(pf, cong(self.equiv_refl(mid), rec_pf))
+                rec_pf = unroll(term_l, op(mid, term_r), positions, l, unrolling - 1)
+                return self.equiv_transitivity(assoc_rev(term_l, mid, term_r), rec_pf)
+            if l == 2:
+                return comm(term_l, term_r)
+            if unrolling == l - 2:
+                pf = comm(term_l, term_r)
+                term_l, mid = extract_op(term_l)
+                rec_pf = unroll(term_l, mid, positions[1:], l - 1, l - 3)
+                return self.equiv_transitivity(pf, cong(self.equiv_refl(term_r), rec_pf))
+            mid, term_r = extract_op(term_r)
+            pf = assoc(term_l, mid, term_r)
+            rec_pf = unroll(op(term_l, mid), term_r, positions, l, unrolling + 1)
+            return self.equiv_transitivity(pf, rec_pf)
 
-    def and_move_to_front(self, pos: int, len: int) -> ProofThunk:
-        return self.AC_move_to_front(pos, len, self.and_assoc(), self.and_comm(), self.and_cong, And)
+        if len(terms) == 1:
+            return self.equiv_refl(terms[0])
+        sorted_pos = sorted(positions)
+        for i in range(len(positions)):
+            sorted_pos[i] = sorted_pos[i] - i
+        sorted_pos.append(0)
+        return unroll(terms[0], foldr_op(op, terms, 1), sorted_pos, len(terms))
 
-    def or_move_n_to_front(self, positions: list[int], l: int) -> ProofThunk:
-        """Assumes positions is sorted decreasingly"""
-        if not positions:
-            return self.equiv_refl()
-        pf = self.or_move_to_front(positions[0], l)
-        for i in range(1, len(positions)):
-            pf = self.equiv_trans_match2(pf, self.or_move_to_front((positions[i] + i), l))
-        return pf
+    def or_move_to_front(self, pos: list[int], terms: list[Pattern]) -> ProofThunk:
+        return self.AC_move_to_front(pos, terms, self.or_assoc, self.or_comm, self.or_cong, Or, Or.extract)
+
+    def and_move_to_front(self, pos: list[int], terms: list[Pattern]) -> ProofThunk:
+        return self.AC_move_to_front(pos, terms, self.and_assoc, self.and_comm, self.and_cong, And, And.extract)
+
+    def or_idem(self, p: Pattern = phi0) -> ProofThunk:
+        """p \\/ p <-> p"""
+        return self.and_intro(
+            self.peirce_bot(p),
+            self.p1(p, neg(p))
+        )
 
     def reduce_duplicates_at_front(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ (p \\/ q) <-> p \\/ q"""
@@ -910,31 +928,38 @@ class Tautology(Propositional):
             self.and_intro(self.imim_or_l(q, self.peirce_bot(p)), self.imim_or_l(q, self.p1(p, neg(p)))),
         )
 
-    def reduce_n_duplicates_at_front(self, n: int) -> ProofThunk:
-        """phi0 \\/ (phi0  ... (phi0 \\/ phi1)) <-> phi0 \\/ phi1"""
-        p = phi0
-        q = phi1
+    def reduce_n_or_duplicates_at_front(self, n: int, terms: list[Pattern]) -> ProofThunk:
+        """p \\/ (p  ... (p \\/ q)) <-> p \\/ q"""
+        assert len(terms) > 0
+        if len(terms) == 1:
+            assert n == 0
+            return self.equiv_refl(terms[0])
         if n == 0:
-            return self.equiv_refl(phi0)
-        pf = self.reduce_duplicates_at_front(p, q)
+            return self.equiv_refl(foldr_op(Or, terms))
+        if len(terms) == n + 1:
+            q = terms[0]
+            pf = self.or_idem(terms[0])
+        else:
+            q = foldr_op(Or, terms, n+1)
+            pf = self.reduce_duplicates_at_front(terms[0], q)
+            q = Or(terms[0], q)
         for i in range(1, n):
-            pat = clause_to_pattern(([1] * i) + [2])
-            pf = self.equiv_transitivity(self.reduce_duplicates_at_front(p, pat), pf)
+            pf = self.equiv_transitivity(self.reduce_duplicates_at_front(terms[0], q), pf)
+            q = Or(terms[0], q)
         return pf
 
     def simplify_clause(self, cl: list[int], positions: list[int]) -> tuple[list[int], ProofThunk]:
         cl = cl[:]
         if not positions:
             return cl, self.equiv_refl(clause_to_pattern(cl))
-        positions = sorted(positions, reverse=True)
-        pat = clause_to_pattern(cl)
-        pf = self.or_move_n_to_front(positions, len(cl))
-        pf = self.equiv_match_l(pf, pat)
-        pf2 = self.reduce_n_duplicates_at_front(len(positions) - 1)
-        pf = self.equiv_trans_match2(pf, pf2)
+        pf = self.or_move_to_front(positions[:], [id_to_metavar(id) for id in cl])
         id = cl[positions[0]]
-        for pos in positions:
+        new_pos = sorted(positions, reverse=True)
+        for pos in new_pos:
             assert cl[pos] == id
             del cl[pos]
+        cl2 = ([id] * len(positions))+ cl
+        pf2 = self.reduce_n_or_duplicates_at_front(len(positions) - 1, [id_to_metavar(id) for id in cl2])
+        pf = self.equiv_transitivity(pf, pf2)
         cl = [id] + cl
         return cl, pf

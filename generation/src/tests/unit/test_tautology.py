@@ -142,24 +142,11 @@ def test_tautology_prover(p: Pattern) -> None:
     print(f'Proved\n{str(res3)}\n<->\n{str(res4)}\n\n')
 
 
-@pytest.mark.parametrize('i', range(5))
-@pytest.mark.parametrize('is_last', [False, True])
-def test_move_last_to_front(i: int, is_last: bool) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
-
-    len = i + 1 if is_last else 100
-
-    pf = taut.or_move_to_front(i, len)
-    conc = pf().conclusion
-    c1, c2 = Equiv.extract(conc)
-
-    print(f'Proved {str(c1)} <-> {str(c2)} \n\n')
-
-
 simplify_clause_test_cases = [
     ([2, 1, 1, 3], []),
     ([1], [0]),
     ([2], [0]),
+    ([1, 1, 1, 1], [0, 1, 2, 3]),
     ([1, 2, 2], [0]),
     ([2, 1], [1]),
     ([1, 2, 3, 1], [0, 3]),
