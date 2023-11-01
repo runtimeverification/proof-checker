@@ -99,6 +99,24 @@ int test_sfresh(int a, int b) {
   return 0;
 }
 
+int test_wellformedness_fresh() {
+  auto phi0_s_fresh_0 =
+      Pattern::metavar_s_fresh(0, 0, IdList::create(0), IdList::create(0));
+  assert(phi0_s_fresh_0->pattern_well_formed());
+
+  auto phi1_e_fresh = IdList::create();
+  phi1_e_fresh->push_back(1);
+  phi1_e_fresh->push_back(2);
+  phi1_e_fresh->push_back(0);
+  auto phi1 =
+      Pattern::metavar(1, phi1_e_fresh, IdList::create(), IdList::create(),
+          IdList::create(), IdList::create(2));
+
+  assert(!phi1->pattern_well_formed());
+
+  return 0;
+}
+
 int test_positivity() {
 
   auto X0 = Pattern::svar(0);
@@ -523,6 +541,62 @@ void execute_vector(std::array<int, MAX_SIZE> &instrs, Pattern::Stack &stack,
   Pattern::execute_instructions(instrs, stack, memory, claims, phase);
 }
 
+void test_publish() {
+
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 1;
+  proof[1] = (int)Instruction::Publish;
+  proof[2] = (int)138; // NO_OP
+
+  auto stack = Pattern::Stack();
+  auto memory = Pattern::Memory();
+  auto claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Pattern_(Pattern::symbol(0)));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Gamma);
+
+  auto expected_stack = Pattern::Stack();
+  auto expected_claims = Pattern::Claims();
+  auto expected_memory = Pattern::Memory();
+  expected_memory.push_back(Pattern::Term::Proved_(Pattern::symbol(0)));
+
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+
+  stack = Pattern::Stack();
+  memory = Pattern::Memory();
+  claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Pattern_(Pattern::symbol(0)));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Claim);
+
+  expected_stack = Pattern::Stack();
+  expected_memory = Pattern::Memory();
+  expected_claims = Pattern::Claims();
+  expected_claims.push_back(Pattern::symbol(0));
+
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+
+  stack = Pattern::Stack();
+  memory = Pattern::Memory();
+  claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Proved_(Pattern::symbol(0)));
+  claims.push_back(Pattern::symbol(0));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  expected_stack = Pattern::Stack();
+  expected_memory = Pattern::Memory();
+  expected_claims = Pattern::Claims();
+
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+}
+
 void test_construct_phi_implies_phi() {
 
   // MetaVar(0,0,0,0,0,0)
@@ -642,19 +716,50 @@ int test_phi_implies_phi_impl() {
   return 0;
 }
 
+int test_universal_quantification() {
+
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 2;
+  proof[1] = (int)Instruction::Generalization;
+  proof[2] = 0;
+  proof[3] = (int)138; // NO_OP
+
+  auto stack = Pattern::Stack();
+  auto memory = Pattern::Memory();
+  auto claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Proved_(Pattern::implies(Pattern::symbol(0), Pattern::symbol(1))));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  auto expected_stack = Pattern::Stack();
+  auto expected_memory = Pattern::Memory();
+  auto expected_claims = Pattern::Claims();
+
+  expected_stack.push_back(Pattern::Term::Proved_(
+    Pattern::implies(Pattern::exists(0, Pattern::symbol(0)), Pattern::symbol(1))));
+  
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+
+  return 0;
+}
+
 int test_no_remaining_claims() {
 
-  auto gamma = std::array<int, MAX_SIZE>();
-  gamma[0] = 1;        // Size
+  std::array<int, MAX_SIZE> gamma;
+  gamma[0] = 0;        // Size
   gamma[1] = (int)138; // NO_OP
-  auto claims = std::array<int, MAX_SIZE>();
-  claims[0] = 4; // Size
+
+  std::array<int, MAX_SIZE> claims;
+  claims[0] = 3; // Size
   claims[1] = (int)Instruction::Symbol;
   claims[2] = 0;
   claims[3] = (int)Instruction::Publish;
   claims[4] = (int)138;
-  auto proof = std::array<int, MAX_SIZE>();
-  proof[0] = 1;        // Size
+
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 0;        // Size
   proof[1] = (int)138; // NO_OP
 
   Pattern::verify(gamma, claims, proof);
