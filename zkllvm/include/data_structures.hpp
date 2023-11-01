@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 
-void *memset_(void *ptr, uint8_t value, size_t num) {
+void *memset_(void *ptr, int value, size_t num) {
   auto *byte_ptr = (unsigned char *)ptr;
   auto byte_value = (unsigned char)value;
 
@@ -38,8 +38,7 @@ bool equal(const Node<T> &lhs, const Node<T> &rhs) noexcept {
   return lhs.data.operator==(rhs.data) && lhs.next == rhs.next;
 }
 
-template <>
-bool equal(const Node<uint8_t> &lhs, const Node<uint8_t> &rhs) noexcept {
+template <> bool equal(const Node<int> &lhs, const Node<int> &rhs) noexcept {
 
   if (!lhs.data && !rhs.data) {
     return true;
@@ -60,7 +59,7 @@ public:
     while (curr) {
       Node<T> *next = curr->next;
       curr->~Node();
-      std::free(curr);
+      free(curr);
       curr = next;
     }
   }
@@ -163,16 +162,16 @@ public:
     return false;
   }
 
-  T &get(uint8_t index) noexcept {
+  T &get(int index) noexcept {
     Node<T> *curr = head;
-    for (uint8_t i = 0; i < index; i++) {
+    for (int i = 0; i < index; i++) {
       curr = curr->next;
       assert(curr && "Index out of bounds.");
     }
     return curr->data;
   }
 
-  T &operator[](uint8_t index) noexcept { return get(index); }
+  T &operator[](int index) noexcept { return get(index); }
 
   size_t size() noexcept {
     size_t count = 0;
@@ -219,7 +218,7 @@ public:
     }
     Node<T> *curr = head;
     while (curr) {
-      std::cout << (uint8_t)curr->data << " ";
+      std::cout << (int)curr->data << " ";
       curr = curr->next;
     }
   }

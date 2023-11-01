@@ -6,8 +6,8 @@ public:
   Rc() noexcept : ptr(nullptr), ref_count(nullptr) {}
 
   Rc(T *raw_ptr) noexcept : ptr(raw_ptr), ref_count(nullptr) {
-    ref_count = static_cast<uint8_t *>(
-        malloc(sizeof(uint8_t))); // Initialize the reference count to 1
+    ref_count = static_cast<int *>(
+        malloc(sizeof(int))); // Initialize the reference count to 1
     *ref_count = 1;
   }
 
@@ -80,5 +80,5 @@ public:
 
 private:
   T *ptr = nullptr;
-  uint8_t *ref_count = nullptr;
+  int *ref_count = nullptr;
 };
