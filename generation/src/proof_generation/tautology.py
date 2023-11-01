@@ -117,17 +117,20 @@ def clause_to_pattern(l: Clause) -> Pattern:
 def clause_list_to_pattern(l: ClauseConjunction) -> Pattern:
     return foldr_op(And, [clause_to_pattern(cl) for cl in l])
 
+
 class ResolutionHintSource:
-    left_set: frozenset(int)
-    right_set: frozenset(int)
+    left_set: frozenset[int]
+    right_set: frozenset[int]
     resolvant: int
-    def __init__(self, left_set: frozenset(int), right_set: frozenset(int), resolvant: int) -> None:
+
+    def __init__(self, left_set: frozenset[int], right_set: frozenset[int], resolvant: int) -> None:
         self.left_set = left_set
         self.right_set = right_set
         self.resolvant = resolvant
 
 
-ResolutionHint = dict[frozenset, ResolutionHintSource | int]
+ResolutionHint = dict[frozenset[int], ResolutionHintSource | int]
+
 
 class Tautology(ProofExp):
     prop: Propositional
@@ -724,10 +727,10 @@ class Tautology(ProofExp):
             return self.or_assoc_r(l1, l2, term_r)
         return self.equiv_transitivity(
             self.equiv_sym(self.or_assoc(l1, l2, term_r)),
-            self.or_cong(self.equiv_refl(l1), self.merge_clauses(l2, len_l-1, term_r))
+            self.or_cong(self.equiv_refl(l1), self.merge_clauses(l2, len_l - 1, term_r)),
         )
 
-    def resolution_algorithm(self, hint: ResolutionHint, l: list[frozenset(int)]) -> bool:
+    def resolution_algorithm(self, hint: ResolutionHint, l: list[frozenset[int]]) -> bool:
         for cl1 in l:
             for cl2 in l:
                 if cl2 == cl1:
@@ -745,15 +748,42 @@ class Tautology(ProofExp):
                         return True
                     l.append(res_set)
         return False
-    
-    def is_trivial_clause(cl: frozenset(int)):
+
+    def is_trivial_clause(self, cl: frozenset[int]) -> bool:
         l = list(cl)
         for x1, x2 in combinations(l, 2):
             if x1 + x2 == 0:
                 return True
         return False
 
-    def build_proof_from_hint(self, hint: ResolutionHint, cl: frozenset(int), terms: list[list[int]]) -> tuple[list(int), ProofThunk]:
+    def prove_trivial_claim(self, cl: list[int]) -> ProofThunk:
+        for (i1, x1), (i2, x2) in combinations(enumerate(cl), 2):
+            if x1 + x2 == 0:
+                neg_first = (x1 < x2) == (i1 < i2)
+                id = x1
+                pos = [i1, i2]
+                break
+        if id < 0:
+            id = -id
+        id_term = id_to_metavar(id)
+        if len(cl) == 2:
+            if neg_first:
+                return self.dneg_elim(id_term)
+            return self.imp_refl(neg(id_term))
+        pf = self.or_move_to_front(pos, [id_to_metavar(x) for x in cl])
+        rest = clause_to_pattern(cl[2:])
+        if neg_first:
+            pf2 = self.or_assoc(neg(id_term), id_term, rest)
+            pf = self.equiv_transitivity(pf, pf2)
+            return self.equiv_transitivity(pf, self.or_cong(self.dneg_elim(id_term), self.equiv_refl(rest)))
+        else:
+            pf2 = self.or_assoc(id_term, neg(id_term), rest)
+            pf = self.equiv_transitivity(pf, pf2)
+            return self.equiv_transitivity(pf, self.or_cong(self.imp_refl(neg(id_term)), self.equiv_refl(rest)))
+
+    def build_proof_from_hint(
+        self, hint: ResolutionHint, cl: frozenset[int], terms: list[list[int]]
+    ) -> tuple[list[int], ProofThunk]:
         res = hint[cl]
         if isinstance(res, ResolutionHintSource):
             resolvant = res.resolvant
@@ -766,25 +796,21 @@ class Tautology(ProofExp):
             assert term_l[0] == resolvant
             final_term = term_l[1:] + term_r[1:]
             assert frozenset(final_term) == cl
-            pf_l = self.imp_transitivity(
-                pf_l,
-                self.and_l(simplify_l)
-            )
-            pf_r = self.imp_transitivity(
-                pf_r,
-                self.and_l(simplify_r)
-            )
+            pf_l = self.imp_transitivity(pf_l, self.and_l(simplify_l))
+            pf_r = self.imp_transitivity(pf_r, self.and_l(simplify_r))
             match (len(term_l) == 1), (len(term_r) == 1):
                 case False, False:
-                    pf = self.resolution(resolvant_term, foldr_op(Or, term_l), foldr_op(Or, term_r))
+                    pf = self.resolution(resolvant_term, clause_to_pattern(term_l), clause_to_pattern(term_r))
                     pf = self.imp_transitivity(
                         pf,
-                        self.and_l(self.merge_clauses(foldr_op(Or, term_l), len(term_l), foldr_op(Or, term_r)))
+                        self.and_l(
+                            self.merge_clauses(clause_to_pattern(term_l), len(term_l), clause_to_pattern(term_r))
+                        ),
                     )
                 case False, True:
-                    pf = self.resolution_l(resolvant_term, foldr_op(Or, term_l))
+                    pf = self.resolution_l(resolvant_term, clause_to_pattern(term_l))
                 case True, False:
-                    pf = self.resolution_r(resolvant_term, foldr_op(Or, term_r))
+                    pf = self.resolution_r(resolvant_term, clause_to_pattern(term_r))
                 case True, True:
                     pf = self.resolution_base(resolvant_term)
             pf = self.resolution_step(pf_l, pf_r, pf)
@@ -800,13 +826,18 @@ class Tautology(ProofExp):
             if not self.is_trivial_clause(cl_set):
                 hint[cl_set] = index
         if not hint:
-            raise NotImplementedError
-            #  TODO This means that the original pattern is a tautology
+            if len(clauses) == 1:
+                return True, self.prove_trivial_claim(clauses[0])
+            pfs = [self.prove_trivial_claim(cl) for cl in clauses]
+            prf = self.and_intro(pfs[-2], pfs[-1])
+            for pf in reversed(pfs[:-2]):
+                prf = self.and_intro(pf, prf)
+            return True, prf
         if not self.resolution_algorithm(hint, list(hint.keys())):
             # Inconclusive result, the original pattern is most likely not
             # a tautology and nor is its negation
             return None
-        ret_bool = True
-        ret_list, pf = self.build_proof_from_hint(hint, {}, clauses)
+        ret_bool = False
+        ret_list, pf = self.build_proof_from_hint(hint, frozenset([]), clauses)
         assert not ret_list
         return ret_bool, pf
