@@ -110,11 +110,15 @@ def foldr_op(op: Callable[[Pattern, Pattern], Pattern], l: list[Pattern], start:
     return l[start]
 
 
-def clause_to_pattern(l: Clause) -> Pattern:
+def clause_to_pattern(l: list[int]) -> Pattern:
+    if not l:
+        return bot
     return foldr_op(Or, [id_to_metavar(id) for id in l])
 
 
-def clause_list_to_pattern(l: ClauseConjunction) -> Pattern:
+def clause_list_to_pattern(l: list[list[int]]) -> Pattern:
+    if not l:
+        return top
     return foldr_op(And, [clause_to_pattern(cl) for cl in l])
 
 
@@ -229,6 +233,30 @@ class Tautology(ProofExp):
     def or_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ q <-> q \\/ p"""
         return self.prop.and_intro(self.or_comm_imp(p, q), self.or_comm_imp(q, p))
+
+    def or_l_imp(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """p -> p \\/ q"""
+        return self.ant_commutativity(self.absurd(p, q))
+
+    def or_r_imp(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """q -> p \\/ q"""
+        return self.p1(q, neg(p))
+
+    def or_l(self, p_pf: ProofThunk, q: Pattern) -> ProofThunk:
+        """
+             p
+        ------------
+          p \\/ q
+        """
+        return self.mp(self.or_l_imp(p_pf.conc, q), p_pf)
+
+    def or_r(self, q_pf: ProofThunk, p: Pattern) -> ProofThunk:
+        """
+             q
+        ------------
+          p \\/ q
+        """
+        return self.mp(self.or_r_imp(p, q_pf.conc), q_pf)
 
     def equiv_refl(self, p: Pattern = phi0) -> ProofThunk:
         """p <-> p"""
@@ -724,7 +752,7 @@ class Tautology(ProofExp):
             return self.equiv_refl(Or(term_l, term_r))
         l1, l2 = Or.extract(term_l)
         if len_l == 2:
-            return self.or_assoc_r(l1, l2, term_r)
+            return self.equiv_sym(self.or_assoc(l1, l2, term_r))
         return self.equiv_transitivity(
             self.equiv_sym(self.or_assoc(l1, l2, term_r)),
             self.or_cong(self.equiv_refl(l1), self.merge_clauses(l2, len_l - 1, term_r)),
@@ -756,30 +784,28 @@ class Tautology(ProofExp):
                 return True
         return False
 
-    def prove_trivial_claim(self, cl: list[int]) -> ProofThunk:
+    def prove_trivial_clause(self, cl: list[int]) -> ProofThunk:
         for (i1, x1), (i2, x2) in combinations(enumerate(cl), 2):
             if x1 + x2 == 0:
                 neg_first = (x1 < x2) == (i1 < i2)
-                id = x1
+                id = abs(x1)
                 pos = [i1, i2]
                 break
-        if id < 0:
-            id = -id
         id_term = id_to_metavar(id)
         if len(cl) == 2:
             if neg_first:
                 return self.dneg_elim(id_term)
             return self.imp_refl(neg(id_term))
-        pf = self.or_move_to_front(pos, [id_to_metavar(x) for x in cl])
-        rest = clause_to_pattern(cl[2:])
+        pf = self.and_r(self.or_move_to_front(pos, [id_to_metavar(x) for x in cl]))
+        rest_cl = [x for (i, x) in enumerate(cl) if i not in pos]
+        rest = clause_to_pattern(rest_cl)
         if neg_first:
-            pf2 = self.or_assoc(neg(id_term), id_term, rest)
-            pf = self.equiv_transitivity(pf, pf2)
-            return self.equiv_transitivity(pf, self.or_cong(self.dneg_elim(id_term), self.equiv_refl(rest)))
+            pf = self.imp_transitivity(self.or_assoc_r(neg(id_term), id_term, rest), pf)
+            pf2 = self.or_l(self.dneg_elim(id_term), rest)
         else:
-            pf2 = self.or_assoc(id_term, neg(id_term), rest)
-            pf = self.equiv_transitivity(pf, pf2)
-            return self.equiv_transitivity(pf, self.or_cong(self.imp_refl(neg(id_term)), self.equiv_refl(rest)))
+            pf = self.imp_transitivity(self.or_assoc_r(id_term, neg(id_term), rest), pf)
+            pf2 = self.or_l(self.imp_refl(neg(id_term)), rest)
+        return self.mp(pf, pf2)
 
     def build_proof_from_hint(
         self, hint: ResolutionHint, cl: frozenset[int], terms: list[list[int]]
@@ -790,27 +816,29 @@ class Tautology(ProofExp):
             resolvant_term = id_to_metavar(resolvant)
             term_l, pf_l = self.build_proof_from_hint(hint, res.left_set, terms)
             term_r, pf_r = self.build_proof_from_hint(hint, res.right_set, terms)
-            term_l, simplify_l = self.simplify_clause(term_l, resolvant)
+            term_l, simplify_l = self.simplify_clause(term_l, -resolvant)
             term_r, simplify_r = self.simplify_clause(term_r, resolvant)
             assert term_l[0] == -resolvant
-            assert term_l[0] == resolvant
-            final_term = term_l[1:] + term_r[1:]
+            assert term_r[0] == resolvant
+            term_l_rest = term_l[1:]
+            term_r_rest = term_r[1:]
+            final_term = term_l_rest + term_r_rest
             assert frozenset(final_term) == cl
             pf_l = self.imp_transitivity(pf_l, self.and_l(simplify_l))
             pf_r = self.imp_transitivity(pf_r, self.and_l(simplify_r))
-            match (len(term_l) == 1), (len(term_r) == 1):
+            match (len(term_l_rest) == 0), (len(term_r_rest) == 0):
                 case False, False:
-                    pf = self.resolution(resolvant_term, clause_to_pattern(term_l), clause_to_pattern(term_r))
+                    term_l_pat = clause_to_pattern(term_l_rest)
+                    term_r_pat = clause_to_pattern(term_r_rest)
+                    pf = self.resolution(resolvant_term, term_l_pat, term_r_pat)
                     pf = self.imp_transitivity(
                         pf,
-                        self.and_l(
-                            self.merge_clauses(clause_to_pattern(term_l), len(term_l), clause_to_pattern(term_r))
-                        ),
+                        self.and_l(self.merge_clauses(term_l_pat, len(term_l_rest), term_r_pat)),
                     )
                 case False, True:
-                    pf = self.resolution_l(resolvant_term, clause_to_pattern(term_l))
+                    pf = self.resolution_l(resolvant_term, clause_to_pattern(term_l_rest))
                 case True, False:
-                    pf = self.resolution_r(resolvant_term, clause_to_pattern(term_r))
+                    pf = self.resolution_r(resolvant_term, clause_to_pattern(term_r_rest))
                 case True, True:
                     pf = self.resolution_base(resolvant_term)
             pf = self.resolution_step(pf_l, pf_r, pf)
@@ -820,6 +848,8 @@ class Tautology(ProofExp):
 
     # The returned boolean represents whether the proof is a proof of the original formula (True) or its negation (False)
     def start_resolution_algorithm(self, clauses: list[list[int]]) -> tuple[bool, ProofThunk] | None:
+        if not clauses:
+            return True, self.top_intro()
         resolution_list = [frozenset(cl) for cl in clauses]
         hint: ResolutionHint = {}
         for index, cl_set in enumerate(resolution_list):
@@ -827,8 +857,8 @@ class Tautology(ProofExp):
                 hint[cl_set] = index
         if not hint:
             if len(clauses) == 1:
-                return True, self.prove_trivial_claim(clauses[0])
-            pfs = [self.prove_trivial_claim(cl) for cl in clauses]
+                return True, self.prove_trivial_clause(clauses[0])
+            pfs = [self.prove_trivial_clause(cl) for cl in clauses]
             prf = self.and_intro(pfs[-2], pfs[-1])
             for pf in reversed(pfs[:-2]):
                 prf = self.and_intro(pf, prf)
