@@ -1,0 +1,17 @@
+// Modified from the transfer function at
+//   https://docs.soliditylang.org/en/v0.8.17/contracts.html
+
+// addressTo, amount, balanceSender, balanceTo, ret
+// int x1, x2, x3, x4, ret;
+x1 = 12345;
+x2 = 10;
+x3 = 100;
+x4 = 200;
+
+if (x2 > x3){
+  ret = 0;
+} else {
+  x3 = x3 - x2;
+  x4 = x4 + x2;
+  ret = 1;
+}
