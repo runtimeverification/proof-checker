@@ -15,29 +15,25 @@ module IMP5-RW-LITERAL-SYNTAX
 
   syntax Id2 ::= "x1" | "x2" | "x3" | "x4" | "x5" | "ret"
   syntax AExp  ::= IInt | Id2
-                 | "(" AExp ")"               [bracket]
-                 > AExp "+" AExp              [left, seqstrict]
-                 | AExp "-" AExp              [left, seqstrict]
+                 > AExp "+" AExp
+                 | AExp "-" AExp
   syntax BExp  ::= IBool
-                 | AExp ">" AExp              [seqstrict]
-                 | "(" BExp ")"               [bracket]
+                 | AExp ">" AExp
   syntax Block ::= "{" "}"
-                 | "{" Stmt "}"
+                 | "{" StmtList "}"
   syntax Stmt  ::= Block
-                 | Id2 "=" AExp ";"           [strict(2)]
+                 | Id2 "=" AExp ";"
                  | "if" "(" BExp ")"
-                   Block "else" Block         [strict(1)]
+                   Block "else" Block
                  | "while" "(" BExp ")" Block
-                 > Stmt Stmt                  [left]
-  syntax Pgm ::= Stmt
+  syntax StmtList ::= Stmt | Stmt StmtList
+  syntax Pgm ::= StmtList
 
 endmodule
 
 module IMP5-RW-LITERAL
   imports IMP5-RW-LITERAL-SYNTAX
   imports INTERNAL-DOMAIN
-
-  syntax KResult ::= IInt | IBool
 
   configuration <T>
                   <k color="green"> $PGM:Pgm </k>
@@ -49,6 +45,11 @@ module IMP5-RW-LITERAL
                   <ret color="red"> 0:IInt </ret>
                 </T>
 
+  // for manually defining heating/cooling rules
+  syntax AExp ::= "#hole"
+  syntax BExp ::= "#hole"
+
+  // Identifiers
   rule <k> x1  => I ...</k> <x1>  I </x1>
   rule <k> x2  => I ...</k> <x2>  I </x2>
   rule <k> x3  => I ...</k> <x3>  I </x3>
@@ -56,25 +57,43 @@ module IMP5-RW-LITERAL
   rule <k> x5  => I ...</k> <x5>  I </x5>
   rule <k> ret => I ...</k> <ret> I </ret>
 
+  // + [seqstrict]
+  rule <k> A1:AExp + A2:AExp => A1 ~> #hole + A2 ... </k>
+  rule <k> (A1:IInt ~> #hole + A2) => A2 ~> A1 ~> #hole + #hole  ... </k>
+  rule <k> (10 ~> 200 ~> #hole + #hole) => 210 ... </k> // the transfer example: 200 + 10
+
+  // - [seqstrict]
+  rule <k> A1:AExp - A2:AExp => A1 ~> #hole - A2 ... </k>
+  rule <k> (A1:IInt ~> #hole - A2) => A2 ~> A1 ~> #hole - #hole  ... </k>
+  rule <k> (10 ~> 100 ~> #hole - #hole) => 90 ... </k> // the transfer example: 100 - 10
+
+  // > [seqstrict]
+  rule <k> A1:AExp > A2:AExp => A1 ~> #hole > A2 ... </k>
+  rule <k> (A1:IInt ~> #hole > A2) => A2 ~> A1 ~> #hole > #hole  ... </k>
+  rule <k> (100 ~> 10 ~> #hole > #hole) => false ... </k> // the transfer example: 10 > 100
+
+  // assignment [strict(2)]
+  rule <k> X:Id2 = A:AExp; => A ~> X = #hole; ... </k>
+  rule <k> (I:IInt ~> x1  = #hole;) => . ...</k> <x1>  _ => I </x1>
+  rule <k> (I:IInt ~> x2  = #hole;) => . ...</k> <x2>  _ => I </x2>
+  rule <k> (I:IInt ~> x3  = #hole;) => . ...</k> <x3>  _ => I </x3>
+  rule <k> (I:IInt ~> x4  = #hole;) => . ...</k> <x4>  _ => I </x4>
+  rule <k> (I:IInt ~> x5  = #hole;) => . ...</k> <x5>  _ => I </x5>
+  rule <k> (I:IInt ~> ret = #hole;) => . ...</k> <ret> _ => I </ret>
+
+  // conditional [strict(1)]
+  rule <k> if (B:BExp) S1 else S2 => B ~> if (#hole) S1 else S2 ...</k>
+  rule <k> (true  ~> if (#hole)  S else _) => S ... </k>
+  rule <k> (false ~> if (#hole)  _ else S) => S ... </k>
+
+  // while loops
+  rule while (B) S => if (B) {S while (B) S} else {}
+
+  // blocks
   rule {} => .
   rule {S} => S
 
-  rule <k> x1  = I:IInt; => . ...</k> <x1>  ( _ => I ) </x1>
-  rule <k> x2  = I:IInt; => . ...</k> <x2>  ( _ => I ) </x2>
-  rule <k> x3  = I:IInt; => . ...</k> <x3>  ( _ => I ) </x3>
-  rule <k> x4  = I:IInt; => . ...</k> <x4>  ( _ => I ) </x4>
-  rule <k> x5  = I:IInt; => . ...</k> <x5>  ( _ => I ) </x5>
-  rule <k> ret = I:IInt; => . ...</k> <ret> ( _ => I ) </ret>
-
+  // Statements
   rule S1:Stmt S2:Stmt => S1 ~> S2
-  rule if (true)  S else _ => S
-  rule if (false) _ else S => S
-
-  rule while (B) S => if (B) {S while (B) S} else {}
-
-  // For the transfer example:
-  rule 200 + 10 => 210
-  rule 100 - 10 => 90
-  rule 10 > 100 => false
 
 endmodule
