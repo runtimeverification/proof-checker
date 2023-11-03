@@ -35,27 +35,22 @@ module IMP5-RW-LITERAL
   imports IMP5-RW-LITERAL-SYNTAX
   imports INTERNAL-DOMAIN
 
-  configuration <T>
-                  <k color="green"> $PGM:Pgm </k>
-                  <x1  color="red"> 0:IInt </x1>
-                  <x2  color="red"> 0:IInt </x2>
-                  <x3  color="red"> 0:IInt </x3>
-                  <x4  color="red"> 0:IInt </x4>
-                  <x5  color="red"> 0:IInt </x5>
-                  <ret color="red"> 0:IInt </ret>
-                </T>
+  syntax Vars5 ::= IInt "," IInt "," IInt "," IInt "," IInt "," IInt
+
+  configuration <k color="green"> $PGM:Pgm </k>
+                <s color="red"> ( 0 , 0 , 0 , 0 , 0 , 0 ):Vars5 </s>
 
   // for manually defining heating/cooling rules
   syntax AExp ::= "#hole"
   syntax BExp ::= "#hole"
 
   // Identifiers
-  rule <k> x1  => I ...</k> <x1>  I </x1>
-  rule <k> x2  => I ...</k> <x2>  I </x2>
-  rule <k> x3  => I ...</k> <x3>  I </x3>
-  rule <k> x4  => I ...</k> <x4>  I </x4>
-  rule <k> x5  => I ...</k> <x5>  I </x5>
-  rule <k> ret => I ...</k> <ret> I </ret>
+  rule <k> x1  => I ...</k> <s> I , _ , _ , _ , _ , _ </s>
+  rule <k> x2  => I ...</k> <s> _ , I , _ , _ , _ , _ </s>
+  rule <k> x3  => I ...</k> <s> _ , _ , I , _ , _ , _ </s>
+  rule <k> x4  => I ...</k> <s> _ , _ , _ , I , _ , _ </s>
+  rule <k> x5  => I ...</k> <s> _ , _ , _ , _ , I , _ </s>
+  rule <k> ret => I ...</k> <s> _ , _ , _ , _ , _ , I </s>
 
   // + [seqstrict]
   rule <k> A1:AExp + A2:AExp => A1 ~> #hole + A2 ... </k>
@@ -74,12 +69,12 @@ module IMP5-RW-LITERAL
 
   // assignment [strict(2)]
   rule <k> X:Id2 = A:AExp; => A ~> X = #hole; ... </k>
-  rule <k> (I:IInt ~> x1  = #hole;) => . ...</k> <x1>  _ => I </x1>
-  rule <k> (I:IInt ~> x2  = #hole;) => . ...</k> <x2>  _ => I </x2>
-  rule <k> (I:IInt ~> x3  = #hole;) => . ...</k> <x3>  _ => I </x3>
-  rule <k> (I:IInt ~> x4  = #hole;) => . ...</k> <x4>  _ => I </x4>
-  rule <k> (I:IInt ~> x5  = #hole;) => . ...</k> <x5>  _ => I </x5>
-  rule <k> (I:IInt ~> ret = #hole;) => . ...</k> <ret> _ => I </ret>
+  rule <k> (I:IInt ~> x1  = #hole;) => . ...</k> <s> ( _ => I ) , _ , _ , _ , _ , _ </s>
+  rule <k> (I:IInt ~> x2  = #hole;) => . ...</k> <s> _ , ( _ => I ) , _ , _ , _ , _ </s>
+  rule <k> (I:IInt ~> x3  = #hole;) => . ...</k> <s> _ , _ , ( _ => I ) , _ , _ , _ </s>
+  rule <k> (I:IInt ~> x4  = #hole;) => . ...</k> <s> _ , _ , _ , ( _ => I ) , _ , _ </s>
+  rule <k> (I:IInt ~> x5  = #hole;) => . ...</k> <s> _ , _ , _ , _ , ( _ => I ) , _ </s>
+  rule <k> (I:IInt ~> ret = #hole;) => . ...</k> <s> _ , _ , _ , _ , _ , ( _ => I ) </s>
 
   // conditional [strict(1)]
   rule <k> if (B:BExp) S1 else S2 => B ~> if (#hole) S1 else S2 ...</k>
@@ -94,6 +89,6 @@ module IMP5-RW-LITERAL
   rule {S} => S
 
   // Statements
-  rule S1:Stmt S2:Stmt => S1 ~> S2
+  rule S:Stmt SL:StmtList => S ~> SL
 
 endmodule
