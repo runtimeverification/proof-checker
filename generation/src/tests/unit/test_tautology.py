@@ -75,7 +75,7 @@ test_patterns = [
 
 
 @pytest.mark.parametrize('p', test_patterns)
-def test_tautology_prover(p: Pattern) -> None:
+def test_cnf_converter(p: Pattern) -> None:
     taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
 
     # Testing to_conj_form
@@ -275,3 +275,33 @@ def test_resolution(test_case: tuple[list[list[int]], (bool | None)]) -> None:
         assert conc == term
     else:
         assert conc == neg(term)
+
+
+phi3 = MetaVar(3)
+phi4 = MetaVar(4)
+
+tautology_test_cases = [
+    (phi0, None),
+    (Implies(phi0, phi0), True),
+    (Or(phi0, neg(phi0)), True),
+    (And(phi0, neg(phi0)), False),
+    (Implies((Implies(Implies(Implies(Implies(phi0, phi1), neg(phi2)), phi3), phi4)), Implies(Implies(phi4, phi0), Implies(phi2, phi0))), True),
+]
+
+
+@pytest.mark.parametrize('test_case', tautology_test_cases)
+def test_tautology_prover(test_case: tuple[Pattern, (bool | None)]) -> None:
+    pat, expected_res = test_case
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    res = taut.prove_tautology(pat)
+    if expected_res is None:
+        assert res is None
+        return
+    assert res is not None
+    proved_true, pf = res
+    assert expected_res == proved_true
+    conc = pf().conclusion
+    if proved_true:
+        assert conc == pat
+    else:
+        assert conc == neg(pat)

@@ -358,9 +358,15 @@ class Tautology(ProofExp):
         assert b == b2
         c2, d = Implies.extract(cd)
         assert c == c2
-        return self.modus_ponens(
-            self.modus_ponens(self.prop.prop2_inst(a, c, d), self.prop.imp_transitivity(ab_pf, bcd_pf)), ac_pf
-        )
+        return self.mp(self.mp(self.p2(a, c, d), self.imp_transitivity(ab_pf, bcd_pf)), ac_pf)
+    
+    def long_imp_trans(self, abc_pf: ProofThunk, cd_pf: ProofThunk) -> ProofThunk:
+        a, bc = Implies.extract(abc_pf.conc)
+        b, c = Implies.extract(bc)
+        c2, d = Implies.extract(cd_pf.conc)
+        assert c == c2
+        return self.mp(self.imim_r(a, self.imim_r(b, cd_pf)), abc_pf)
+
 
     def is_propositional(self, pat: Pattern) -> bool:
         if pat == bot:
@@ -831,9 +837,10 @@ class Tautology(ProofExp):
                     term_l_pat = clause_to_pattern(term_l_rest)
                     term_r_pat = clause_to_pattern(term_r_rest)
                     pf = self.resolution(resolvant_term, term_l_pat, term_r_pat)
-                    pf = self.imp_transitivity(
+                    merge_pf = self.merge_clauses(term_l_pat, len(term_l_rest), term_r_pat)
+                    pf = self.long_imp_trans(
                         pf,
-                        self.and_l(self.merge_clauses(term_l_pat, len(term_l_rest), term_r_pat)),
+                        self.and_l(merge_pf)
                     )
                 case False, True:
                     pf = self.resolution_l(resolvant_term, clause_to_pattern(term_l_rest))
@@ -871,3 +878,30 @@ class Tautology(ProofExp):
         ret_list, pf = self.build_proof_from_hint(hint, frozenset([]), clauses)
         assert not ret_list
         return ret_bool, pf
+
+    def prove_tautology(self, pat: Pattern) -> tuple[bool, ProofThunk] | None:
+        conj_term, pf_conj_1, pf_conj_2 = self.to_conj(neg(pat))
+        if isinstance(conj_term, ConjBool):
+            return conj_term.negated, pf_conj_1
+        assert pf_conj_2 is not None
+        neg_term, pf_neg_1, pf_neg_2 = self.propag_neg(conj_term)
+        cnf_term, pf_cnf_1, pf_cnf_2 = self.to_cnf(neg_term)
+        clauses, pf_cl_1, pf_cl_2 = self.to_clauses(cnf_term)
+        res = self.start_resolution_algorithm(clauses)
+        if res is None:
+            return None
+        proved_true, pf = res
+        if proved_true:
+            ret_pf = self.mp(
+                self.imp_transitivity(
+                    pf_cl_2, self.imp_transitivity(pf_cnf_2, self.imp_transitivity(pf_neg_2, pf_conj_2))
+                ),
+                pf,
+            )
+        else:
+            ret_pf = self.mp(self.dneg_elim(pat),
+                self.imp_transitivity(
+                    pf_conj_1,
+                    self.imp_transitivity(pf_neg_1, self.imp_transitivity(pf_cnf_1, self.imp_transitivity(pf_cl_1, pf))),
+                ))
+        return (not proved_true), ret_pf
