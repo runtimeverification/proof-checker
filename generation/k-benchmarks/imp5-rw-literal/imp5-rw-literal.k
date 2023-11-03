@@ -89,6 +89,6 @@ module IMP5-RW-LITERAL
   rule {S} => S
 
   // Statements
-  rule S1:Stmt S2:Stmt => S1 ~> S2
+  rule S:Stmt SL:StmtList => S ~> SL
 
 endmodule
