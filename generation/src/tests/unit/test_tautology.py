@@ -285,7 +285,13 @@ tautology_test_cases = [
     (Implies(phi0, phi0), True),
     (Or(phi0, neg(phi0)), True),
     (And(phi0, neg(phi0)), False),
-    (Implies((Implies(Implies(Implies(Implies(phi0, phi1), neg(phi2)), phi3), phi4)), Implies(Implies(phi4, phi0), Implies(phi2, phi0))), True),
+    (
+        Implies(
+            (Implies(Implies(Implies(Implies(phi0, phi1), neg(phi2)), phi3), phi4)),
+            Implies(Implies(phi4, phi0), Implies(phi2, phi0)),
+        ),
+        True,
+    ),
 ]
 
 

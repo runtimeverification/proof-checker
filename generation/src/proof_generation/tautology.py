@@ -359,14 +359,13 @@ class Tautology(ProofExp):
         c2, d = Implies.extract(cd)
         assert c == c2
         return self.mp(self.mp(self.p2(a, c, d), self.imp_transitivity(ab_pf, bcd_pf)), ac_pf)
-    
+
     def long_imp_trans(self, abc_pf: ProofThunk, cd_pf: ProofThunk) -> ProofThunk:
         a, bc = Implies.extract(abc_pf.conc)
         b, c = Implies.extract(bc)
         c2, d = Implies.extract(cd_pf.conc)
         assert c == c2
         return self.mp(self.imim_r(a, self.imim_r(b, cd_pf)), abc_pf)
-
 
     def is_propositional(self, pat: Pattern) -> bool:
         if pat == bot:
@@ -838,10 +837,7 @@ class Tautology(ProofExp):
                     term_r_pat = clause_to_pattern(term_r_rest)
                     pf = self.resolution(resolvant_term, term_l_pat, term_r_pat)
                     merge_pf = self.merge_clauses(term_l_pat, len(term_l_rest), term_r_pat)
-                    pf = self.long_imp_trans(
-                        pf,
-                        self.and_l(merge_pf)
-                    )
+                    pf = self.long_imp_trans(pf, self.and_l(merge_pf))
                 case False, True:
                     pf = self.resolution_l(resolvant_term, clause_to_pattern(term_l_rest))
                 case True, False:
@@ -899,9 +895,13 @@ class Tautology(ProofExp):
                 pf,
             )
         else:
-            ret_pf = self.mp(self.dneg_elim(pat),
+            ret_pf = self.mp(
+                self.dneg_elim(pat),
                 self.imp_transitivity(
                     pf_conj_1,
-                    self.imp_transitivity(pf_neg_1, self.imp_transitivity(pf_cnf_1, self.imp_transitivity(pf_cl_1, pf))),
-                ))
+                    self.imp_transitivity(
+                        pf_neg_1, self.imp_transitivity(pf_cnf_1, self.imp_transitivity(pf_cl_1, pf))
+                    ),
+                ),
+            )
         return (not proved_true), ret_pf
