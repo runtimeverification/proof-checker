@@ -5,11 +5,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import EVar, Exists, Notation
-from proof_generation.proof import ProofThunk
 from proof_generation.proofs.propositional import Propositional, neg, phi0, top
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
+    from proof_generation.proof import ProofThunk
 
 
 @dataclass(frozen=True, eq=False)
@@ -43,19 +43,14 @@ class Substitution(Propositional):
         forall {var} . phi
         """
         # (exists {var} (neg phi)) -> bot == forall {var} phi
-        return ProofThunk(
-            (
-                lambda: self.exists_generalization(
-                    # neg phi -> bot
-                    self.mp(
-                        # phi -> (neg phi -> bot)
-                        self.dneg_intro(phi.conc),
-                        phi,
-                    )(),
-                    var,
-                )
+        return self.exists_generalization(
+            # neg phi -> bot
+            self.modus_ponens(
+                # phi -> (neg phi -> bot)
+                self.dneg_intro(phi.conc),
+                phi,
             ),
-            Forall(var.name, phi.conc),
+            var,
         )
 
     def top_univgen(self) -> ProofThunk:
