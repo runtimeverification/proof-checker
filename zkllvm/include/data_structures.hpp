@@ -45,7 +45,7 @@ template <> bool equal(const Node<int> &lhs, const Node<int> &rhs) noexcept {
   } else if (!lhs.data || !rhs.data) {
     return false;
   }
-  return lhs.data == rhs.data && lhs.next == rhs.next;
+  return lhs.data == rhs.data && (*lhs.next == *rhs.next);
 }
 
 template <typename T> class LinkedList {
