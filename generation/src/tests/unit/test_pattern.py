@@ -118,6 +118,25 @@ def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: P
     assert pattern.apply_ssubst(svar_id, plug) == expected
 
 
+def test_metavars() -> None:
+    assert phi0.metavars() == {0}
+    assert Implies(phi0, phi1).metavars() == {0, 1}
+    assert App(phi0, phi1).metavars() == {0, 1}
+    assert Exists(0, phi1).metavars() == {1}
+    assert Mu(0, phi1).metavars() == {1}
+    assert Instantiate(phi0, frozendict({0: phi1})).metavars() == {1}
+    assert Instantiate(phi0, frozendict({1: phi1})).metavars() == {0}
+
+    assert ESubst(phi1, EVar(0), phi0).metavars() == {1, 0}
+    assert SSubst(phi1, SVar(0), phi0).metavars() == {1, 0}
+
+    assert ESubst(MetaVar(1), EVar(0), phi0).metavars() == {0, 1}
+    assert ESubst(MetaVar(1, e_fresh=(EVar(0),)), EVar(0), phi0).metavars() == {0, 1}  # TODO: Do we want {1} instead?
+
+    assert SSubst(MetaVar(1), SVar(0), phi0).metavars() == {0, 1}
+    assert SSubst(MetaVar(1, s_fresh=(SVar(0),)), SVar(0), phi0).metavars() == {0, 1}  # TODO: Do we want {1} instead?
+
+
 # Subst 0 for 1 and then 1 for 2
 ssubst_stack_seq = lambda term: SSubst(SSubst(term, SVar(0), plug=SVar(1)), SVar(1), plug=SVar(2))
 

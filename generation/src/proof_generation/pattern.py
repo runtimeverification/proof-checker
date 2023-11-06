@@ -93,6 +93,9 @@ class Pattern:
     def evar_is_free(self, name: int) -> bool:
         raise NotImplementedError
 
+    def metavars(self) -> set[int]:
+        raise NotImplementedError
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
@@ -130,6 +133,9 @@ class EVar(Pattern):
     def evar_is_free(self, name: int) -> bool:
         return name != self.name
 
+    def metavars(self) -> set[int]:
+        return set()
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
@@ -159,6 +165,9 @@ class SVar(Pattern):
 
     def evar_is_free(self, name: int) -> bool:
         return True
+
+    def metavars(self) -> set[int]:
+        return set()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
@@ -190,6 +199,9 @@ class Symbol(Pattern):
     def evar_is_free(self, name: int) -> bool:
         return True
 
+    def metavars(self) -> set[int]:
+        return set()
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
@@ -219,6 +231,9 @@ class Implies(Pattern):
     def evar_is_free(self, name: int) -> bool:
         return self.left.evar_is_free(name) and self.right.evar_is_free(name)
 
+    def metavars(self) -> set[int]:
+        return self.left.metavars().union(self.right.metavars())
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -246,6 +261,9 @@ class App(Pattern):
     def evar_is_free(self, name: int) -> bool:
         return self.left.evar_is_free(name) and self.right.evar_is_free(name)
 
+    def metavars(self) -> set[int]:
+        return self.left.metavars().union(self.right.metavars())
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -268,6 +286,9 @@ class Exists(Pattern):
 
     def evar_is_free(self, name: int) -> bool:
         return name == self.var or self.subpattern.evar_is_free(name)
+
+    def metavars(self) -> set[int]:
+        return self.subpattern.metavars()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -302,6 +323,9 @@ class Mu(Pattern):
     def evar_is_free(self, name: int) -> bool:
         return self.subpattern.evar_is_free(name)
 
+    def metavars(self) -> set[int]:
+        return self.subpattern.metavars()
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -335,6 +359,9 @@ class MetaVar(Pattern):
     positive: tuple[SVar, ...] = ()
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
+
+    def metavars(self) -> set[int]:
+        return {self.name}
 
     def evar_is_free(self, name: int) -> bool:
         return EVar(name) in self.e_fresh
@@ -383,6 +410,9 @@ class ESubst(Pattern):
         # We assume that at least one instance will be replaced
         return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
 
+    def metavars(self) -> set[int]:
+        return self.pattern.metavars().union(self.plug.metavars())
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -407,6 +437,9 @@ class SSubst(Pattern):
     def evar_is_free(self, name: int) -> bool:
         # We assume that at least one instance will be replaced
         return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
+
+    def metavars(self) -> set[int]:
+        return self.pattern.metavars().union(self.plug.metavars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -447,6 +480,15 @@ class Instantiate(Pattern):
 
     def evar_is_free(self, name: int) -> bool:
         return self.pattern.evar_is_free(name) or any(value.evar_is_free(name) for value in self.inst.values())
+
+    def metavars(self) -> set[int]:
+        ret: set[int] = set()
+        for v in self.pattern.metavars():
+            if v in self.inst:
+                ret = ret.union(self.inst[v].metavars())
+            else:
+                ret.add(v)
+        return ret
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})
