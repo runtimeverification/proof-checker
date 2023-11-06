@@ -564,12 +564,16 @@ void test_publish() {
   assert(memory == expected_memory);
   assert(claims == expected_claims);
 
+  memory.clear();
+
   stack = Pattern::Stack();
   memory = Pattern::Memory();
   claims = Pattern::Claims();
   stack.push_back(Pattern::Term::Pattern_(Pattern::symbol(0)));
 
   execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Claim);
+
+  expected_memory.clear();
 
   expected_stack = Pattern::Stack();
   expected_memory = Pattern::Memory();
@@ -580,6 +584,8 @@ void test_publish() {
   assert(memory == expected_memory);
   assert(claims == expected_claims);
 
+  claims.clear();
+
   stack = Pattern::Stack();
   memory = Pattern::Memory();
   claims = Pattern::Claims();
@@ -587,6 +593,8 @@ void test_publish() {
   claims.push_back(Pattern::symbol(0));
 
   execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  expected_claims.clear();
 
   expected_stack = Pattern::Stack();
   expected_memory = Pattern::Memory();
