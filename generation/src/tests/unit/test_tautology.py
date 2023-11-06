@@ -98,7 +98,6 @@ def test_tautology_prover(p: Pattern) -> None:
     assert l1 == p
     assert r1 == res
     assert is_conj_form(p_conj)
-    print(f'Proved\n{str(p)}\n<->\n{str(res)}\n\n')
 
     # Testing propag_neg
     p_conj2, pf_neg_1, pf_neg_2 = taut.propag_neg(p_conj)
