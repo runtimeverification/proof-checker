@@ -878,7 +878,9 @@ class Tautology(ProofExp):
     def prove_tautology(self, pat: Pattern) -> tuple[bool, ProofThunk] | None:
         conj_term, pf_conj_1, pf_conj_2 = self.to_conj(neg(pat))
         if isinstance(conj_term, ConjBool):
-            return conj_term.negated, pf_conj_1
+            if conj_term.negated:
+                return False, pf_conj_1
+            return True, self.mp(self.dneg_elim(pat), pf_conj_1)
         assert pf_conj_2 is not None
         neg_term, pf_neg_1, pf_neg_2 = self.propag_neg(conj_term)
         cnf_term, pf_cnf_1, pf_cnf_2 = self.to_cnf(neg_term)
@@ -888,20 +890,18 @@ class Tautology(ProofExp):
             return None
         proved_true, pf = res
         if proved_true:
-            ret_pf = self.mp(
+            return False, self.mp(
                 self.imp_transitivity(
                     pf_cl_2, self.imp_transitivity(pf_cnf_2, self.imp_transitivity(pf_neg_2, pf_conj_2))
                 ),
                 pf,
             )
-        else:
-            ret_pf = self.mp(
-                self.dneg_elim(pat),
+        return True, self.mp(
+            self.dneg_elim(pat),
+            self.imp_transitivity(
+                pf_conj_1,
                 self.imp_transitivity(
-                    pf_conj_1,
-                    self.imp_transitivity(
-                        pf_neg_1, self.imp_transitivity(pf_cnf_1, self.imp_transitivity(pf_cl_1, pf))
-                    ),
+                    pf_neg_1, self.imp_transitivity(pf_cnf_1, self.imp_transitivity(pf_cl_1, pf))
                 ),
-            )
-        return (not proved_true), ret_pf
+            ),
+        )

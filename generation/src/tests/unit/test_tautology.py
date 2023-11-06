@@ -281,6 +281,9 @@ phi3 = MetaVar(3)
 phi4 = MetaVar(4)
 
 tautology_test_cases = [
+    (top, True),
+    (bot, False),
+    (Or(top, phi0), True),
     (phi0, None),
     (Implies(phi0, phi0), True),
     (Or(phi0, neg(phi0)), True),
