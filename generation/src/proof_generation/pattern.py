@@ -90,7 +90,7 @@ def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None
 
 
 class Pattern:
-    def ef(self, name: int) -> bool:
+    def evar_is_free(self, name: int) -> bool:
         raise NotImplementedError
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -127,7 +127,7 @@ class Pattern:
 class EVar(Pattern):
     name: int
 
-    def ef(self, name: int) -> bool:
+    def evar_is_free(self, name: int) -> bool:
         return name != self.name
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -157,7 +157,7 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
-    def ef(self, name: int) -> bool:
+    def evar_is_free(self, name: int) -> bool:
         return True
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -187,7 +187,7 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: str
 
-    def ef(self, name: int) -> bool:
+    def evar_is_free(self, name: int) -> bool:
         return True
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -216,8 +216,8 @@ class Implies(Pattern):
     left: Pattern
     right: Pattern
 
-    def ef(self, name: int) -> bool:
-        return self.left.ef(name) and self.right.ef(name)
+    def evar_is_free(self, name: int) -> bool:
+        return self.left.evar_is_free(name) and self.right.evar_is_free(name)
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -243,8 +243,8 @@ class App(Pattern):
     left: Pattern
     right: Pattern
 
-    def ef(self, name: int) -> bool:
-        return self.left.ef(name) and self.right.ef(name)
+    def evar_is_free(self, name: int) -> bool:
+        return self.left.evar_is_free(name) and self.right.evar_is_free(name)
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -266,8 +266,8 @@ class Exists(Pattern):
     var: int
     subpattern: Pattern
 
-    def ef(self, name: int) -> bool:
-        return name == self.var or self.subpattern.ef(name)
+    def evar_is_free(self, name: int) -> bool:
+        return name == self.var or self.subpattern.evar_is_free(name)
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -299,8 +299,8 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
-    def ef(self, name: int) -> bool:
-        return self.subpattern.ef(name)
+    def evar_is_free(self, name: int) -> bool:
+        return self.subpattern.evar_is_free(name)
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -336,7 +336,7 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
 
-    def ef(self, name: int) -> bool:
+    def evar_is_free(self, name: int) -> bool:
         return EVar(name) in self.e_fresh
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
@@ -376,12 +376,12 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
-    def ef(self, name: int) -> bool:
+    def evar_is_free(self, name: int) -> bool:
         if self.var.name == name:
-            return self.plug.ef(name)
+            return self.plug.evar_is_free(name)
 
         # We assume that at least one instance will be replaced
-        return self.pattern.ef(name) and self.plug.ef(name)
+        return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -404,9 +404,9 @@ class SSubst(Pattern):
     var: SVar
     plug: Pattern
 
-    def ef(self, name: int) -> bool:
+    def evar_is_free(self, name: int) -> bool:
         # We assume that at least one instance will be replaced
-        return self.pattern.ef(name) and self.plug.ef(name)
+        return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -445,8 +445,8 @@ class Instantiate(Pattern):
         # TODO: This should recursively remove all notation.
         return self.simplify() == o
 
-    def ef(self, name: int) -> bool:
-        return self.pattern.ef(name) or any(value.ef(name) for value in self.inst.values())
+    def evar_is_free(self, name: int) -> bool:
+        return self.pattern.evar_is_free(name) or any(value.evar_is_free(name) for value in self.inst.values())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})

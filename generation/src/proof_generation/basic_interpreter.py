@@ -165,7 +165,7 @@ class BasicInterpreter:
 
     def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
         l, r = Implies.extract(proved.conclusion)
-        assert r.ef(var.name), f'{str(var)} in FV({str(r)})'
+        assert r.evar_is_free(var.name), f'{str(var)} in FV({str(r)})'
         return Proved(Implies(Exists(var.name, l), r))
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
