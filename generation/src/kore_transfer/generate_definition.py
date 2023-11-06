@@ -3,71 +3,54 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-import pyk.kore.syntax as kore
-
 import proof_generation.proof as proof
 
 if TYPE_CHECKING:
-    import proof_generation.pattern as nf
-    from kore_transfer.kore_converter import KoreConverter
+    from kore_transfer.generate_hints import KoreHint
+    from kore_transfer.kore_converter import Axioms, KoreConverter
+    from proof_generation.pattern import Pattern
 
 ProofMethod = Callable[[proof.ProofExp], proof.Proved]
 
 
 class KoreDefinition(proof.ProofExp):
-    axiom_patterns: list[nf.Pattern] = []
-    claim_patterns: list[nf.Pattern] = []
+    prove_step_axioms: list[Pattern] = []
+    prove_step_claims: list[Pattern] = []
     proofs: list[ProofMethod] = []
 
     @classmethod
-    def axioms(cls) -> list[nf.Pattern]:
-        return cls.axiom_patterns
+    def axioms(cls) -> list[Pattern]:
+        return list(cls.prove_step_axioms)
 
     @classmethod
-    def claims(cls) -> list[nf.Pattern]:
-        return cls.claim_patterns
+    def claims(cls) -> list[Pattern]:
+        return cls.prove_step_claims
 
     @classmethod
-    def prove_rewrite_step(cls, claim: nf.Pattern, axiom: nf.Pattern, instantiations: dict[int, nf.Pattern]) -> None:
+    def prove_rewrite_step(cls, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]) -> None:
         """Take a single rewrite step and emit a proof for it."""
-        assert len(cls.axiom_patterns) > 0, 'No axioms to prove the rewrite step'
-        cls.claim_patterns.append(claim)
+        assert len(cls.prove_step_axioms) > 0, 'No axioms to prove the rewrite step'
+        cls.prove_step_claims.append(claim)
 
         def proof_transition(proof_expr: proof.ProofExp) -> proof.Proved:
             """Prove the transition between two configurations."""
             for pattern in instantiations.values():
                 proof_expr.interpreter.pattern(pattern)
+            # The axiom pattern must be a rewrite rule
             return proof_expr.interpreter.instantiate(proof_expr.load_axiom(axiom), instantiations)
 
         cls.proofs.append(proof_transition)
+
+    @classmethod
+    def add_axioms(cls, hint: KoreHint, converter: KoreConverter) -> Axioms:
+        """Add axioms to the definition."""
+        axioms = converter.collect_functional_axioms(hint)
+        axioms.setdefault(hint.axiom.kind, []).append(hint.axiom)
+        cls.prove_step_axioms.append(hint.axiom.pattern)
+        return axioms
 
     def proof_expressions(self) -> list[proof.ProvedExpression]:
         def make_function(obj: KoreDefinition, func: ProofMethod) -> proof.ProvedExpression:
             return lambda: func(obj)
 
         return [make_function(self, proof_func) for proof_func in self.proofs]
-
-
-def compose_definition(kore_definition: kore.Definition, converter: KoreConverter) -> type[KoreDefinition]:
-    """Compose the proofs for all steps."""
-    extracted_axioms = _convert_axioms(kore_definition, converter)
-    KoreDefinition.axiom_patterns.extend(extracted_axioms)
-    return KoreDefinition
-
-
-def _convert_axioms(kore_definition: kore.Definition, converter: KoreConverter) -> list[nf.Pattern]:
-    axioms: list[nf.Pattern] = []
-    for module in kore_definition.modules:
-        # Select only patterns below that starts with kore.Rewrites
-        for axiom in (axiom for axiom in module.axioms if isinstance(axiom.pattern, kore.Rewrites)):
-            pattern = axiom.pattern
-            assert isinstance(pattern, kore.Rewrites)
-            assert isinstance(pattern.left, kore.And)
-            assert isinstance(pattern.right, kore.And)
-            # TODO: Remove side conditions for now
-            preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-
-            converted_axiom = converter.convert_pattern(preprocessed_pattern)
-            axioms.append(converted_axiom)
-
-    return axioms

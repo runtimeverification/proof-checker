@@ -1,0 +1,73 @@
+SVar 0
+	Stack:
+	0: X0
+Mu 0
+	Stack:
+	0: (μ X0 . X0)
+// Notation 'Bot'
+	Stack:
+	0: ⊥
+SVar 0
+	Stack:
+	0: ⊥
+	1: X0
+Mu 0
+	Stack:
+	0: ⊥
+	1: (μ X0 . X0)
+// Notation 'Bot'
+	Stack:
+	0: ⊥
+	1: ⊥
+Implies
+	Stack:
+	0: (⊥ -> ⊥)
+// Notation 'Negation'
+	Stack:
+	0: ¬(⊥)
+// Notation 'Top'
+	Stack:
+	0: ⊤
+SVar 0
+	Stack:
+	0: ⊤
+	1: X0
+Mu 0
+	Stack:
+	0: ⊤
+	1: (μ X0 . X0)
+// Notation 'Bot'
+	Stack:
+	0: ⊤
+	1: ⊥
+Implies
+	Stack:
+	0: (⊤ -> ⊥)
+// Notation 'Negation'
+	Stack:
+	0: ¬(⊤)
+Exists 0
+	Stack:
+	0: (∃ x0 . ¬(⊤))
+SVar 0
+	Stack:
+	0: (∃ x0 . ¬(⊤))
+	1: X0
+Mu 0
+	Stack:
+	0: (∃ x0 . ¬(⊤))
+	1: (μ X0 . X0)
+// Notation 'Bot'
+	Stack:
+	0: (∃ x0 . ¬(⊤))
+	1: ⊥
+Implies
+	Stack:
+	0: ((∃ x0 . ¬(⊤)) -> ⊥)
+// Notation 'Negation'
+	Stack:
+	0: ¬((∃ x0 . ¬(⊤)))
+// Notation 'Forall'
+	Stack:
+	0: (∀ x0 . ⊤)
+Publish

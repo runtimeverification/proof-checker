@@ -13,8 +13,9 @@ clean-kgenerated-proofs:
 	rm -rf .build/proofs/generated-from-k
 
 update-snapshots:
-	cp -u $(wildcard .build/proofs/*.*) proofs
-	cp -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+	rsync -u $(wildcard .build/proofs/*.*) proofs
+	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
+	rsync -u $(wildcard .build/generated-from-k/*.ml*) proofs/generated-from-k
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 
@@ -99,7 +100,7 @@ test-unit-python:
 # System testing
 # ==============
 
-test-system: test-integration test-proof-gen test-proof-translate test-proof-ktranslate test-proof-verify
+test-system: test-integration test-proof-gen test-proof-translate test-proof-kgen test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
 test-integration:
@@ -131,8 +132,10 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 # -------------------------
 
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
+# We assume that there is only one hint file per benchmark
 proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/k-benchmarks/single-rewrite/foo-a.$* .build/kompiled-definitions --clean --depth 1 --proof-dir proofs/generated-from-k/
+	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --clean --proof-dir proofs/generated-from-k/
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -141,19 +144,20 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
 # Checking proof generation for K
 # -------------------------------
-
+# We assume that there is only one hint file per benchmark
 .build/proofs/generated-from-k/%.ml-proof: FORCE
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/single-rewrite/$*.k generation/k-benchmarks/single-rewrite/foo-a.$* .build/kompiled-definitions  --depth 1 --proof-dir .build/proofs/generated-from-k/
+	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
-KPROOF_TRANSLATION_TARGETS=$(addsuffix .ktranslate,${TRANSLATED_FROM_K})
-proofs/generated-from-k/%.ml-proof.ktranslate: .build/proofs/generated-from-k/%.ml-proof
+KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
+proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-gamma" ".build/proofs/generated-from-k/$*.ml-gamma"
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-claim" ".build/proofs/generated-from-k/$*.ml-claim"
 	${BIN_DIFF} "proofs/generated-from-k/$*.ml-proof" ".build/proofs/generated-from-k/$*.ml-proof"
 
-test-proof-ktranslate: ${KPROOF_TRANSLATION_TARGETS}
+test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 
-.PHONY: test-proof-ktranslate
+.PHONY: test-proof-kgen
 
 
 # Proof generation
@@ -161,32 +165,16 @@ test-proof-ktranslate: ${KPROOF_TRANSLATION_TARGETS}
 
 .build/proofs/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary proof $@
-
-.build/proofs/%.ml-claim: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary claim $@
-
-.build/proofs/%.ml-gamma: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" binary gamma $@
+	poetry -C generation run python -m "proof_generation.proofs.$*" memo $(dir $@) $*
 
 .build/proofs/%.pretty-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty proof $@
-
-.build/proofs/%.pretty-claim: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty claim $@
-
-.build/proofs/%.pretty-gamma: FORCE
-	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty gamma $@
+	poetry -C generation run python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
 DIFF=colordiff -U3
-proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.ml-claim .build/proofs/%.ml-gamma .build/proofs/%.pretty-proof .build/proofs/%.pretty-claim .build/proofs/%.pretty-gamma
+proofs/%.ml-proof.gen: .build/proofs/%.ml-proof .build/proofs/%.pretty-proof
 	${DIFF} --label expected "proofs/$*.pretty-claim" --label actual ".build/proofs/$*.pretty-claim"
 	${DIFF} --label expected "proofs/$*.pretty-proof" --label actual ".build/proofs/$*.pretty-proof"
 	${DIFF} --label expected "proofs/$*.pretty-gamma" --label actual ".build/proofs/$*.pretty-gamma"
@@ -225,7 +213,7 @@ verify-translated: clean-translated-proofs ${TRANSLATED_PROOF_VERIFY_BUILD_TARGE
 .PHONY: verify-translated
 
 PROOF_VERIFY_BUILD_TARGETS=$(addsuffix .verify-generated,${PROOFS})
-proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+proofs/%.ml-proof.verify-generated: .build/proofs/%.ml-proof
 	$(CARGO) run --release --bin checker .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 
 verify-generated: clean-proofs ${PROOF_VERIFY_BUILD_TARGETS}
@@ -242,7 +230,7 @@ verify-kgenerated: clean-kgenerated-proofs ${PROOF_VERIFY_KBUILD_TARGETS}
 # ---------
 
 PROFILING_TARGETS=$(addsuffix .profile,${PROOFS})
-proofs/%.ml-proof.profile: .build/proofs/%.ml-gamma .build/proofs/%.ml-claim .build/proofs/%.ml-proof
+proofs/%.ml-proof.profile: .build/proofs/%.ml-proof
 	$(CARGO)  build --release --bin profiler
 	flamegraph -- .build/target/release/profiler .build/proofs/$*.ml-gamma .build/proofs/$*.ml-claim .build/proofs/$*.ml-proof
 	mv flamegraph.svg $*.svg

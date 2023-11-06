@@ -31,9 +31,13 @@ k-version:
 # Target only this specific subset of programs that are currently supported:
 PROOF_HINTS=proof-hints/peano/mul_3_5.peano.hints \
 			proof-hints/single-rewrite/foo-a.single-rewrite.hints \
+			proof-hints/double-rewrite/foo-a.double-rewrite.hints \
 			proof-hints/trivial/0_rewrites.trivial.hints \
 			proof-hints/trivial/1_rewrite.trivial.hints \
-			proof-hints/trivial/2_rewrites.trivial.hints
+			proof-hints/trivial/2_rewrites.trivial.hints \
+			proof-hints/imp5/empty.imp5.hints \
+			proof-hints/imp5-rw-succ/transfer.imp5-rw-succ.hints \
+			proof-hints/imp5-rw-literal/transfer.imp5-rw-literal.hints
 
 # Eventually, we want to support all input programs using something like the following:
 # ALL_K_FILES=$(wildcard k-benchmarks/*/*)
