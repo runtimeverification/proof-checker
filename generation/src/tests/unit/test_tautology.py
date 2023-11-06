@@ -14,9 +14,9 @@ if TYPE_CHECKING:
     from proof_generation.tautology import ConjForm
 
 
-def is_conj(t: ConjForm) -> bool:
+def is_conj_form(t: ConjForm) -> bool:
     if isinstance(t, CFOr):
-        return is_conj(t.left) and is_conj(t.right)
+        return is_conj_form(t.left) and is_conj_form(t.right)
     if isinstance(t, CFVar):
         return True
     return False
@@ -43,15 +43,13 @@ def test_tautology_prover(p: Pattern) -> None:
     if isinstance(p_conj, CFBot):
         if p_conj.negated:
             assert pf2 is None
-            pf = pf1().conclusion
-            assert pf == p
-            print(f'Proved\n{str(p)}\n\n')
+            conc = pf1().conclusion
+            assert conc == p
             return
         else:
             assert pf2 is None
             pf = pf1().conclusion
             assert pf == neg(p)
-            print(f'Proved\n~({str(p)})\n\n')
             return
     assert pf2 is not None
     res = conj_to_pattern(p_conj)
@@ -61,5 +59,4 @@ def test_tautology_prover(p: Pattern) -> None:
     assert r1 == l2
     assert l1 == p
     assert r1 == res
-    assert is_conj(p_conj)
-    print(f'Proved\n{str(p)}\n<->\n{str(res)}\n\n')
+    assert is_conj_form(p_conj)
