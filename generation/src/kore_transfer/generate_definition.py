@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from kore_transfer.kore_converter import Axioms, KoreConverter
     from proof_generation.pattern import Pattern
 
-ProofMethod = Callable[[proof.ProofExp], proof.Proved]
+ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
 
 
 class KoreDefinition(proof.ProofExp):
@@ -32,12 +32,8 @@ class KoreDefinition(proof.ProofExp):
         assert len(cls.prove_step_axioms) > 0, 'No axioms to prove the rewrite step'
         cls.prove_step_claims.append(claim)
 
-        def proof_transition(proof_expr: proof.ProofExp) -> proof.Proved:
-            """Prove the transition between two configurations."""
-            for pattern in instantiations.values():
-                proof_expr.interpreter.pattern(pattern)
-            # The axiom pattern must be a rewrite rule
-            return proof_expr.interpreter.instantiate(proof_expr.load_axiom(axiom), instantiations)
+        def proof_transition(proof_expr: proof.ProofExp) -> proof.ProofThunk:
+            return proof_expr.dynamic_inst(proof_expr.load_axiom(axiom), instantiations)
 
         cls.proofs.append(proof_transition)
 
@@ -49,8 +45,5 @@ class KoreDefinition(proof.ProofExp):
         cls.prove_step_axioms.append(hint.axiom.pattern)
         return axioms
 
-    def proof_expressions(self) -> list[proof.ProvedExpression]:
-        def make_function(obj: KoreDefinition, func: ProofMethod) -> proof.ProvedExpression:
-            return lambda: func(obj)
-
-        return [make_function(self, proof_func) for proof_func in self.proofs]
+    def proof_expressions(self) -> list[proof.ProofThunk]:
+        return [proof_func(self) for proof_func in self.proofs]
