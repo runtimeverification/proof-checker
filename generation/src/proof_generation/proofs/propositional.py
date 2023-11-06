@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
+
 @dataclass(frozen=True, eq=False)
 class Negation(Notation):
     phi0: Pattern
@@ -78,6 +79,7 @@ class Equiv(Notation):
 
     def __str__(self) -> str:
         return f'({str(self.phi0)}) <-> ({str(self.phi1)})'
+
 
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
