@@ -19,7 +19,14 @@ template <typename T> struct Node {
 
   explicit Node(const T &value) noexcept : data(value), next(nullptr) {}
 
-  bool operator==(const Node &rhs) const noexcept { return equal(*this, rhs); }
+  bool operator==(const Node &rhs) const noexcept {
+    if (!next && !rhs.next) {
+      return data == rhs.data;
+    } else if (!next || !rhs.next) {
+      return false;
+    }
+    return data == rhs.data && *next == *rhs.next;
+  }
 
   bool operator!=(const Node &rhs) noexcept { return !(this->operator==(rhs)); }
 
@@ -31,22 +38,6 @@ template <typename T> struct Node {
     return newNode;
   }
 };
-
-template <typename T>
-bool equal(const Node<T> &lhs, const Node<T> &rhs) noexcept {
-
-  return lhs.data.operator==(rhs.data) && lhs.next == rhs.next;
-}
-
-template <> bool equal(const Node<int> &lhs, const Node<int> &rhs) noexcept {
-
-  if (!lhs.data && !rhs.data) {
-    return true;
-  } else if (!lhs.data || !rhs.data) {
-    return false;
-  }
-  return lhs.data == rhs.data && lhs.next == rhs.next;
-}
 
 template <typename T> class LinkedList {
 public:
