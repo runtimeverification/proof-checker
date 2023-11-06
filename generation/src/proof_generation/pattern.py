@@ -216,6 +216,8 @@ class Implies(Pattern):
         return self.left.ef(name) and self.right.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        if not delta:
+            return self
         return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -241,6 +243,8 @@ class App(Pattern):
         return self.left.ef(name) and self.right.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        if not delta:
+            return self
         return App(self.left.instantiate(delta), self.right.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -262,6 +266,8 @@ class Exists(Pattern):
         return name == self.var or self.subpattern.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        if not delta:
+            return self
         return Exists(self.var, self.subpattern.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -293,6 +299,8 @@ class Mu(Pattern):
         return self.subpattern.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        if not delta:
+            return self
         return Mu(self.var, self.subpattern.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -372,6 +380,8 @@ class ESubst(Pattern):
         return self.pattern.ef(name) and self.plug.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        if not delta:
+            return self
         return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -395,6 +405,8 @@ class SSubst(Pattern):
         return self.pattern.ef(name) and self.plug.ef(name)
 
     def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+        if not delta:
+            return self
         return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug.instantiate(delta))
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
