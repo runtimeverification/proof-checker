@@ -169,7 +169,7 @@ class StatefulInterpreter(BasicInterpreter):
 
     def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         *self.stack, expected_pattern = self.stack
-        expected_plugs : list[Pattern] = []
+        expected_plugs = []
         if len(delta):
             expected_plugs = self.stack[-len(delta) :]
             self.stack = self.stack[: -len(delta)]
