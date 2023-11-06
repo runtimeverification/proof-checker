@@ -8,13 +8,11 @@ from itertools import combinations
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implies, MetaVar, Notation, match_single, phi0, phi1, phi2
-from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import And, Equiv, Negation, Or, Propositional, _build_subst, bot, neg, top
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
@@ -70,6 +68,7 @@ class CFVar(ConjForm):
     def __init__(self, id: int):
         super().__init__(False)
         self.id = id
+
 
 # Types used by the Resolution algorithm
 class ResolutionHintSource:
@@ -137,7 +136,6 @@ def clause_list_to_pattern(l: ClauseConjunction) -> Pattern:
 
 
 class Tautology(Propositional):
-
     @staticmethod
     def claims() -> list[Pattern]:
         return []
@@ -353,7 +351,9 @@ class Tautology(Propositional):
         assert b == b2
         c2, d = Implies.extract(cd)
         assert c == c2
-        return self.modus_ponens(self.modus_ponens(self.prop2_inst(a, c, d), self.imp_transitivity(ab_pf, bcd_pf)), ac_pf)
+        return self.modus_ponens(
+            self.modus_ponens(self.prop2_inst(a, c, d), self.imp_transitivity(ab_pf, bcd_pf)), ac_pf
+        )
 
     def long_imp_trans(self, abc_pf: ProofThunk, cd_pf: ProofThunk) -> ProofThunk:
         a, bc = Implies.extract(abc_pf.conc)
@@ -569,9 +569,7 @@ class Tautology(Propositional):
                     shift_right = self.imp_trans_match1(
                         self.and_assoc_r(), self.imim_and_r(MetaVar(i + 3), shift_right)
                     )
-                    shift_left = self.imp_trans_match2(
-                        self.imim_and_r(MetaVar(i + 3), shift_left), self.and_assoc_l()
-                    )
+                    shift_left = self.imp_trans_match2(self.imim_and_r(MetaVar(i + 3), shift_left), self.and_assoc_l())
                 ret_pf1 = self.imp_trans_match2(ret_pf1, shift_right)
                 ret_pf2 = self.imp_trans_match1(shift_left, ret_pf2)
             return term_l + term_r, ret_pf1, ret_pf2
@@ -588,12 +586,8 @@ class Tautology(Propositional):
                 shift_right = self.or_assoc_r()
                 shift_left = self.or_assoc_l()
                 for i in range(0, l - 2):
-                    shift_right = self.imp_trans_match1(
-                        self.or_assoc_r(), self.imim_or_r(MetaVar(i + 3), shift_right)
-                    )
-                    shift_left = self.imp_trans_match2(
-                        self.imim_or_r(MetaVar(i + 3), shift_left), self.or_assoc_l()
-                    )
+                    shift_right = self.imp_trans_match1(self.or_assoc_r(), self.imim_or_r(MetaVar(i + 3), shift_right))
+                    shift_left = self.imp_trans_match2(self.imim_or_r(MetaVar(i + 3), shift_left), self.or_assoc_l())
                 ret_pf1 = self.imp_trans_match2(ret_pf1, shift_right)
                 ret_pf2 = self.imp_trans_match1(shift_left, ret_pf2)
             return [term_l[0] + term_r[0]], ret_pf1, ret_pf2
@@ -693,9 +687,7 @@ class Tautology(Propositional):
         """p \\/ (p \\/ q) <-> p \\/ q"""
         return self.equiv_transitivity(
             self.or_assoc(p, p, q),
-            self.and_intro(
-                self.imim_or_l(q, self.peirce_bot(p)), self.imim_or_l(q, self.prop1_inst(p, neg(p)))
-            ),
+            self.and_intro(self.imim_or_l(q, self.peirce_bot(p)), self.imim_or_l(q, self.prop1_inst(p, neg(p)))),
         )
 
     def reduce_n_or_duplicates_at_front(self, n: int, terms: list[Pattern]) -> ProofThunk:
@@ -871,7 +863,7 @@ class Tautology(Propositional):
         return ret_bool, pf
 
     def prove_tautology(self, pat: Pattern) -> tuple[bool, ProofThunk] | None:
-        conj_term, pf_conj_1, pf_conj_2 = self.to_conj(neg(pat))
+        conj_term, pf_conj_1, pf_conj_2 = self.to_conj_form(neg(pat))
         if isinstance(conj_term, CFBot):
             if conj_term.negated:
                 return False, pf_conj_1
@@ -895,8 +887,6 @@ class Tautology(Propositional):
             self.dneg_elim(pat),
             self.imp_transitivity(
                 pf_conj_1,
-                self.imp_transitivity(
-                    pf_neg_1, self.imp_transitivity(pf_cnf_1, self.imp_transitivity(pf_cl_1, pf))
-                ),
+                self.imp_transitivity(pf_neg_1, self.imp_transitivity(pf_cnf_1, self.imp_transitivity(pf_cl_1, pf))),
             ),
         )
