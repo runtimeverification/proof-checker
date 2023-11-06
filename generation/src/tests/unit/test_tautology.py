@@ -6,8 +6,17 @@ import pytest
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import Implies, bot, imp, phi0, phi1, phi2
-from proof_generation.proofs.propositional import And, Or, Equiv, neg, top
-from proof_generation.tautology import CFBot, CFOr, CFAnd, CFVar, Tautology, conj_to_pattern, clause_list_to_pattern, clause_to_pattern
+from proof_generation.proofs.propositional import And, Equiv, Or, neg, top
+from proof_generation.tautology import (
+    CFAnd,
+    CFBot,
+    CFOr,
+    CFVar,
+    Tautology,
+    clause_list_to_pattern,
+    clause_to_pattern,
+    conj_to_pattern,
+)
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -17,6 +26,34 @@ if TYPE_CHECKING:
 def is_conj_form(t: ConjForm) -> bool:
     if isinstance(t, CFOr):
         return is_conj_form(t.left) and is_conj_form(t.right)
+    if isinstance(t, CFVar):
+        return True
+    return False
+
+
+def is_conj_neg(t: ConjForm) -> bool:
+    if isinstance(t, CFAnd):
+        return (not t.negated) and is_conj_neg(t.left) and is_conj_neg(t.right)
+    if isinstance(t, CFOr):
+        return (not t.negated) and is_conj_neg(t.left) and is_conj_neg(t.right)
+    if isinstance(t, CFVar):
+        return True
+    return False
+
+
+def is_clause(t: ConjForm) -> bool:
+    if isinstance(t, CFOr):
+        return (not t.negated) and is_clause(t.left) and is_clause(t.right)
+    if isinstance(t, CFVar):
+        return True
+    return False
+
+
+def is_cnf(t: ConjForm) -> bool:
+    if isinstance(t, CFAnd):
+        return (not t.negated) and is_cnf(t.left) and is_cnf(t.right)
+    if isinstance(t, CFOr):
+        return (not t.negated) and is_clause(t.left) and is_clause(t.right)
     if isinstance(t, CFVar):
         return True
     return False

@@ -8,10 +8,11 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implies, MetaVar, Notation, match_single, phi0, phi1, phi2
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import And, Equiv, Or, Propositional, Negation, bot, neg, top
+from proof_generation.proofs.propositional import And, Equiv, Negation, Or, Propositional, bot, neg, top
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
     from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
@@ -205,7 +206,7 @@ class Tautology(ProofExp):
 
     def or_comm_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ q -> q \\/ p"""
-        return self.imp_transitivity(self.imp_trans(neg(p), q, bot), self.dne_r(neg(q), p))
+        return self.prop.imp_transitivity(self.prop.imp_trans(neg(p), q, bot), self.prop.dne_r(neg(q), p))
 
     def or_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ q <-> q \\/ p"""
@@ -311,7 +312,9 @@ class Tautology(ProofExp):
         assert b == b2
         c2, d = Implies.extract(cd)
         assert c == c2
-        return self.modus_ponens(self.modus_ponens(self.prop.prop2_inst(a, c, d), self.prop.imp_transitivity(ab_pf, bcd_pf)), ac_pf)
+        return self.modus_ponens(
+            self.modus_ponens(self.prop.prop2_inst(a, c, d), self.prop.imp_transitivity(ab_pf, bcd_pf)), ac_pf
+        )
 
     def is_propositional(self, pat: Pattern) -> bool:
         if pat == bot:
@@ -520,7 +523,9 @@ class Tautology(ProofExp):
                     shift_right = self.imp_trans_match1(
                         self.and_assoc_r(), self.prop.imim_and_r(MetaVar(i + 3), shift_right)
                     )
-                    shift_left = self.imp_trans_match2(self.prop.imim_and_r(MetaVar(i + 3), shift_left), self.and_assoc_l())
+                    shift_left = self.imp_trans_match2(
+                        self.prop.imim_and_r(MetaVar(i + 3), shift_left), self.and_assoc_l()
+                    )
                 ret_pf1 = self.imp_trans_match2(ret_pf1, shift_right)
                 ret_pf2 = self.imp_trans_match1(shift_left, ret_pf2)
             return term_l + term_r, ret_pf1, ret_pf2
@@ -537,8 +542,12 @@ class Tautology(ProofExp):
                 shift_right = self.or_assoc_r()
                 shift_left = self.or_assoc_l()
                 for i in range(0, l - 2):
-                    shift_right = self.imp_trans_match1(self.or_assoc_r(), self.imim_or_r(MetaVar(i + 3), shift_right))
-                    shift_left = self.imp_trans_match2(self.prop.imim_or_r(MetaVar(i + 3), shift_left), self.or_assoc_l())
+                    shift_right = self.imp_trans_match1(
+                        self.or_assoc_r(), self.prop.imim_or_r(MetaVar(i + 3), shift_right)
+                    )
+                    shift_left = self.imp_trans_match2(
+                        self.prop.imim_or_r(MetaVar(i + 3), shift_left), self.or_assoc_l()
+                    )
                 ret_pf1 = self.imp_trans_match2(ret_pf1, shift_right)
                 ret_pf2 = self.imp_trans_match1(shift_left, ret_pf2)
             return [term_l[0] + term_r[0]], ret_pf1, ret_pf2
@@ -628,7 +637,9 @@ class Tautology(ProofExp):
         """p \\/ (p \\/ q) <-> p \\/ q"""
         return self.equiv_transitivity(
             self.or_assoc(p, p, q),
-            self.prop.and_intro(self.prop.imim_or_l(q, self.prop.peirce_bot(p)), self.prop.imim_or_l(q, self.prop.prop1_inst(p, neg(p)))),
+            self.prop.and_intro(
+                self.prop.imim_or_l(q, self.prop.peirce_bot(p)), self.prop.imim_or_l(q, self.prop.prop1_inst(p, neg(p)))
+            ),
         )
 
     def reduce_n_or_duplicates_at_front(self, n: int, terms: list[Pattern]) -> ProofThunk:
