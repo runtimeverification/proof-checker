@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implies, MetaVar, Notation, match_single, phi0, phi1, phi2
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import And, Equiv, Negation, Or, Propositional, bot, neg, top, _build_subst
+from proof_generation.proofs.propositional import And, Equiv, Negation, Or, Propositional, _build_subst, bot, neg, top
 
 if TYPE_CHECKING:
     from collections.abc import Callable

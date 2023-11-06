@@ -150,7 +150,7 @@ class ProofExp(ABC):
             return axiom
 
         return ProofThunk(proved_exp, axiom_term)
-    
+
     def load_axiom_by_index(self, i: int) -> ProofThunk:
         return self.load_axiom(self.axioms()[i])
 

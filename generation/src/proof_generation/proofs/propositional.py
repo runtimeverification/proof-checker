@@ -81,13 +81,13 @@ class Equiv(Notation):
         return f'({str(self.phi0)}) <-> ({str(self.phi1)})'
 
 
-
-def _build_subst(self, pats: list[Pattern]) -> dict[int, Pattern]:
+def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
     ret = {}
     for i, p in enumerate(pats):
         if p != MetaVar(i):
             ret[i] = p
     return ret
+
 
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
@@ -370,10 +370,7 @@ class Propositional(ProofExp):
 
     def con2(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """(p -> ~q) -> (q -> ~p)"""
-        return self.imp_transitivity(
-            self.prop2_inst(p, q, bot),
-            self.imim_l(neg(p), self.prop1_inst(q, p))
-        )
+        return self.imp_transitivity(self.prop2_inst(p, q, bot), self.imim_l(neg(p), self.prop1_inst(q, p)))
 
     def absurd3(self, npq_pf: ProofThunk, nr_pf: ProofThunk) -> ProofThunk:
         """
