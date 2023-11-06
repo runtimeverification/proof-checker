@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implies, MetaVar, Notation, match_single, phi0, phi1, phi2
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import And, Equiv, Negation, Or, Propositional, bot, neg, top
+from proof_generation.proofs.propositional import And, Equiv, Negation, Or, Propositional, bot, neg, top, _build_subst
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -139,7 +139,6 @@ class Tautology(ProofExp):
             Implies(And(Or(phi0, phi2), Or(phi1, phi2)), Or(And(phi0, phi1), phi2)),
             Implies(Or(phi0, And(phi1, phi2)), And(Or(phi0, phi1), Or(phi0, phi2))),
             Implies(And(Or(phi0, phi1), Or(phi0, phi2)), Or(phi0, And(phi1, phi2))),
-            Equiv(And(phi0, phi1), And(phi1, phi0)),
         ]
 
     def imp_trans_match1(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
@@ -162,35 +161,35 @@ class Tautology(ProofExp):
 
     def and_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a /\\ b) /\\ c -> a /\\ (b /\\ c)"""
-        return self.prop.load_ax_inst(0, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(0), _build_subst([pat1, pat2, pat3]))
 
     def and_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a /\\ (b /\\ c) -> (a /\\ b) /\\ c"""
-        return self.prop.load_ax_inst(1, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(1), _build_subst([pat1, pat2, pat3]))
 
     def or_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a \\/ b) \\/ c -> a \\/ (b \\/ c)"""
-        return self.prop.load_ax_inst(2, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(2), _build_subst([pat1, pat2, pat3]))
 
     def or_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a \\/ (b \\/ c) -> (a \\/ b) \\/ c"""
-        return self.prop.load_ax_inst(3, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(3), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a /\\ b) \\/ c -> (a \\/ c) /\\ (b \\/ c)"""
-        return self.prop.load_ax_inst(4, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(4), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_r_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a \\/ c) /\\ (b \\/ c) -> (a /\\ b) \\/ c"""
-        return self.prop.load_ax_inst(5, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(5), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a \\/ (b /\\ c) -> (a \\/ b) /\\ (a \\/ c)"""
-        return self.prop.load_ax_inst(6, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(6), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_l_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a \\/ b) /\\ (a \\/ c) -> a \\/ (b /\\ c)"""
-        return self.prop.load_ax_inst(7, [pat1, pat2, pat3])
+        return self.dynamic_inst(self.load_axiom_by_index(7), _build_subst([pat1, pat2, pat3]))
 
     def and_assoc(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a /\\ (b /\\ c) <-> (a /\\ b) /\\ c"""
@@ -200,9 +199,13 @@ class Tautology(ProofExp):
         """a \\/ (b \\/ c) <-> (a \\/ b) \\/ c"""
         return self.prop.and_intro(self.or_assoc_l(pat1, pat2, pat3), self.or_assoc_r(pat1, pat2, pat3))
 
+    def and_comm_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """p /\\ q -> q /\\ p"""
+        return self.prop.con3_i(self.prop.con2(q, p))
+
     def and_comm(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p /\\ q <-> q /\\ p"""
-        return self.prop.load_ax_inst(8, [p, q])
+        return self.prop.and_intro(self.and_comm_imp(p, q), self.and_comm_imp(q, p))
 
     def or_comm_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """p \\/ q -> q \\/ p"""
