@@ -27,10 +27,10 @@ class SmallTheory(Propositional):
         return [self.sym0_implies_sym2_proof()]
 
     def sym0_implies_sym1(self) -> ProofThunk:
-        return self.load_ax(0)
+        return self.load_axiom_by_index(0)
 
     def sym1_implies_sym2(self) -> ProofThunk:
-        return self.load_ax(1)
+        return self.load_axiom_by_index(1)
 
     def sym0_implies_sym2_proof(self) -> ProofThunk:
         return self.imp_transitivity(self.sym0_implies_sym1(), self.sym1_implies_sym2())

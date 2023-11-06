@@ -151,6 +151,9 @@ class ProofExp(ABC):
 
         return ProofThunk(proved_exp, axiom_term)
 
+    def load_axiom_by_index(self, i: int) -> ProofThunk:
+        return self.load_axiom(self.axioms()[i])
+
     def save_pattern(self, id: str, pattern: Pattern) -> Pattern:
         self.interpreter.save(id, pattern)
         return pattern
