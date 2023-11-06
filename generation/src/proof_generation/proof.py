@@ -3,19 +3,19 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
-from proof_generation.pattern import Pattern
+from proof_generation.pattern import ESubst, EVar, Exists, Implies, Pattern, bot, phi0, phi1, phi2
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
 from proof_generation.serializing_interpreter import MemoizingInterpreter, SerializingInterpreter
 
 if TYPE_CHECKING:
     from proof_generation.basic_interpreter import BasicInterpreter
-    from proof_generation.pattern import EVar, SVar
+    from proof_generation.pattern import SVar
 
 # Proof Expressions
 # =================
@@ -27,32 +27,16 @@ ProvedExpression = Callable[[], Proved]
 class ProofThunk:
     _expr: ProvedExpression
     conc: Pattern
-    # As of the time of writing this, this field is only used by
-    # the test script for some automation
-    _name: str
-    # TODO get rid of this once it's no longer needed
-    _disable_conc: bool
 
-    def __init__(self, expr: ProvedExpression, conc: Pattern, name: str = '', disable_conc: bool = False):
+    def __init__(self, expr: ProvedExpression, conc: Pattern):
         self._expr = expr
         self.conc = conc
-        self._name = name
-        self._disable_conc = disable_conc
 
     def __call__(self) -> Proved:
         proved = self._expr()
         # TODO Check is this call to equality is causing performance issues
-        assert self._disable_conc or proved.conclusion == self.conc
+        assert proved.conclusion == self.conc
         return proved
-
-
-def name_proof_dec(func: Callable[..., ProofThunk]) -> Callable[..., ProofThunk]:
-    def wrapper(*args: Any, **kwargs: Any) -> ProofThunk:
-        pt = func(*args, **kwargs)
-        pt._name = func.__name__
-        return pt
-
-    return wrapper
 
 
 class ProofExp(ABC):
@@ -60,7 +44,6 @@ class ProofExp(ABC):
 
     def __init__(self, interpreter: BasicInterpreter) -> None:
         self.interpreter = interpreter
-        self.notation: dict[str, Pattern] = {}
 
     @classmethod
     @abstractmethod
@@ -113,42 +96,60 @@ class ProofExp(ABC):
     # Proof Rules
     # -----------
 
-    def prop1(self) -> Proved:
-        return self.interpreter.prop1()
-
-    def prop2(self) -> Proved:
-        return self.interpreter.prop2()
-
-    def prop3(self) -> Proved:
-        return self.interpreter.prop3()
-
-    def modus_ponens(self, left: Proved, right: Proved) -> Proved:
-        return self.interpreter.modus_ponens(left, right)
-
-    def exists_quantifier(self) -> Proved:
-        return self.interpreter.exists_quantifier()
-
-    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
-        return self.interpreter.exists_generalization(proved, var)
-
-    def dynamic_inst(self, proved_expr: ProvedExpression, delta: dict[int, Pattern]) -> Proved:
+    def dynamic_inst(self, pf: ProofThunk, delta: dict[int, Pattern]) -> ProofThunk:
         if not delta:
-            return proved_expr()
-        for idn, p in delta.items():
-            delta[idn] = self.interpreter.pattern(p)
-        return self.interpreter.instantiate(proved_expr(), delta)
+            return pf
 
-    def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
-        return self.interpreter.instantiate(proved, delta)
+        def proved_exp() -> Proved:
+            for idn, p in delta.items():
+                delta[idn] = self.interpreter.pattern(p)
+            return self.interpreter.instantiate(pf(), delta)
+
+        return ProofThunk(proved_exp, pf.conc.instantiate(delta))
+
+    def prop1(self) -> ProofThunk:
+        return ProofThunk(self.interpreter.prop1, Implies(phi0, Implies(phi1, phi0)))
+
+    def prop2(self) -> ProofThunk:
+        return ProofThunk(
+            self.interpreter.prop2,
+            Implies(Implies(phi0, Implies(phi1, phi2)), Implies(Implies(phi0, phi1), Implies(phi0, phi2))),
+        )
+
+    def prop3(self) -> ProofThunk:
+        return ProofThunk(self.interpreter.prop3, Implies(Implies(Implies(phi0, bot), bot), phi0))
+
+    def modus_ponens(self, left: ProofThunk, right: ProofThunk) -> ProofThunk:
+        p, q = Implies.extract(left.conc)
+        assert p == right.conc
+        return ProofThunk((lambda: self.interpreter.modus_ponens(left(), right())), q)
+
+    def exists_quantifier(self) -> ProofThunk:
+        x = EVar(0)
+        y = EVar(1)
+        return ProofThunk(self.interpreter.exists_quantifier, Implies(ESubst(phi0, x, y), Exists(x.name, phi0)))
+
+    def exists_generalization(self, proved: ProofThunk, var: EVar) -> ProofThunk:
+        l, r = Implies.extract(proved.conc)
+        return ProofThunk(
+            (lambda: self.interpreter.exists_generalization(proved(), var)), Implies(Exists(var.name, l), r)
+        )
+
+    def instantiate(self, proved: ProofThunk, delta: dict[int, Pattern]) -> ProofThunk:
+        return ProofThunk((lambda: self.interpreter.instantiate(proved(), delta)), proved.conc.instantiate(delta))
 
     def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
         return self.interpreter.instantiate_pattern(pattern, delta)
 
-    def load_axiom(self, axiom_term: Pattern) -> Proved:
+    def load_axiom(self, axiom_term: Pattern) -> ProofThunk:
         assert axiom_term in self.axioms()
         axiom = Proved(axiom_term)
-        self.interpreter.load(f'Axiom {str(axiom)}', axiom)
-        return axiom
+
+        def proved_exp() -> Proved:
+            self.interpreter.load(f'Axiom {str(axiom)}', axiom)
+            return axiom
+
+        return ProofThunk(proved_exp, axiom_term)
 
     def save_pattern(self, id: str, pattern: Pattern) -> Pattern:
         self.interpreter.save(id, pattern)
@@ -158,9 +159,12 @@ class ProofExp(ABC):
         self.interpreter.publish_axiom(proved)
         return proved
 
-    def publish_proof(self, proved: Proved) -> Proved:
-        self.interpreter.publish_proof(proved)
-        return proved
+    def publish_proof(self, proved: ProofThunk) -> ProofThunk:
+        def proved_exp() -> Proved:
+            self.interpreter.publish_proof(proved())
+            return Proved(proved.conc)
+
+        return ProofThunk(proved_exp, proved.conc)
 
     def publish_claim(self, pattern: Pattern) -> Pattern:
         self.interpreter.publish_claim(pattern)
@@ -183,7 +187,7 @@ class ProofExp(ABC):
     def execute_proofs_phase(self) -> None:
         assert self.interpreter.phase == ExecutionPhase.Proof
         for proof_expr in self.proof_expressions():
-            self.publish_proof(proof_expr())
+            self.publish_proof(proof_expr)()
         self.check_interpreting()
 
     def execute_full(self) -> None:

@@ -361,6 +361,11 @@ class MetaVar(Pattern):
         return f'phi{self.name}'
 
 
+phi0 = MetaVar(0)
+phi1 = MetaVar(1)
+phi2 = MetaVar(2)
+
+
 @dataclass(frozen=True)
 class ESubst(Pattern):
     pattern: MetaVar | ESubst | SSubst

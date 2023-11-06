@@ -7,13 +7,10 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 
+#  TODO Get rif of this wrapper type
 @dataclass
 class Proved:
     conclusion: Pattern
-
-    def assertc(self, pattern: Pattern) -> Proved:
-        assert self.conclusion == pattern
-        return self
 
     def __str__(self) -> str:
         return str(self.conclusion)
