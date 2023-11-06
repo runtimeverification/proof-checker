@@ -110,13 +110,13 @@ def foldr_op(op: Callable[[Pattern, Pattern], Pattern], l: list[Pattern], start:
     return l[start]
 
 
-def clause_to_pattern(l: list[int]) -> Pattern:
+def clause_to_pattern(l: Clause) -> Pattern:
     if not l:
         return bot
     return foldr_op(Or, [id_to_metavar(id) for id in l])
 
 
-def clause_list_to_pattern(l: list[list[int]]) -> Pattern:
+def clause_list_to_pattern(l: ClauseConjunction) -> Pattern:
     if not l:
         return top
     return foldr_op(And, [clause_to_pattern(cl) for cl in l])
@@ -789,7 +789,7 @@ class Tautology(ProofExp):
                 return True
         return False
 
-    def prove_trivial_clause(self, cl: list[int]) -> ProofThunk:
+    def prove_trivial_clause(self, cl: Clause) -> ProofThunk:
         for (i1, x1), (i2, x2) in combinations(enumerate(cl), 2):
             if x1 + x2 == 0:
                 neg_first = (x1 < x2) == (i1 < i2)
@@ -813,8 +813,8 @@ class Tautology(ProofExp):
         return self.mp(pf, pf2)
 
     def build_proof_from_hint(
-        self, hint: ResolutionHint, cl: frozenset[int], terms: list[list[int]]
-    ) -> tuple[list[int], ProofThunk]:
+        self, hint: ResolutionHint, cl: frozenset[int], terms: ClauseConjunction
+    ) -> tuple[Clause, ProofThunk]:
         res = hint[cl]
         if isinstance(res, ResolutionHintSource):
             resolvant = res.resolvant
@@ -850,7 +850,7 @@ class Tautology(ProofExp):
         return terms[res], self.conjunction_implies_nth(term, res, len(terms))
 
     # The returned boolean represents whether the proof is a proof of the original formula (True) or its negation (False)
-    def start_resolution_algorithm(self, clauses: list[list[int]]) -> tuple[bool, ProofThunk] | None:
+    def start_resolution_algorithm(self, clauses: ClauseConjunction) -> tuple[bool, ProofThunk] | None:
         if not clauses:
             return True, self.top_intro()
         resolution_list = [frozenset(cl) for cl in clauses]
