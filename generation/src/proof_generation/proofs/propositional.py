@@ -12,6 +12,72 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
+@dataclass(frozen=True, eq=False)
+class Negation(Notation):
+    phi0: Pattern
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return Implies(phi0, bot)
+
+    def __str__(self) -> str:
+        return f'¬({str(self.phi0)})'
+
+
+def neg(p: Pattern) -> Pattern:
+    return Negation(p)
+
+
+@dataclass(frozen=True, eq=False)
+class Top(Notation):
+    @classmethod
+    def definition(cls) -> Pattern:
+        return neg(bot)
+
+    def __str__(self) -> str:
+        return '⊤'
+
+
+top = Top()
+
+
+@dataclass(frozen=True, eq=False)
+class And(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return neg(Implies(phi0, neg(phi1)))
+
+    def __str__(self) -> str:
+        return f'({self.phi0} ∧ {self.phi1})'
+
+
+@dataclass(frozen=True, eq=False)
+class Or(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return Implies(neg(phi0), phi1)
+
+    def __str__(self) -> str:
+        return f'({self.phi0} ∨ {self.phi1})'
+
+
+@dataclass(frozen=True, eq=False)
+class Equiv(Notation):
+    phi0: Pattern
+    phi1: Pattern
+
+    @classmethod
+    def definition(cls) -> Pattern:
+        return And(Implies(phi0, phi1), Implies(phi1, phi0))
+
+    def __str__(self) -> str:
+        return f'({str(self.phi0)}) <-> ({str(self.phi1)})'
 
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
@@ -176,71 +242,3 @@ class Propositional(ProofExp):
 
 if __name__ == '__main__':
     Propositional.main(sys.argv)
-
-
-@dataclass(frozen=True, eq=False)
-class Negation(Notation):
-    phi0: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return Implies(phi0, bot)
-
-    def __str__(self) -> str:
-        return f'¬({str(self.phi0)})'
-
-
-def neg(p: Pattern) -> Pattern:
-    return Negation(p)
-
-
-@dataclass(frozen=True, eq=False)
-class Top(Notation):
-    @classmethod
-    def definition(cls) -> Pattern:
-        return neg(bot)
-
-    def __str__(self) -> str:
-        return '⊤'
-
-
-top = Top()
-
-
-@dataclass(frozen=True, eq=False)
-class And(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return neg(Implies(phi0, neg(phi1)))
-
-    def __str__(self) -> str:
-        return f'({self.phi0} ∧ {self.phi1})'
-
-
-@dataclass(frozen=True, eq=False)
-class Or(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return Implies(neg(phi0), phi1)
-
-    def __str__(self) -> str:
-        return f'({self.phi0} ∨ {self.phi1})'
-
-
-@dataclass(frozen=True, eq=False)
-class Equiv(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return And(Implies(phi0, phi1), Implies(phi1, phi0))
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}) <-> ({str(self.phi1)})'
