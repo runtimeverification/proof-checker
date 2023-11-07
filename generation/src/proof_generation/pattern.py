@@ -25,18 +25,6 @@ def match_single(
                 return None
             ret[id] = instance
         return ret
-    if type(pattern) == type(instance) and issubclass(type(pattern), Notation):  # Added for optimization
-        cls = type(pattern)
-        pat_n = cls.unwrap(pattern)
-        inst_n = cls.unwrap(instance)
-        assert pat_n is not None
-        assert inst_n is not None
-        assert len(pat_n) == len(inst_n)
-        for i in range(len(pat_n)):
-            ret = match_single(pat_n[i], inst_n[i], ret)
-            if ret is None:
-                return None
-        return ret
     if (pat_imp := Implies.unwrap(pattern)) and (inst_imp := Implies.unwrap(instance)):
         ret = match_single(pat_imp[0], inst_imp[0], ret)
         if ret is None:
