@@ -48,7 +48,7 @@ class KSort:
 
 @dataclass(frozen=True)
 class KSymbol:
-    aml_id: int  # Binary AML id
+    name: str
     input_sorts: tuple[KSort, ...]
     output_sort: KSort
     is_functional: bool
@@ -104,6 +104,7 @@ class KModue(Converter):
         self._name = name
         # Ordinal -> axiom
         self._imported_modules: tuple[KModue, ...] = ()
+        self._sorts: dict[str, KSort] = {}
         self._symbols: dict[str, KSymbol] = {}
         self._axioms: dict[int, KRewritingRule | KEquationalRule] = {}
 
@@ -122,28 +123,49 @@ class KModue(Converter):
 
     @converting_method
     def import_module(self, module: KModue) -> None:
+        if module in self._imported_modules:
+            raise ValueError(f'Sort {module.name} already exists!')
         self._imported_modules += (module,)
 
     @converting_method
     def sort(self, name) -> KSort:
-        # TODO: Parameteric sorts?
-        return KSort(name)
+        return self._sort(name, False)
 
     @converting_method
     def hooked_sort(self, name) -> KSort:
-        # TODO: Parameteric sorts?
-        # TODO: Do we need a separate method for that?
-        return KSort(name, True)
+        return self._sort(name, True)
+
+    def _sort(self, name, hooked) -> KSort:
+        if name in self._sorts:
+            raise ValueError(f'Sort {name} has been already added!')
+        self._sorts[name] = KSort(name, hooked)
+        return self._sorts[name]
+
+    @converting_method
+    def symbol(self, name, input_sorts: tuple[KSort, ...], output_sort: KSort, is_functional: bool, is_ctor: bool, is_cell: bool) -> KSymbol:
+        if name in self._symbols:
+            raise ValueError(f'Symbol {name} has been already added!')
+        symbol = KSymbol(name, input_sorts, output_sort, is_functional, is_ctor, is_cell)
+        self._symbols[name] = symbol
+        return symbol
 
     @converting_method
     def equational_rewrite(self, pattern) -> KEquationalRule:
-        # TODO: Add the ordinal
+        # TODO: Add the ordinal, save to the collection
         return KEquationalRule(0, pattern)
 
     @converting_method
     def rewrite_rule(self, pattern: kl.KoreRewrites) -> KRewritingRule:
-        # TODO: Add the ordinal
+        # TODO: Add the ordinal, save to the collection
         return KRewritingRule(0, pattern)
+
+    def get_sort(self, name: str) -> KSort:
+        # TODO: It can be imported
+        return self._sorts[name]
+
+    def get_symbol(self, name: str) -> KSymbol:
+        # TODO: It can be imported
+        return self._symbols[name]
 
 
 class LanguageSemantics(Converter):
@@ -198,8 +220,15 @@ class LanguageSemantics(Converter):
                             else:
                                 module.sort(sentence.name)
                         elif isinstance(sentence, kore.SymbolDecl):
-                            pass
+                            symbol = sentence.symbol.name
+                            sort = module.get_sort(sentence.sort.name)
+                            param_sorts = tuple([module.get_sort(sort.name) for sort in sentence.param_sorts])
+                            attrs = [attr.symbol for attr in sentence.attrs if isinstance(attr, kore.App)]
+
+                            # TODO: Support cells
+                            module.symbol(symbol, param_sorts, sort, 'functional' in attrs, 'constructor' in attrs, False)
                         elif isinstance(sentence, kore.Axiom):
+                            # Add axioms
                             if isinstance(sentence.pattern, kore.Rewrites):
                                 pattern = sentence.pattern
                                 assert isinstance(pattern, kore.Rewrites)
