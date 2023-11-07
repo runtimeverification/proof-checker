@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from proof_generation.pattern import App, EVar, Exists, Implies, Mu, SVar, match, match_single
+from proof_generation.pattern import App, EVar, Exists, Implies, Mu, Notation, SVar, match, match_single
 from proof_generation.proofs.propositional import _and, _or, bot, phi0, phi1, phi2
 
 
@@ -53,6 +53,9 @@ def test_match() -> None:
     assert match_single(_and.definition, _and.definition) == {0: phi0, 1: phi1}
     assert match_single(_or.definition, _and.definition) == None
     assert match_single(_or.definition, Implies(Implies(phi1, bot()), EVar(1))) == {0: phi1, 1: EVar(1)}
+
+    foo = Notation('foo', 3, phi0, '{0}')
+    assert foo.matches(phi1) == (phi1, phi1, phi2)
 
     assert match([(Implies(phi0, phi1), Implies(phi0, phi0)), (Implies(phi1, phi2), Implies(phi0, phi0))]) == {
         0: phi0,

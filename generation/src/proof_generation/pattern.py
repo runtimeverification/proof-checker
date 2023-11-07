@@ -531,7 +531,10 @@ class Notation:
         return Instantiate(self.definition, frozendict(enumerate(args)))
 
     def matches(self, pattern: Pattern) -> None | tuple[Pattern, ...]:
-        raise NotImplementedError
+        match = match_single(self.definition, pattern)
+        if match is None:
+            return None
+        return tuple((match[i] if i in match else MetaVar(i)) for i in range(self.arity))
 
     def assert_matches(self, pattern: Pattern) -> tuple[Pattern, ...]:
         if match := self.matches(pattern):
