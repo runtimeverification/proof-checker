@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def forall(var: int) -> Notation:
-    return Notation(f'forall_{var}', neg(Exists(var, neg(phi0))), f'(∀ x{var} . {{0}})')
+    return Notation(f'forall_{var}', 1, neg(Exists(var, neg(phi0))), f'(∀ x{var} . {{0}})')
 
 
 class Substitution(Propositional):

@@ -23,28 +23,28 @@ kore_dv_symbol = Symbol('kore_dv')
 
 
 """ kore_top(sort) """
-kore_top = Notation('kore-top', App(inhabitant_symbol, phi0), '(k⊤ {0})')
+kore_top = Notation('kore-top', 1, App(inhabitant_symbol, phi0), '(k⊤ {0})')
 
 """ kore_not(sort, pattern) """
-kore_not = Notation('kore-not', _and(neg(phi1), kore_top(phi0)), '(k¬ {0})')
+kore_not = Notation('kore-not', 2, _and(neg(phi1), kore_top(phi0)), '(k¬{{0}} {1})')
 
 """ kore_and(sort, pattern, pattern) """
-kore_and = Notation('kore-and', _and(phi1, phi2), '({0}[{1}] k⋀ {0}[{2}])')
+kore_and = Notation('kore-and', 3, _and(phi1, phi2), '({0}[{1}] k⋀ {0}[{2}])')
 
 """ kore_or(sort, pattern, pattern) """
-kore_or = Notation('kore-or', _or(phi1, phi2), '({0}[{1}] k⋁ {0}[{2}])')
+kore_or = Notation('kore-or', 3, _or(phi1, phi2), '({0}[{1}] k⋁ {0}[{2}])')
 
 """ kore_next(sort, pattern) """
-kore_next = Notation('kore-next', App(kore_next_symbol, phi1), '(♦ {1})')
+kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '(♦ {0})')
 
 """ kore_implies(sort, pattern, pattern) """
-kore_implies = Notation('kore-implies', kore_or(phi0, kore_not(phi0, phi1), phi2), '({0}[{1}] k-> {0}[{2}])')
+kore_implies = Notation('kore-implies', 3, kore_or(phi0, kore_not(phi0, phi1), phi2), '({0}[{1}] k-> {0}[{2}])')
 
 """ kore_rewrites(sort, left, right) """
-kore_rewrites = Notation('kore-rewrites', kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({0}[{1}] k=> {0}[{2}])')
+kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({0}[{1}] k=> {0}[{2}])')
 
 """ kore_dv(sort, value) """
-kore_dv = Notation('kore-dv', App(App(kore_dv_symbol, phi0), phi1), 'dv({0})')
+kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), 'dv({0})')
 
 
 def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
@@ -61,7 +61,7 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     else:
         fmt = f'{symbol.name}(' + ', '.join(fmt_args) + ')'
 
-    return Notation(symbol.name, p, fmt)
+    return Notation(symbol.name, n, p, fmt)
 
 
 def nary_cell(symbol: Symbol, n: int) -> Notation:

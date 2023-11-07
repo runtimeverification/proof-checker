@@ -12,7 +12,7 @@ foo_app = nary_app(foo_symbol, 3)
 foo_cell = nary_cell(foo_symbol, 3)
 
 bar_symbol = Symbol('bar')
-bar = Notation('bar', bar_symbol, 'bar')
+bar = Notation('bar', 0, bar_symbol, 'bar')
 
 
 def test_nary_application() -> None:

@@ -49,10 +49,10 @@ def test_match() -> None:
 
     assert match_single(bot(), bot()) == {}
     assert match_single(bot(), bot.definition) == {}
-    assert match_single(_and(), _and(Mu(0, phi1), Mu(0, phi0))) == {0: Mu(0, phi1), 1: Mu(0, phi0)}
-    assert match_single(_and(), _and.definition) == {0: phi0, 1: phi1}
-    assert match_single(_or(), _and.definition) == None
-    assert match_single(_or(), Implies(Implies(phi1, bot()), EVar(1))) == {0: phi1, 1: EVar(1)}
+    assert match_single(_and.definition, _and(Mu(0, phi1), Mu(0, phi0))) == {0: Mu(0, phi1), 1: Mu(0, phi0)}
+    assert match_single(_and.definition, _and.definition) == {0: phi0, 1: phi1}
+    assert match_single(_or.definition, _and.definition) == None
+    assert match_single(_or.definition, Implies(Implies(phi1, bot()), EVar(1))) == {0: phi1, 1: EVar(1)}
 
     assert match([(Implies(phi0, phi1), Implies(phi0, phi0)), (Implies(phi1, phi2), Implies(phi0, phi0))]) == {
         0: phi0,

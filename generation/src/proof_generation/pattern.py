@@ -518,10 +518,16 @@ class Instantiate(Pattern):
 @dataclass(frozen=True)
 class Notation:
     label: str
+    arity: int
     definition: Pattern
     format_str: str
 
+    def __post_init__(self) -> None:
+        if self.definition.metavars():
+            assert max(self.definition.metavars()) < self.arity, f'Notation {self.label}'
+
     def __call__(self, *args: Pattern) -> Pattern:
+        assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
         return Instantiate(self.definition, frozendict(enumerate(args)))
 
     def matches(self, pattern: Pattern) -> None | tuple[Pattern, ...]:
@@ -543,4 +549,4 @@ class PrettyOptions:
     notations: Mapping[Pattern, Notation] = frozendict({})
 
 
-bot = Notation('bot', Mu(0, SVar(0)), '⊥')
+bot = Notation('bot', 0, Mu(0, SVar(0)), '⊥')
