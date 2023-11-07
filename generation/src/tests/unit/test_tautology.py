@@ -12,10 +12,12 @@ from proof_generation.tautology import (
     CFBot,
     CFOr,
     CFVar,
+    MetaVar,
     Tautology,
     clause_list_to_pattern,
     clause_to_pattern,
     conj_to_pattern,
+    foldr_op,
 )
 
 if TYPE_CHECKING:
@@ -73,7 +75,7 @@ test_patterns = [
 
 
 @pytest.mark.parametrize('p', test_patterns)
-def test_tautology_prover(p: Pattern) -> None:
+def test_cnf_converter(p: Pattern) -> None:
     taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
 
     # Testing to_conj_form
@@ -169,3 +171,147 @@ def test_simplify_clause(test_case: tuple[list[int], int]) -> None:
         return
     assert final_cl[0] == resolvent
     assert final_cl[1:] == stripped_cl
+
+
+@pytest.mark.parametrize('l', [1, 2, 5])
+def test_conjunction_implies_nth(l: int) -> None:
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    term = foldr_op(And, [MetaVar(i) for i in range(l)])
+    for i in range(l):
+        pf = taut.conjunction_implies_nth(term, i, l)
+        conc = pf().conclusion
+        left, right = Implies.extract(conc)
+        assert left == term
+        assert right == MetaVar(i)
+
+
+resolvable_test_cases = [
+    ({}, {}, False),
+    ({}, {1}, False),
+    ({1}, {-1}, True),
+    ({-2}, {2}, True),
+    ({1, 2, 3}, {-2, -1}, False),
+    ({1, 2, 3, 4}, {-3, 2, 4}, True),
+]
+
+
+@pytest.mark.parametrize('test_case', resolvable_test_cases)
+def test_resolvable(test_case: tuple[frozenset[int], frozenset[int], bool]) -> None:
+    c1, c2, expect_success = test_case
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    res = taut.resolvable(c1, c2)
+    if not expect_success:
+        assert res is None
+        return
+    assert res is not None
+    resolvant, res_set = res
+    assert c1.union(c2).difference({resolvant, -resolvant}) == res_set
+
+
+merge_clauses_test_cases = [
+    ([1], [2]),
+    ([3], [1, 2]),
+    ([3, 2], [2]),
+    ([3, 2, 2], [1, 2, 3]),
+]
+
+
+@pytest.mark.parametrize('test_case', merge_clauses_test_cases)
+def test_merge_clauses(test_case: tuple[list[int], list[int]]) -> None:
+    list_l, list_r = test_case
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    term_l = clause_to_pattern(list_l)
+    term_r = clause_to_pattern(list_r)
+    pf = taut.merge_clauses(term_l, len(list_l), term_r)
+    conc = pf().conclusion
+    conc_l, conc_r = Equiv.extract(conc)
+    assert conc_l == Or(term_l, term_r)
+    assert conc_r == clause_to_pattern(list_l + list_r)
+
+
+trivial_clause_test_cases = [
+    [-1, 1],
+    [2, -2],
+    [1, 2, 3, -2],
+    # The following test case takes a very long time to run for some reason
+    # [1, 2, 3, -2, -1, -1],
+    [-1, -1, -1, 1, -1],
+]
+
+
+@pytest.mark.parametrize('test_case', trivial_clause_test_cases)
+def test_prove_trivial_clause(test_case: list[int]) -> None:
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    pf = taut.prove_trivial_clause(test_case)
+    conc = pf().conclusion
+    assert conc == clause_to_pattern(test_case)
+
+
+resolution_test_cases = [
+    ([], True),
+    ([[1]], None),
+    ([[1, -1]], True),
+    ([[1, -1], [-2, 1, 2, -2]], True),
+    ([[-1], [1]], False),
+    ([[1], [-1]], False),
+    ([[1], [1, -1], [-1]], False),
+    ([[1], [-2], [2, -1], [3]], False),
+]
+
+
+@pytest.mark.parametrize('test_case', resolution_test_cases)
+def test_resolution(test_case: tuple[list[list[int]], (bool | None)]) -> None:
+    clauses, expected_res = test_case
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    res = taut.start_resolution_algorithm(clauses)
+    if expected_res is None:
+        assert res is None
+        return
+    assert res is not None
+    proved_true, pf = res
+    assert expected_res == proved_true
+    conc = pf().conclusion
+    term = clause_list_to_pattern(clauses)
+    if proved_true:
+        assert conc == term
+    else:
+        assert conc == neg(term)
+
+
+phi3 = MetaVar(3)
+phi4 = MetaVar(4)
+
+tautology_test_cases = [
+    (top, True),
+    (bot, False),
+    (Or(top, phi0), True),
+    (phi0, None),
+    (Implies(phi0, phi0), True),
+    (Or(phi0, neg(phi0)), True),
+    (And(phi0, neg(phi0)), False),
+    (
+        Implies(
+            (Implies(Implies(Implies(Implies(phi0, phi1), neg(phi2)), phi3), phi4)),
+            Implies(Implies(phi4, phi0), Implies(phi2, phi0)),
+        ),
+        True,
+    ),
+]
+
+
+@pytest.mark.parametrize('test_case', tautology_test_cases)
+def test_tautology_prover(test_case: tuple[Pattern, (bool | None)]) -> None:
+    pat, expected_res = test_case
+    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    res = taut.prove_tautology(pat)
+    if expected_res is None:
+        assert res is None
+        return
+    assert res is not None
+    proved_true, pf = res
+    assert expected_res == proved_true
+    conc = pf().conclusion
+    if proved_true:
+        assert conc == pat
+    else:
+        assert conc == neg(pat)

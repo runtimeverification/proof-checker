@@ -368,10 +368,6 @@ class Propositional(ProofExp):
             self.dneg_elim(p),
         )
 
-    def con2(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
-        """(p -> ~q) -> (q -> ~p)"""
-        return self.imp_transitivity(self.prop2_inst(p, q, bot), self.imim_l(neg(p), self.prop1_inst(q, p)))
-
     def absurd3(self, npq_pf: ProofThunk, nr_pf: ProofThunk) -> ProofThunk:
         """
            ~p -> q     ~r
@@ -430,6 +426,19 @@ class Propositional(ProofExp):
         return self.imp_transitivity(
             self.imim_l(c, h1), self.modus_ponens(self.prop2_inst(a, c, d), self.imp_provable(a, h2))
         )
+
+    def imim_r(self, c: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+              (a -> b)
+        ---------------------
+        (c -> a) -> (c -> b)
+        """
+        a, b = Implies.extract(h.conc)
+        return self.imim(self.imp_refl(c), h)
+
+    def con2(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """(p -> ~q) -> (q -> ~p)"""
+        return self.imp_transitivity(self.prop2_inst(p, q, bot), self.imim_l(neg(p), self.prop1_inst(q, p)))
 
     def imim_nnr(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
         """
