@@ -34,13 +34,6 @@ kore_and = Notation('kore-and', _and(phi1, phi2), '({0}[{1}] k⋀ {0}[{2}])')
 """ kore_or(sort, pattern, pattern) """
 kore_or = Notation('kore-or', _or(phi1, phi2), '({0}[{1}] k⋁ {0}[{2}])')
 
-""" kore_app(sorts, patterns) """
-# TODO: We just drop the sort for now
-# In the Kore we can have an application of a symbol to none or several arguments. We chain them manually
-# in a single pattern and then save it to phi1. We can't guarantee that there are two or more args as in
-# the normal application.
-kore_app = Notation('kore-app', phi1, '(kapp({0}) ({1})')
-
 """ kore_next(sort, pattern) """
 kore_next = Notation('kore-next', App(kore_next_symbol, phi1), '(♦ {1})')
 
@@ -104,7 +97,6 @@ class KoreLemmas(ProofExp):
             kore_or,
             kore_next,
             kore_implies,
-            kore_app,
             kore_rewrites,
             kore_dv,
         ]
