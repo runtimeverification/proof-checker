@@ -13,8 +13,9 @@ int test_efresh(int a, int b) {
   auto implication = Pattern::implies(left.clone(), right.clone());
   assert(!implication->pattern_e_fresh(a));
 
-  auto mvar =
-      Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
+  auto pos = IdList(b);
+  auto neg = IdList(b);
+  auto mvar = Pattern::metavar_s_fresh(a, b, pos, neg);
   auto metaapp = Pattern::app(left.clone(), mvar.clone());
   assert(!metaapp->pattern_e_fresh(b));
 
@@ -60,8 +61,9 @@ int test_sfresh(int a, int b) {
   auto implication = Pattern::implies(left.clone(), right.clone());
   assert(!implication->pattern_s_fresh(a));
 
-  auto mvar =
-      Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
+  auto pos = IdList(b);
+  auto neg = IdList(b);
+  auto mvar = Pattern::metavar_s_fresh(a, b, pos, neg);
 
   auto metaapp = Pattern::app(left.clone(), mvar.clone());
   assert(!metaapp->pattern_s_fresh(a));
@@ -100,17 +102,22 @@ int test_sfresh(int a, int b) {
 }
 
 int test_wellformedness_fresh() {
-  auto phi0_s_fresh_0 =
-      Pattern::metavar_s_fresh(0, 0, IdList::create(0), IdList::create(0));
+  auto pos = IdList(0);
+  auto neg = IdList(0);
+  auto phi0_s_fresh_0 = Pattern::metavar_s_fresh(0, 0, pos, neg);
   assert(phi0_s_fresh_0->pattern_well_formed());
 
-  auto phi1_e_fresh = IdList::create();
-  phi1_e_fresh->push_back(1);
-  phi1_e_fresh->push_back(2);
-  phi1_e_fresh->push_back(0);
+  auto phi1_e_fresh = IdList();
+  phi1_e_fresh.push_back(1);
+  phi1_e_fresh.push_back(2);
+  phi1_e_fresh.push_back(0);
+  auto phi1_s_fresh = IdList();
+  auto phi1_pos = IdList();
+  auto phi1_neg = IdList();
+  auto phi1_app = IdList(2);
   auto phi1 =
-      Pattern::metavar(1, phi1_e_fresh, IdList::create(), IdList::create(),
-          IdList::create(), IdList::create(2));
+      Pattern::metavar(1, phi1_e_fresh, phi1_s_fresh, phi1_pos,
+          phi1_neg, phi1_app);
 
   assert(!phi1->pattern_well_formed());
 
@@ -205,14 +212,18 @@ int test_positivity() {
   assert(!metavarUncons1->pattern_negative(2));
 
   // Do not imply positivity from freshness
-  auto metavarSFresh11__ =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(), IdList::create());
-  auto metavarSFresh1111 =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(1), IdList::create(1));
-  auto metavarSFresh111_ =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(1), IdList::create());
-  auto metavarSFresh11_1 =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(), IdList::create(1));
+  auto pos = IdList();
+  auto neg = IdList();
+  auto metavarSFresh11__ = Pattern::metavar_s_fresh(1, 1, pos, neg);
+  pos = IdList(1);
+  neg = IdList(1);
+  auto metavarSFresh1111 = Pattern::metavar_s_fresh(1, 1, pos, neg);
+  pos = IdList(1);
+  neg = IdList();
+  auto metavarSFresh111_ =  Pattern::metavar_s_fresh(1, 1, pos, neg);
+  pos = IdList();
+  neg = IdList(1);
+  auto metavarSFresh11_1 = Pattern::metavar_s_fresh(1, 1, pos, neg);
 
   assert(!metavarSFresh11__->pattern_positive(1));
   assert(!metavarSFresh11__->pattern_negative(1));
@@ -227,9 +238,10 @@ int test_positivity() {
   // ESubst
   auto esubstMetaVarUnconsX0 =
       Pattern::esubst(Pattern::metavar_unconstrained(0), 0, X0.clone());
+  pos = IdList(1);
+  neg = IdList();
   auto esubstMetaVarSFreshX1 = Pattern::esubst(
-      Pattern::metavar_s_fresh(0, 1, IdList::create(1), IdList::create()), 0,
-      X1.clone());
+      Pattern::metavar_s_fresh(0, 1, pos, neg), 0, X1.clone());
   auto esubstMetaVarUnconsX1 =
       Pattern::esubst(Pattern::metavar_unconstrained(0), 0, X1.clone());
 
@@ -245,9 +257,10 @@ int test_positivity() {
       Pattern::ssubst(Pattern::metavar_unconstrained(0), 0, X0.clone());
   auto ssubstMetaVarUnconsX1 =
       Pattern::ssubst(Pattern::metavar_unconstrained(0), 0, X1.clone());
+  pos = IdList(1);
+  neg = IdList();
   auto ssubstMetaVarSFreshX1 = Pattern::ssubst(
-      Pattern::metavar_s_fresh(0, 1, IdList::create(1), IdList::create()), 0,
-      X1.clone());
+      Pattern::metavar_s_fresh(0, 1, pos, neg), 0, X1.clone());
 
   assert(!ssubstMetaVarUnconsX0->pattern_positive(0));
   assert(ssubstMetaVarUnconsX1->pattern_positive(0));
@@ -349,27 +362,31 @@ int test_wellformedness_positive() {
   auto mux_x4 = Pattern::mu(1, Pattern::negate(svar.clone()));
   assert(!mux_x4->pattern_well_formed());
 
-  auto phi =
-      Pattern::metavar_s_fresh(97, 2, IdList::create(), IdList::create());
+  auto pos = IdList();
+  auto neg = IdList();
+  auto phi = Pattern::metavar_s_fresh(97, 2, pos, neg);
   auto mux_phi = Pattern::mu(1, phi.clone());
   assert(!mux_phi->pattern_well_formed());
 
   // Even though freshness implies positivity, we do not want to do any
   // additional reasoning and let everything on the prover
-  auto phi2 =
-      Pattern::metavar_s_fresh(98, 1, IdList::create(), IdList::create());
+  pos = IdList();
+  neg = IdList();
+  auto phi2 = Pattern::metavar_s_fresh(98, 1, pos, neg);
   auto mux_phi2 = Pattern::mu(1, phi2.clone());
   assert(!mux_phi2->pattern_well_formed());
 
   // It's ok if 2 is negative, the only thing we care about is that 2 is
   // guaranteed to be positive (we can instantiate without this variable)
-  auto phi3 =
-      Pattern::metavar_s_fresh(99, 1, IdList::create(2), IdList::create(2));
+  pos = IdList(2);
+  neg = IdList(2);
+  auto phi3 = Pattern::metavar_s_fresh(99, 1, pos, neg);
   auto mux_phi3 = Pattern::mu(2, phi3.clone());
   assert(mux_phi3->pattern_well_formed());
 
-  auto phi4 =
-      Pattern::metavar_s_fresh(100, 1, IdList::create(2), IdList::create());
+  pos = IdList(2);
+  neg = IdList();
+  auto phi4 = Pattern::metavar_s_fresh(100, 1, pos, neg);
   auto mux_phi4 = Pattern::mu(2, phi4.clone());
   assert(mux_phi4->pattern_well_formed());
 

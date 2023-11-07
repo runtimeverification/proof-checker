@@ -121,18 +121,6 @@ public:
     return head->data;
   }
 
-  static LinkedList *create() noexcept {
-    auto newList = static_cast<LinkedList *>(std::malloc(sizeof(LinkedList)));
-    newList->head = nullptr;
-    return newList;
-  }
-
-  static LinkedList *create(const T &value) noexcept {
-    LinkedList *list = create();
-    list->push(value);
-    return list;
-  }
-
   bool contains(const T &value) noexcept {
     Node<T> *curr = head;
     while (curr) {
@@ -214,4 +202,38 @@ public:
     }
   }
 #endif
+};
+
+using Id = int;
+
+class IdList : public LinkedList<Id> {
+public:
+  IdList() noexcept : LinkedList<Id>() {
+    memset_(this, 0, sizeof(IdList));
+  }
+
+  IdList(const Id &value) noexcept : LinkedList<Id>(){
+    head = Node<Id>::create(value);
+  }
+
+  IdList(const IdList &other) noexcept : LinkedList<Id>() {
+    Node<Id> *curr = other.head;
+    while (curr) {
+      push_back(curr->data);
+      curr = curr->next;
+    }
+  }
+
+  IdList &operator=(const IdList &other) noexcept {
+    if (this != &other) {
+      clear();
+      Node<Id> *curr = other.head;
+      while (curr) {
+        push_back(curr->data);
+        curr = curr->next;
+      }
+    }
+    return *this;
+  }
+
 };
