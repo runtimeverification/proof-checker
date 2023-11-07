@@ -54,6 +54,10 @@ class KSymbol:
     is_ctor: bool
     is_cell: bool
 
+    @staticmethod
+    def from_kore(kore_symbol: kore.Symbol) -> KSymbol:
+        raise NotImplementedError()
+
 
 @dataclass(frozen=True)
 class KRewritingRule:
@@ -80,7 +84,7 @@ class Converter:
         self._parsing = False
 
 
-def parsing_method(func):
+def converting_method(func):
     """Helps to forbid calling methods that change the semantics outside of parsing."""
     def wrapper(self, *args, **kwargs):
         assert isinstance(self, Converter)
@@ -96,6 +100,7 @@ class KModue(Converter):
     def __init__(self, name: str) -> None:
         self._name = name
         # Ordinal -> axiom
+        self._imported_modules: tuple[KModue, ...] = ()
         self._symbols: dict[str, KSymbol] = {}
         self._axioms: dict[int, KRewritingRule | KEquationalRule] = {}
 
@@ -106,12 +111,53 @@ class KModue(Converter):
     def has_ordinal(self, ordinal) -> bool:
         return True if ordinal >= min(self._axioms.keys()) and ordinal <= max(self._axioms.keys()) else False
 
+    @converting_method
+    def import_module(self, module: KModue) -> None:
+        self._imported_modules += (module,)
+
+    @converting_method
+    def sort(self) -> KSort:
+        raise NotImplementedError()
+
+    @converting_method
+    def hooked_sort(self) -> KSort:
+        raise NotImplementedError()
+
+    @converting_method
+    def constructor(self) -> KSymbol:
+        raise NotImplementedError()
+
+    @converting_method
+    def cell(self) -> KSymbol:
+        raise NotImplementedError()
+
+    @converting_method
+    def function(self) -> KSymbol:
+        raise NotImplementedError()
+
+    @converting_method
+    def subsort(self) -> KSort:
+        raise NotImplementedError()
+
+    @converting_method
+    def equational_rewrite(self) -> KEquationalRule:
+        raise NotImplementedError()
+
+    @converting_method
+    def rewrite_rule(self) -> KRewritingRule:
+        raise NotImplementedError()
+
 
 class LanguageSemantics(Converter):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
     def __init__(self, kore_definition: kore.Definition) -> None:
         self._definition = kore_definition
+
+        # TODO: New attributes
+        self._imported_modules: tuple[KModue, ...] = ()
+
+        # TODO: Obsolete
 
         # Attributes for caching new format objects
         self._symbols: dict[str, Symbol] = {}
@@ -126,6 +172,12 @@ class LanguageSemantics(Converter):
         self._raw_functional_symbols: set[str] = self._collect_functional_symbols()
         self._functional_symbols: set[Symbol] = set()
         self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
+
+    @converting_method
+    def module(self, name: str) -> KModue:
+        module = KModue(name)
+        self._imported_modules += (module,)
+        return module
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
