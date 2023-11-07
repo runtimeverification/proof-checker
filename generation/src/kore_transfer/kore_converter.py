@@ -151,15 +151,13 @@ class KModue(Converter):
 class LanguageSemantics(Converter):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
-    def __init__(self, kore_definition: kore.Definition) -> None:
-        self._definition = kore_definition
-
+    def __init__(self, kore_definition: kore.Definition | None) -> None:
         # TODO: New attributes
         self._imported_modules: tuple[KModue, ...] = ()
 
         # TODO: Obsolete
-
         # Attributes for caching new format objects
+        self._definition = kore_definition
         self._symbols: dict[str, Symbol] = {}
         self._evars: dict[str, EVar] = {}
         self._svars: dict[str, SVar] = {}
@@ -167,11 +165,17 @@ class LanguageSemantics(Converter):
         self._notations: dict[str, type[Notation]] = {}
 
         # Kore object cache
-        self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
+
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
-        self._raw_functional_symbols: set[str] = self._collect_functional_symbols()
         self._functional_symbols: set[Symbol] = set()
         self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
+        if kore_definition:
+            self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
+            self._raw_functional_symbols: set[str] = self._collect_functional_symbols()
+
+    @property
+    def modules(self) -> tuple[KModue, ...]:
+        return self._imported_modules
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""
@@ -196,6 +200,7 @@ class LanguageSemantics(Converter):
         module = KModue(name)
         self._imported_modules += (module,)
         return module
+    
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
