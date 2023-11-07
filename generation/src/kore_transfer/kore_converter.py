@@ -4,6 +4,7 @@ from collections.abc import Callable
 from enum import Enum
 from re import match
 from typing import TYPE_CHECKING, NamedTuple
+from dataclasses import dataclass
 
 import pyk.kore.syntax as kore
 
@@ -36,7 +37,77 @@ class ConvertedAxiom(NamedTuple):
 Axioms = dict[AxiomType, list[ConvertedAxiom]]
 
 
-class KoreConverter:
+@dataclass(frozen=True)
+class KSort:
+    name: str
+
+    def to_aml(self) -> Symbol:
+        return Symbol(self.name)
+
+
+@dataclass(frozen=True)
+class KSymbol:
+    aml_id: int  # Binary AML id
+    input_sorts: tuple[KSort, ...]
+    output_sort: KSort
+    is_functional: bool
+    is_ctor: bool
+    is_cell: bool
+
+
+@dataclass(frozen=True)
+class KRewritingRule:
+    pass
+
+
+@dataclass(frozen=True)
+class KEquationalRule:
+    pass
+
+
+class Converter:
+
+    def __init__(self) -> None:
+        self._parsing = False
+
+    def __enter__(self) -> Converter:
+        """It is not allows to change the semantics except while parsing."""
+        self._parsing = True
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        """It is not allows to change the semantics except while parsing."""
+        self._parsing = False
+
+
+def parsing_method(func):
+    """Helps to forbid calling methods that change the semantics outside of parsing."""
+    def wrapper(self, *args, **kwargs):
+        assert isinstance(self, Converter)
+        if self._parsing:
+            return func(self, *args, **kwargs)
+        else:
+            raise ValueError('Cannot call parsing method on immutable theory')
+    return wrapper
+
+
+class KModue(Converter):
+
+    def __init__(self, name: str) -> None:
+        self._name = name
+        # Ordinal -> axiom
+        self._symbols: dict[str, KSymbol] = {}
+        self._axioms: dict[int, KRewritingRule | KEquationalRule] = {}
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    def has_ordinal(self, ordinal) -> bool:
+        return True if ordinal >= min(self._axioms.keys()) and ordinal <= max(self._axioms.keys()) else False
+
+
+class LanguageSemantics(Converter):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
     def __init__(self, kore_definition: kore.Definition) -> None:
