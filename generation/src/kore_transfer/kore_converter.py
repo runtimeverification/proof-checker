@@ -173,6 +173,24 @@ class LanguageSemantics(Converter):
         self._functional_symbols: set[Symbol] = set()
         self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
 
+    def __enter__(self) -> LanguageSemantics:
+        """It is not allows to change the semantics except while parsing."""
+        obj = super().__enter__()
+        assert isinstance(obj, LanguageSemantics)
+        return obj
+
+    @staticmethod
+    def from_kore_definition(kore_definition: kore.Definition) -> LanguageSemantics:
+        """Create a new instance of LanguageSemantics from the given Kore definition."""
+        with LanguageSemantics(kore_definition) as semantics:
+            for kore_module in kore_definition.modules:
+                semantics.module(kore_module.name)
+                # TODO: Add imports
+                # TODO: Add sorts
+                # TODO: Add symbols
+                # TODO: Add axioms
+            return semantics
+
     @converting_method
     def module(self, name: str) -> KModue:
         module = KModue(name)
