@@ -4,7 +4,7 @@ from collections.abc import Callable
 from enum import Enum
 from re import match
 from typing import TYPE_CHECKING, NamedTuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import pyk.kore.syntax as kore
 
@@ -40,6 +40,7 @@ Axioms = dict[AxiomType, list[ConvertedAxiom]]
 @dataclass(frozen=True)
 class KSort:
     name: str
+    hooked: bool = field(default=False)
 
     def to_aml(self) -> Symbol:
         return Symbol(self.name)
@@ -61,12 +62,14 @@ class KSymbol:
 
 @dataclass(frozen=True)
 class KRewritingRule:
-    pass
+    ordinal: int
+    pattern: kl.KoreRewrites
 
 
 @dataclass(frozen=True)
 class KEquationalRule:
-    pass
+    ordinal: int
+    pattern: Pattern
 
 
 class Converter:
@@ -104,6 +107,12 @@ class KModue(Converter):
         self._symbols: dict[str, KSymbol] = {}
         self._axioms: dict[int, KRewritingRule | KEquationalRule] = {}
 
+    def __enter__(self) -> KModue:
+        """It is not allows to change the semantics except while parsing."""
+        obj = super().__enter__()
+        assert isinstance(obj, KModue)
+        return obj
+
     @property
     def name(self) -> str:
         return self._name
@@ -116,36 +125,25 @@ class KModue(Converter):
         self._imported_modules += (module,)
 
     @converting_method
-    def sort(self) -> KSort:
-        raise NotImplementedError()
+    def sort(self, name) -> KSort:
+        # TODO: Parameteric sorts?
+        return KSort(name)
 
     @converting_method
-    def hooked_sort(self) -> KSort:
-        raise NotImplementedError()
+    def hooked_sort(self, name) -> KSort:
+        # TODO: Parameteric sorts?
+        # TODO: Do we need a separate method for that?
+        return KSort(name, True)
 
     @converting_method
-    def constructor(self) -> KSymbol:
-        raise NotImplementedError()
+    def equational_rewrite(self, pattern) -> KEquationalRule:
+        # TODO: Add the ordinal
+        return KEquationalRule(0, pattern)
 
     @converting_method
-    def cell(self) -> KSymbol:
-        raise NotImplementedError()
-
-    @converting_method
-    def function(self) -> KSymbol:
-        raise NotImplementedError()
-
-    @converting_method
-    def subsort(self) -> KSort:
-        raise NotImplementedError()
-
-    @converting_method
-    def equational_rewrite(self) -> KEquationalRule:
-        raise NotImplementedError()
-
-    @converting_method
-    def rewrite_rule(self) -> KRewritingRule:
-        raise NotImplementedError()
+    def rewrite_rule(self, pattern: kl.KoreRewrites) -> KRewritingRule:
+        # TODO: Add the ordinal
+        return KRewritingRule(0, pattern)
 
 
 class LanguageSemantics(Converter):
@@ -188,11 +186,36 @@ class LanguageSemantics(Converter):
         """Create a new instance of LanguageSemantics from the given Kore definition."""
         with LanguageSemantics(kore_definition) as semantics:
             for kore_module in kore_definition.modules:
-                semantics.module(kore_module.name)
-                # TODO: Add imports
-                # TODO: Add sorts
-                # TODO: Add symbols
-                # TODO: Add axioms
+                with semantics.module(kore_module.name) as module:
+                    for sentence in kore_module.sentences:
+                        if isinstance(sentence, kore.Import):
+                            # Add imports
+                            module.import_module(semantics.get_module(sentence.module_name))
+                        elif isinstance(sentence, kore.SortDecl):
+                            # Add sorts
+                            if hasattr(sentence, 'hooked') and sentence.hooked:
+                                module.hooked_sort(sentence.name)
+                            else:
+                                module.sort(sentence.name)
+                        elif isinstance(sentence, kore.SymbolDecl):
+                            pass
+                        elif isinstance(sentence, kore.Axiom):
+                            if isinstance(sentence.pattern, kore.Rewrites):
+                                pattern = sentence.pattern
+                                assert isinstance(pattern, kore.Rewrites)
+                                assert isinstance(pattern.left, kore.And)
+                                assert isinstance(pattern.right, kore.And)
+
+                                # TODO: Remove side conditions for now
+                                preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
+                                parsed_pattern = semantics._convert_pattern(preprocessed_pattern)
+                                assert isinstance(parsed_pattern, kl.KoreRewrites)
+                                module.rewrite_rule(parsed_pattern)
+                            # TODO: Cannot parse everything yet
+                            # elif isinstance(sentence.pattern, kore.Equals):
+                            #     parsed_pattern = semantics._convert_pattern(sentence.pattern)
+                            #     module.equational_rewrite(parsed_pattern)
+
             return semantics
 
     @converting_method
@@ -200,8 +223,14 @@ class LanguageSemantics(Converter):
         module = KModue(name)
         self._imported_modules += (module,)
         return module
-    
 
+    def get_module(self, name: str) -> KModue:
+        for module in self._imported_modules:
+            if module.name == name:
+                return module
+        raise ValueError(f'Module {name} not found')
+
+    # TODO: Methods added before the refactoring:
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
         return self._convert_pattern(pattern)
