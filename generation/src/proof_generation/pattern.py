@@ -444,7 +444,7 @@ class Notation(Pattern, ABC):
 
     # We assume all metavars in notations are instantiated for
     # So this is correct, as this can only change "internals" of the instantiations
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         pattern_args = self._instantiate_args(delta)
 
         final_args = []
@@ -486,7 +486,7 @@ class Notation(Pattern, ABC):
 
         return ret
 
-    def _instantiate_args(self, delta: dict[int, Pattern]) -> list[Pattern]:
+    def _instantiate_args(self, delta: Mapping[int, Pattern]) -> list[Pattern]:
         args: list[Pattern] = []
 
         for arg in self._arguments().values():
