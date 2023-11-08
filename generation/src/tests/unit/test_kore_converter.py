@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 
 def test_module_creation():
-    semantics = LanguageSemantics(None)
+    semantics = LanguageSemantics()
     with semantics as definition:
         test_name = 'test_module'
         m = definition.module(test_name)

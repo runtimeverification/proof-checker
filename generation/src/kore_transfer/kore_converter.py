@@ -48,6 +48,7 @@ class KSort:
         return Symbol('ksort_' + self.name)
 
 
+# TODO: Remove this class
 class KSortVar(KSort):
     pass
 
@@ -239,20 +240,14 @@ class ConvertionScope:
 class LanguageSemantics(Converter):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
-    def __init__(self, kore_definition: kore.Definition | None) -> None:
+    def __init__(self) -> None:
         self._imported_modules: tuple[KModue, ...] = ()
         self._cached_axiom_scopes: dict[int, ConvertionScope] = {}
 
-        # TODO: Obsolete
-        self._definition = kore_definition
-
-        # Kore object cache
+        # TODO: Should be removed after the refactoring
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
         self._functional_symbols: set[Symbol] = set()
         self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
-        if kore_definition:
-            self._axioms_to_choose_from: list[kore.Axiom] = self._retrieve_axioms()
-            self._raw_functional_symbols: set[str] = self._collect_functional_symbols()
 
     @property
     def modules(self) -> tuple[KModue, ...]:
@@ -272,7 +267,7 @@ class LanguageSemantics(Converter):
     @staticmethod
     def from_kore_definition(kore_definition: kore.Definition) -> LanguageSemantics:
         """Create a new instance of LanguageSemantics from the given Kore definition."""
-        with LanguageSemantics(kore_definition) as semantics:
+        with LanguageSemantics() as semantics:
             for kore_module in kore_definition.modules:
                 with semantics.module(kore_module.name) as module:
                     for sentence in kore_module.sentences:
@@ -370,58 +365,50 @@ class LanguageSemantics(Converter):
     def convert_substitutions(self, subst: dict[str, kore.Pattern], axiom_ordinal: int) -> dict[int, Pattern]:
         substitutions = {}
         scope = self._cached_axiom_scopes[axiom_ordinal]
-        for id, kore_pattern in subst.items():
+        for var_name, kore_pattern in subst.items():
             # TODO: Replace it with the EVar later
-            name = scope.lookup_metavar(id).name
+            name = scope.lookup_metavar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
 
-    # TODO: Methods added before the refactoring:
-    def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
-        added_axioms = self._construct_subst_axioms(hint)
-        added_axioms.extend(self._construct_event_axioms(hint))
-        return self._organize_axioms(added_axioms)
+    def collect_functional_axioms(self, hint: KoreHint) -> tuple[Pattern, ...]:
+        # TODO: TBD during the refactoring
+        return ()
 
-    def _collect_functional_symbols(self) -> set[str]:
-        """Collect all functional symbols from the definition."""
-        functional_symbols: set[str] = set()
-        for kore_module in self._definition.modules:
-            for symbol_declaration in kore_module.symbol_decls:
-                if any(attr.symbol == 'functional' for attr in symbol_declaration.attrs if isinstance(attr, kore.App)):
-                    functional_symbols.add(symbol_declaration.symbol.name)
-        return functional_symbols
-
-    def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
-        subst_axioms = []
-        # TODO: Refactoring pending ...
-        # for pattern in hint.substitutions.values():
-        #     # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-        #     assert isinstance(
-        #         pattern, kl.KoreApplies | kl.Cell
-        #     ), f'Expected application of a Kore symbol, got {str(pattern)}'
-        #     if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
-        #         assert pattern.phi0.left in self._functional_symbols
-        #     elif isinstance(pattern.phi0, Symbol | kl.Cell):
-        #         assert pattern.phi0 in self._functional_symbols
-        #     else:
-        #         raise NotImplementedError(f'Pattern {pattern} is not supported')
-        #     # TODO: Requires equality to be implemented
-        #     converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
-        #     subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
-        return subst_axioms
-
-    def _construct_event_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
-        event_axioms = []
-        for event in hint.functional_events:
-            if isinstance(event, FunEvent):
-                # TODO: construct the proper axiom using event.name, event.relative_position
-                pattern = Implies(EVar(0), EVar(0))
-                event_axioms.append(ConvertedAxiom(AxiomType.FunctionEvent, pattern))
-            if isinstance(event, HookEvent):
-                # TODO: construct the proper axiom using event.name, event.args, and event.result
-                pattern = Implies(EVar(0), EVar(0))
-                event_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
-        return event_axioms
+    # TODO: Keep it as a reference for refactoring the functional axioms generating
+    # def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
+    #     added_axioms = self._construct_subst_axioms(hint)
+    #     added_axioms.extend(self._construct_event_axioms(hint))
+    #     return self._organize_axioms(added_axioms)
+    # def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
+    #     subst_axioms = []
+    #     for pattern in hint.substitutions.values():
+    #         # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+    #         assert isinstance(
+    #             pattern, kl.KoreApplies | kl.Cell
+    #         ), f'Expected application of a Kore symbol, got {str(pattern)}'
+    #         if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
+    #             assert pattern.phi0.left in self._functional_symbols
+    #         elif isinstance(pattern.phi0, Symbol | kl.Cell):
+    #             assert pattern.phi0 in self._functional_symbols
+    #         else:
+    #             raise NotImplementedError(f'Pattern {pattern} is not supported')
+    #         # TODO: Requires equality to be implemented
+    #         converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
+    #         subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+    #     return subst_axioms
+    # def _construct_event_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
+    #     event_axioms = []
+    #     for event in hint.functional_events:
+    #         if isinstance(event, FunEvent):
+    #             # TODO: construct the proper axiom using event.name, event.relative_position
+    #             pattern = Implies(EVar(0), EVar(0))
+    #             event_axioms.append(ConvertedAxiom(AxiomType.FunctionEvent, pattern))
+    #         if isinstance(event, HookEvent):
+    #             # TODO: construct the proper axiom using event.name, event.args, and event.result
+    #             pattern = Implies(EVar(0), EVar(0))
+    #             event_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
+    #     return event_axioms
 
     def _convert_axiom(self, kore_axiom: kore.Axiom, scope: ConvertionScope) -> ConvertedAxiom:
         if kore_axiom in self._axioms_cache:
@@ -490,7 +477,6 @@ class LanguageSemantics(Converter):
 
                 return kl.KoreOr(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, sorts, args):
-
                 def chain_patterns(patterns: list[Pattern]) -> Pattern:
                     *patterns_left, next_one = patterns
                     if len(patterns_left) == 0:
@@ -499,10 +485,10 @@ class LanguageSemantics(Converter):
                         return App(chain_patterns(patterns_left), next_one)
 
                 if symbol in self._cell_symbols:
-
                     def is_cell(kore_application: kore.Pattern) -> str | None:
                         """Returns the cell name if the given application is a cell, None otherwise."""
                         if isinstance(kore_application, kore.App):
+                            # TODO: This can be improved
                             if comparison := match(r"Lbl'-LT-'(.+)'-GT-'", kore_application.symbol):
                                 return comparison.group(0)
                         return None
@@ -514,8 +500,6 @@ class LanguageSemantics(Converter):
 
                         cell_symbol: Symbol = self.get_symbol(cell_name).aml_symbol
                         self._cell_symbols.add(kore_application.symbol)
-                        if kore_application.symbol in self._raw_functional_symbols:
-                            self._functional_symbols.add(cell_symbol)
 
                         if len(kore_application.args) == 0:
                             print(f'Cell {cell_name} has nothing to store!')
