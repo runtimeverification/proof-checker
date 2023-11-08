@@ -120,9 +120,6 @@ Instruction from(int value) noexcept {
   }
 }
 
-using Id = int;
-using IdList = LinkedList<Id>;
-
 struct Pattern {
   Instruction inst;       // All
   Id id;                  // EVar, SVar, Symbol, Mu, Exists, MetaVar,
@@ -132,11 +129,11 @@ struct Pattern {
   Rc<Pattern> subpattern; // Exists, Mu, ESubst (pattern), SSubst (pattern)
   Rc<Pattern> plug;       // ESubst, SSubst
 
-  IdList *e_fresh;       // MetaVar
-  IdList *s_fresh;       // MetaVar
-  IdList *positive;      // MetaVar
-  IdList *negative;      // MetaVar
-  IdList *app_ctx_holes; // MetaVar
+  IdList e_fresh;       // MetaVar
+  IdList s_fresh;       // MetaVar
+  IdList positive;      // MetaVar
+  IdList negative;      // MetaVar
+  IdList app_ctx_holes; // MetaVar
 
   // Constructor for creating instances of Pattern
   static Pattern *newPattern(Instruction inst, Id id) noexcept {
@@ -154,26 +151,6 @@ struct Pattern {
     if (inst != rhs.inst || id != rhs.id) {
       return false;
     }
-    if (e_fresh == nullptr && rhs.e_fresh != nullptr ||
-        e_fresh != nullptr && rhs.e_fresh == nullptr) {
-      return false;
-    }
-    if (s_fresh == nullptr && rhs.s_fresh != nullptr ||
-        s_fresh != nullptr && rhs.s_fresh == nullptr) {
-      return false;
-    }
-    if (positive == nullptr && rhs.positive != nullptr ||
-        positive != nullptr && rhs.positive == nullptr) {
-      return false;
-    }
-    if (negative == nullptr && rhs.negative != nullptr ||
-        negative != nullptr && rhs.negative == nullptr) {
-      return false;
-    }
-    if (app_ctx_holes == nullptr && rhs.app_ctx_holes != nullptr ||
-        app_ctx_holes != nullptr && rhs.app_ctx_holes == nullptr) {
-      return false;
-    }
     if (left != rhs.left) {
       return false;
     }
@@ -186,24 +163,19 @@ struct Pattern {
     if (plug != rhs.plug) {
       return false;
     }
-    if (e_fresh != nullptr && rhs.e_fresh != nullptr &&
-        *e_fresh != *rhs.e_fresh) {
+    if (e_fresh != rhs.e_fresh) {
       return false;
     }
-    if (s_fresh != nullptr && rhs.s_fresh != nullptr &&
-        *s_fresh != *rhs.s_fresh) {
+    if (s_fresh != rhs.s_fresh) {
       return false;
     }
-    if (positive != nullptr && rhs.positive != nullptr &&
-        *positive != *rhs.positive) {
+    if(positive != rhs.positive) {
       return false;
     }
-    if (negative != nullptr && rhs.negative != nullptr &&
-        *negative != *rhs.negative) {
+    if (negative != rhs.negative) {
       return false;
     }
-    if (app_ctx_holes != nullptr && rhs.app_ctx_holes != nullptr &&
-        *app_ctx_holes != *rhs.app_ctx_holes) {
+    if (app_ctx_holes != rhs.app_ctx_holes) {
       return false;
     }
     return true;
@@ -219,7 +191,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return e_fresh->contains(evar);
+      return e_fresh.contains(evar);
     case Instruction::Implication:
     case Instruction::Application:
       return left->pattern_e_fresh(evar) && right->pattern_e_fresh(evar);
@@ -265,7 +237,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return s_fresh->contains(svar);
+      return s_fresh.contains(svar);
     case Instruction::Implication:
     case Instruction::Application:
       return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
@@ -305,7 +277,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return positive->contains(svar);
+      return positive.contains(svar);
     case Instruction::Implication:
       return left->pattern_negative(svar) && right->pattern_positive(svar);
     case Instruction::Application:
@@ -343,7 +315,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return negative->contains(svar);
+      return negative.contains(svar);
     case Instruction::Implication:
       return left->pattern_positive(svar) && right->pattern_negative(svar);
     case Instruction::Application:
@@ -377,7 +349,7 @@ struct Pattern {
   bool pattern_well_formed() noexcept {
     switch (inst) {
     case Instruction::MetaVar:
-      return !app_ctx_holes->containsElementOf(e_fresh);
+      return !app_ctx_holes.containsElementOf(&e_fresh);
     case Instruction::Mu:
       return subpattern->pattern_positive(id);
     case Instruction::ESubst:
@@ -405,35 +377,34 @@ struct Pattern {
 
   static Rc<Pattern> metavar_unconstrained(Id id) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
-    pattern->e_fresh = IdList::create();
-    pattern->s_fresh = IdList::create();
-    pattern->positive = IdList::create();
-    pattern->negative = IdList::create();
-    pattern->app_ctx_holes = IdList::create();
+    pattern->e_fresh = IdList();
+    pattern->s_fresh = IdList();
+    pattern->positive = IdList();
+    pattern->negative = IdList();
+    pattern->app_ctx_holes = IdList();
     return pattern;
   }
 
-  static Rc<Pattern> metavar_s_fresh(Id id, Id s_fresh, IdList *positive,
-                                     IdList *negative) noexcept {
+  static Rc<Pattern> metavar_s_fresh(Id id, Id s_fresh, IdList positive,
+                                     IdList negative) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
-    pattern->e_fresh = IdList::create();
-    pattern->s_fresh = IdList::create(s_fresh);
-    pattern->positive = positive;
-    pattern->negative = negative;
-    pattern->app_ctx_holes = IdList::create();
-    ;
+    pattern->e_fresh = IdList();
+    pattern->s_fresh = IdList(s_fresh);
+    pattern->positive = std::move(positive);
+    pattern->negative = std::move(negative);
+    pattern->app_ctx_holes = IdList();
     return pattern;
   }
 
-  static Rc<Pattern> metavar(Id id, IdList *e_fresh, IdList *s_fresh,
-                             IdList *positive, IdList *negative,
-                             IdList *app_ctx_holes) noexcept {
+  static Rc<Pattern> metavar(Id id, IdList e_fresh, IdList s_fresh,
+                             IdList positive, IdList negative,
+                             IdList app_ctx_holes) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
-    pattern->e_fresh = e_fresh;
-    pattern->s_fresh = s_fresh;
-    pattern->positive = positive;
-    pattern->negative = negative;
-    pattern->app_ctx_holes = app_ctx_holes;
+    pattern->e_fresh = std::move(e_fresh);
+    pattern->s_fresh = std::move(s_fresh);
+    pattern->positive = std::move(positive);
+    pattern->negative = std::move(negative);
+    pattern->app_ctx_holes = std::move(app_ctx_holes);
     return pattern;
   }
 
@@ -480,38 +451,7 @@ struct Pattern {
   }
 
   // Destructor to manually release memory
-  ~Pattern() noexcept {
-    if (e_fresh && e_fresh->head) {
-      e_fresh->~LinkedList();
-      free(e_fresh);
-    } else if (e_fresh) {
-      free(e_fresh);
-    }
-    if (s_fresh && s_fresh->head) {
-      s_fresh->~LinkedList();
-      free(s_fresh);
-    } else if (s_fresh) {
-      free(s_fresh);
-    }
-    if (positive && positive->head) {
-      positive->~LinkedList();
-      free(positive);
-    } else if (positive) {
-      free(positive);
-    }
-    if (negative && negative->head) {
-      negative->~LinkedList();
-      free(negative);
-    } else if (negative) {
-      free(negative);
-    }
-    if (app_ctx_holes && app_ctx_holes->head) {
-      app_ctx_holes->~LinkedList();
-      free(app_ctx_holes);
-    } else if (app_ctx_holes) {
-      free(app_ctx_holes);
-    }
-  }
+  ~Pattern() noexcept = default;
 
 #if DEBUG
   void print() noexcept {
@@ -557,25 +497,25 @@ struct Pattern {
     case Instruction::MetaVar:
       // std::cout << "phi" << static_cast<int>(id);
       std::cout << "MetaVar(" << static_cast<int>(id);
-      if (e_fresh->head) {
+      if (e_fresh.head) {
         std::cout << ", ";
-        e_fresh->print();
+        e_fresh.print();
       }
-      if (s_fresh->head) {
+      if (s_fresh.head) {
         std::cout << ", ";
-        s_fresh->print();
+        s_fresh.print();
       }
-      if (positive->head) {
+      if (positive.head) {
         std::cout << ", ";
-        positive->print();
+        positive.print();
       }
-      if (negative->head) {
+      if (negative.head) {
         std::cout << ", ";
-        negative->print();
+        negative.print();
       }
-      if (app_ctx_holes->head) {
+      if (app_ctx_holes.head) {
         std::cout << ", ";
-        app_ctx_holes->print();
+        app_ctx_holes.print();
       }
       std::cout << ")";
       break;
@@ -686,7 +626,7 @@ struct Pattern {
       Id pos = 0;
       for (auto it : vars) {
         if (it == p->id) {
-          for (const auto &evar : *p->e_fresh) {
+          for (const auto &evar : p->e_fresh) {
             if (!plugs[pos]->pattern_e_fresh(evar)) {
 #ifdef DEBUG
               throw std::runtime_error("Instantiation of MetaVar " +
@@ -697,7 +637,7 @@ struct Pattern {
               exit(1);
             }
           }
-          for (const auto &svar : *p->s_fresh) {
+          for (const auto &svar : p->s_fresh) {
             if (!plugs[pos]->pattern_s_fresh(svar)) {
 #ifdef DEBUG
               throw std::runtime_error("Instantiation of MetaVar " +
@@ -708,7 +648,7 @@ struct Pattern {
               exit(1);
             }
           }
-          for (const auto &svar : *p->positive) {
+          for (const auto &svar : p->positive) {
             if (!plugs[pos]->pattern_positive(svar)) {
 #ifdef DEBUG
               throw std::runtime_error(
@@ -719,7 +659,7 @@ struct Pattern {
               exit(1);
             }
           }
-          for (const auto &svar : *p->negative) {
+          for (const auto &svar : p->negative) {
             if (!plugs[pos]->pattern_negative(svar)) {
 #ifdef DEBUG
               throw std::runtime_error(
@@ -907,17 +847,16 @@ struct Pattern {
 
   enum class ExecutionPhase { Gamma, Claim, Proof };
 
-  static IdList *
-  read_u8_vec(std::array<int, MAX_SIZE>::iterator &iterator) noexcept {
+  static void
+  read_u8_vec(std::array<int, MAX_SIZE>::iterator &iterator, IdList *vec) noexcept {
     auto size = *iterator;
     iterator++;
-    auto vec = IdList::create();
     for (int i = 0; i < size; i++) {
       vec->push_back(static_cast<int>(*iterator));
       iterator++;
     }
-    return vec;
   }
+
   static void execute_instructions(std::array<int, MAX_SIZE> &buffer,
                                    Stack &stack, Memory &memory, Claims &claims,
                                    ExecutionPhase phase) noexcept {
@@ -1012,14 +951,20 @@ struct Pattern {
         }
         auto id = static_cast<Id>(*getId);
 
-        auto e_fresh = read_u8_vec(iterator);
-        auto s_fresh = read_u8_vec(iterator);
-        auto positive = read_u8_vec(iterator);
-        auto negative = read_u8_vec(iterator);
-        auto app_ctx_holes = read_u8_vec(iterator);
+        auto e_fresh = IdList();
+        read_u8_vec(iterator, &e_fresh);
+        auto s_fresh = IdList();
+        read_u8_vec(iterator, &s_fresh);
+        auto positive = IdList();
+        read_u8_vec(iterator, &positive);
+        auto negative = IdList();
+        read_u8_vec(iterator, &negative);
+        auto app_ctx_holes = IdList();
+        read_u8_vec(iterator, &app_ctx_holes);
 
         auto metavar_pat =
-            metavar(id, e_fresh, s_fresh, positive, negative, app_ctx_holes);
+            metavar(id, std::move(e_fresh), std::move(s_fresh), std::move(positive),
+                std::move(negative), std::move(app_ctx_holes));
 
         if (!metavar_pat->pattern_well_formed()) {
 #if DEBUG
