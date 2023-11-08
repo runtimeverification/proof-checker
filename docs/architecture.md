@@ -57,7 +57,7 @@ and a library for proof generation.
 
 ZK certifies that there exists an "ml-proof" for a set of "ml-claims" wrt an "ml-theory".
 Since this certificate "rolls up" the proof, it is not one of the public inputs.
-Thus, besides the cryptographic components, a ZK Certificate contains just two parts:
+Thus, besides the cryptographic components, a ZK certificate contains just two parts:
 
 1.  "ml-theory" defining the set of axioms used.
 2.  "ml-claims" defining the set of claims proved.
