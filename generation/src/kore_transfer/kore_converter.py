@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import count
 from collections.abc import Callable
 from enum import Enum
 from re import match
@@ -12,7 +13,7 @@ import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
 import proof_generation.proofs.propositional as prop
 from kore_transfer.generate_hints import FunEvent, HookEvent
-from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, NotationPlaceholder, Symbol
+from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Symbol
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
@@ -109,8 +110,13 @@ def converting_method(func):
 
 class KModue(Converter):
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, counter: count | None = None) -> None:
         self._name = name
+        if counter is None:
+            self.counter = count()
+        else:
+            self.counter = counter
+
         # Ordinal -> axiom
         self._imported_modules: tuple[KModue, ...] = ()
         self._sorts: dict[str, KSort] = {}
@@ -126,9 +132,6 @@ class KModue(Converter):
     @property
     def name(self) -> str:
         return self._name
-
-    def has_ordinal(self, ordinal) -> bool:
-        return True if ordinal >= min(self._axioms.keys()) and ordinal <= max(self._axioms.keys()) else False
 
     @converting_method
     def import_module(self, module: KModue) -> None:
@@ -160,13 +163,17 @@ class KModue(Converter):
 
     @converting_method
     def equational_rewrite(self, pattern) -> KEquationalRule:
-        # TODO: Add the ordinal, save to the collection
-        return KEquationalRule(0, pattern)
+        ordinal = next(self.counter)
+        axiom = KEquationalRule(ordinal, pattern)
+        self._axioms[ordinal] = axiom
+        return axiom
 
     @converting_method
     def rewrite_rule(self, pattern: kl.KoreRewrites) -> KRewritingRule:
-        # TODO: Add the ordinal, save to the collection
-        return KRewritingRule(0, pattern)
+        ordinal = next(self.counter)
+        axiom = KRewritingRule(ordinal, pattern)
+        self._axioms[ordinal] = axiom
+        return axiom
 
     def get_sort(self, name: str) -> KSort:
         if name in self._sorts:
@@ -191,6 +198,18 @@ class KModue(Converter):
             except ValueError:
                 continue
         raise ValueError(f'Symbol {name} not found in the module {self.name}')
+
+    def get_axiom(self, ordinal: int) -> KRewritingRule | KEquationalRule:
+        if ordinal in self._axioms:
+            return self._axioms[ordinal]
+
+        for module in self._imported_modules:
+            try:
+                axiom = module.get_axiom(ordinal)
+                return axiom
+            except ValueError:
+                continue
+        raise ValueError(f'Axiom with ordinal {ordinal} not found in the module {self.name}')
 
 
 class ConvertionScope:
@@ -222,6 +241,7 @@ class LanguageSemantics(Converter):
 
     def __init__(self, kore_definition: kore.Definition | None) -> None:
         self._imported_modules: tuple[KModue, ...] = ()
+        self._cached_axiom_scopes: dict[int, ConvertionScope] = {}
 
         # TODO: Obsolete
         self._definition = kore_definition
@@ -237,6 +257,11 @@ class LanguageSemantics(Converter):
     @property
     def modules(self) -> tuple[KModue, ...]:
         return self._imported_modules
+
+    @property
+    def main_module(self):
+        # TODO: This is a heuristic
+        return self._imported_modules[-1]
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""
@@ -298,9 +323,13 @@ class LanguageSemantics(Converter):
 
                                 # TODO: Remove side conditions for now
                                 preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-                                parsed_pattern = semantics.convert_pattern(preprocessed_pattern)
+                                scope = ConvertionScope()
+                                parsed_pattern = semantics._convert_pattern(scope, preprocessed_pattern)
                                 assert isinstance(parsed_pattern, kl.KoreRewrites)
-                                module.rewrite_rule(parsed_pattern)
+                                axiom = module.rewrite_rule(parsed_pattern)
+                                semantics._cached_axiom_scopes[axiom.ordinal] = scope
+                            else:
+                                next(module.counter)
                             # TODO: Cannot parse everything yet
                             # elif isinstance(sentence.pattern, kore.Equals):
                             #     parsed_pattern = semantics._convert_pattern(sentence.pattern)
@@ -308,14 +337,13 @@ class LanguageSemantics(Converter):
 
             return semantics
 
-    @property
-    def main_module(self):
-        # TODO: This is a heuristic
-        return self._imported_modules[-1]
-
     @converting_method
     def module(self, name: str) -> KModue:
-        module = KModue(name)
+        if name in self._imported_modules:
+            raise ValueError(f'Module {name} has been already added')
+        axiom_counter = count() if len(self._imported_modules) == 0 else self.main_module.counter
+
+        module = KModue(name, axiom_counter)
         self._imported_modules += (module,)
         return module
 
@@ -324,6 +352,9 @@ class LanguageSemantics(Converter):
             if module.name == name:
                 return module
         raise ValueError(f'Module {name} not found')
+
+    def get_axiom(self, ordinal: int) -> KRewritingRule | KEquationalRule:
+        return self.main_module.get_axiom(ordinal)
 
     def get_sort(self, name: str) -> KSort:
         return self.main_module.get_sort(name)
@@ -336,21 +367,9 @@ class LanguageSemantics(Converter):
         scope = ConvertionScope()
         return self._convert_pattern(scope, pattern)
 
-    def retrieve_axiom_with_substitutions(self, ordinal: int, subst: dict[str, kore.Pattern]) -> tuple[ConvertedAxiom, dict[int, Pattern]]:
-        parsing_scope = ConvertionScope()
-        axiom = self._retrieve_axiom_for_ordinal(ordinal, parsing_scope)
-        substitutions = self._convert_substitutions(subst, parsing_scope)
-        return axiom, substitutions
-
-    def _retrieve_axiom_for_ordinal(self, ordinal: int, scope: ConvertionScope) -> ConvertedAxiom:
-        """Retrieve the axiom for the given ordinal."""
-        assert ordinal < len(self._axioms_to_choose_from), f'Ordinal {ordinal} is out of range!'
-
-        kore_axiom = self._axioms_to_choose_from[ordinal]
-        return self._convert_axiom(kore_axiom, scope)
-
-    def _convert_substitutions(self, subst: dict[str, kore.Pattern], scope: ConvertionScope) -> dict[int, Pattern]:
+    def convert_substitutions(self, subst: dict[str, kore.Pattern], axiom_ordinal: int) -> dict[int, Pattern]:
         substitutions = {}
+        scope = self._cached_axiom_scopes[axiom_ordinal]
         for id, kore_pattern in subst.items():
             # TODO: Replace it with the EVar later
             name = scope.lookup_metavar(id).name
