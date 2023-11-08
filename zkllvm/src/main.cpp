@@ -1,71 +1,61 @@
+#if DEBUG
+#include "../inputs/input.hpp"
+#endif
 #include "lib.hpp"
 #include <array>
 #include <iostream>
 
-#define MAX_SIZE_ASSUMPTION 27001
-#define MAX_SIZE_CLAIM 27001
-#define MAX_SIZE_PROOF 27001
-
-typedef std::array<int, MAX_SIZE_ASSUMPTION> assumption_type;
-typedef std::array<int, MAX_SIZE_CLAIM> claim_type;
-typedef std::array<int, MAX_SIZE_PROOF> proof_type;
-
-void read_input_assumption(assumption_type &arr, LinkedList<uint8_t> *input) {
-  int arr_size = arr[0];
-  for (int i = 1; i <= arr_size; i++) {
-    input->push_back((uint8_t)arr[i]);
-  }
-}
-
-void read_input_claim(claim_type &arr, LinkedList<uint8_t> *input) {
-  int arr_size = arr[0];
-  for (int i = 1; i <= arr_size; i++) {
-    input->push_back((uint8_t)arr[i]);
-  }
-}
-
-void read_input_proof(proof_type &arr, LinkedList<uint8_t> *input) {
-  int arr_size = arr[0];
-  for (int i = 1; i <= arr_size; i++) {
-    input->push_back((uint8_t)arr[i]);
-  }
-}
+typedef std::array<int, MAX_SIZE> assumption_type;
+typedef std::array<int, MAX_SIZE> claim_type;
+typedef std::array<int, MAX_SIZE> proof_type;
 
 #ifndef DEBUG
-[[circuit]] int foo(assumption_type a, claim_type c, proof_type p) {
-
-  auto gamma = LinkedList<uint8_t>::create();
-  auto claim = LinkedList<uint8_t>::create();
-  auto proof = LinkedList<uint8_t>::create();
-
-  read_input_assumption(a, gamma);
-  read_input_claim(c, claim);
-  read_input_proof(p, proof);
-
-  return Pattern::verify(gamma, claim, proof);
+[[circuit]] int foo(assumption_type a, claim_type c, proof_type p) noexcept {
+  return Pattern::verify(a, c, p);
 }
 #else
 int main() {
-  assumption_type assumption = {0, 128};
-  claim_type claim_gamma = {7, 137, 0, 137, 0, 5, 28, 30, 138};
-  proof_type proof_gamma = {
-      70,  137, 0,   137, 0,  137, 0,  5,  28,  5,   28, 29,  0,  137, 0,  // 15
-      29,  0,   137, 0,   5,  5,   29, 2,  29,  0,   5,  137, 0,  29,  0,  // 15
-      137, 0,   13,  26,  3,  2,   1,  0,  137, 0,   29, 0,   12, 26,  2,  // 15
-      1,   0,   21,  28,  27, 27,  27, 29, 3,   137, 0,  137, 0,  12,  26, // 15
-      2,   1,   0,   21,  28, 27,  27, 27, 29,  4,   30, 138};             // 12
+  int result = -1;
 
-  auto gamma = LinkedList<uint8_t>::create();
-  auto claims = LinkedList<uint8_t>::create();
-  auto proof = LinkedList<uint8_t>::create();
+  // Impreflex Compressed Goal
+  result =
+      Pattern::verify(assumption_impreflex_compressed,
+                      claim_impreflex_compressed, proof_impreflex_compressed);
+  std::cout << "Impeflex Compressed Goal result: " << result << std::endl;
+  std::cout << std::endl;
 
-  read_input_assumption(assumption, gamma);
-  read_input_claim(claim_gamma, claims);
-  read_input_proof(proof_gamma, proof);
+  // Transfer Task Specific
+  result = Pattern::verify(assumption_transfer_task_specific,
+                           claim_transfer_task_specific,
+                           proof_transfer_task_specific);
+  std::cout << "Transfer Task Specific Goal result: " << result << std::endl;
+  std::cout << std::endl;
 
-  std::cout << static_cast<int>(proof->get(proof->size()-1)) << std::endl;
+  // Transfer Simple Compressed Goal
+  result = Pattern::verify(assumption_transfer_simple_compressed,
+                           claim_transfer_simple_compressed,
+                           proof_transfer_simple_compressed);
+  std::cout << "Transfer Simple Compressed Goal result: " << result
+            << std::endl;
+  std::cout << std::endl;
 
-  Pattern::verify(gamma, claims, proof);
+  // Transfer Batch 1k Goal
+  result = Pattern::verify(assumption_transfer_batch_1k,
+                           claim_transfer_batch_1k, proof_transfer_batch_1k);
+  std::cout << "Transfer Batch 1k Goal result: " << result << std::endl;
+  std::cout << std::endl;
+
+  // Perceptron Goal
+  result = Pattern::verify(assumption_perceptron, claim_perceptron,
+                           proof_perceptron);
+  std::cout << "Perceptron Goal result: " << result << std::endl;
+  std::cout << std::endl;
+
+  // Svm5 Goal
+  result = Pattern::verify(assumption_svm5, claim_svm5, proof_svm5);
+  std::cout << "Svm5 Goal result: " << result << std::endl;
+  std::cout << std::endl;
+
   return 0;
 }
 #endif
