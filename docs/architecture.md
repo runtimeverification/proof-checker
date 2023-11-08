@@ -81,17 +81,13 @@ For example, we expect a proof of program execution to be broken up at least int
 *   Program specific lemmas: Through the use of the KSummarizer, we may replace execution of multiple consecutive rules, e.g. for the body of a for loop into a single lemma.
 *   For long executions we may split a single execution trace into sub-executions with perhaps a few thousand execution steps in each subproof.
 
-Possible ways to aggregate or re-use proofs are:
+One way of aggregating proofs is to let one extend another: If the union of the `ml-theory` and `ml-claims` of one proof are the subset of the `ml-theory` of another
+then we assume the existence of a proof with the `ml-theory` of the first, and the `ml-claims` as the union of their `ml-claims`.
+The resulting aggregated proof will have an `ml-theory` and `ml-claims` component, but no `ml-proof` component, and instead refer to the subproofs.
+Since membership checking and unions are fairly cheap operations over Merkle trees I think this should be a relatively cheap operation in ZK.
 
-1.  Extension: If the union of the `ml-theory` and `ml-claims` of one proof are the subset of the `ml-theory` of another
-    then we assume the existence of a proof with the `ml-theory` of the first, and the `ml-claims` as the union of their `ml-claims`.
-    The resulting aggregated proof will have an `ml-theory` and `ml-claims` component, but no `ml-proof` component, and instead refer to the subproofs.
+Another way we can consider is by instantiating symbols in the theory/claim to more specific (closed) patterns.
 
-    Since membership checking and unions are fairly cheap operations over Merkle trees I think this should be a relatively cheap operation in ZK.
-
-2.  Instantiation:
-    If certificate includes a symbol, then we may replace all instances of that symbol  (in both the `ml-theory` and `ml-claim`) with an arbitary pattern.
-    This gives us a way to handle derived rules.
 
 ## Proof Generation DSL
 
