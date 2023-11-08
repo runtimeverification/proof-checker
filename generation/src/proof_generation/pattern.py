@@ -524,7 +524,7 @@ class NotationPlaceholder(Notation):
                 current_callable = App(current_callable, next_one)
             return current_callable
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         args = self._instantiate_args(delta)
         return NotationPlaceholder(self.symbol, tuple(args))
 
