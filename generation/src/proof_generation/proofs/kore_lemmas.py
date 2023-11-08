@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import Propositional, _and, _or, neg
 
@@ -70,6 +70,9 @@ def nary_cell(symbol: Symbol, n: int) -> Notation:
 
 def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ...]]:
     match p:
+        case Instantiate(_, _):
+            # TODO: Consider something smarter here.
+            return deconstruct_nary_application(p.simplify())
         case App(l, r):
             symbol, args = deconstruct_nary_application(l)
             return symbol, (*args, r)
