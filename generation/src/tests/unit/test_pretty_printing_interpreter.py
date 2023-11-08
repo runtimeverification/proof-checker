@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.proofs.propositional import Implies, Propositional, bot, neg, phi0, phi1, top
+from proof_generation.proofs.propositional import Implies, bot, neg, phi0, phi1, top
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
