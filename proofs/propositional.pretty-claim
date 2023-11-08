@@ -66,6 +66,12 @@ Mu 0
 	1: phi0
 	2: phi0
 	3: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: phi0
+	2: phi0
+	3: ⊥
 Implies
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -119,6 +125,13 @@ Mu 0
 	2: phi0
 	3: phi0
 	4: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: phi0
+	3: phi0
+	4: ⊥
 Implies
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -194,6 +207,15 @@ Mu 0
 	4: phi0
 	5: phi0
 	6: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: phi0
+	4: phi0
+	5: phi0
+	6: ⊥
 Implies
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -235,6 +257,15 @@ Mu 0
 	4: ¬(phi0)
 	5: phi0
 	6: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: phi0
+	4: ¬(phi0)
+	5: phi0
+	6: ⊥
 Implies
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -290,6 +321,15 @@ Mu 0
 	4: phi0
 	5: phi0
 	6: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: (phi0 -> ¬(¬(phi0)))
+	4: phi0
+	5: phi0
+	6: ⊥
 Implies
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -331,6 +371,15 @@ Mu 0
 	4: ¬(phi0)
 	5: phi0
 	6: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: (phi0 -> ¬(¬(phi0)))
+	4: ¬(phi0)
+	5: phi0
+	6: ⊥
 Implies
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -378,6 +427,14 @@ Mu 0
 	3: (phi0 -> ¬(¬(phi0)))
 	4: (¬(¬(phi0)) -> phi0)
 	5: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: (phi0 -> ¬(¬(phi0)))
+	4: (¬(¬(phi0)) -> phi0)
+	5: ⊥
 MetaVar 0
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -414,6 +471,15 @@ Mu 0
 	4: (¬(¬(phi0)) -> phi0)
 	5: (⊥ -> phi0)
 	6: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: (phi0 -> ¬(¬(phi0)))
+	4: (¬(¬(phi0)) -> phi0)
+	5: (⊥ -> phi0)
+	6: ⊥
 MetaVar 0
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -446,6 +512,17 @@ Mu 0
 	6: ⊥
 	7: phi0
 	8: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: (phi0 -> ¬(¬(phi0)))
+	4: (¬(¬(phi0)) -> phi0)
+	5: (⊥ -> phi0)
+	6: ⊥
+	7: phi0
+	8: ⊥
 Implies
 	Stack:
 	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
@@ -465,6 +542,15 @@ Instantiate 0
 	4: (¬(¬(phi0)) -> phi0)
 	5: (⊥ -> phi0)
 	6: ¬(⊥)
+Instantiate 
+	Stack:
+	0: ((phi0 -> phi1) -> ((phi1 -> phi2) -> (phi0 -> phi2)))
+	1: ((¬(phi0) -> phi0) -> phi0)
+	2: (¬(phi0) -> (phi0 -> phi1))
+	3: (phi0 -> ¬(¬(phi0)))
+	4: (¬(¬(phi0)) -> phi0)
+	5: (⊥ -> phi0)
+	6: ⊤
 Publish
 MetaVar 0
 	Stack:
