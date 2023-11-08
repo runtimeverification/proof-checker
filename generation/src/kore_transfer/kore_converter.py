@@ -46,6 +46,10 @@ class KSort:
         return Symbol(self.name)
 
 
+class KSortVar(KSort):
+    pass
+
+
 @dataclass(frozen=True)
 class KSymbol:
     name: str
@@ -142,7 +146,7 @@ class KModue(Converter):
         return self._sorts[name]
 
     @converting_method
-    def symbol(self, name, input_sorts: tuple[KSort, ...], output_sort: KSort, is_functional: bool, is_ctor: bool, is_cell: bool) -> KSymbol:
+    def symbol(self, name, input_sorts: tuple[KSort | KSortVar, ...], output_sort: KSort | KSortVar, is_functional: bool, is_ctor: bool, is_cell: bool) -> KSymbol:
         if name in self._symbols:
             raise ValueError(f'Symbol {name} has been already added!')
         symbol = KSymbol(name, input_sorts, output_sort, is_functional, is_ctor, is_cell)
@@ -160,12 +164,28 @@ class KModue(Converter):
         return KRewritingRule(0, pattern)
 
     def get_sort(self, name: str) -> KSort:
-        # TODO: It can be imported
-        return self._sorts[name]
+        if name in self._sorts:
+            return self._sorts[name]
+
+        for module in self._imported_modules:
+            try:
+                sort = module.get_sort(name)
+                return sort
+            except ValueError:
+                continue
+        raise ValueError(f'Sort {name} not found in the module {self.name}')
 
     def get_symbol(self, name: str) -> KSymbol:
-        # TODO: It can be imported
-        return self._symbols[name]
+        if name in self._symbols:
+            return self._symbols[name]
+
+        for module in self._imported_modules:
+            try:
+                symbol = module.get_symbol(name)
+                return symbol
+            except ValueError:
+                continue
+        raise ValueError(f'Symbol {name} not found in the module {self.name}')
 
 
 class LanguageSemantics(Converter):
@@ -221,12 +241,32 @@ class LanguageSemantics(Converter):
                                 module.sort(sentence.name)
                         elif isinstance(sentence, kore.SymbolDecl):
                             symbol = sentence.symbol.name
-                            sort = module.get_sort(sentence.sort.name)
-                            param_sorts = tuple([module.get_sort(sort.name) for sort in sentence.param_sorts])
+                            param_sorts: list[KSort | KSortVar] = []
+                            for param_sort in sentence.param_sorts:
+                                match param_sort:
+                                    case kore.SortVar(name):
+                                        param_sorts.append(KSortVar(name))
+                                    case kore.SortApp(name):
+                                        param_sorts.append(module.get_sort(name))
+                                    case _:
+                                        raise NotImplementedError(f'Sort {param_sort} is not supported')                            
+                            if isinstance(sentence.sort, kore.SortVar):
+                                mapping = {s.name: s for s in param_sorts}
+                                # TODO: This is a bit unexpected but despite the actual syntax like:
+                                #  symbol inj{From, To}(From) : To [sortInjection{}()]
+                                # The sort parameter list doesn't contain the last parameter To. So we saving it back
+                                # assert sentence.sort.name in mapping
+                                if sentence.sort.name not in mapping:
+                                    sort = KSortVar(sentence.sort.name)
+                                    param_sorts.append(sort)
+                                else:
+                                    sort = mapping[sentence.sort.name]
+                            else:
+                                sort = module.get_sort(sentence.sort.name)
                             attrs = [attr.symbol for attr in sentence.attrs if isinstance(attr, kore.App)]
 
                             # TODO: Support cells
-                            module.symbol(symbol, param_sorts, sort, 'functional' in attrs, 'constructor' in attrs, False)
+                            module.symbol(symbol, tuple(param_sorts), sort, 'functional' in attrs, 'constructor' in attrs, False)
                         elif isinstance(sentence, kore.Axiom):
                             # Add axioms
                             if isinstance(sentence.pattern, kore.Rewrites):
