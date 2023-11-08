@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
-from proof_generation.pattern import ESubst, EVar, Exists, Implies, Pattern, bot, phi0, phi1, phi2
+from proof_generation.pattern import ESubst, EVar, Exists, Implies, Pattern, PrettyOptions, bot, phi0, phi1, phi2
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
 from proof_generation.serializing_interpreter import MemoizingInterpreter, SerializingInterpreter
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from proof_generation.basic_interpreter import BasicInterpreter
-    from proof_generation.pattern import SVar
+    from proof_generation.pattern import Notation, SVar
 
 # Proof Expressions
 # =================
@@ -50,6 +50,10 @@ class ProofExp(ABC):
     @classmethod
     @abstractmethod
     def axioms(cls) -> list[Pattern]:
+        raise NotImplementedError
+
+    @classmethod
+    def notations(cls) -> list[Notation]:
         raise NotImplementedError
 
     @classmethod
@@ -221,6 +225,10 @@ class ProofExp(ABC):
                 print(warning)
 
     @classmethod
+    def pretty_options(cls) -> PrettyOptions:
+        return PrettyOptions(notations={n.definition: n for n in cls.notations()})
+
+    @classmethod
     def prettyprint(cls, file_path: Path) -> None:
         prover = cls(
             PrettyPrintingInterpreter(
@@ -229,6 +237,7 @@ class ProofExp(ABC):
                 out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
                 claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
                 proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
+                pretty_options=cls.pretty_options(),
             )
         )
         prover.execute_full()

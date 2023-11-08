@@ -21,6 +21,10 @@ class Substitution(Propositional):
         return []
 
     @staticmethod
+    def notations() -> list[Notation]:
+        return [*Propositional.notations(), forall(0)]
+
+    @staticmethod
     def claims() -> list[Pattern]:
         return [forall(0)(top())]
 

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import _and, _or, neg
+from proof_generation.proofs.propositional import Propositional, _and, _or, neg
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -64,9 +64,9 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
 
     fmt: str
     if cell:
-        fmt = f'{symbol.name}( {", ".join(fmt_args)}</{symbol.name}>'
+        fmt = f'<{symbol.name}> ' + ' '.join(fmt_args) + f' </{symbol.name}>'
     else:
-        fmt = f'<{symbol.name}> {" ".join(fmt_args)} </{symbol.name}>'
+        fmt = f'{symbol.name}(' + ', '.join(fmt_args) + ')'
 
     return Notation(symbol.name, p, fmt)
 
@@ -93,6 +93,21 @@ class KoreLemmas(ProofExp):
     @staticmethod
     def claims() -> list[Pattern]:
         return []
+
+    @staticmethod
+    def notations() -> list[Notation]:
+        return [
+            *Propositional.notations(),
+            kore_top,
+            kore_not,
+            kore_and,
+            kore_or,
+            kore_next,
+            kore_implies,
+            kore_app,
+            kore_rewrites,
+            kore_dv,
+        ]
 
     def proof_expressions(self) -> list[ProofThunk]:
         return []

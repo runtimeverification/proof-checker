@@ -102,6 +102,12 @@ class Pattern:
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         raise NotImplementedError
 
+    def pretty(self, opts: PrettyOptions) -> str:
+        raise NotImplementedError
+
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
+
     @classmethod
     def unwrap(cls, pattern: Pattern) -> tuple[Pattern, ...] | None:
         if isinstance(pattern, Instantiate):
@@ -135,6 +141,9 @@ class EVar(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self
 
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'x{self.name}'
+
     @staticmethod
     def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, EVar):
@@ -142,9 +151,6 @@ class EVar(Pattern):
         if isinstance(pat, Instantiate):
             return EVar.deconstruct(pat.simplify())
         return None
-
-    def __str__(self) -> str:
-        return f'x{self.name}'
 
 
 @dataclass(frozen=True)
@@ -165,6 +171,9 @@ class SVar(Pattern):
             return plug
         return self
 
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'X{self.name}'
+
     @staticmethod
     def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, SVar):
@@ -172,9 +181,6 @@ class SVar(Pattern):
         if isinstance(pat, Instantiate):
             return SVar.deconstruct(pat.simplify())
         return None
-
-    def __str__(self) -> str:
-        return f'X{self.name}'
 
 
 @dataclass(frozen=True)
@@ -193,6 +199,9 @@ class Symbol(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return self
 
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'\u03c3{self.name}'
+
     @staticmethod
     def deconstruct(pat: Pattern) -> str | None:
         if isinstance(pat, Symbol):
@@ -200,9 +209,6 @@ class Symbol(Pattern):
         if isinstance(pat, Instantiate):
             return Symbol.deconstruct(pat.simplify())
         return None
-
-    def __str__(self) -> str:
-        return f'\u03c3{self.name}'
 
 
 @dataclass(frozen=True)
@@ -224,8 +230,8 @@ class Implies(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return Implies(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
-    def __str__(self) -> str:
-        return f'({str(self.left)} -> {str(self.right)})'
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'({self.left.pretty(opts)} -> {self.right.pretty(opts)})'
 
 
 def imp(p1: Pattern, p2: Pattern) -> Pattern:
@@ -251,8 +257,8 @@ class App(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
-    def __str__(self) -> str:
-        return f'app({str(self.left)}, {str(self.right)})'
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'app({self.left.pretty(opts)}, {self.right.pretty(opts)})'
 
 
 @dataclass(frozen=True)
@@ -276,6 +282,9 @@ class Exists(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return Exists(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'(∃ x{self.var} . {self.subpattern.pretty(opts)})'
+
     @staticmethod
     def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
         if isinstance(pat, Exists):
@@ -283,9 +292,6 @@ class Exists(Pattern):
         if isinstance(pat, Instantiate):
             return Exists.deconstruct(pat.simplify())
         return None
-
-    def __str__(self) -> str:
-        return f'(∃ x{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -309,6 +315,9 @@ class Mu(Pattern):
             return self
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'(μ X{self.var} . {self.subpattern.pretty(opts)})'
+
     @staticmethod
     def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
         if isinstance(pat, Mu):
@@ -316,9 +325,6 @@ class Mu(Pattern):
         if isinstance(pat, Instantiate):
             return Mu.deconstruct(pat.simplify())
         return None
-
-    def __str__(self) -> str:
-        return f'(μ X{self.var} . {str(self.subpattern)})'
 
 
 @dataclass(frozen=True)
@@ -355,7 +361,7 @@ class MetaVar(Pattern):
             return self
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
-    def __str__(self) -> str:
+    def pretty(self, opts: PrettyOptions) -> str:
         return f'phi{self.name}'
 
 
@@ -388,8 +394,8 @@ class ESubst(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
-    def __str__(self) -> str:
-        return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'({self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}])'
 
 
 @dataclass(frozen=True)
@@ -413,8 +419,8 @@ class SSubst(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
-    def __str__(self) -> str:
-        return f'({str(self.pattern)}[{str(self.plug)}/{str(self.var)}])'
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'({self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}])'
 
 
 InstantiationDict = frozendict[int, Pattern]
@@ -459,7 +465,11 @@ class Instantiate(Pattern):
         # and apply the ssubst to self.inst.
         return self.simplify().apply_ssubst(svar_id, plug)
 
-    def __str__(self) -> str:
+    def pretty(self, opts: PrettyOptions) -> str:
+        if opts.simplify_instantiations:
+            return self.simplify().pretty(opts)
+        if self.pattern in opts.notations:
+            return opts.notations[self.pattern].print_instantiation(self, opts)
         return f'({str(self.pattern)}[{str(dict(self.inst))}])'
 
 
@@ -479,6 +489,16 @@ class Notation:
         if match := self.matches(pattern):
             return match
         raise AssertionError(f'Does not match notation {self.label}: {str(pattern)}')
+
+    def print_instantiation(self, applied: Instantiate, opts: PrettyOptions) -> str:
+        assert applied.pattern == self.definition
+        return self.format_str.format(*(p.pretty(opts) for p in applied.inst.values()))
+
+
+@dataclass(frozen=True)
+class PrettyOptions:
+    simplify_instantiations: bool = False
+    notations: Mapping[Pattern, Notation] = frozendict({})
 
 
 bot = Notation('bot', Mu(0, SVar(0)), '⊥')

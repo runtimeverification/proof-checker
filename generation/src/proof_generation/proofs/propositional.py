@@ -36,6 +36,10 @@ class Propositional(ProofExp):
         return []
 
     @staticmethod
+    def notations() -> list[Notation]:
+        return [bot, neg, top, _and, _or]
+
+    @staticmethod
     def claims() -> list[Pattern]:
         return [
             Implies(phi0, phi0),  # Reflexivity
