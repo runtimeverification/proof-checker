@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 def match_single(
@@ -90,7 +94,7 @@ class Pattern:
     def ef(self, name: int) -> bool:
         raise NotImplementedError
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -126,7 +130,7 @@ class EVar(Pattern):
     def ef(self, name: int) -> bool:
         return name != self.name
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -156,7 +160,7 @@ class SVar(Pattern):
     def ef(self, name: int) -> bool:
         return True
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -186,7 +190,7 @@ class Symbol(Pattern):
     def ef(self, name: int) -> bool:
         return True
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
@@ -215,7 +219,7 @@ class Implies(Pattern):
     def ef(self, name: int) -> bool:
         return self.left.ef(name) and self.right.ef(name)
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
         return Implies(self.left.instantiate(delta), self.right.instantiate(delta))
@@ -242,7 +246,7 @@ class App(Pattern):
     def ef(self, name: int) -> bool:
         return self.left.ef(name) and self.right.ef(name)
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
         return App(self.left.instantiate(delta), self.right.instantiate(delta))
@@ -265,7 +269,7 @@ class Exists(Pattern):
     def ef(self, name: int) -> bool:
         return name == self.var or self.subpattern.ef(name)
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
         return Exists(self.var, self.subpattern.instantiate(delta))
@@ -298,7 +302,7 @@ class Mu(Pattern):
     def ef(self, name: int) -> bool:
         return self.subpattern.ef(name)
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
         return Mu(self.var, self.subpattern.instantiate(delta))
@@ -339,7 +343,7 @@ class MetaVar(Pattern):
         # TODO implement this function by checking constraints
         return True
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if self.name in delta:
             assert self.can_be_replaced_by(
                 delta[self.name]
@@ -379,7 +383,7 @@ class ESubst(Pattern):
         # We assume that at least one instance will be replaced
         return self.pattern.ef(name) and self.plug.ef(name)
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
         return self.pattern.instantiate(delta).apply_esubst(self.var.name, self.plug.instantiate(delta))
@@ -404,7 +408,7 @@ class SSubst(Pattern):
         # We assume that at least one instance will be replaced
         return self.pattern.ef(name) and self.plug.ef(name)
 
-    def instantiate(self, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
         return self.pattern.instantiate(delta).apply_ssubst(self.var.name, self.plug.instantiate(delta))
