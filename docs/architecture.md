@@ -79,7 +79,7 @@ For example, we expect a proof of program execution to be broken up at least int
 *   Generic K related lemmas including term algebras, maps, ints, sorts etc.
 *   Language specific lemmas: shortcuts for easy application of rules summarizing a single rule exection into a lemma.
 *   Program specific lemmas: Through the use of the KSummarizer, we may replace execution of multiple consecutive rules, e.g. for the body of a for loop into a single lemma.
-*   For long executions we may a single execution trace into sub-executions with perhaps a few though thousand execution steps in each subproof.
+*   For long executions we may split a single execution trace into sub-executions with perhaps a few thousand execution steps in each subproof.
 
 Possible ways to aggregate or re-use proofs are:
 
