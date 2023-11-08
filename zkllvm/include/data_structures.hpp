@@ -224,6 +224,12 @@ public:
     }
   }
 
+  // Move constructor
+  IdList(IdList &&other) noexcept : LinkedList<Id>() {
+    head = other.head;
+    other.head = nullptr;
+  }
+
   IdList &operator=(const IdList &other) noexcept {
     if (this != &other) {
       clear();
@@ -233,6 +239,17 @@ public:
         curr = curr->next;
       }
     }
+    return *this;
+  }
+
+  // Move assignment
+  IdList &operator=(IdList &&other) noexcept {
+    if (this != &other) {
+      clear();
+      head = other.head;
+    }
+    other.head = nullptr;
+
     return *this;
   }
 
