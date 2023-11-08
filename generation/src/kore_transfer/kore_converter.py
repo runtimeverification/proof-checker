@@ -1,25 +1,26 @@
 from __future__ import annotations
 
-from itertools import count
-from collections.abc import Callable
-from enum import Enum
-from re import match
-from typing import TYPE_CHECKING, NamedTuple
 from dataclasses import dataclass, field
+from enum import Enum
+from itertools import count
+from re import match
+from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 
 import pyk.kore.syntax as kore
 
-import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
 import proof_generation.proofs.propositional as prop
-from kore_transfer.generate_hints import FunEvent, HookEvent
-from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Symbol
+from proof_generation.pattern import App, EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from types import TracebackType
+
     from kore_transfer.generate_hints import KoreHint
     from proof_generation.pattern import Notation, Pattern, SVar
 
-ProofMethod = Callable[[proof.ProofExp], proof.Proved]
+T = TypeVar('T')
+P = ParamSpec('P')
 
 
 class AxiomType(Enum):
@@ -84,7 +85,6 @@ class KEquationalRule:
 
 
 class Converter:
-
     def __init__(self) -> None:
         self._parsing = False
 
@@ -93,24 +93,32 @@ class Converter:
         self._parsing = True
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         """It is not allows to change the semantics except while parsing."""
         self._parsing = False
 
 
-def converting_method(func):
-    """Helps to forbid calling methods that change the semantics outside of parsing."""
-    def wrapper(self, *args, **kwargs):
-        assert isinstance(self, Converter)
-        if self._parsing:
-            return func(self, *args, **kwargs)
+def converting_method(func: Callable[P, T]) -> Callable[P, T]:
+    """Helps to forbid calling methods that c   hange the semantics outside of parsing."""
+
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        assert len(args) > 0
+        first_arg = args[0]
+        assert isinstance(first_arg, Converter)
+        if first_arg._parsing:
+            return func(*args, **kwargs)
         else:
             raise ValueError('Cannot call parsing method on immutable theory')
+
     return wrapper
 
 
 class KModue(Converter):
-
     def __init__(self, name: str, counter: count | None = None) -> None:
         self._name = name
         if counter is None:
@@ -141,21 +149,29 @@ class KModue(Converter):
         self._imported_modules += (module,)
 
     @converting_method
-    def sort(self, name) -> KSort:
+    def sort(self, name: str) -> KSort:
         return self._sort(name, False)
 
     @converting_method
-    def hooked_sort(self, name) -> KSort:
+    def hooked_sort(self, name: str) -> KSort:
         return self._sort(name, True)
 
-    def _sort(self, name, hooked) -> KSort:
+    def _sort(self, name: str, hooked: bool) -> KSort:
         if name in self._sorts:
             raise ValueError(f'Sort {name} has been already added!')
         self._sorts[name] = KSort(name, hooked)
         return self._sorts[name]
 
     @converting_method
-    def symbol(self, name, input_sorts: tuple[KSort | KSortVar, ...], output_sort: KSort | KSortVar, is_functional: bool, is_ctor: bool, is_cell: bool) -> KSymbol:
+    def symbol(
+        self,
+        name: str,
+        input_sorts: tuple[KSort | KSortVar, ...],
+        output_sort: KSort | KSortVar,
+        is_functional: bool,
+        is_ctor: bool,
+        is_cell: bool,
+    ) -> KSymbol:
         if name in self._symbols:
             raise ValueError(f'Symbol {name} has been already added!')
         symbol = KSymbol(name, input_sorts, output_sort, is_functional, is_ctor, is_cell)
@@ -163,7 +179,7 @@ class KModue(Converter):
         return symbol
 
     @converting_method
-    def equational_rewrite(self, pattern) -> KEquationalRule:
+    def equational_rewrite(self, pattern: Pattern) -> KEquationalRule:
         ordinal = next(self.counter)
         axiom = KEquationalRule(ordinal, pattern)
         self._axioms[ordinal] = axiom
@@ -214,7 +230,6 @@ class KModue(Converter):
 
 
 class ConvertionScope:
-
     def __init__(self) -> None:
         self._evars: dict[str, EVar] = {}
         self._svars: dict[str, SVar] = {}
@@ -254,7 +269,7 @@ class LanguageSemantics(Converter):
         return self._imported_modules
 
     @property
-    def main_module(self):
+    def main_module(self) -> KModue:
         # TODO: This is a heuristic
         return self._imported_modules[-1]
 
@@ -290,13 +305,14 @@ class LanguageSemantics(Converter):
                                     case kore.SortApp(name):
                                         param_sorts.append(module.get_sort(name))
                                     case _:
-                                        raise NotImplementedError(f'Sort {param_sort} is not supported')                            
+                                        raise NotImplementedError(f'Sort {param_sort} is not supported')
                             if isinstance(sentence.sort, kore.SortVar):
                                 mapping = {s.name: s for s in param_sorts}
                                 # TODO: This is a bit unexpected but despite the actual syntax like:
                                 #  symbol inj{From, To}(From) : To [sortInjection{}()]
                                 # The sort parameter list doesn't contain the last parameter To. So we saving it back
                                 # assert sentence.sort.name in mapping
+                                sort: KSort | KSortVar
                                 if sentence.sort.name not in mapping:
                                     sort = KSortVar(sentence.sort.name)
                                     param_sorts.append(sort)
@@ -307,7 +323,9 @@ class LanguageSemantics(Converter):
                             attrs = [attr.symbol for attr in sentence.attrs if isinstance(attr, kore.App)]
 
                             # TODO: Support cells
-                            module.symbol(symbol, tuple(param_sorts), sort, 'functional' in attrs, 'constructor' in attrs, False)
+                            module.symbol(
+                                symbol, tuple(param_sorts), sort, 'functional' in attrs, 'constructor' in attrs, False
+                            )
                         elif isinstance(sentence, kore.Axiom):
                             # Add axioms
                             if isinstance(sentence.pattern, kore.Rewrites):
@@ -317,7 +335,9 @@ class LanguageSemantics(Converter):
                                 assert isinstance(pattern.right, kore.And)
 
                                 # TODO: Remove side conditions for now
-                                preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
+                                preprocessed_pattern = kore.Rewrites(
+                                    pattern.sort, pattern.left.left, pattern.right.left
+                                )
                                 scope = ConvertionScope()
                                 parsed_pattern = semantics._convert_pattern(scope, preprocessed_pattern)
                                 assert isinstance(parsed_pattern, kl.KoreRewrites)
@@ -334,7 +354,7 @@ class LanguageSemantics(Converter):
 
     @converting_method
     def module(self, name: str) -> KModue:
-        if name in self._imported_modules:
+        if name in (module.name for module in self._imported_modules):
             raise ValueError(f'Module {name} has been already added')
         axiom_counter = count() if len(self._imported_modules) == 0 else self.main_module.counter
 
@@ -410,52 +430,7 @@ class LanguageSemantics(Converter):
     #             event_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
     #     return event_axioms
 
-    def _convert_axiom(self, kore_axiom: kore.Axiom, scope: ConvertionScope) -> ConvertedAxiom:
-        if kore_axiom in self._axioms_cache:
-            return self._axioms_cache[kore_axiom]
-
-        # Check the axiom type
-        preprocessed_pattern: kore.Pattern
-        if isinstance(kore_axiom.pattern, kore.Rewrites):
-            axiom_type = AxiomType.RewriteRule
-
-            pattern = kore_axiom.pattern
-            assert isinstance(pattern, kore.Rewrites)
-            assert isinstance(pattern.left, kore.And)
-            assert isinstance(pattern.right, kore.And)
-
-            # TODO: Remove side conditions for now
-            preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-        else:
-            axiom_type = AxiomType.Unclassified
-            preprocessed_pattern = kore_axiom.pattern
-
-        assert isinstance(preprocessed_pattern, kore.Pattern)
-        converted_pattern = self._convert_pattern(scope, preprocessed_pattern)
-        converted_axiom = ConvertedAxiom(axiom_type, converted_pattern)
-        self._axioms_cache[kore_axiom] = converted_axiom
-        return converted_axiom
-
-    def _organize_axioms(self, axioms: list[ConvertedAxiom]) -> Axioms:
-        """Organize the axioms by their type."""
-        organized_axioms: Axioms = {}
-        for axiom in axioms:
-            organized_axioms.setdefault(axiom.kind, [])
-            if axiom not in organized_axioms[axiom.kind]:
-                organized_axioms[axiom.kind].append(axiom)
-
-        return organized_axioms
-
-    def _retrieve_axioms(self) -> list[kore.Axiom]:
-        """Collect and save all axioms from the definition in Kore without converting them. This list will
-        be used to resolve ordinals from hints to real axioms."""
-        axioms: list[kore.Axiom] = []
-        for kore_module in self._definition.modules:
-            for axiom in kore_module.axioms:
-                axioms.append(axiom)
-        return axioms
-
-    def _convert_pattern(self, scope, pattern: kore.Pattern) -> Pattern:
+    def _convert_pattern(self, scope: ConvertionScope, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
         match pattern:
             case kore.Rewrites(sort, left, right):
@@ -477,6 +452,7 @@ class LanguageSemantics(Converter):
 
                 return kl.KoreOr(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, sorts, args):
+
                 def chain_patterns(patterns: list[Pattern]) -> Pattern:
                     *patterns_left, next_one = patterns
                     if len(patterns_left) == 0:
@@ -485,6 +461,7 @@ class LanguageSemantics(Converter):
                         return App(chain_patterns(patterns_left), next_one)
 
                 if symbol in self._cell_symbols:
+
                     def is_cell(kore_application: kore.Pattern) -> str | None:
                         """Returns the cell name if the given application is a cell, None otherwise."""
                         if isinstance(kore_application, kore.App):

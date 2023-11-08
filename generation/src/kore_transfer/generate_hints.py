@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from kore_transfer.kore_converter import ConvertedAxiom, LanguageSemantics, KRewritingRule, KEquationalRule
+    from kore_transfer.kore_converter import KEquationalRule, KRewritingRule, LanguageSemantics
     from proof_generation.pattern import Pattern
 
 
@@ -82,7 +82,9 @@ def get_proof_hints(
         post_config = language_semantics.convert_pattern(rewrite_step.post_config)
 
         axiom = language_semantics.get_axiom(rewrite_step.rule_ordinal)
-        substitutions = language_semantics.convert_substitutions(dict(rewrite_step.substitution), rewrite_step.rule_ordinal)
+        substitutions = language_semantics.convert_substitutions(
+            dict(rewrite_step.substitution), rewrite_step.rule_ordinal
+        )
 
         # TODO: read function/hook events from the given trace
         fun_events = ()

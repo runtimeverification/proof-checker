@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from kore_transfer.kore_converter import LanguageSemantics
 
-from typing import TYPE_CHECKING
 
-
-def test_module_creation():
+def test_module_creation() -> None:
     semantics = LanguageSemantics()
     with semantics as definition:
         test_name = 'test_module'
