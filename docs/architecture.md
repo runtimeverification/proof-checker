@@ -84,7 +84,7 @@ For example, we expect a proof of program execution to be broken up at least int
 Possible ways to aggregate or re-use proofs are:
 
 1.  Extension: If the union of the `ml-theory` and `ml-claims` of one proof are the subset of the `ml-theory` of another
-    then we assume the existance of a proof with the `ml-theory` of the first, and the `ml-claims` as the union of their `ml-claims`.
+    then we assume the existence of a proof with the `ml-theory` of the first, and the `ml-claims` as the union of their `ml-claims`.
     The resulting aggregated proof will have an `ml-theory` and `ml-claims` component, but no `ml-proof` component, and instead refer to the subproofs.
 
     Since membership checking and unions are fairly cheap operations over Merkle trees I think this should be a relatively cheap operation in ZK.
