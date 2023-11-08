@@ -42,8 +42,9 @@ class KSort:
     name: str
     hooked: bool = field(default=False)
 
-    def to_aml(self) -> Symbol:
-        return Symbol(self.name)
+    @property
+    def aml_symbol(self) -> Symbol:
+        return Symbol('ksort_' + self.name)
 
 
 class KSortVar(KSort):
@@ -59,8 +60,12 @@ class KSymbol:
     is_ctor: bool
     is_cell: bool
 
-    @staticmethod
-    def from_kore(kore_symbol: kore.Symbol) -> KSymbol:
+    @property
+    def aml_symbol(self) -> Symbol:
+        return Symbol('kore_' + self.name)
+
+    @property
+    def aml_notation(self) -> Notation:
         raise NotImplementedError()
 
 
@@ -192,20 +197,16 @@ class LanguageSemantics(Converter):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
     def __init__(self, kore_definition: kore.Definition | None) -> None:
-        # TODO: New attributes
         self._imported_modules: tuple[KModue, ...] = ()
 
         # TODO: Obsolete
-        # Attributes for caching new format objects
         self._definition = kore_definition
-        self._symbols: dict[str, Symbol] = {}
         self._evars: dict[str, EVar] = {}
         self._svars: dict[str, SVar] = {}
-        self._metavars: dict[str, MetaVar] = {}
-        self._notations: dict[str, type[Notation]] = {}
+        self._metavars: dict[str, MetaVar] = {}        
 
         # Kore object cache
-
+        self._notations: dict[str, Notation] = {}
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
         self._functional_symbols: set[Symbol] = set()
         self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
@@ -287,6 +288,11 @@ class LanguageSemantics(Converter):
 
             return semantics
 
+    @property
+    def main_module(self):
+        # TODO: This is a heuristic
+        return self._imported_modules[-1]
+
     @converting_method
     def module(self, name: str) -> KModue:
         module = KModue(name)
@@ -299,11 +305,17 @@ class LanguageSemantics(Converter):
                 return module
         raise ValueError(f'Module {name} not found')
 
-    # TODO: Methods added before the refactoring:
+    def get_sort(self, name: str) -> KSort:
+        return self.main_module.get_sort(name)
+
+    def get_symbol(self, name: str) -> KSymbol:
+        return self.main_module.get_symbol(name)
+
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
         return self._convert_pattern(pattern)
 
+    # TODO: Methods added before the refactoring:
     def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
         added_axioms = self._construct_subst_axioms(hint)
         added_axioms.extend(self._construct_event_axioms(hint))
@@ -335,13 +347,21 @@ class LanguageSemantics(Converter):
 
     def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
         subst_axioms = []
-        for pattern in hint.substitutions.values():
-            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            symbol, *args = kl.deconstruct_nary_application(pattern)
-            assert isinstance(symbol, Symbol)
-            assert symbol in self._functional_symbols
-            converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
-            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        # TODO: Refactoring pending ...
+        # for pattern in hint.substitutions.values():
+        #     # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+        #     assert isinstance(
+        #         pattern, kl.KoreApplies | kl.Cell
+        #     ), f'Expected application of a Kore symbol, got {str(pattern)}'
+        #     if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
+        #         assert pattern.phi0.left in self._functional_symbols
+        #     elif isinstance(pattern.phi0, Symbol | kl.Cell):
+        #         assert pattern.phi0 in self._functional_symbols
+        #     else:
+        #         raise NotImplementedError(f'Pattern {pattern} is not supported')
+        #     # TODO: Requires equality to be implemented
+        #     converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
+        #     subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return subst_axioms
 
     def _construct_event_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
@@ -406,23 +426,23 @@ class LanguageSemantics(Converter):
         """Convert the given pattern to the pattern in the new format."""
         match pattern:
             case kore.Rewrites(sort, left, right):
-                rewrite_sort_symbol: Pattern = self._resolve_symbol(sort)
+                rewrite_sort: KSort = self.get_sort(sort.name)
                 left_rw_pattern = self._convert_pattern(left)
                 right_rw_pattern = self._convert_pattern(right)
 
-                return kl.KoreRewrites(rewrite_sort_symbol, left_rw_pattern, right_rw_pattern)
+                return kl.KoreRewrites(rewrite_sort.aml_symbol, left_rw_pattern, right_rw_pattern)
             case kore.And(sort, left, right):
-                and_sort_symbol: Pattern = self._resolve_symbol(sort)
+                and_sort: KSort = self.get_sort(sort.name)
                 left_and_pattern: Pattern = self._convert_pattern(left)
                 right_and_pattern: Pattern = self._convert_pattern(right)
 
-                return kl.KoreAnd(and_sort_symbol, left_and_pattern, right_and_pattern)
+                return kl.KoreAnd(and_sort.aml_symbol, left_and_pattern, right_and_pattern)
             case kore.Or(sort, left, right):
-                or_sort_symbol: Pattern = self._resolve_symbol(sort)
+                or_sort: KSort = self.get_sort(sort.name)
                 left_or_pattern: Pattern = self._convert_pattern(left)
                 right_or_pattern: Pattern = self._convert_pattern(right)
 
-                return kl.KoreOr(or_sort_symbol, left_or_pattern, right_or_pattern)
+                return kl.KoreOr(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, sorts, args):
 
                 def chain_patterns(patterns: list[Pattern]) -> Pattern:
@@ -438,7 +458,7 @@ class LanguageSemantics(Converter):
                         """Returns the cell name if the given application is a cell, None otherwise."""
                         if isinstance(kore_application, kore.App):
                             if comparison := match(r"Lbl'-LT-'(.+)'-GT-'", kore_application.symbol):
-                                return comparison.group(1)
+                                return comparison.group(0)
                         return None
 
                     def convert_cell(kore_application: kore.App) -> Pattern:
@@ -446,7 +466,7 @@ class LanguageSemantics(Converter):
                         cell_name = is_cell(kore_application)
                         assert cell_name, f'Application {kore_application} is not a cell!'
 
-                        cell_symbol: Symbol = self._resolve_symbol(cell_name)
+                        cell_symbol: Symbol = self.get_symbol(cell_name).aml_symbol
                         self._cell_symbols.add(kore_application.symbol)
                         if kore_application.symbol in self._raw_functional_symbols:
                             self._functional_symbols.add(cell_symbol)
@@ -478,11 +498,14 @@ class LanguageSemantics(Converter):
                     # Nested cells have a specific notation: Nested(tcell, App (App(kcell, 1)) (App(scell, 2)))
                     return convert_cell(pattern)
                 else:
-                    app_symbol: Pattern = self._resolve_symbol(symbol)
+                    ksymbol: KSymbol = self.get_symbol(symbol)
+                    # TODO: Use this after the new notation format is implemented
+                    # aml_notation = ksymbol.aml_notation()
                     args_patterns: list[Pattern] = [self._convert_pattern(arg) for arg in args]
-                    sorts_patterns: list[Pattern] = [self._resolve_symbol(sort) for sort in sorts]
+                    ksorts: list[KSort] = [self.get_sort(sort.name) for sort in sorts]
+                    sorts_patterns: list[Pattern] = [ksort.aml_symbol for ksort in ksorts]
 
-                    args_chain = chain_patterns([app_symbol] + args_patterns)
+                    args_chain = chain_patterns([ksymbol.aml_symbol] + args_patterns)
 
                     application_sorts = sorts_patterns if sorts_patterns else [prop.Top()]
                     assert isinstance(args_chain, (App, Symbol))
@@ -492,29 +515,14 @@ class LanguageSemantics(Converter):
                 # return self._resolve_evar(pattern)
                 return self._resolve_metavar(name)
             case kore.Top(sort):
-                top_sort_symbol: Pattern = self._resolve_symbol(sort)
+                top_sort_symbol: Pattern = self.get_sort(sort.name).aml_symbol
                 return kl.KoreTop(top_sort_symbol)
             case kore.DV(sort, value):
-                dv_sort_symbol: Pattern = self._resolve_symbol(sort)
-                value_symbol: Pattern = self._resolve_symbol(value.value)
+                dv_sort_symbol: Pattern = self.get_sort(sort.name).aml_symbol
+                value_symbol: Pattern = Symbol(str(value.value))
                 return kl.KoreDv(dv_sort_symbol, value_symbol)
 
         raise NotImplementedError(f'Pattern {pattern} is not supported')
-
-    def _resolve_symbol(self, pattern: kore.Pattern | kore.Sort | str) -> Symbol:
-        """Resolve the symbol in the given pattern."""
-        if isinstance(pattern, str):
-            if pattern not in self._symbols:
-                self._symbols[pattern] = Symbol('kore_' + pattern)
-                if pattern in self._raw_functional_symbols:
-                    self._functional_symbols.add(self._symbols[pattern])
-            return self._symbols[pattern]
-        elif isinstance(pattern, kore.Sort):
-            if pattern.name not in self._symbols:
-                self._symbols[pattern.name] = Symbol('kore_sort_' + pattern.name)
-            return self._symbols[pattern.name]
-        else:
-            raise NotImplementedError(f'Pattern {pattern} is not supported')
 
     def _resolve_notation(self, name: str, symbol: Symbol, arguments: list[Pattern]) -> Pattern:
         """Resolve the notation or make up one."""
