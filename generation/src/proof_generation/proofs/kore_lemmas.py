@@ -184,6 +184,10 @@ class KoreNestedCells(Cell):
 
 def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ...]]:
     match p:
+        case KoreApplies(_, pattern):
+            return deconstruct_nary_application(pattern)
+        case Cell(s, value):
+            return s, (value,)
         case App(l, r):
             symbol, args = deconstruct_nary_application(l)
             return symbol, (*args, r)
