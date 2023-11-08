@@ -5,7 +5,7 @@
 ![High Level Architecture](images/high-level-architecture.png)
 
 Various K tools produce an informal "proof hint", containing all the information
-needed for producing the proof, including rules applied simplifications made and
+needed for producing the proof, including rules applied and simplifications made and
 domain reasoning.
 
 This is transformed into a formal proof via matching logic proof tactics
