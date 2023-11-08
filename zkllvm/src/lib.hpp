@@ -385,26 +385,26 @@ struct Pattern {
     return pattern;
   }
 
-  static Rc<Pattern> metavar_s_fresh(Id id, Id s_fresh, IdList &positive,
-                                     IdList &negative) noexcept {
+  static Rc<Pattern> metavar_s_fresh(Id id, Id s_fresh, IdList positive,
+                                     IdList negative) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
     pattern->e_fresh = IdList();
     pattern->s_fresh = IdList(s_fresh);
-    pattern->positive = positive;
-    pattern->negative = negative;
+    pattern->positive = std::move(positive);
+    pattern->negative = std::move(negative);
     pattern->app_ctx_holes = IdList();
     return pattern;
   }
 
-  static Rc<Pattern> metavar(Id id, IdList &e_fresh, IdList &s_fresh,
-                             IdList &positive, IdList &negative,
-                             IdList &app_ctx_holes) noexcept {
+  static Rc<Pattern> metavar(Id id, IdList e_fresh, IdList s_fresh,
+                             IdList positive, IdList negative,
+                             IdList app_ctx_holes) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
-    pattern->e_fresh = e_fresh;
-    pattern->s_fresh = s_fresh;
-    pattern->positive = positive;
-    pattern->negative = negative;
-    pattern->app_ctx_holes = app_ctx_holes;
+    pattern->e_fresh = std::move(e_fresh);
+    pattern->s_fresh = std::move(s_fresh);
+    pattern->positive = std::move(positive);
+    pattern->negative = std::move(negative);
+    pattern->app_ctx_holes = std::move(app_ctx_holes);
     return pattern;
   }
 
@@ -963,7 +963,8 @@ struct Pattern {
         read_u8_vec(iterator, &app_ctx_holes);
 
         auto metavar_pat =
-            metavar(id, e_fresh, s_fresh, positive, negative, app_ctx_holes);
+            metavar(id, std::move(e_fresh), std::move(s_fresh), std::move(positive),
+                std::move(negative), std::move(app_ctx_holes));
 
         if (!metavar_pat->pattern_well_formed()) {
 #if DEBUG
