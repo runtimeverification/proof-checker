@@ -116,9 +116,9 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp) ->
                     saved_antecedents.append((str(stack()[-1]), stack()[-1]))
                     interpreter().save(str(stack()[-1]), stack()[-1])
                     interpreter().pop(stack()[-1])
-                proofexp.load_axiom(convert_to_implication(axiom.antecedents, axiom.pattern))
+                proofexp.load_axiom(convert_to_implication(axiom.antecedents, axiom.pattern))()
             else:
-                proofexp.load_axiom(axiom.pattern)
+                proofexp.load_axiom(axiom.pattern)()
 
             # We need to instantiate the axiom depending on what we are given on stack
             if len(axiom.metavars) > 0:

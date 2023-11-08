@@ -6,7 +6,7 @@
 
 #define MAX_SIZE 27001 // For Simple transfer 1785 is enough
 
-enum class Instruction : uint8_t {
+enum class Instruction : int {
   // Patterns
   EVar = 2,
   SVar,
@@ -45,13 +45,13 @@ enum class Instruction : uint8_t {
   // Journal Manipulation,
   Publish,
   // Metavar with no constraints
-  CleanMetaVar, // For some reason setting CleanMetaVar = (uint8_t)(9 + 128)
+  CleanMetaVar, // For some reason setting CleanMetaVar = (int)(9 + 128)
                 // isn't working with zkLLVM
   // EOF exclusive for zkLLVM
   NO_OP
 };
 
-Instruction from(uint8_t value) noexcept {
+Instruction from(int value) noexcept {
   switch (value) {
   case 2:
     return Instruction::EVar;
@@ -120,9 +120,6 @@ Instruction from(uint8_t value) noexcept {
   }
 }
 
-using Id = uint8_t;
-using IdList = LinkedList<Id>;
-
 struct Pattern {
   Instruction inst;       // All
   Id id;                  // EVar, SVar, Symbol, Mu, Exists, MetaVar,
@@ -132,11 +129,11 @@ struct Pattern {
   Rc<Pattern> subpattern; // Exists, Mu, ESubst (pattern), SSubst (pattern)
   Rc<Pattern> plug;       // ESubst, SSubst
 
-  IdList *e_fresh;       // MetaVar
-  IdList *s_fresh;       // MetaVar
-  IdList *positive;      // MetaVar
-  IdList *negative;      // MetaVar
-  IdList *app_ctx_holes; // MetaVar
+  IdList e_fresh;       // MetaVar
+  IdList s_fresh;       // MetaVar
+  IdList positive;      // MetaVar
+  IdList negative;      // MetaVar
+  IdList app_ctx_holes; // MetaVar
 
   // Constructor for creating instances of Pattern
   static Pattern *newPattern(Instruction inst, Id id) noexcept {
@@ -154,26 +151,6 @@ struct Pattern {
     if (inst != rhs.inst || id != rhs.id) {
       return false;
     }
-    if (e_fresh == nullptr && rhs.e_fresh != nullptr ||
-        e_fresh != nullptr && rhs.e_fresh == nullptr) {
-      return false;
-    }
-    if (s_fresh == nullptr && rhs.s_fresh != nullptr ||
-        s_fresh != nullptr && rhs.s_fresh == nullptr) {
-      return false;
-    }
-    if (positive == nullptr && rhs.positive != nullptr ||
-        positive != nullptr && rhs.positive == nullptr) {
-      return false;
-    }
-    if (negative == nullptr && rhs.negative != nullptr ||
-        negative != nullptr && rhs.negative == nullptr) {
-      return false;
-    }
-    if (app_ctx_holes == nullptr && rhs.app_ctx_holes != nullptr ||
-        app_ctx_holes != nullptr && rhs.app_ctx_holes == nullptr) {
-      return false;
-    }
     if (left != rhs.left) {
       return false;
     }
@@ -186,24 +163,19 @@ struct Pattern {
     if (plug != rhs.plug) {
       return false;
     }
-    if (e_fresh != nullptr && rhs.e_fresh != nullptr &&
-        *e_fresh != *rhs.e_fresh) {
+    if (e_fresh != rhs.e_fresh) {
       return false;
     }
-    if (s_fresh != nullptr && rhs.s_fresh != nullptr &&
-        *s_fresh != *rhs.s_fresh) {
+    if (s_fresh != rhs.s_fresh) {
       return false;
     }
-    if (positive != nullptr && rhs.positive != nullptr &&
-        *positive != *rhs.positive) {
+    if(positive != rhs.positive) {
       return false;
     }
-    if (negative != nullptr && rhs.negative != nullptr &&
-        *negative != *rhs.negative) {
+    if (negative != rhs.negative) {
       return false;
     }
-    if (app_ctx_holes != nullptr && rhs.app_ctx_holes != nullptr &&
-        *app_ctx_holes != *rhs.app_ctx_holes) {
+    if (app_ctx_holes != rhs.app_ctx_holes) {
       return false;
     }
     return true;
@@ -219,7 +191,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return e_fresh->contains(evar);
+      return e_fresh.contains(evar);
     case Instruction::Implication:
     case Instruction::Application:
       return left->pattern_e_fresh(evar) && right->pattern_e_fresh(evar);
@@ -265,7 +237,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return s_fresh->contains(svar);
+      return s_fresh.contains(svar);
     case Instruction::Implication:
     case Instruction::Application:
       return left->pattern_s_fresh(svar) && right->pattern_s_fresh(svar);
@@ -305,7 +277,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return positive->contains(svar);
+      return positive.contains(svar);
     case Instruction::Implication:
       return left->pattern_negative(svar) && right->pattern_positive(svar);
     case Instruction::Application:
@@ -343,7 +315,7 @@ struct Pattern {
     case Instruction::Symbol:
       return true;
     case Instruction::MetaVar:
-      return negative->contains(svar);
+      return negative.contains(svar);
     case Instruction::Implication:
       return left->pattern_positive(svar) && right->pattern_negative(svar);
     case Instruction::Application:
@@ -377,7 +349,7 @@ struct Pattern {
   bool pattern_well_formed() noexcept {
     switch (inst) {
     case Instruction::MetaVar:
-      return !app_ctx_holes->containsElementOf(e_fresh);
+      return !app_ctx_holes.containsElementOf(&e_fresh);
     case Instruction::Mu:
       return subpattern->pattern_positive(id);
     case Instruction::ESubst:
@@ -405,35 +377,34 @@ struct Pattern {
 
   static Rc<Pattern> metavar_unconstrained(Id id) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
-    pattern->e_fresh = IdList::create();
-    pattern->s_fresh = IdList::create();
-    pattern->positive = IdList::create();
-    pattern->negative = IdList::create();
-    pattern->app_ctx_holes = IdList::create();
+    pattern->e_fresh = IdList();
+    pattern->s_fresh = IdList();
+    pattern->positive = IdList();
+    pattern->negative = IdList();
+    pattern->app_ctx_holes = IdList();
     return pattern;
   }
 
-  static Rc<Pattern> metavar_s_fresh(Id id, Id s_fresh, IdList *positive,
-                                     IdList *negative) noexcept {
+  static Rc<Pattern> metavar_s_fresh(Id id, Id s_fresh, IdList positive,
+                                     IdList negative) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
-    pattern->e_fresh = IdList::create();
-    pattern->s_fresh = IdList::create(s_fresh);
-    pattern->positive = positive;
-    pattern->negative = negative;
-    pattern->app_ctx_holes = IdList::create();
-    ;
+    pattern->e_fresh = IdList();
+    pattern->s_fresh = IdList(s_fresh);
+    pattern->positive = std::move(positive);
+    pattern->negative = std::move(negative);
+    pattern->app_ctx_holes = IdList();
     return pattern;
   }
 
-  static Rc<Pattern> metavar(Id id, IdList *e_fresh, IdList *s_fresh,
-                             IdList *positive, IdList *negative,
-                             IdList *app_ctx_holes) noexcept {
+  static Rc<Pattern> metavar(Id id, IdList e_fresh, IdList s_fresh,
+                             IdList positive, IdList negative,
+                             IdList app_ctx_holes) noexcept {
     auto pattern = newPattern(Instruction::MetaVar, id);
-    pattern->e_fresh = e_fresh;
-    pattern->s_fresh = s_fresh;
-    pattern->positive = positive;
-    pattern->negative = negative;
-    pattern->app_ctx_holes = app_ctx_holes;
+    pattern->e_fresh = std::move(e_fresh);
+    pattern->s_fresh = std::move(s_fresh);
+    pattern->positive = std::move(positive);
+    pattern->negative = std::move(negative);
+    pattern->app_ctx_holes = std::move(app_ctx_holes);
     return pattern;
   }
 
@@ -449,7 +420,7 @@ struct Pattern {
     return pattern;
   }
 
-  static Rc<Pattern> esubst(Rc<Pattern> pattern, uint8_t evar_id,
+  static Rc<Pattern> esubst(Rc<Pattern> pattern, int evar_id,
                             Rc<Pattern> plug) noexcept {
     auto evarPattern = newPattern(Instruction::ESubst, evar_id);
     evarPattern->subpattern = pattern;
@@ -457,7 +428,7 @@ struct Pattern {
     return evarPattern;
   }
 
-  static Rc<Pattern> ssubst(Rc<Pattern> pattern, uint8_t svar_id,
+  static Rc<Pattern> ssubst(Rc<Pattern> pattern, int svar_id,
                             Rc<Pattern> plug) noexcept {
     auto svarPattern = newPattern(Instruction::SSubst, svar_id);
     svarPattern->subpattern = pattern;
@@ -480,40 +451,19 @@ struct Pattern {
   }
 
   // Destructor to manually release memory
-  ~Pattern() noexcept {
-    if (e_fresh) {
-      e_fresh->~LinkedList();
-      free(e_fresh);
-    }
-    if (s_fresh) {
-      s_fresh->~LinkedList();
-      free(s_fresh);
-    }
-    if (positive) {
-      positive->~LinkedList();
-      free(positive);
-    }
-    if (negative) {
-      negative->~LinkedList();
-      free(negative);
-    }
-    if (app_ctx_holes) {
-      app_ctx_holes->~LinkedList();
-      free(app_ctx_holes);
-    }
-  }
+  ~Pattern() noexcept = default;
 
 #if DEBUG
   void print() noexcept {
     switch (inst) {
     case Instruction::EVar:
-      std::cout << "EVar(" << (uint8_t)id << ")";
+      std::cout << "EVar(" << static_cast<int>(id) << ")";
       break;
     case Instruction::SVar:
-      std::cout << "SVar(" << (uint8_t)id << ")";
+      std::cout << "SVar(" << static_cast<int>(id) << ")";
       break;
     case Instruction::Symbol:
-      std::cout << "Symbol(" << (uint8_t)id << ")";
+      std::cout << "Symbol(" << static_cast<int>(id) << ")";
       break;
     case Instruction::Implication:
       /* std::cout << "Implication(";
@@ -535,51 +485,51 @@ struct Pattern {
       std::cout << ")";
       break;
     case Instruction::Exists:
-      std::cout << "Exists(" << (uint8_t)id << ", ";
+      std::cout << "Exists(" << static_cast<int>(id) << ", ";
       subpattern->print();
       std::cout << ")";
       break;
     case Instruction::Mu:
-      std::cout << "Mu(" << (uint8_t)id << ", ";
+      std::cout << "Mu(" << static_cast<int>(id) << ", ";
       subpattern->print();
       std::cout << ")";
       break;
     case Instruction::MetaVar:
-      // std::cout << "phi" << (uint8_t)id;
-      std::cout << "MetaVar(" << (uint8_t)id;
-      if (e_fresh->head) {
+      // std::cout << "phi" << static_cast<int>(id);
+      std::cout << "MetaVar(" << static_cast<int>(id);
+      if (e_fresh.head) {
         std::cout << ", ";
-        e_fresh->print();
+        e_fresh.print();
       }
-      if (s_fresh->head) {
+      if (s_fresh.head) {
         std::cout << ", ";
-        s_fresh->print();
+        s_fresh.print();
       }
-      if (positive->head) {
+      if (positive.head) {
         std::cout << ", ";
-        positive->print();
+        positive.print();
       }
-      if (negative->head) {
+      if (negative.head) {
         std::cout << ", ";
-        negative->print();
+        negative.print();
       }
-      if (app_ctx_holes->head) {
+      if (app_ctx_holes.head) {
         std::cout << ", ";
-        app_ctx_holes->print();
+        app_ctx_holes.print();
       }
       std::cout << ")";
       break;
     case Instruction::ESubst:
       std::cout << "ESubst(";
       subpattern->print();
-      std::cout << ", " << (uint8_t)id << ", ";
+      std::cout << ", " << static_cast<int>(id) << ", ";
       plug->print();
       std::cout << ")";
       break;
     case Instruction::SSubst:
       std::cout << "SSubst(";
       subpattern->print();
-      std::cout << ", " << (uint8_t)id << ", ";
+      std::cout << ", " << static_cast<int>(id) << ", ";
       plug->print();
       std::cout << ")";
       break;
@@ -591,13 +541,15 @@ struct Pattern {
     std::cout << "Stack: ";
     for (Term it : stack) {
       if (it.type == Term::Type::Pattern) {
-        it.pattern->print();
-        std::cout << "; ";
+        std::cout << "[ Pattern: ";
+        // it.pattern->print();
+        std::cout << "]; ";
       } else if (it.type == Term::Type::Proved) {
         std::cout << "[ Proved: ";
-        it.pattern->print();
+        // it.pattern->print();
         std::cout << " ]; ";
       }
+      std::cout << std::endl;
     }
     std::cout << std::endl;
   }
@@ -646,7 +598,7 @@ struct Pattern {
   template <class T> class Optional {
   private:
     T value;
-    bool hasValue;
+    bool hasValue = false;
 
   public:
     Optional(const T &value) noexcept : value(value), hasValue(true) {}
@@ -674,7 +626,7 @@ struct Pattern {
       Id pos = 0;
       for (auto it : vars) {
         if (it == p->id) {
-          for (const auto &evar : *p->e_fresh) {
+          for (const auto &evar : p->e_fresh) {
             if (!plugs[pos]->pattern_e_fresh(evar)) {
 #ifdef DEBUG
               throw std::runtime_error("Instantiation of MetaVar " +
@@ -685,7 +637,7 @@ struct Pattern {
               exit(1);
             }
           }
-          for (const auto &svar : *p->s_fresh) {
+          for (const auto &svar : p->s_fresh) {
             if (!plugs[pos]->pattern_s_fresh(svar)) {
 #ifdef DEBUG
               throw std::runtime_error("Instantiation of MetaVar " +
@@ -696,7 +648,7 @@ struct Pattern {
               exit(1);
             }
           }
-          for (const auto &svar : *p->positive) {
+          for (const auto &svar : p->positive) {
             if (!plugs[pos]->pattern_positive(svar)) {
 #ifdef DEBUG
               throw std::runtime_error(
@@ -707,7 +659,7 @@ struct Pattern {
               exit(1);
             }
           }
-          for (const auto &svar : *p->negative) {
+          for (const auto &svar : p->negative) {
             if (!plugs[pos]->pattern_negative(svar)) {
 #ifdef DEBUG
               throw std::runtime_error(
@@ -893,19 +845,18 @@ struct Pattern {
   /// Main implementation
   /// -------------------
 
-  enum class ExecutionPhase { Gamma, Claims, Proof };
+  enum class ExecutionPhase { Gamma, Claim, Proof };
 
-  static IdList *
-  read_u8_vec(std::array<int, MAX_SIZE>::iterator &iterator) noexcept {
+  static void
+  read_u8_vec(std::array<int, MAX_SIZE>::iterator &iterator, IdList *vec) noexcept {
     auto size = *iterator;
     iterator++;
-    auto vec = IdList::create();
-    for (uint8_t i = 0; i < size; i++) {
-      vec->push_back(static_cast<uint8_t>(*iterator));
+    for (int i = 0; i < size; i++) {
+      vec->push_back(static_cast<int>(*iterator));
       iterator++;
     }
-    return vec;
   }
+
   static void execute_instructions(std::array<int, MAX_SIZE> &buffer,
                                    Stack &stack, Memory &memory, Claims &claims,
                                    ExecutionPhase phase) noexcept {
@@ -942,7 +893,9 @@ struct Pattern {
 
     // Iteration through the input buffer
     while (iterator != buffer.end()) {
-      Instruction instr_u32 = from(static_cast<uint8_t>(*iterator));
+      Instruction instr_u32 = from(static_cast<int>(*iterator));
+      // std::cout << "Instruction: " << static_cast<int>(*iterator) <<
+      // std::endl;
       iterator++;
 
       switch (instr_u32) {
@@ -998,14 +951,20 @@ struct Pattern {
         }
         auto id = static_cast<Id>(*getId);
 
-        auto e_fresh = read_u8_vec(iterator);
-        auto s_fresh = read_u8_vec(iterator);
-        auto positive = read_u8_vec(iterator);
-        auto negative = read_u8_vec(iterator);
-        auto app_ctx_holes = read_u8_vec(iterator);
+        auto e_fresh = IdList();
+        read_u8_vec(iterator, &e_fresh);
+        auto s_fresh = IdList();
+        read_u8_vec(iterator, &s_fresh);
+        auto positive = IdList();
+        read_u8_vec(iterator, &positive);
+        auto negative = IdList();
+        read_u8_vec(iterator, &negative);
+        auto app_ctx_holes = IdList();
+        read_u8_vec(iterator, &app_ctx_holes);
 
         auto metavar_pat =
-            metavar(id, e_fresh, s_fresh, positive, negative, app_ctx_holes);
+            metavar(id, std::move(e_fresh), std::move(s_fresh), std::move(positive),
+                std::move(negative), std::move(app_ctx_holes));
 
         if (!metavar_pat->pattern_well_formed()) {
 #if DEBUG
@@ -1029,31 +988,124 @@ struct Pattern {
         stack.push(Term::Pattern_(app(left, right)));
         break;
       }
+
       case Instruction::Exists: {
-        assert(false && "Not implemented yet");
+        auto id = iterator;
+        iterator++;
+        if (id == buffer.end()) {
+#if DEBUG
+          throw std::runtime_error("Expected var_id for the exists binder");
+#endif
+          exit(1);
+        }
+
+        auto subpattern = pop_stack_pattern(stack);
+        stack.push(Term::Pattern_(exists(static_cast<Id>(*id), subpattern)));
         break;
       }
+
       case Instruction::Mu: {
-        assert(false && "Not implemented yet");
+        auto id = iterator;
+        iterator++;
+        if (id == buffer.end()) {
+#if DEBUG
+          throw std::runtime_error("Expected var_id for the mu binder");
+#endif
+          exit(1);
+        }
+
+        auto subpattern = pop_stack_pattern(stack);
+        auto mu_pat = mu(static_cast<Id>(*id), subpattern);
+        if (!mu_pat->pattern_well_formed()) {
+#if DEBUG
+          throw std::runtime_error("Constructed mu-pattern " +
+                                   std::to_string((Id)*id) + " is ill-formed.");
+#endif
+          exit(1);
+        }
+        stack.push(Term::Pattern_(mu_pat));
         break;
       }
+
       case Instruction::ESubst: {
-        assert(false && "Not implemented yet");
+        auto evar_id = iterator;
+        iterator++;
+        if (evar_id == buffer.end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Insufficient parameters for ESubst instruction");
+#endif
+          exit(1);
+        }
+
+        auto pattern = pop_stack_pattern(stack);
+        auto plug = pop_stack_pattern(stack);
+        Instruction pattern_inst = pattern->inst;
+        if (!(pattern_inst == Instruction::MetaVar ||
+              pattern_inst == Instruction::ESubst ||
+              pattern_inst == Instruction::SSubst)) {
+#if DEBUG
+          throw std::runtime_error("Cannot apply ESubst on concrete term!");
+#endif
+          exit(1);
+        }
+
+        auto esubst_pat =
+            esubst(pattern.clone(), static_cast<Id>(*evar_id), plug);
+        if (esubst_pat->pattern_well_formed()) {
+          // The substitution is redundant, we don't apply it.
+          stack.push(Term::Pattern_(pattern));
+        } else {
+          stack.push(Term::Pattern_(esubst_pat));
+        }
         break;
       }
+
       case Instruction::SSubst: {
-        assert(false && "Not implemented yet");
+        auto svar_id = iterator;
+        iterator++;
+        if (svar_id == buffer.end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Insufficient parameters for SSubst instruction");
+#endif
+          exit(1);
+        }
+
+        auto pattern = pop_stack_pattern(stack);
+        auto plug = pop_stack_pattern(stack);
+        Instruction pattern_inst = pattern->inst;
+        if (!(pattern_inst == Instruction::MetaVar ||
+              pattern_inst == Instruction::ESubst ||
+              pattern_inst == Instruction::SSubst)) {
+#if DEBUG
+          throw std::runtime_error("Cannot apply SSubst on concrete term!");
+#endif
+          exit(1);
+        }
+
+        auto ssubst_pat =
+            ssubst(pattern.clone(), static_cast<Id>(*svar_id), plug);
+        if (!ssubst_pat->pattern_well_formed()) {
+          // The substitution is redundant, we don't apply it.
+          stack.push(Term::Pattern_(pattern));
+        } else {
+          stack.push(Term::Pattern_(ssubst_pat));
+        }
         break;
       }
-      case Instruction::Prop1:
+      case Instruction::Prop1: {
         stack.push(Term::Proved_(prop1.clone()));
         break;
-      case Instruction::Prop2:
+      }
+      case Instruction::Prop2: {
         stack.push(Term::Proved_(prop2.clone()));
         break;
-      case Instruction::Prop3:
+      }
+      case Instruction::Prop3: {
         stack.push(Term::Proved_(prop3.clone()));
         break;
+      }
       case Instruction::ModusPonens: {
         auto premise2 = pop_stack_proved(stack);
         auto premise1 = pop_stack_proved(stack);
@@ -1062,7 +1114,7 @@ struct Pattern {
 #if DEBUG
           throw std::runtime_error("Modus Ponens: expected implication on the "
                                    "stack, got: " +
-                                   std::to_string((uint8_t)premise1->inst));
+                                   std::to_string((int)premise1->inst));
 #endif
           exit(1);
         }
@@ -1071,8 +1123,8 @@ struct Pattern {
 #if DEBUG
           throw std::runtime_error(
               "Antecedents do not match for modus ponens.\n" +
-              std::to_string((uint8_t)premise1->left->inst) + "\n" +
-              std::to_string((uint8_t)premise2->inst));
+              std::to_string((int)premise1->left->inst) + "\n" +
+              std::to_string((int)premise2->inst));
 
 #endif
           exit(1);
@@ -1080,22 +1132,84 @@ struct Pattern {
         stack.push(Term::Proved_(premise1->right.clone()));
         break;
       }
-      case Instruction::Quantifier: {
-        assert(false && "Not implemented yet");
+
+      case Instruction::Quantifier:
+        stack.push(Term::Proved_(quantifier.clone()));
+        break;
+
+      case Instruction::Generalization: {
+        auto proved_pat = pop_stack_proved(stack);
+
+        if (proved_pat->inst == Instruction::Implication) {
+          auto evar_id = iterator;
+          iterator++;
+          if (evar_id == buffer.end()) {
+#if DEBUG
+            throw std::runtime_error(
+                "Insufficient parameters for Generalization instruction");
+#endif
+            exit(1);
+          }
+
+          if (!proved_pat->right->pattern_e_fresh(*evar_id)) {
+#if DEBUG
+            throw std::runtime_error(
+                "The binding variable has to be fresh in the conclusion.");
+#endif
+            exit(1);
+          }
+
+          stack.push(Term::Proved_(implies(
+              exists(static_cast<Id>(*evar_id), proved_pat->left.clone()),
+              proved_pat->right.clone())));
+        } else {
+#if DEBUG
+          throw std::runtime_error(
+              "Expected an implication as a first parameter.");
+#endif
+          exit(1);
+        }
         break;
       }
 
-      case Instruction::Generalization: {
-        assert(false && "Not implemented yet");
-        break;
-      }
       case Instruction::Existence:
         stack.push(Term::Proved_(existence.clone()));
         break;
+
       case Instruction::Substitution: {
-        assert(false && "Not implemented yet");
+        auto svar_id = iterator;
+        iterator++;
+        if (svar_id == buffer.end()) {
+#if DEBUG
+          throw std::runtime_error(
+              "Insufficient parameters for Substitution instruction");
+#endif
+          exit(1);
+        }
+
+        auto plug = pop_stack_pattern(stack);
+        auto pattern = pop_stack_proved(stack);
+        Instruction pattern_inst = pattern->inst;
+        if (!(pattern_inst == Instruction::MetaVar ||
+              pattern_inst == Instruction::ESubst ||
+              pattern_inst == Instruction::SSubst)) {
+#if DEBUG
+          throw std::runtime_error("Cannot apply SSubst on concrete term!");
+#endif
+          exit(1);
+        }
+
+        auto ssubst_pat =
+            ssubst(pattern.clone(), static_cast<Id>(*svar_id), plug);
+        if (!ssubst_pat->pattern_well_formed()) {
+          // The substitution is redundant, we don't apply it.
+          stack.push(Term::Proved_(pattern));
+        } else {
+          stack.push(Term::Proved_(ssubst_pat));
+        }
         break;
       }
+
       case Instruction::Instantiate: {
         auto n = iterator;
         iterator++;
@@ -1106,11 +1220,11 @@ struct Pattern {
 #endif
           exit(1);
         }
-        auto ids = LinkedList<Id>();
+        auto ids = IdList();
         auto plugs = LinkedList<Rc<Pattern>>();
 
         Term metaterm = pop_stack(stack);
-        for (uint8_t i = 0; i < static_cast<uint8_t>(*n); i++) {
+        for (int i = 0; i < static_cast<int>(*n); i++) {
           ids.push(static_cast<Id>(*iterator));
           iterator++;
           plugs.push(pop_stack_pattern(stack));
@@ -1128,9 +1242,10 @@ struct Pattern {
         }
         break;
       }
-      case Instruction::Pop:
+      case Instruction::Pop: {
         stack.pop().pattern.release();
         break;
+      }
       case Instruction::Save: {
         Term term = stack.front();
         if (term.type == Term::Type::Pattern) {
@@ -1155,7 +1270,7 @@ struct Pattern {
 #endif
           exit(1);
         }
-        Term term = memory.get(static_cast<uint8_t>(*index));
+        Term term = memory.get(static_cast<int>(*index));
         if (term.type == Term::Type::Pattern) {
           stack.push(Term::Pattern_(term.pattern.clone()));
         } else if (term.type == Term::Type::Proved) {
@@ -1173,7 +1288,7 @@ struct Pattern {
         case ExecutionPhase::Gamma:
           memory.push_back(Term::Proved_(pop_stack_pattern(stack)));
           break;
-        case ExecutionPhase::Claims:
+        case ExecutionPhase::Claim:
           claims.push_back(pop_stack_pattern(stack));
           break;
         case ExecutionPhase::Proof: {
@@ -1189,8 +1304,8 @@ struct Pattern {
 #if DEBUG
             throw std::runtime_error(
                 "This proof does not prove the requested claim: " +
-                std::to_string((uint8_t)claim->inst) +
-                ", theorem: " + std::to_string((uint8_t)theorem->inst));
+                std::to_string((int)claim->inst) +
+                ", theorem: " + std::to_string((int)theorem->inst));
 #endif
             exit(1);
           }
@@ -1215,26 +1330,27 @@ struct Pattern {
         stack.push(Term::Pattern_(metavar_pat));
         break;
       }
-      case Instruction::NO_OP:
+      case Instruction::NO_OP: {
         iterator = buffer.end();
         break;
+      }
       default: {
 #if DEBUG
         throw std::runtime_error("Unknown instruction: " +
-                                 std::to_string((uint8_t)instr_u32));
+                                 std::to_string((int)instr_u32));
 #endif
         exit(1);
       }
       }
 #if DEBUG
-      printStack(stack);
+      // printStack(stack);
 #endif
     }
   }
 
-  static uint8_t verify(std::array<int, MAX_SIZE> &gamma_buffer,
-                        std::array<int, MAX_SIZE> &claims_buffer,
-                        std::array<int, MAX_SIZE> &proof_buffer) noexcept {
+  static int verify(std::array<int, MAX_SIZE> &gamma_buffer,
+                    std::array<int, MAX_SIZE> &claims_buffer,
+                    std::array<int, MAX_SIZE> &proof_buffer) noexcept {
     auto claims = Claims();
     auto memory = Memory();
     auto stack = Stack();
@@ -1251,7 +1367,7 @@ struct Pattern {
                          stack,  // stack is empty initially.
                          memory, // reuse memory
                          claims, // claims populated in this phase
-                         ExecutionPhase::Claims);
+                         ExecutionPhase::Claim);
 
     stack.clear();
 

@@ -4,18 +4,13 @@ import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implies, MetaVar, Notation, bot
+from proof_generation.pattern import Implies, MetaVar, Notation, bot, phi0, phi1, phi2
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
+    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
-    from proof_generation.proof import ProvedExpression
-    from proof_generation.proved import Proved
-
-phi0 = MetaVar(0)
-phi1 = MetaVar(1)
-phi2 = MetaVar(2)
+    from proof_generation.proof import ProofThunk
 
 
 @dataclass(frozen=True, eq=False)
@@ -86,6 +81,14 @@ class Equiv(Notation):
         return f'({str(self.phi0)}) <-> ({str(self.phi1)})'
 
 
+def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
+    ret = {}
+    for i, p in enumerate(pats):
+        if p != MetaVar(i):
+            ret[i] = p
+    return ret
+
+
 class Propositional(ProofExp):
     def __init__(self, interpreter: BasicInterpreter) -> None:
         super().__init__(interpreter)
@@ -104,90 +107,93 @@ class Propositional(ProofExp):
             Implies(phi0, neg(neg(phi0))),  # Double Negation intro
             Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
             Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
+            Implies(Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))),  # Implication Transitivity
         ]
 
-    def proof_expressions(self) -> list[ProvedExpression]:
+    def proof_expressions(self) -> list[ProofThunk]:
         return [
-            self.imp_refl,
-            self.top_intro,
-            self.bot_elim,
-            self.dneg_elim,
-            self.dneg_intro,
-            self.absurd,
-            self.peirce_bot,
+            self.imp_refl(),
+            self.top_intro(),
+            self.bot_elim(),
+            self.dneg_elim(),
+            self.dneg_intro(),
+            self.absurd(),
+            self.peirce_bot(),
+            self.imp_trans(),
         ]
-
-    # TODO This function should not exist anymore once we
-    # have support for Lemmas in the binary format
-    def PROVISIONAL_get_conc(self, p: ProvedExpression) -> Pattern:  # noqa: N802
-        i = self.interpreter
-        self.interpreter = BasicInterpreter(ExecutionPhase.Proof)
-        conc = p().conclusion
-        self.interpreter = i
-        return conc
 
     # Proofs
     # ======
 
-    def imp_refl(self, p: Pattern = phi0) -> Proved:
+    def prop1_inst(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        return self.dynamic_inst(self.prop1(), _build_subst([p, q]))
+
+    def prop2_inst(self, p: Pattern = phi0, q: Pattern = phi1, r: Pattern = phi2) -> ProofThunk:
+        return self.dynamic_inst(self.prop2(), _build_subst([p, q, r]))
+
+    def dneg_elim(self, p: Pattern = phi0) -> ProofThunk:
+        return self.dynamic_inst(self.prop3(), _build_subst([p]))
+
+    def imp_refl(self, p: Pattern = phi0) -> ProofThunk:
         """p -> p"""
         pp = Implies(p, p)
         # fmt: off
         return self.modus_ponens(
             self.modus_ponens(
-                self.dynamic_inst(self.prop2, {0: p, 1: pp, 2: p}),
-                self.dynamic_inst(self.prop1, {0: p, 1: pp})),
-            self.dynamic_inst(self.prop1, {0: p, 1: p}))
+                self.prop2_inst(p, pp, p),
+                self.prop1_inst(p, pp)),
+            self.prop1_inst(p, p))
 
-    def imp_provable(self, p: Pattern, q_pf: ProvedExpression) -> Proved:
+    def imp_provable(self, p: Pattern, q_pf: ProofThunk) -> ProofThunk:
         """
             q
         ----------
           p -> q
         """
-        q = self.PROVISIONAL_get_conc(q_pf)
-        return self.modus_ponens(self.dynamic_inst(self.prop1, {0: q, 1: p}), q_pf())
+        q = q_pf.conc
+        return self.modus_ponens(self.prop1_inst(q, p), q_pf)
 
-    def imp_transitivity(self, pq_pf: ProvedExpression, qr_pf: ProvedExpression) -> Proved:
+    def imp_transitivity(self, pq_pf: ProofThunk, qr_pf: ProofThunk) -> ProofThunk:
         """
            p -> q    q -> r
         ----------------------
                 p -> r
         """
-        a, b = Implies.extract(self.PROVISIONAL_get_conc(pq_pf))
-        b2, c = Implies.extract(self.PROVISIONAL_get_conc(qr_pf))
-        assert b == b2
+        p, q = Implies.extract(pq_pf.conc)
+        q2, r = Implies.extract(qr_pf.conc)
+        assert q == q2
 
         return self.modus_ponens(
-            # (a -> b) -> (a -> c)
+            # (p -> q) -> (p -> r)
             self.modus_ponens(
-                # (a -> (b -> c)) -> ((a -> b) -> (a -> c))
-                self.dynamic_inst(self.prop2, {0: a, 1: b, 2: c}),
-                #  a -> (b -> c)
-                self.imp_provable(a, qr_pf),
+                # (p -> (q -> r)) -> ((p -> q) -> (p -> r))
+                self.prop2_inst(p, q, r),
+                #  p -> (q -> r)
+                self.imp_provable(p, qr_pf),
             ),
-            pq_pf(),
+            # p -> q
+            pq_pf,
         )
 
-    def top_intro(self) -> Proved:
+    def top_intro(self) -> ProofThunk:
         """top"""
         return self.imp_refl(bot)
 
-    def bot_elim(self, p: Pattern = phi0) -> Proved:
+    def bot_elim(self, p: Pattern = phi0) -> ProofThunk:
         """bot -> p"""
         return self.modus_ponens(
             # ((bot -> neg neg p) -> (bot -> p)))
             self.modus_ponens(
                 # (bot -> (neg neg p -> p)) -> ((bot -> neg neg p) -> (bot -> p))
-                self.dynamic_inst(self.prop2, {0: bot, 1: neg(neg(p)), 2: p}),
+                self.prop2_inst(bot, neg(neg(p)), p),
                 #  bot -> (neg neg p -> p)
-                self.imp_provable(bot, lambda: self.dynamic_inst(self.prop3, {0: p})),
+                self.imp_provable(bot, self.dneg_elim(p)),
             ),
             # (bot -> (neg neg p))
-            self.dynamic_inst(self.prop1, {0: bot, 1: neg(p)}),
+            self.prop1_inst(bot, neg(p)),
         )
 
-    def top_imp(self, p_pf: ProvedExpression) -> Proved:
+    def top_imp(self, p_pf: ProofThunk) -> ProofThunk:
         """
             p
         ----------
@@ -195,158 +201,342 @@ class Propositional(ProofExp):
         """
         return self.imp_provable(top, p_pf)
 
-    def imp_top(self, p: Pattern) -> Proved:
+    def imp_top(self, p: Pattern) -> ProofThunk:
         """p -> T"""
-        return self.imp_provable(p, self.top_intro)
+        return self.imp_provable(p, self.top_intro())
 
-    def dneg_elim(self) -> Proved:
-        """(neg neg p) -> p"""
-        return self.prop3()
-
-    def ant_commutativity(self, pf: ProvedExpression) -> Proved:
+    def ant_commutativity(self, pf: ProofThunk) -> ProofThunk:
         """
           p -> (q -> r)
         ---------------
           q -> (p -> r)
         """
-        conc = self.PROVISIONAL_get_conc(pf)
-        p, qr = Implies.extract(conc)
+        p, qr = Implies.extract(pf.conc)
         q, r = Implies.extract(qr)
-        return self.imp_transitivity(
-            lambda: self.dynamic_inst(self.prop1, {0: q, 1: p}),
-            lambda: self.modus_ponens(self.dynamic_inst(self.prop2, {0: p, 1: q, 2: r}), pf()),
-        )
+        return self.imp_transitivity(self.prop1_inst(q, p), self.modus_ponens(self.prop2_inst(p, q, r), pf))
 
-    def dneg_intro(self, p: Pattern = phi0) -> Proved:
+    def dneg_intro(self, p: Pattern = phi0) -> ProofThunk:
         """p -> ~~p"""
-        return self.ant_commutativity(lambda: self.imp_refl(neg(p)))
+        return self.ant_commutativity(self.imp_refl(neg(p)))
 
-    def absurd(self, a: Pattern = phi0, b: Pattern = phi1) -> Proved:
-        """(neg p) -> (p -> q)"""
-        bot_to_b = Implies(bot, b)
-
+    def absurd(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """~p -> (p -> q)"""
         return self.modus_ponens(
-            self.dynamic_inst(self.prop2, {0: a, 1: bot, 2: b}),
-            # a -> bot -> b
-            self.modus_ponens(self.dynamic_inst(self.prop1, {0: bot_to_b, 1: a}), self.bot_elim(b)),
+            self.prop2_inst(p, bot, q),
+            # p -> bot -> q
+            self.imp_provable(p, self.bot_elim(q)),
         )
 
-    def peirce_bot(self) -> Proved:
-        """(((ph0 -> bot) -> ph0) -> ph0)"""
+    def peirce_bot(self, p: Pattern = phi0) -> ProofThunk:
+        """(~p -> p) -> p   or, alternatively   p \\/ p -> p"""
+        return self.imp_transitivity(
+            self.modus_ponens(self.prop2_inst(neg(p), p, bot), self.imp_refl(neg(p))), self.dneg_elim(p)
+        )
 
-        def phi0_bot_imp_ph0() -> Pattern:
-            # ((ph0 -> bot) -> ph0)
-            return Implies(Implies(phi0, bot), phi0)
+    def imp_trans(self, p: Pattern = phi0, q: Pattern = phi1, r: Pattern = phi2) -> ProofThunk:
+        """(p -> q) -> (q -> r) -> (p -> r)"""
+        return self.ant_commutativity(
+            self.imp_transitivity(self.prop1_inst(Implies(q, r), p), self.prop2_inst(p, q, r))
+        )
 
-        def phi0_bot_imp_bot() -> Pattern:
-            # (ph0 -> bot) -> bot)
-            return Implies(Implies(phi0, bot), bot)
-
-        def phi0_bot_imp_phi0_bot() -> Pattern:
-            # (phi0 -> bot) -> (phi0->bot)
-            return Implies(Implies(phi0, bot), Implies(phi0, bot))
-
-        def modus_ponens_1() -> Proved:
-            return self.modus_ponens(
-                self.dynamic_inst(
-                    self.prop2,
-                    {
-                        # ((ph0 -> bot) -> ph0) = neg 0 -> 0
-                        0: phi0_bot_imp_ph0(),
-                        # ((ph0 -> bot) -> bot) = neg 0 -> bot
-                        1: phi0_bot_imp_bot(),
-                        2: phi0,
-                    },
-                ),
-                self.modus_ponens(
-                    self.dynamic_inst(
-                        self.prop1,
-                        {
-                            # (((ph0 -> bot) -> bot) -> ph0)
-                            0: Implies(phi0_bot_imp_bot(), phi0),
-                            # ((ph0 -> bot) -> ph0)
-                            1: phi0_bot_imp_ph0(),
-                        },
-                    ),
-                    # ph0
-                    self.dynamic_inst(self.prop3, {0: phi0}),
-                ),
-            )
-
-        def modus_ponens_2() -> Proved:
-            return self.modus_ponens(
-                self.dynamic_inst(
-                    self.prop2,
-                    {
-                        0: phi0_bot_imp_ph0(),
-                        1: phi0_bot_imp_phi0_bot(),
-                        # (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot)))
-                        2: Implies(phi0_bot_imp_ph0(), phi0_bot_imp_bot()),
-                    },
-                ),
-                self.modus_ponens(
-                    self.dynamic_inst(
-                        self.prop1,
-                        {
-                            # ((phi0 -> bot) -> (phi0 -> bot)) -> (((ph0 -> bot) -> phi0) -> ((ph0 -> bot) -> bot))),
-                            0: Implies(
-                                Implies(
-                                    Implies(phi0, bot),
-                                    Implies(phi0, bot),
-                                ),
-                                Implies(
-                                    phi0_bot_imp_ph0(),
-                                    phi0_bot_imp_bot(),
-                                ),
-                            ),
-                            1: phi0_bot_imp_ph0(),
-                        },
-                    ),
-                    self.dynamic_inst(
-                        self.prop2,
-                        {
-                            0: Implies(phi0, bot),
-                            1: phi0,
-                            2: bot,
-                        },
-                    ),
-                ),
-            )
-
-        def modus_ponens_3() -> Proved:
-            return self.modus_ponens(
-                # ((phi0 -> bot) -> (phi0 -> bot)) -> (((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> (phi0->bot)))
-                self.dynamic_inst(
-                    self.prop1,
-                    {
-                        0: phi0_bot_imp_phi0_bot(),
-                        1: phi0_bot_imp_ph0(),
-                    },
-                ),
-                # ((phi0 -> bot) -> phi0) -> ((phi0 -> bot) -> phi0)
-                self.imp_refl(Implies(phi0, bot)),
-            )
-
+    def mpcom(self, p_pf: ProofThunk, q: Pattern) -> ProofThunk:
+        """
+               p
+        -----------------
+          (p -> q) -> q
+        """
+        p = p_pf.conc
+        pq = Implies(p, q)
         return self.modus_ponens(
-            modus_ponens_1(),
+            self.modus_ponens(self.prop2_inst(pq, p, q), self.imp_refl(pq)), self.imp_provable(pq, p_pf)
+        )
+
+    def dni_l(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """(p -> q) -> (~~p -> q)"""
+        return self.modus_ponens(self.imp_trans(neg(neg(p)), p, q), self.dneg_elim(p))
+
+    def dni_l_i(self, pq_pf: ProofThunk) -> ProofThunk:
+        """
+            p -> q
+        --------------
+          ~~p -> q
+        """
+        p, q = Implies.extract(pq_pf.conc)
+        return self.modus_ponens(self.dni_l(p, q), pq_pf)
+
+    def dni_r(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """(p -> q) -> (p -> ~~q)"""
+        return self.modus_ponens(self.prop2_inst(p, q, neg(neg(q))), self.imp_provable(p, self.dneg_intro(q)))
+
+    def dni_r_i(self, pq_pf: ProofThunk) -> ProofThunk:
+        """
+           p -> q
+        --------------
+          p -> ~~q
+        """
+        p, q = Implies.extract(pq_pf.conc)
+        return self.modus_ponens(self.dni_r(p, q), pq_pf)
+
+    def dne_l(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """(~~p -> q) -> (p -> q)"""
+        return self.modus_ponens(self.imp_trans(p, neg(neg(p)), q), self.dneg_intro(p))
+
+    def dne_l_i(self, pq_pf: ProofThunk) -> ProofThunk:
+        """
+          ~~p -> q
+        --------------
+            p -> q
+        """
+        p, q = Implies.extract(pq_pf.conc)
+        return self.modus_ponens(self.dne_l(p, q), pq_pf)
+
+    def dne_r(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """(p -> ~~q) -> (p -> q)"""
+        return self.modus_ponens(self.prop2_inst(p, neg(neg(q)), q), self.imp_provable(p, self.dneg_elim(q)))
+
+    def dne_r_i(self, pq_pf: ProofThunk) -> ProofThunk:
+        """
+          p -> ~~q
+        --------------
+           p -> q
+        """
+        p, q = Implies.extract(pq_pf.conc)
+        return self.modus_ponens(self.dne_r(p, q), pq_pf)
+
+    def helper1(self, p_pf: ProofThunk, qr_pf: ProofThunk) -> ProofThunk:
+        """
+           p    q -> r
+        -----------------
+          (p -> q) -> r
+        """
+        q, _ = Implies.extract(qr_pf.conc)
+        return self.imp_transitivity(self.mpcom(p_pf, q), qr_pf)
+
+    def a1d(self, pq_pf: ProofThunk, r: Pattern) -> ProofThunk:
+        """
+             p -> q
+        ---------------
+          p -> r -> q
+        """
+        _, q = Implies.extract(pq_pf.conc)
+        return self.imp_transitivity(pq_pf, self.prop1_inst(q, r))
+
+    def con3(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """(p -> q) -> (~q -> ~p)"""
+        return self.imp_trans(p, q, bot)
+
+    def con3_i(self, pq_pf: ProofThunk) -> ProofThunk:
+        """
+          p -> q
+        ------------
+          ~q -> ~p
+        """
+        p, q = Implies.extract(pq_pf.conc)
+        return self.modus_ponens(self.con3(p, q), pq_pf)
+
+    def absurd2(self, pq_pf: ProofThunk, r: Pattern) -> ProofThunk:
+        """
+             p -> q
+        -----------------
+           ~q -> p -> r
+        """
+        p, q = Implies.extract(pq_pf.conc)
+        return self.imp_transitivity(self.absurd(q, r), self.modus_ponens(self.imp_trans(p, q, r), pq_pf))
+
+    def lemma1(self, q: Pattern, pf: ProofThunk) -> ProofThunk:
+        """
+                ~p
+        ------------------
+          (q -> p) -> ~q
+        """
+        p = Negation.extract(pf.conc)[0]
+        return self.modus_ponens(self.prop2_inst(q, p, bot), self.imp_provable(q, pf))
+
+    def con1(self, pf: ProofThunk) -> ProofThunk:
+        """
+          ~p -> q
+        -----------
+          ~q -> p
+        """
+        np, q = Implies.extract(pf.conc)
+        p = Negation.extract(np)[0]
+        return self.imp_transitivity(
             self.modus_ponens(
-                self.modus_ponens(
-                    self.dynamic_inst(
-                        self.prop2,
-                        {
-                            0: phi0_bot_imp_ph0(),
-                            1: phi0_bot_imp_ph0(),
-                            2: phi0_bot_imp_bot(),
-                        },
-                    ),
-                    self.modus_ponens(
-                        modus_ponens_2(),
-                        modus_ponens_3(),
-                    ),
-                ),
-                self.imp_refl(phi0_bot_imp_ph0()),
+                self.ant_commutativity(self.imp_transitivity(self.prop1_inst(neg(q), np), self.prop2_inst(np, q, bot))),
+                pf,
             ),
+            self.dneg_elim(p),
         )
+
+    def con2(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """(p -> ~q) -> (q -> ~p)"""
+        return self.imp_transitivity(self.prop2_inst(p, q, bot), self.imim_l(neg(p), self.prop1_inst(q, p)))
+
+    def absurd3(self, npq_pf: ProofThunk, nr_pf: ProofThunk) -> ProofThunk:
+        """
+           ~p -> q     ~r
+        -------------------
+           (q -> r) -> p
+        """
+        _, q = Implies.extract(npq_pf.conc)
+        return self.imp_transitivity(self.lemma1(q, nr_pf), self.con1(npq_pf))
+
+    def absurd4(self, pnq_pf: ProofThunk, r: Pattern) -> ProofThunk:
+        """
+           p -> ~q
+        ------------------
+           q -> p -> r
+        """
+        _, nq = Implies.extract(pnq_pf.conc)
+        q = Negation.extract(nq)[0]
+        return self.imp_transitivity(self.dneg_intro(q), self.absurd2(pnq_pf, r))
+
+    def absurd_i(self, np_pf: ProofThunk, q: Pattern) -> ProofThunk:
+        """
+           ~p
+        -----------
+          p -> q
+        """
+        p = Negation.extract(np_pf.conc)[0]
+        return self.modus_ponens(self.absurd(p, q), np_pf)
+
+    def and_not_r_intro(self, p_pf: ProofThunk, nq_pf: ProofThunk) -> ProofThunk:
+        """
+           p   ~q
+        -------------
+          ~(p -> q)
+        """
+        p_pf.conc
+        q = Negation.extract(nq_pf.conc)[0]
+        return self.imp_transitivity(self.mpcom(p_pf, q), nq_pf)
+
+    def imim_l(self, pat: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+              a -> b
+        ---------------------
+        (b -> c) -> (a -> c)
+        """
+        a, b = Implies.extract(h.conc)
+        return self.modus_ponens(self.imp_trans(a, b, pat), h)
+
+    def imim(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
+        """
+        (a -> b)    (c -> d)
+        ---------------------
+        (b -> c) -> (a -> d)
+        """
+        a, b = Implies.extract(h1.conc)
+        c, d = Implies.extract(h2.conc)
+        return self.imp_transitivity(
+            self.imim_l(c, h1), self.modus_ponens(self.prop2_inst(a, c, d), self.imp_provable(a, h2))
+        )
+
+    def imim_nnr(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
+        """
+        (a -> b)    (c -> d)
+        ---------------------
+        (b -> c) -> (~~a -> d)
+        """
+        a, b = Implies.extract(h1.conc)
+        c, d = Implies.extract(h2.conc)
+        return self.imp_transitivity(
+            self.imim(h1, h2), self.modus_ponens(self.imp_trans(neg(neg(a)), a, d), self.dneg_elim(a))
+        )
+
+    def imim_nnl(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
+        """
+        (a -> b)    (c -> d)
+        ---------------------
+        (~~b -> c) -> (a -> d)
+        """
+        a, b = Implies.extract(h1.conc)
+        c, d = Implies.extract(h2.conc)
+        return self.imp_transitivity(
+            self.modus_ponens(self.imp_trans(b, neg(neg(b)), c), self.dneg_intro(b)), self.imim(h1, h2)
+        )
+
+    def imim_or(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
+        """
+        (a -> b)   (c -> d)
+        ---------------------
+        a \\/ c -> b \\/ d
+        """
+        return self.imim(self.con3_i(h1), h2)
+
+    def imim_and(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
+        """
+        (a -> b)   (c -> d)
+        ---------------------
+        a /\\ c -> b /\\ d
+        """
+        return self.con3_i(self.imim(h1, self.con3_i(h2)))
+
+    def imim_and_r(self, pat: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+           (b -> c)
+        ---------------------
+           a /\\ b -> a /\\ c
+        """
+        return self.imim_and(self.imp_refl(pat), h)
+
+    def imim_and_l(self, pat: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+            (a -> b)
+        ---------------------
+           a /\\ c -> b /\\ c
+        """
+        return self.imim_and(h, self.imp_refl(pat))
+
+    def imim_or_r(self, pat: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+             (b -> c)
+        ---------------------
+            a \\/ b -> a \\/ c
+        """
+        return self.imim(self.imp_refl(neg(pat)), h)
+
+    def imim_or_l(self, pat: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+              (a -> b)
+        ---------------------
+           a \\/ c -> b \\/ c
+        """
+        return self.imim(self.con3_i(h), self.imp_refl(pat))
+
+    def and_intro(self, p_pf: ProofThunk, q_pf: ProofThunk) -> ProofThunk:
+        """
+            p   q
+        ------------
+           p /\\ q
+        """
+        q = q_pf.conc
+        return self.imp_transitivity(self.mpcom(p_pf, neg(q)), self.modus_ponens(self.dneg_intro(q), q_pf))
+
+    def and_l_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """p /\\ q -> p"""
+        return self.con1(self.absurd(p, neg(q)))
+
+    def and_l(self, pq_pf: ProofThunk) -> ProofThunk:
+        """
+           p /\\ q
+        ------------
+              p
+        """
+        p, q = And.extract(pq_pf.conc)
+        return self.modus_ponens(self.and_l_imp(p, q), pq_pf)
+
+    def and_r_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """p /\\ q -> q"""
+        return self.con1(self.prop1_inst(neg(q), p))
+
+    def and_r(self, pq_pf: ProofThunk) -> ProofThunk:
+        """
+           p /\\ q
+        ------------
+              q
+        """
+        p, q = And.extract(pq_pf.conc)
+        return self.modus_ponens(self.and_r_imp(p, q), pq_pf)
 
 
 if __name__ == '__main__':

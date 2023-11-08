@@ -13,8 +13,7 @@ int test_efresh(int a, int b) {
   auto implication = Pattern::implies(left.clone(), right.clone());
   assert(!implication->pattern_e_fresh(a));
 
-  auto mvar =
-      Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
+  auto mvar = Pattern::metavar_s_fresh(a, b, IdList(b), IdList(b));
   auto metaapp = Pattern::app(left.clone(), mvar.clone());
   assert(!metaapp->pattern_e_fresh(b));
 
@@ -60,8 +59,7 @@ int test_sfresh(int a, int b) {
   auto implication = Pattern::implies(left.clone(), right.clone());
   assert(!implication->pattern_s_fresh(a));
 
-  auto mvar =
-      Pattern::metavar_s_fresh(a, b, IdList::create(b), IdList::create(b));
+  auto mvar = Pattern::metavar_s_fresh(a, b, IdList(b), IdList(b));
 
   auto metaapp = Pattern::app(left.clone(), mvar.clone());
   assert(!metaapp->pattern_s_fresh(a));
@@ -95,6 +93,23 @@ int test_sfresh(int a, int b) {
   ssubst->print();
   std::cout << std::endl;
 #endif
+
+  return 0;
+}
+
+int test_wellformedness_fresh() {
+  auto phi0_s_fresh_0 = Pattern::metavar_s_fresh(0, 0, IdList(0), IdList(0));
+  assert(phi0_s_fresh_0->pattern_well_formed());
+
+  auto phi1_e_fresh = IdList();
+  phi1_e_fresh.push_back(1);
+  phi1_e_fresh.push_back(2);
+  phi1_e_fresh.push_back(0);
+  auto phi1 =
+      Pattern::metavar(1, phi1_e_fresh, IdList(), IdList(),
+          IdList(), IdList(2));
+
+  assert(!phi1->pattern_well_formed());
 
   return 0;
 }
@@ -187,14 +202,12 @@ int test_positivity() {
   assert(!metavarUncons1->pattern_negative(2));
 
   // Do not imply positivity from freshness
-  auto metavarSFresh11__ =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(), IdList::create());
-  auto metavarSFresh1111 =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(1), IdList::create(1));
-  auto metavarSFresh111_ =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(1), IdList::create());
-  auto metavarSFresh11_1 =
-      Pattern::metavar_s_fresh(1, 1, IdList::create(), IdList::create(1));
+  auto pos = IdList();
+  auto neg = IdList();
+  auto metavarSFresh11__ = Pattern::metavar_s_fresh(1, 1, IdList(), IdList());
+  auto metavarSFresh1111 = Pattern::metavar_s_fresh(1, 1, IdList(1), IdList(1));
+  auto metavarSFresh111_ =  Pattern::metavar_s_fresh(1, 1, IdList(1), IdList());
+  auto metavarSFresh11_1 = Pattern::metavar_s_fresh(1, 1, IdList(), IdList(1));
 
   assert(!metavarSFresh11__->pattern_positive(1));
   assert(!metavarSFresh11__->pattern_negative(1));
@@ -210,8 +223,7 @@ int test_positivity() {
   auto esubstMetaVarUnconsX0 =
       Pattern::esubst(Pattern::metavar_unconstrained(0), 0, X0.clone());
   auto esubstMetaVarSFreshX1 = Pattern::esubst(
-      Pattern::metavar_s_fresh(0, 1, IdList::create(1), IdList::create()), 0,
-      X1.clone());
+      Pattern::metavar_s_fresh(0, 1, IdList(1), IdList()), 0, X1.clone());
   auto esubstMetaVarUnconsX1 =
       Pattern::esubst(Pattern::metavar_unconstrained(0), 0, X1.clone());
 
@@ -228,8 +240,7 @@ int test_positivity() {
   auto ssubstMetaVarUnconsX1 =
       Pattern::ssubst(Pattern::metavar_unconstrained(0), 0, X1.clone());
   auto ssubstMetaVarSFreshX1 = Pattern::ssubst(
-      Pattern::metavar_s_fresh(0, 1, IdList::create(1), IdList::create()), 0,
-      X1.clone());
+      Pattern::metavar_s_fresh(0, 1, IdList(1), IdList()), 0, X1.clone());
 
   assert(!ssubstMetaVarUnconsX0->pattern_positive(0));
   assert(ssubstMetaVarUnconsX1->pattern_positive(0));
@@ -331,27 +342,23 @@ int test_wellformedness_positive() {
   auto mux_x4 = Pattern::mu(1, Pattern::negate(svar.clone()));
   assert(!mux_x4->pattern_well_formed());
 
-  auto phi =
-      Pattern::metavar_s_fresh(97, 2, IdList::create(), IdList::create());
+  auto phi = Pattern::metavar_s_fresh(97, 2, IdList(), IdList());
   auto mux_phi = Pattern::mu(1, phi.clone());
   assert(!mux_phi->pattern_well_formed());
 
   // Even though freshness implies positivity, we do not want to do any
   // additional reasoning and let everything on the prover
-  auto phi2 =
-      Pattern::metavar_s_fresh(98, 1, IdList::create(), IdList::create());
+  auto phi2 = Pattern::metavar_s_fresh(98, 1, IdList(), IdList());
   auto mux_phi2 = Pattern::mu(1, phi2.clone());
   assert(!mux_phi2->pattern_well_formed());
 
   // It's ok if 2 is negative, the only thing we care about is that 2 is
   // guaranteed to be positive (we can instantiate without this variable)
-  auto phi3 =
-      Pattern::metavar_s_fresh(99, 1, IdList::create(2), IdList::create(2));
+  auto phi3 = Pattern::metavar_s_fresh(99, 1, IdList(2), IdList(2));
   auto mux_phi3 = Pattern::mu(2, phi3.clone());
   assert(mux_phi3->pattern_well_formed());
 
-  auto phi4 =
-      Pattern::metavar_s_fresh(100, 1, IdList::create(2), IdList::create());
+  auto phi4 = Pattern::metavar_s_fresh(100, 1, IdList(2), IdList());
   auto mux_phi4 = Pattern::mu(2, phi4.clone());
   assert(mux_phi4->pattern_well_formed());
 
@@ -523,6 +530,70 @@ void execute_vector(std::array<int, MAX_SIZE> &instrs, Pattern::Stack &stack,
   Pattern::execute_instructions(instrs, stack, memory, claims, phase);
 }
 
+void test_publish() {
+
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 1;
+  proof[1] = (int)Instruction::Publish;
+  proof[2] = (int)138; // NO_OP
+
+  auto stack = Pattern::Stack();
+  auto memory = Pattern::Memory();
+  auto claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Pattern_(Pattern::symbol(0)));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Gamma);
+
+  auto expected_stack = Pattern::Stack();
+  auto expected_claims = Pattern::Claims();
+  auto expected_memory = Pattern::Memory();
+  expected_memory.push_back(Pattern::Term::Proved_(Pattern::symbol(0)));
+
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+
+  memory.clear();
+
+  stack = Pattern::Stack();
+  memory = Pattern::Memory();
+  claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Pattern_(Pattern::symbol(0)));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Claim);
+
+  expected_memory.clear();
+
+  expected_stack = Pattern::Stack();
+  expected_memory = Pattern::Memory();
+  expected_claims = Pattern::Claims();
+  expected_claims.push_back(Pattern::symbol(0));
+
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+
+  claims.clear();
+
+  stack = Pattern::Stack();
+  memory = Pattern::Memory();
+  claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Proved_(Pattern::symbol(0)));
+  claims.push_back(Pattern::symbol(0));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  expected_claims.clear();
+
+  expected_stack = Pattern::Stack();
+  expected_memory = Pattern::Memory();
+  expected_claims = Pattern::Claims();
+
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+}
+
 void test_construct_phi_implies_phi() {
 
   // MetaVar(0,0,0,0,0,0)
@@ -642,19 +713,50 @@ int test_phi_implies_phi_impl() {
   return 0;
 }
 
+int test_universal_quantification() {
+
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 2;
+  proof[1] = (int)Instruction::Generalization;
+  proof[2] = 0;
+  proof[3] = (int)138; // NO_OP
+
+  auto stack = Pattern::Stack();
+  auto memory = Pattern::Memory();
+  auto claims = Pattern::Claims();
+  stack.push_back(Pattern::Term::Proved_(Pattern::implies(Pattern::symbol(0), Pattern::symbol(1))));
+
+  execute_vector(proof, stack, memory, claims, Pattern::ExecutionPhase::Proof);
+
+  auto expected_stack = Pattern::Stack();
+  auto expected_memory = Pattern::Memory();
+  auto expected_claims = Pattern::Claims();
+
+  expected_stack.push_back(Pattern::Term::Proved_(
+    Pattern::implies(Pattern::exists(0, Pattern::symbol(0)), Pattern::symbol(1))));
+  
+  assert(stack == expected_stack);
+  assert(memory == expected_memory);
+  assert(claims == expected_claims);
+
+  return 0;
+}
+
 int test_no_remaining_claims() {
 
-  auto gamma = std::array<int, MAX_SIZE>();
-  gamma[0] = 1;        // Size
+  std::array<int, MAX_SIZE> gamma;
+  gamma[0] = 0;        // Size
   gamma[1] = (int)138; // NO_OP
-  auto claims = std::array<int, MAX_SIZE>();
-  claims[0] = 4; // Size
+
+  std::array<int, MAX_SIZE> claims;
+  claims[0] = 3; // Size
   claims[1] = (int)Instruction::Symbol;
   claims[2] = 0;
   claims[3] = (int)Instruction::Publish;
   claims[4] = (int)138;
-  auto proof = std::array<int, MAX_SIZE>();
-  proof[0] = 1;        // Size
+
+  std::array<int, MAX_SIZE> proof;
+  proof[0] = 0;        // Size
   proof[1] = (int)138; // NO_OP
 
   Pattern::verify(gamma, claims, proof);
