@@ -82,8 +82,7 @@ def get_proof_hints(
         pre_config = post_config
         post_config = kore_converter.convert_pattern(rewrite_step.post_config)
 
-        axiom = kore_converter.retrieve_axiom_for_ordinal(rewrite_step.rule_ordinal)
-        substitutions = kore_converter.convert_substitutions(dict(rewrite_step.substitution))
+        axiom, substitutions = kore_converter.retrieve_axiom_with_substitutions(rewrite_step.rule_ordinal, dict(rewrite_step.substitution))
 
         # TODO: read function/hook events from the given trace
         fun_events = ()

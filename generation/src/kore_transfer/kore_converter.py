@@ -193,6 +193,30 @@ class KModue(Converter):
         raise ValueError(f'Symbol {name} not found in the module {self.name}')
 
 
+class ConvertionScope:
+
+    def __init__(self) -> None:
+        self._evars: dict[str, EVar] = {}
+        self._svars: dict[str, SVar] = {}
+        self._metavars: dict[str, MetaVar] = {}
+
+    def resolve_evar(self, name: str) -> EVar:
+        """Resolve the evar in the given pattern."""
+        if name not in self._evars:
+            self._evars[name] = EVar(name=len(self._evars))
+        return self._evars[name]
+
+    def resolve_metavar(self, name: str) -> MetaVar:
+        """Resolve the metavar in the given pattern."""
+        if name not in self._metavars:
+            self._metavars[name] = MetaVar(name=len(self._metavars))
+        return self._metavars[name]
+
+    def lookup_metavar(self, name: str) -> MetaVar:
+        assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
+        return self._metavars[name]
+
+
 class LanguageSemantics(Converter):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
@@ -201,12 +225,8 @@ class LanguageSemantics(Converter):
 
         # TODO: Obsolete
         self._definition = kore_definition
-        self._evars: dict[str, EVar] = {}
-        self._svars: dict[str, SVar] = {}
-        self._metavars: dict[str, MetaVar] = {}        
 
         # Kore object cache
-        self._notations: dict[str, Notation] = {}
         self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
         self._functional_symbols: set[Symbol] = set()
         self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
@@ -278,7 +298,7 @@ class LanguageSemantics(Converter):
 
                                 # TODO: Remove side conditions for now
                                 preprocessed_pattern = kore.Rewrites(pattern.sort, pattern.left.left, pattern.right.left)
-                                parsed_pattern = semantics._convert_pattern(preprocessed_pattern)
+                                parsed_pattern = semantics.convert_pattern(preprocessed_pattern)
                                 assert isinstance(parsed_pattern, kl.KoreRewrites)
                                 module.rewrite_rule(parsed_pattern)
                             # TODO: Cannot parse everything yet
@@ -313,28 +333,35 @@ class LanguageSemantics(Converter):
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
-        return self._convert_pattern(pattern)
+        scope = ConvertionScope()
+        return self._convert_pattern(scope, pattern)
+
+    def retrieve_axiom_with_substitutions(self, ordinal: int, subst: dict[str, kore.Pattern]) -> tuple[ConvertedAxiom, dict[int, Pattern]]:
+        parsing_scope = ConvertionScope()
+        axiom = self._retrieve_axiom_for_ordinal(ordinal, parsing_scope)
+        substitutions = self._convert_substitutions(subst, parsing_scope)
+        return axiom, substitutions
+
+    def _retrieve_axiom_for_ordinal(self, ordinal: int, scope: ConvertionScope) -> ConvertedAxiom:
+        """Retrieve the axiom for the given ordinal."""
+        assert ordinal < len(self._axioms_to_choose_from), f'Ordinal {ordinal} is out of range!'
+
+        kore_axiom = self._axioms_to_choose_from[ordinal]
+        return self._convert_axiom(kore_axiom, scope)
+
+    def _convert_substitutions(self, subst: dict[str, kore.Pattern], scope: ConvertionScope) -> dict[int, Pattern]:
+        substitutions = {}
+        for id, kore_pattern in subst.items():
+            # TODO: Replace it with the EVar later
+            name = scope.lookup_metavar(id).name
+            substitutions[name] = self._convert_pattern(scope, kore_pattern)
+        return substitutions
 
     # TODO: Methods added before the refactoring:
     def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
         added_axioms = self._construct_subst_axioms(hint)
         added_axioms.extend(self._construct_event_axioms(hint))
         return self._organize_axioms(added_axioms)
-
-    def retrieve_axiom_for_ordinal(self, ordinal: int) -> ConvertedAxiom:
-        """Retrieve the axiom for the given ordinal."""
-        assert ordinal < len(self._axioms_to_choose_from), f'Ordinal {ordinal} is out of range!'
-
-        kore_axiom = self._axioms_to_choose_from[ordinal]
-        return self._convert_axiom(kore_axiom)
-
-    def convert_substitutions(self, subst: dict[str, kore.Pattern]) -> dict[int, Pattern]:
-        substitutions = {}
-        for id, kore_pattern in subst.items():
-            # TODO: Replace it with the EVar later
-            name = self._lookup_metavar(id).name
-            substitutions[name] = self._convert_pattern(kore_pattern)
-        return substitutions
 
     def _collect_functional_symbols(self) -> set[str]:
         """Collect all functional symbols from the definition."""
@@ -377,7 +404,7 @@ class LanguageSemantics(Converter):
                 event_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
         return event_axioms
 
-    def _convert_axiom(self, kore_axiom: kore.Axiom) -> ConvertedAxiom:
+    def _convert_axiom(self, kore_axiom: kore.Axiom, scope: ConvertionScope) -> ConvertedAxiom:
         if kore_axiom in self._axioms_cache:
             return self._axioms_cache[kore_axiom]
 
@@ -398,7 +425,7 @@ class LanguageSemantics(Converter):
             preprocessed_pattern = kore_axiom.pattern
 
         assert isinstance(preprocessed_pattern, kore.Pattern)
-        converted_pattern = self._convert_pattern(preprocessed_pattern)
+        converted_pattern = self._convert_pattern(scope, preprocessed_pattern)
         converted_axiom = ConvertedAxiom(axiom_type, converted_pattern)
         self._axioms_cache[kore_axiom] = converted_axiom
         return converted_axiom
@@ -422,25 +449,25 @@ class LanguageSemantics(Converter):
                 axioms.append(axiom)
         return axioms
 
-    def _convert_pattern(self, pattern: kore.Pattern) -> Pattern:
+    def _convert_pattern(self, scope, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
         match pattern:
             case kore.Rewrites(sort, left, right):
                 rewrite_sort: KSort = self.get_sort(sort.name)
-                left_rw_pattern = self._convert_pattern(left)
-                right_rw_pattern = self._convert_pattern(right)
+                left_rw_pattern = self._convert_pattern(scope, left)
+                right_rw_pattern = self._convert_pattern(scope, right)
 
                 return kl.KoreRewrites(rewrite_sort.aml_symbol, left_rw_pattern, right_rw_pattern)
             case kore.And(sort, left, right):
                 and_sort: KSort = self.get_sort(sort.name)
-                left_and_pattern: Pattern = self._convert_pattern(left)
-                right_and_pattern: Pattern = self._convert_pattern(right)
+                left_and_pattern: Pattern = self._convert_pattern(scope, left)
+                right_and_pattern: Pattern = self._convert_pattern(scope, right)
 
                 return kl.KoreAnd(and_sort.aml_symbol, left_and_pattern, right_and_pattern)
             case kore.Or(sort, left, right):
                 or_sort: KSort = self.get_sort(sort.name)
-                left_or_pattern: Pattern = self._convert_pattern(left)
-                right_or_pattern: Pattern = self._convert_pattern(right)
+                left_or_pattern: Pattern = self._convert_pattern(scope, left)
+                right_or_pattern: Pattern = self._convert_pattern(scope, right)
 
                 return kl.KoreOr(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, sorts, args):
@@ -482,7 +509,7 @@ class LanguageSemantics(Converter):
                                     converted_cell: Pattern = convert_cell(kore_pattern)
                                     chained_cell_patterns.append(converted_cell)
                                 else:
-                                    converted_value = self._convert_pattern(kore_pattern)
+                                    converted_value = self._convert_pattern(scope, kore_pattern)
                                     chained_cell_patterns.append(converted_value)
 
                             # TODO: This is hacky, we will have a trouble if all cells are EVars or Metavars
@@ -501,7 +528,7 @@ class LanguageSemantics(Converter):
                     ksymbol: KSymbol = self.get_symbol(symbol)
                     # TODO: Use this after the new notation format is implemented
                     # aml_notation = ksymbol.aml_notation()
-                    args_patterns: list[Pattern] = [self._convert_pattern(arg) for arg in args]
+                    args_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
                     ksorts: list[KSort] = [self.get_sort(sort.name) for sort in sorts]
                     sorts_patterns: list[Pattern] = [ksort.aml_symbol for ksort in ksorts]
 
@@ -512,8 +539,8 @@ class LanguageSemantics(Converter):
                     return kl.KoreApplies(tuple(application_sorts), args_chain)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
-                # return self._resolve_evar(pattern)
-                return self._resolve_metavar(name)
+                # return scope.resolve_evar(pattern)
+                return scope.resolve_metavar(name)
             case kore.Top(sort):
                 top_sort_symbol: Pattern = self.get_sort(sort.name).aml_symbol
                 return kl.KoreTop(top_sort_symbol)
@@ -523,26 +550,3 @@ class LanguageSemantics(Converter):
                 return kl.KoreDv(dv_sort_symbol, value_symbol)
 
         raise NotImplementedError(f'Pattern {pattern} is not supported')
-
-    def _resolve_notation(self, name: str, symbol: Symbol, arguments: list[Pattern]) -> Pattern:
-        """Resolve the notation or make up one."""
-        if name in self._notations:
-            return self._notations[name](*arguments)
-        else:
-            return NotationPlaceholder(symbol, tuple(arguments))
-
-    def _resolve_evar(self, name: str) -> EVar:
-        """Resolve the evar in the given pattern."""
-        if name not in self._evars:
-            self._evars[name] = EVar(name=len(self._evars))
-        return self._evars[name]
-
-    def _resolve_metavar(self, name: str) -> MetaVar:
-        """Resolve the metavar in the given pattern."""
-        if name not in self._metavars:
-            self._metavars[name] = MetaVar(name=len(self._metavars))
-        return self._metavars[name]
-
-    def _lookup_metavar(self, name: str) -> MetaVar:
-        assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
-        return self._metavars[name]
