@@ -9,7 +9,7 @@ needed for producing the proof, including rules applied simplifications made and
 domain reasoning.
 
 This is transformed into a formal proof via matching logic proof tactics
-represented in a Python DSL. The formal proof is represented into a simple
+represented in a Python DSL. The formal proof is represented by a simple
 binary format. This may be verified by a proof checker and certified using ZK
 technologies.
 
