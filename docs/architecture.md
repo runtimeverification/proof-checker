@@ -152,4 +152,3 @@ aimed at formalizing a language defined in K.
 It is generated using a Kore Language specification as a guide.
 This specification needs to patch any unsoundness in the Kore Language Specification,
 and represents a formal, sound, AML theory for the language.
-It is presented by the `RewriteTheory` class below.
