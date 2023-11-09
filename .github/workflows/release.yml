@@ -32,6 +32,8 @@ jobs:
       - name: Copy cairo changes to proof-check-public
         run: cp -r proof-checker/cairo proof-check-public/
 
+      - name: Copy example proofs
+        run: cp -r proof-checker/proofs/ proof-check-public/
       - name: 'Update Version'
         run: |
           cd proof-checker-public
