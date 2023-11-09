@@ -84,11 +84,11 @@ class KEquationalRule:
     pattern: Pattern
 
 
-class Converter:
+class BuilderScope:
     def __init__(self) -> None:
         self._parsing = False
 
-    def __enter__(self) -> Converter:
+    def __enter__(self) -> BuilderScope:
         """It is not allows to change the semantics except while parsing."""
         self._parsing = True
         return self
@@ -109,7 +109,7 @@ def builder_method(func: Callable[P, T]) -> Callable[P, T]:
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         assert len(args) > 0
         first_arg = args[0]
-        assert isinstance(first_arg, Converter)
+        assert isinstance(first_arg, BuilderScope)
         if first_arg._parsing:
             return func(*args, **kwargs)
         else:
@@ -118,7 +118,7 @@ def builder_method(func: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
-class KModule(Converter):
+class KModule(BuilderScope):
     def __init__(self, name: str, counter: count | None = None) -> None:
         self._name = name
         if counter is None:
@@ -252,7 +252,7 @@ class ConvertionScope:
         return self._metavars[name]
 
 
-class LanguageSemantics(Converter):
+class LanguageSemantics(BuilderScope):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
     def __init__(self) -> None:
