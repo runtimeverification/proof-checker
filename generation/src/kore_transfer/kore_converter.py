@@ -118,7 +118,7 @@ def builder_method(func: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
-class KModue(Converter):
+class KModule(Converter):
     def __init__(self, name: str, counter: count | None = None) -> None:
         self._name = name
         if counter is None:
@@ -127,15 +127,15 @@ class KModue(Converter):
             self.counter = counter
 
         # Ordinal -> axiom
-        self._imported_modules: tuple[KModue, ...] = ()
+        self._imported_modules: tuple[KModule, ...] = ()
         self._sorts: dict[str, KSort] = {}
         self._symbols: dict[str, KSymbol] = {}
         self._axioms: dict[int, KRewritingRule | KEquationalRule] = {}
 
-    def __enter__(self) -> KModue:
+    def __enter__(self) -> KModule:
         """It is not allows to change the semantics except while parsing."""
         obj = super().__enter__()
-        assert isinstance(obj, KModue)
+        assert isinstance(obj, KModule)
         return obj
 
     @property
@@ -143,7 +143,7 @@ class KModue(Converter):
         return self._name
 
     @builder_method
-    def import_module(self, module: KModue) -> None:
+    def import_module(self, module: KModule) -> None:
         if module in self._imported_modules:
             raise ValueError(f'Sort {module.name} already exists!')
         self._imported_modules += (module,)
@@ -256,7 +256,7 @@ class LanguageSemantics(Converter):
     GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
     def __init__(self) -> None:
-        self._imported_modules: tuple[KModue, ...] = ()
+        self._imported_modules: tuple[KModule, ...] = ()
         self._cached_axiom_scopes: dict[int, ConvertionScope] = {}
 
         # TODO: Should be removed after the refactoring
@@ -265,11 +265,11 @@ class LanguageSemantics(Converter):
         self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
 
     @property
-    def modules(self) -> tuple[KModue, ...]:
+    def modules(self) -> tuple[KModule, ...]:
         return self._imported_modules
 
     @property
-    def main_module(self) -> KModue:
+    def main_module(self) -> KModule:
         # TODO: This is a heuristic
         return self._imported_modules[-1]
 
@@ -353,16 +353,16 @@ class LanguageSemantics(Converter):
             return semantics
 
     @builder_method
-    def module(self, name: str) -> KModue:
+    def module(self, name: str) -> KModule:
         if name in (module.name for module in self._imported_modules):
             raise ValueError(f'Module {name} has been already added')
         axiom_counter = count() if len(self._imported_modules) == 0 else self.main_module.counter
 
-        module = KModue(name, axiom_counter)
+        module = KModule(name, axiom_counter)
         self._imported_modules += (module,)
         return module
 
-    def get_module(self, name: str) -> KModue:
+    def get_module(self, name: str) -> KModule:
         for module in self._imported_modules:
             if module.name == name:
                 return module
