@@ -34,13 +34,12 @@ jobs:
 
       - name: Copy example proofs
         run: cp -r proof-checker/proofs/ proof-check-public/
-      - name: 'Update Version'
+      - name: 'Update Remote Public Repository'
         run: |
           cd proof-checker-public
           set -x
           git config user.name devops
           git config user.email devops@runtimeverification.com
-          ./package/version.sh sub
-          if git add --update && git commit --message "Set Version: $(cat package/version)"; then
-            git push origin HEAD:${GITHUB_HEAD_REF}
+          if git add --update && git commit --message "Publish Public Files"; then
+            git push origin HEAD
           fi
