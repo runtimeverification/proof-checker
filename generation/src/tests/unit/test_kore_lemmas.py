@@ -1,6 +1,6 @@
 from frozendict import frozendict
 
-from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, Instantiate, MetaVar, Notation, PrettyOptions, Symbol
 from proof_generation.proofs.kore_lemmas import deconstruct_nary_application, nary_app, nary_cell
 
 phi0 = MetaVar(0)
