@@ -103,7 +103,7 @@ class Converter:
         self._parsing = False
 
 
-def converting_method(func: Callable[P, T]) -> Callable[P, T]:
+def builder_method(func: Callable[P, T]) -> Callable[P, T]:
     """Helps to forbid calling methods that c   hange the semantics outside of parsing."""
 
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
@@ -142,17 +142,17 @@ class KModue(Converter):
     def name(self) -> str:
         return self._name
 
-    @converting_method
+    @builder_method
     def import_module(self, module: KModue) -> None:
         if module in self._imported_modules:
             raise ValueError(f'Sort {module.name} already exists!')
         self._imported_modules += (module,)
 
-    @converting_method
+    @builder_method
     def sort(self, name: str) -> KSort:
         return self._sort(name, False)
 
-    @converting_method
+    @builder_method
     def hooked_sort(self, name: str) -> KSort:
         return self._sort(name, True)
 
@@ -162,7 +162,7 @@ class KModue(Converter):
         self._sorts[name] = KSort(name, hooked)
         return self._sorts[name]
 
-    @converting_method
+    @builder_method
     def symbol(
         self,
         name: str,
@@ -178,14 +178,14 @@ class KModue(Converter):
         self._symbols[name] = symbol
         return symbol
 
-    @converting_method
+    @builder_method
     def equational_rewrite(self, pattern: Pattern) -> KEquationalRule:
         ordinal = next(self.counter)
         axiom = KEquationalRule(ordinal, pattern)
         self._axioms[ordinal] = axiom
         return axiom
 
-    @converting_method
+    @builder_method
     def rewrite_rule(self, pattern: kl.KoreRewrites) -> KRewritingRule:
         ordinal = next(self.counter)
         axiom = KRewritingRule(ordinal, pattern)
@@ -352,7 +352,7 @@ class LanguageSemantics(Converter):
 
             return semantics
 
-    @converting_method
+    @builder_method
     def module(self, name: str) -> KModue:
         if name in (module.name for module in self._imported_modules):
             raise ValueError(f'Module {name} has been already added')
