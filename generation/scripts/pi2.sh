@@ -17,4 +17,4 @@ else
   OPTS=""
 fi
 
-poetry -C generation run python -m "kore_transfer.proof_gen" $1 $3/proof-hint.bin $3 --reuse --proof-dir ./ $OPTS
+poetry -C generation run python -m "kore_transfer.proof_gen" $3/definition.kore $3/proof-hint.bin $3 --reuse --proof-dir ./ $OPTS

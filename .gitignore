@@ -3,8 +3,8 @@
 build
 cmake-build-debug
 
-# User directory for temp files
-/tmp/
+# User directory for temp files and folders
+tmp*
 
 # zkLLVM output directory
 /zkllvm/output/
@@ -17,6 +17,9 @@ cmake-build-debug
 
 # IntelliJ IDEA files
 .idea
+
+# Python versions used by pyenv
+.python-version
 
 # Kompiled directories
 *-kompiled
