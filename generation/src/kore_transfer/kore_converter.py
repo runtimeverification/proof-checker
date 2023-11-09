@@ -119,12 +119,9 @@ def builder_method(func: Callable[P, T]) -> Callable[P, T]:
 
 
 class KModule(BuilderScope):
-    def __init__(self, name: str, counter: count | None = None) -> None:
+    def __init__(self, name: str, counter: count) -> None:
         self._name = name
-        if counter is None:
-            self.counter = count()
-        else:
-            self.counter = counter
+        self.counter = counter
 
         # Ordinal -> axiom
         self._imported_modules: tuple[KModule, ...] = ()
