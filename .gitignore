@@ -17,3 +17,5 @@ cmake-build-debug
 
 # IntelliJ IDEA files
 .idea
+
+*-kompiled
