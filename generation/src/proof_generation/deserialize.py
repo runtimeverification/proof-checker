@@ -18,15 +18,21 @@ class DeserializingException(Exception):
 def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) -> None:
     index = 0
 
-    def next_byte(err_msg: str | None = None) -> int | None:
+    def maybe_next_byte() -> int | None:
         nonlocal index
         if index == len(data):
-            if err_msg is None:
-                return None
-            raise DeserializingException(err_msg)
+            return None
         ret = data[index]
         index += 1
         return ret
+
+    def next_byte(err_msg: str) -> int:
+        match maybe_next_byte():
+            case None:
+                raise DeserializingException(err_msg)
+            case ret:
+                assert ret is not None
+                return ret
 
     def read_list() -> tuple[int, ...]:
         length = next_byte('Expected list length')
@@ -40,7 +46,7 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
 
         return tuple(res)
 
-    while byte := next_byte():
+    while byte := maybe_next_byte():
         instruction = Instruction(byte)
 
         if instruction == Instruction.EVar:
@@ -114,9 +120,13 @@ def deserialize_instructions(data: Any, interpreter: PrettyPrintingInterpreter) 
             n = next_byte('Expected number of instantiations.')
             assert n is not None
 
-            keys = [next_byte() for _ in range(n)]
+            def assert_is_pattern(p: Proved | Pattern) -> Pattern:
+                assert isinstance(p, Pattern)
+                return p
+
+            keys = [next_byte('Insufficient instantiation indices') for _ in range(n)]
             target = interpreter.stack[-1]
-            values = reversed(interpreter.stack[-(n + 1) : -1])
+            values = map(assert_is_pattern, reversed(interpreter.stack[-(n + 1) : -1]))
 
             delta = dict(reversed(list(zip(keys, values, strict=True))))
 

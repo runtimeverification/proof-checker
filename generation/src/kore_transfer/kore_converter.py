@@ -93,16 +93,9 @@ class KoreConverter:
         subst_axioms = []
         for pattern in hint.substitutions.values():
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            assert isinstance(
-                pattern, kl.KoreApplies | kl.Cell
-            ), f'Expected application of a Kore symbol, got {str(pattern)}'
-            if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
-                assert pattern.phi0.left in self._functional_symbols
-            elif isinstance(pattern.phi0, Symbol | kl.Cell):
-                assert pattern.phi0 in self._functional_symbols
-            else:
-                raise NotImplementedError(f'Pattern {pattern} is not supported')
-            # TODO: Requires equality to be implemented
+            symbol, *args = kl.deconstruct_nary_application(pattern)
+            assert isinstance(symbol, Symbol)
+            assert symbol in self._functional_symbols
             converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
             subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return subst_axioms

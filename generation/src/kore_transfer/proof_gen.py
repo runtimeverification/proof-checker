@@ -12,7 +12,7 @@ from kore_transfer.generate_definition import KoreDefinition
 from kore_transfer.generate_hints import get_proof_hints
 from kore_transfer.generate_proof import generate_proofs
 from kore_transfer.kore_converter import KoreConverter
-from rewrite.llvm_proof_hint import LLVMRewriteTrace
+from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
     from pyk.kore.syntax import Axiom, Definition
