@@ -4,11 +4,11 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
-from kore_transfer.kore_converter import KRewritingRule
+from kore_transfer.language_definition import KRewritingRule
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
-    from kore_transfer.kore_converter import LanguageSemantics
+    from kore_transfer.language_definition import LanguageSemantics
     from proof_generation.pattern import Pattern
 
 ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
