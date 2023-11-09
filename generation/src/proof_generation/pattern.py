@@ -506,44 +506,6 @@ class Notation(Pattern, ABC):
 
 
 @dataclass(frozen=True, eq=False)
-class NotationPlaceholder(Notation):
-    symbol: Symbol
-    pattern_arguments: tuple[Pattern, ...]
-
-    def label(self) -> str:
-        return f'{type(self).__name__}[{str(self.symbol)}]'
-
-    def object_definition(self) -> Pattern:
-        if len(self.pattern_arguments) == 0:
-            return self.symbol
-        else:
-            current_callable: Pattern = self.symbol
-            arguments_left = [MetaVar(i) for i, _ in enumerate(self.pattern_arguments)]
-            while len(arguments_left) > 0:
-                next_one, *arguments_left = arguments_left
-                current_callable = App(current_callable, next_one)
-            return current_callable
-
-    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
-        args = self._instantiate_args(delta)
-        return NotationPlaceholder(self.symbol, tuple(args))
-
-    def _arguments(self) -> dict[int, Pattern]:
-        ret: dict[int, Pattern] = {}
-
-        for i, arg in enumerate(self.pattern_arguments):
-            ret[i] = arg
-
-        return ret
-
-    def __eq__(self, o: object) -> bool:
-        assert isinstance(o, Pattern)
-        if isinstance(o, Notation) and type(o) == type(self):
-            return o._arguments() == self._arguments()
-        return self.conclusion() == o
-
-
-@dataclass(frozen=True, eq=False)
 class Bot(Notation):
     @classmethod
     def definition(cls) -> Pattern:

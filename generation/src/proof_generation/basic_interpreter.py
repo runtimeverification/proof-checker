@@ -12,7 +12,6 @@ from proof_generation.pattern import (
     MetaVar,
     Mu,
     Notation,
-    NotationPlaceholder,
     SSubst,
     SVar,
     Symbol,
@@ -126,8 +125,6 @@ class BasicInterpreter:
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
 
         if isinstance(p, Notation):
-            if isinstance(p, NotationPlaceholder):
-                self.mark_generation_unsafe(f'Using fake notation for symbol {str(p.symbol)}')
             return self.add_notation(p)
 
         raise NotImplementedError(f'{type(p)}')
