@@ -392,43 +392,8 @@ class LanguageSemantics(Converter):
         return substitutions
 
     def collect_functional_axioms(self, hint: KoreHint) -> tuple[Pattern, ...]:
-        # TODO: TBD during the refactoring
+        # TODO: TBD during the refactoring, issue # 386
         return ()
-
-    # TODO: Keep it as a reference for refactoring the functional axioms generating
-    # def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
-    #     added_axioms = self._construct_subst_axioms(hint)
-    #     added_axioms.extend(self._construct_event_axioms(hint))
-    #     return self._organize_axioms(added_axioms)
-    # def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
-    #     subst_axioms = []
-    #     for pattern in hint.substitutions.values():
-    #         # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-    #         assert isinstance(
-    #             pattern, kl.KoreApplies | kl.Cell
-    #         ), f'Expected application of a Kore symbol, got {str(pattern)}'
-    #         if isinstance(pattern.phi0, App) and isinstance(pattern.phi0.left, Symbol):
-    #             assert pattern.phi0.left in self._functional_symbols
-    #         elif isinstance(pattern.phi0, Symbol | kl.Cell):
-    #             assert pattern.phi0 in self._functional_symbols
-    #         else:
-    #             raise NotImplementedError(f'Pattern {pattern} is not supported')
-    #         # TODO: Requires equality to be implemented
-    #         converted_pattern = Exists(0, prop.And(Implies(EVar(0), pattern), Implies(pattern, EVar(0))))
-    #         subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
-    #     return subst_axioms
-    # def _construct_event_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
-    #     event_axioms = []
-    #     for event in hint.functional_events:
-    #         if isinstance(event, FunEvent):
-    #             # TODO: construct the proper axiom using event.name, event.relative_position
-    #             pattern = Implies(EVar(0), EVar(0))
-    #             event_axioms.append(ConvertedAxiom(AxiomType.FunctionEvent, pattern))
-    #         if isinstance(event, HookEvent):
-    #             # TODO: construct the proper axiom using event.name, event.args, and event.result
-    #             pattern = Implies(EVar(0), EVar(0))
-    #             event_axioms.append(ConvertedAxiom(AxiomType.HookEvent, pattern))
-    #     return event_axioms
 
     def _convert_pattern(self, scope: ConvertionScope, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""

@@ -41,7 +41,7 @@ class KoreDefinition(proof.ProofExp):
     @classmethod
     def add_axioms(cls, hint: KoreHint, converter: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
-        # TODO: We don't use them so far
+        # TODO: We don't use them until the substitutions are implemented
         converter.collect_functional_axioms(hint)
         cls.prove_step_axioms.append(hint.axiom.pattern)
         assert isinstance(hint.axiom, KRewritingRule)
