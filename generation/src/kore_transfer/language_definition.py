@@ -50,15 +50,16 @@ class KSort:
 
 
 # TODO: Remove this class
-class KSortVar(KSort):
-    pass
+@dataclass(frozen=True)
+class KSortVar:
+    name: str
 
 
 @dataclass(frozen=True)
 class KSymbol:
     name: str
-    input_sorts: tuple[KSort, ...]
-    output_sort: KSort
+    input_sorts: tuple[KSort | KSortVar, ...]
+    output_sort: KSort | KSortVar
     is_functional: bool
     is_ctor: bool
     is_cell: bool
