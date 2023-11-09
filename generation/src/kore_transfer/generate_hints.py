@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from kore_transfer.kore_converter import KEquationalRule, KRewritingRule, LanguageSemantics
+    from proof_generation.llvm_proof_hint import LLVMRewriteTrace
     from proof_generation.pattern import Pattern
 
 
