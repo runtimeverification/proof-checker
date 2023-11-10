@@ -50,15 +50,16 @@ class KSort:
 
 
 # TODO: Remove this class
-class KSortVar(KSort):
-    pass
+@dataclass(frozen=True)
+class KSortVar:
+    name: str
 
 
 @dataclass(frozen=True)
 class KSymbol:
     name: str
-    input_sorts: tuple[KSort, ...]
-    output_sort: KSort
+    input_sorts: tuple[KSort | KSortVar, ...]
+    output_sort: KSort | KSortVar
     is_functional: bool
     is_ctor: bool
     is_cell: bool
@@ -139,6 +140,14 @@ class KModule(BuilderScope):
     def name(self) -> str:
         return self._name
 
+    @property
+    def sorts(self) -> tuple[KSort, ...]:
+        return tuple(self._sorts.values())
+
+    @property
+    def symbols(self) -> tuple[KSymbol, ...]:
+        return tuple(self._symbols.values())
+
     @builder_method
     def import_module(self, module: KModule) -> None:
         if module in self._imported_modules:
@@ -156,6 +165,7 @@ class KModule(BuilderScope):
     def _sort(self, name: str, hooked: bool) -> KSort:
         if name in self._sorts:
             raise ValueError(f'Sort {name} has been already added!')
+
         self._sorts[name] = KSort(name, hooked)
         return self._sorts[name]
 
@@ -163,14 +173,23 @@ class KModule(BuilderScope):
     def symbol(
         self,
         name: str,
-        input_sorts: tuple[KSort | KSortVar, ...],
         output_sort: KSort | KSortVar,
-        is_functional: bool,
-        is_ctor: bool,
-        is_cell: bool,
+        input_sorts: tuple[KSort | KSortVar, ...] = (),
+        is_functional: bool = False,
+        is_ctor: bool = False,
+        is_cell: bool = False,
     ) -> KSymbol:
         if name in self._symbols:
             raise ValueError(f'Symbol {name} has been already added!')
+        if isinstance(output_sort, KSort):
+            # It should be either in the module or in imported modules
+            assert self.get_sort(output_sort.name) == output_sort
+        for sort in input_sorts:
+            assert isinstance(sort, (KSort, KSortVar))
+            if isinstance(sort, KSort):
+                # It should be either in the module or in imported modules
+                assert self.get_sort(sort.name) == sort
+
         symbol = KSymbol(name, input_sorts, output_sort, is_functional, is_ctor, is_cell)
         self._symbols[name] = symbol
         return symbol
@@ -204,7 +223,6 @@ class KModule(BuilderScope):
     def get_symbol(self, name: str) -> KSymbol:
         if name in self._symbols:
             return self._symbols[name]
-
         for module in self._imported_modules:
             try:
                 symbol = module.get_symbol(name)
@@ -321,7 +339,7 @@ class LanguageSemantics(BuilderScope):
 
                             # TODO: Support cells
                             module.symbol(
-                                symbol, tuple(param_sorts), sort, 'functional' in attrs, 'constructor' in attrs, False
+                                symbol, sort, tuple(param_sorts), 'functional' in attrs, 'constructor' in attrs, False
                             )
                         elif isinstance(sentence, kore.Axiom):
                             # Add axioms
