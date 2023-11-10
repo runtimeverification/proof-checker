@@ -16,7 +16,7 @@ jobs:
           path: proof-checker
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
 
-      - name: Checkout proof-checker
+      - name: Checkout proof-checker-public
         uses: actions/checkout@v3
         with:
           repository: runtimeverification/proof-checker-public
@@ -40,6 +40,6 @@ jobs:
           set -x
           git config user.name devops
           git config user.email devops@runtimeverification.com
-          if git add --update && git commit --message "Publish Public Files"; then
+          if git add . && git commit --message "Publish Public Files"; then
             git push origin HEAD
           fi
