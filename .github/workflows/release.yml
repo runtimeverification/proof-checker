@@ -1,0 +1,45 @@
+
+name: Update proof-check-public
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-proof-check-public:
+    runs-on: [self-hosted, linux, flyweight-ephemeral]
+    steps:
+      - name: Checkout proof-checker
+        uses: actions/checkout@v3
+        with:
+          path: proof-checker
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+
+      - name: Checkout proof-checker
+        uses: actions/checkout@v3
+        with:
+          repository: runtimeverification/proof-checker-public
+          path: proof-checker-public
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+
+      - name: Copy risc0 changes to proof-check-public
+        run: cp -r proof-checker/risc0 proof-check-public/
+
+      - name: Copy zkllvm changes to proof-check-public
+        run: cp -r proof-checker/zkllvm proof-check-public/
+
+      - name: Copy cairo changes to proof-check-public
+        run: cp -r proof-checker/cairo proof-check-public/
+
+      - name: Copy example proofs
+        run: cp -r proof-checker/proofs/ proof-check-public/
+      - name: 'Update Remote Public Repository'
+        run: |
+          cd proof-checker-public
+          set -x
+          git config user.name devops
+          git config user.email devops@runtimeverification.com
+          if git add --update && git commit --message "Publish Public Files"; then
+            git push origin HEAD
+          fi
