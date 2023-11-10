@@ -4,8 +4,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
+from proof_generation.basic_interpreter import ExecutionPhase
+from proof_generation.stateful_interpreter import StatefulInterpreter
 from proof_generation.pattern import Implies, bot, imp, phi0, phi1, phi2
+from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import And, Equiv, Or, neg, top
 from proof_generation.tautology import (
     CFAnd,
@@ -61,6 +63,12 @@ def is_cnf(t: ConjForm) -> bool:
     return False
 
 
+def tautology_test_proof_expression() -> ProofExp:
+    proof_exp = Tautology(StatefulInterpreter(ExecutionPhase.Gamma))
+    proof_exp.execute_gamma_phase()
+    proof_exp.execute_claims_phase()
+    return proof_exp
+
 test_patterns = [
     top,
     imp(phi0, phi0),
@@ -76,7 +84,7 @@ test_patterns = [
 
 @pytest.mark.parametrize('p', test_patterns)
 def test_cnf_converter(p: Pattern) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
 
     # Testing to_conj_form
     p_conj, pf1, pf2 = taut.to_conj_form(p)
@@ -144,7 +152,7 @@ simplify_clause_test_cases = [
 
 @pytest.mark.parametrize('cl, resolvent', simplify_clause_test_cases)
 def test_simplify_clause(cl: list[int], resolvent: int) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
     final_cl, pf = taut.simplify_clause(cl, resolvent)
     conc = pf().conclusion
     pf_l, pf_r = Equiv.extract(conc)
@@ -166,7 +174,7 @@ def test_simplify_clause(cl: list[int], resolvent: int) -> None:
 
 @pytest.mark.parametrize('l', [1, 2, 5])
 def test_conjunction_implies_nth(l: int) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
     term = foldr_op(And, [MetaVar(i) for i in range(l)])
     for i in range(l):
         pf = taut.conjunction_implies_nth(term, i, l)
@@ -186,7 +194,7 @@ resolvable_test_cases = [
 
 @pytest.mark.parametrize('c1, c2, expect_success', resolvable_test_cases)
 def test_resolvable(c1: frozenset[int], c2: frozenset[int], expect_success: bool) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
     res = taut.resolvable(c1, c2)
     if not expect_success:
         assert res is None
@@ -206,7 +214,7 @@ merge_clauses_test_cases = [
 
 @pytest.mark.parametrize('list_l, list_r', merge_clauses_test_cases)
 def test_merge_clauses(list_l: list[int], list_r: list[int]) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
     term_l = clause_to_pattern(list_l)
     term_r = clause_to_pattern(list_r)
     final_term = clause_to_pattern(list_l + list_r)
@@ -227,7 +235,7 @@ trivial_clause_test_cases = [
 
 @pytest.mark.parametrize('test_case', trivial_clause_test_cases)
 def test_prove_trivial_clause(test_case: list[int]) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
     pf = taut.prove_trivial_clause(test_case)
     conc = pf().conclusion
     assert conc == clause_to_pattern(test_case)
@@ -247,7 +255,7 @@ resolution_test_cases = [
 
 @pytest.mark.parametrize('clauses, expected_res', resolution_test_cases)
 def test_resolution(clauses: list[list[int]], expected_res: bool | None) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
     res = taut.start_resolution_algorithm(clauses)
     if expected_res is None:
         assert res is None
@@ -286,7 +294,7 @@ tautology_test_cases = [
 
 @pytest.mark.parametrize('pat, expected_res', tautology_test_cases)
 def test_tautology_prover(pat: Pattern, expected_res: bool | None) -> None:
-    taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
+    taut = tautology_test_proof_expression()
     res = taut.prove_tautology(pat)
     if expected_res is None:
         assert res is None
