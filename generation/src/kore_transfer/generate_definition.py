@@ -4,11 +4,11 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
-from kore_transfer.kore_converter import KRewritingRule
+from kore_transfer.language_semantics import KRewritingRule
 
 if TYPE_CHECKING:
     from kore_transfer.generate_hints import KoreHint
-    from kore_transfer.kore_converter import LanguageSemantics
+    from kore_transfer.language_semantics import LanguageSemantics
     from proof_generation.pattern import Pattern
 
 ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
@@ -39,10 +39,10 @@ class KoreDefinition(proof.ProofExp):
         cls.proofs.append(proof_transition)
 
     @classmethod
-    def add_axioms(cls, hint: KoreHint, converter: LanguageSemantics) -> KRewritingRule:
+    def add_axioms(cls, hint: KoreHint, language_semantics: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
-        converter.collect_functional_axioms(hint)
+        language_semantics.collect_functional_axioms(hint)
         cls.prove_step_axioms.append(hint.axiom.pattern)
         assert isinstance(hint.axiom, KRewritingRule)
         return hint.axiom

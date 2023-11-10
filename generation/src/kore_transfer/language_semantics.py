@@ -3,14 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from itertools import count
-from re import match
 from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore_lemmas as kl
-import proof_generation.proofs.propositional as prop
-from proof_generation.pattern import App, EVar, MetaVar, Symbol
+from proof_generation.pattern import EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -50,15 +48,16 @@ class KSort:
 
 
 # TODO: Remove this class
-class KSortVar(KSort):
-    pass
+@dataclass(frozen=True)
+class KSortVar:
+    name: str
 
 
 @dataclass(frozen=True)
 class KSymbol:
     name: str
-    input_sorts: tuple[KSort, ...]
-    output_sort: KSort
+    input_sorts: tuple[KSort | KSortVar, ...]
+    output_sort: KSort | KSortVar
     is_functional: bool
     is_ctor: bool
     is_cell: bool
@@ -75,7 +74,7 @@ class KSymbol:
 @dataclass(frozen=True)
 class KRewritingRule:
     ordinal: int
-    pattern: kl.KoreRewrites
+    pattern: Pattern
 
 
 @dataclass(frozen=True)
@@ -139,6 +138,14 @@ class KModule(BuilderScope):
     def name(self) -> str:
         return self._name
 
+    @property
+    def sorts(self) -> tuple[KSort, ...]:
+        return tuple(self._sorts.values())
+
+    @property
+    def symbols(self) -> tuple[KSymbol, ...]:
+        return tuple(self._symbols.values())
+
     @builder_method
     def import_module(self, module: KModule) -> None:
         if module in self._imported_modules:
@@ -156,6 +163,7 @@ class KModule(BuilderScope):
     def _sort(self, name: str, hooked: bool) -> KSort:
         if name in self._sorts:
             raise ValueError(f'Sort {name} has been already added!')
+
         self._sorts[name] = KSort(name, hooked)
         return self._sorts[name]
 
@@ -163,14 +171,23 @@ class KModule(BuilderScope):
     def symbol(
         self,
         name: str,
-        input_sorts: tuple[KSort | KSortVar, ...],
         output_sort: KSort | KSortVar,
-        is_functional: bool,
-        is_ctor: bool,
-        is_cell: bool,
+        input_sorts: tuple[KSort | KSortVar, ...] = (),
+        is_functional: bool = False,
+        is_ctor: bool = False,
+        is_cell: bool = False,
     ) -> KSymbol:
         if name in self._symbols:
             raise ValueError(f'Symbol {name} has been already added!')
+        if isinstance(output_sort, KSort):
+            # It should be either in the module or in imported modules
+            assert self.get_sort(output_sort.name) == output_sort
+        for sort in input_sorts:
+            assert isinstance(sort, (KSort, KSortVar))
+            if isinstance(sort, KSort):
+                # It should be either in the module or in imported modules
+                assert self.get_sort(sort.name) == sort
+
         symbol = KSymbol(name, input_sorts, output_sort, is_functional, is_ctor, is_cell)
         self._symbols[name] = symbol
         return symbol
@@ -183,7 +200,7 @@ class KModule(BuilderScope):
         return axiom
 
     @builder_method
-    def rewrite_rule(self, pattern: kl.KoreRewrites) -> KRewritingRule:
+    def rewrite_rule(self, pattern: Pattern) -> KRewritingRule:
         ordinal = next(self.counter)
         axiom = KRewritingRule(ordinal, pattern)
         self._axioms[ordinal] = axiom
@@ -204,7 +221,6 @@ class KModule(BuilderScope):
     def get_symbol(self, name: str) -> KSymbol:
         if name in self._symbols:
             return self._symbols[name]
-
         for module in self._imported_modules:
             try:
                 symbol = module.get_symbol(name)
@@ -321,7 +337,12 @@ class LanguageSemantics(BuilderScope):
 
                             # TODO: Support cells
                             module.symbol(
-                                symbol, tuple(param_sorts), sort, 'functional' in attrs, 'constructor' in attrs, False
+                                symbol,
+                                sort,
+                                tuple(param_sorts),
+                                'functional' in attrs,
+                                'constructor' in attrs,
+                                'cell' in attrs,
                             )
                         elif isinstance(sentence, kore.Axiom):
                             # Add axioms
@@ -337,7 +358,6 @@ class LanguageSemantics(BuilderScope):
                                 )
                                 scope = ConvertionScope()
                                 parsed_pattern = semantics._convert_pattern(scope, preprocessed_pattern)
-                                assert isinstance(parsed_pattern, kl.KoreRewrites)
                                 axiom = module.rewrite_rule(parsed_pattern)
                                 semantics._cached_axiom_scopes[axiom.ordinal] = scope
                             else:
@@ -400,95 +420,36 @@ class LanguageSemantics(BuilderScope):
                 left_rw_pattern = self._convert_pattern(scope, left)
                 right_rw_pattern = self._convert_pattern(scope, right)
 
-                return kl.KoreRewrites(rewrite_sort.aml_symbol, left_rw_pattern, right_rw_pattern)
+                return kl.kore_rewrites(rewrite_sort.aml_symbol, left_rw_pattern, right_rw_pattern)
             case kore.And(sort, left, right):
                 and_sort: KSort = self.get_sort(sort.name)
                 left_and_pattern: Pattern = self._convert_pattern(scope, left)
                 right_and_pattern: Pattern = self._convert_pattern(scope, right)
 
-                return kl.KoreAnd(and_sort.aml_symbol, left_and_pattern, right_and_pattern)
+                return kl.kore_and(and_sort.aml_symbol, left_and_pattern, right_and_pattern)
             case kore.Or(sort, left, right):
                 or_sort: KSort = self.get_sort(sort.name)
                 left_or_pattern: Pattern = self._convert_pattern(scope, left)
                 right_or_pattern: Pattern = self._convert_pattern(scope, right)
 
-                return kl.KoreOr(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
-            case kore.App(symbol, sorts, args):
+                return kl.kore_or(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
+            case kore.App(symbol, _, args):
+                ksymbol: KSymbol = self.get_symbol(symbol)
+                # TODO: Use this after the new notation format is implemented
+                # aml_notation = ksymbol.aml_notation(args)
+                arg_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
+                return kl.nary_app(ksymbol.aml_symbol, len(arg_patterns), cell=ksymbol.is_cell)(*arg_patterns)
 
-                def chain_patterns(patterns: list[Pattern]) -> Pattern:
-                    *patterns_left, next_one = patterns
-                    if len(patterns_left) == 0:
-                        return next_one
-                    else:
-                        return App(chain_patterns(patterns_left), next_one)
-
-                if symbol in self._cell_symbols:
-
-                    def is_cell(kore_application: kore.Pattern) -> str | None:
-                        """Returns the cell name if the given application is a cell, None otherwise."""
-                        if isinstance(kore_application, kore.App):
-                            # TODO: This can be improved
-                            if comparison := match(r"Lbl'-LT-'(.+)'-GT-'", kore_application.symbol):
-                                return comparison.group(0)
-                        return None
-
-                    def convert_cell(kore_application: kore.App) -> Pattern:
-                        """Converts a cell to a pattern."""
-                        cell_name = is_cell(kore_application)
-                        assert cell_name, f'Application {kore_application} is not a cell!'
-
-                        cell_symbol: Symbol = self.get_symbol(cell_name).aml_symbol
-                        self._cell_symbols.add(kore_application.symbol)
-
-                        if len(kore_application.args) == 0:
-                            print(f'Cell {cell_name} has nothing to store!')
-                            return cell_symbol
-                        else:
-                            chained_cell_patterns: list[Pattern] = []
-                            for kore_pattern in kore_application.args:
-                                if is_cell(kore_pattern):
-                                    assert isinstance(kore_pattern, kore.App)
-                                    converted_cell: Pattern = convert_cell(kore_pattern)
-                                    chained_cell_patterns.append(converted_cell)
-                                else:
-                                    converted_value = self._convert_pattern(scope, kore_pattern)
-                                    chained_cell_patterns.append(converted_value)
-
-                            # TODO: This is hacky, we will have a trouble if all cells are EVars or Metavars
-                            cells_chained = chain_patterns(chained_cell_patterns)
-                            if any(x for x in chained_cell_patterns if isinstance(x, kl.Cell)):
-                                assert isinstance(cells_chained, App)
-                                return kl.KoreNestedCells(cell_symbol, cells_chained)
-                            else:
-                                return kl.Cell(cell_symbol, cells_chained)
-
-                    # Process cells
-                    # We need them to be converted to a sequence: App (App(kcell, 1)) (App(scell, 2))
-                    # Nested cells have a specific notation: Nested(tcell, App (App(kcell, 1)) (App(scell, 2)))
-                    return convert_cell(pattern)
-                else:
-                    ksymbol: KSymbol = self.get_symbol(symbol)
-                    # TODO: Use this after the new notation format is implemented
-                    # aml_notation = ksymbol.aml_notation()
-                    args_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
-                    ksorts: list[KSort] = [self.get_sort(sort.name) for sort in sorts]
-                    sorts_patterns: list[Pattern] = [ksort.aml_symbol for ksort in ksorts]
-
-                    args_chain = chain_patterns([ksymbol.aml_symbol] + args_patterns)
-
-                    application_sorts = sorts_patterns if sorts_patterns else [prop.Top()]
-                    assert isinstance(args_chain, (App, Symbol))
-                    return kl.KoreApplies(tuple(application_sorts), args_chain)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return scope.resolve_evar(pattern)
                 return scope.resolve_metavar(name)
             case kore.Top(sort):
                 top_sort_symbol: Pattern = self.get_sort(sort.name).aml_symbol
-                return kl.KoreTop(top_sort_symbol)
+                return kl.kore_top(top_sort_symbol)
             case kore.DV(sort, value):
                 dv_sort_symbol: Pattern = self.get_sort(sort.name).aml_symbol
                 value_symbol: Pattern = Symbol(str(value.value))
-                return kl.KoreDv(dv_sort_symbol, value_symbol)
+                return kl.kore_dv(dv_sort_symbol, value_symbol)
 
         raise NotImplementedError(f'Pattern {pattern} is not supported')

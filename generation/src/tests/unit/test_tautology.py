@@ -6,7 +6,7 @@ import pytest
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import Implies, bot, imp, phi0, phi1, phi2
-from proof_generation.proofs.propositional import And, Equiv, Or, neg, top
+from proof_generation.proofs.propositional import _and, _or, equiv, neg, top
 from proof_generation.tautology import (
     CFAnd,
     CFBot,
@@ -60,15 +60,15 @@ def is_cnf(t: ConjForm) -> bool:
 
 
 test_patterns = [
-    top,
+    top(),
     imp(phi0, phi0),
     neg(imp(neg(phi0), phi0)),
     imp(imp(phi0, phi0), phi0),
-    neg(imp(phi1, imp(bot, bot))),
-    Or(imp(phi0, phi1), neg(phi2)),
-    imp(Or(phi0, phi2), phi0),
-    neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2))))),
-    neg(neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2)))))),
+    neg(imp(phi1, imp(bot(), bot()))),
+    _or(imp(phi0, phi1), neg(phi2)),
+    imp(_or(phi0, phi2), phi0),
+    neg(neg(imp(_or(neg(phi0), phi0), _and(phi1, imp(phi1, phi2))))),
+    neg(neg(neg(imp(_or(neg(phi0), phi0), _and(phi1, imp(phi1, phi2)))))),
 ]
 
 
@@ -154,7 +154,7 @@ def test_simplify_clause(test_case: tuple[list[int], int]) -> None:
     taut = Tautology(BasicInterpreter(ExecutionPhase.Proof))
     final_cl, pf = taut.simplify_clause(cl, resolvent)
     conc = pf().conclusion
-    pf_l, pf_r = Equiv.extract(conc)
+    pf_l, pf_r = equiv.assert_matches(conc)
     assert clause_to_pattern(cl) == pf_l
     assert clause_to_pattern(final_cl) == pf_r
     resolvent_present = False
