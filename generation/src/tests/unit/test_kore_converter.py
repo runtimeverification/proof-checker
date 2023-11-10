@@ -4,18 +4,18 @@ from itertools import count
 
 from pytest import raises
 
-from kore_transfer.language_definition import KModule, KSort, KSymbol, LanguageSemantics
+from kore_transfer.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
 
 
 def test_module_creation() -> None:
     semantics = LanguageSemantics()
-    with semantics as definition:
+    with semantics as sem:
         test_name = 'test_module'
-        m = definition.module(test_name)
+        m = sem.module(test_name)
 
         assert m.name == test_name
-        assert len(definition.modules) == 1
-        assert m in definition.modules
+        assert len(sem.modules) == 1
+        assert m in sem.modules
 
 
 def test_module_sort() -> None:
