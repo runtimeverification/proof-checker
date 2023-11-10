@@ -6,6 +6,8 @@ from proof_generation.basic_interpreter import BasicInterpreter
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
@@ -100,11 +102,6 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def add_notation(self, notation: Pattern) -> Pattern:
-        ret = super().add_notation(notation)
-        self.stack[-1] = notation
-        return ret
-
     def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         *self.stack, expected_plug, expected_pattern = self.stack
         assert expected_pattern == pattern
@@ -167,10 +164,12 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         *self.stack, expected_pattern = self.stack
-        expected_plugs = self.stack[-len(delta) :]
-        self.stack = self.stack[: -len(delta)]
+        expected_plugs = []
+        if len(delta):
+            expected_plugs = self.stack[-len(delta) :]
+            self.stack = self.stack[: -len(delta)]
 
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'

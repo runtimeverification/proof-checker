@@ -8,6 +8,8 @@ from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
@@ -200,7 +202,7 @@ class CountingInterpreter(StatefulInterpreter):
         self._collect_patterns(ret.conclusion)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         ret = super().instantiate_pattern(pattern, delta)
         self._collect_patterns(ret)
         return ret

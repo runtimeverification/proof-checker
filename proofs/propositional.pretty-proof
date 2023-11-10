@@ -70,7 +70,7 @@ Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
@@ -84,7 +84,7 @@ Mu 0
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
 	2: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
@@ -101,7 +101,7 @@ Mu 0
 	1: ⊥
 	2: ⊥
 	3: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
@@ -124,7 +124,7 @@ Mu 0
 	1: ⊥
 	2: (⊥ -> ⊥)
 	3: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊥
@@ -151,7 +151,7 @@ Mu 0
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ ((⊥ -> ((⊥ -> ⊥) -> ⊥)) -> ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥)))
 	2: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ ((⊥ -> ((⊥ -> ⊥) -> ⊥)) -> ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥)))
@@ -168,7 +168,7 @@ Mu 0
 	1: ⊢ ((⊥ -> ((⊥ -> ⊥) -> ⊥)) -> ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥)))
 	2: ⊥
 	3: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ ((⊥ -> ((⊥ -> ⊥) -> ⊥)) -> ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥)))
@@ -188,7 +188,7 @@ Mu 0
 	2: ⊥
 	3: ⊥
 	4: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ ((⊥ -> ((⊥ -> ⊥) -> ⊥)) -> ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥)))
@@ -227,7 +227,7 @@ Mu 0
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥))
 	2: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥))
@@ -244,7 +244,7 @@ Mu 0
 	1: ⊢ ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥))
 	2: ⊥
 	3: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ ((⊥ -> (⊥ -> ⊥)) -> (⊥ -> ⊥))
@@ -277,7 +277,7 @@ Mu 0
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -288,67 +288,89 @@ MetaVar 0
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊥
+	3: phi0
+	4: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: phi0
-	4: X0
+	4: phi0
+	5: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: phi0
-	4: (μ X0 . X0)
-// Notation 'Bot'
+	4: phi0
+	5: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: phi0
-	4: ⊥
+	4: phi0
+	5: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
-	3: (phi0 -> ⊥)
-// Notation 'Negation'
+	3: phi0
+	4: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊥
+	3: ¬(phi0)
+	4: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: ¬(phi0)
-	4: X0
+	4: phi0
+	5: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: ¬(phi0)
-	4: (μ X0 . X0)
-// Notation 'Bot'
+	4: phi0
+	5: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
 	3: ¬(phi0)
-	4: ⊥
+	4: phi0
+	5: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊥
-	3: (¬(phi0) -> ⊥)
-// Notation 'Negation'
+	3: ¬(phi0)
+	4: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -394,7 +416,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (¬(¬(phi0)) -> phi0)) -> ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0)))
 	3: phi0
 	4: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -421,7 +443,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (¬(¬(phi0)) -> phi0)) -> ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0)))
 	3: (phi0 -> ⊥)
 	4: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -461,7 +483,7 @@ Mu 0
 	2: ⊢ ((⊥ -> (¬(¬(phi0)) -> phi0)) -> ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0)))
 	3: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -512,7 +534,7 @@ Mu 0
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0))
 	3: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -525,6 +547,14 @@ MetaVar 0
 	2: ⊢ ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0))
 	3: ⊥
 	4: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0))
+	3: ⊥
+	4: phi0
+	5: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -532,7 +562,8 @@ SVar 0
 	2: ⊢ ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0))
 	3: ⊥
 	4: phi0
-	5: X0
+	5: phi0
+	6: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -540,23 +571,26 @@ Mu 0
 	2: ⊢ ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0))
 	3: ⊥
 	4: phi0
-	5: (μ X0 . X0)
-// Notation 'Bot'
+	5: phi0
+	6: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0))
 	3: ⊥
 	4: phi0
-	5: ⊥
+	5: phi0
+	6: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ ((⊥ -> ¬(¬(phi0))) -> (⊥ -> phi0))
 	3: ⊥
-	4: (phi0 -> ⊥)
-// Notation 'Negation'
+	4: phi0
+	5: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -597,66 +631,13 @@ MetaVar 0
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: phi0
-SVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: phi0
-	5: X0
-Mu 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: phi0
-	5: (μ X0 . X0)
-// Notation 'Bot'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: phi0
-	5: ⊥
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: (phi0 -> ⊥)
-// Notation 'Negation'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ¬(phi0)
-	5: phi0
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: (¬(phi0) -> phi0)
-MetaVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: (¬(phi0) -> phi0)
+	4: phi0
 	5: phi0
 SVar 0
 	Stack:
@@ -664,7 +645,7 @@ SVar 0
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: (¬(phi0) -> phi0)
+	4: phi0
 	5: phi0
 	6: X0
 Mu 0
@@ -673,16 +654,16 @@ Mu 0
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: (¬(phi0) -> phi0)
+	4: phi0
 	5: phi0
 	6: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: (¬(phi0) -> phi0)
+	4: phi0
 	5: phi0
 	6: ⊥
 Implies
@@ -691,9 +672,87 @@ Implies
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: (¬(phi0) -> phi0)
+	4: phi0
 	5: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ¬(phi0)
+	5: phi0
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: (¬(phi0) -> phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: (¬(phi0) -> phi0)
+	5: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: (¬(phi0) -> phi0)
+	5: phi0
+	6: phi0
+SVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: (¬(phi0) -> phi0)
+	5: phi0
+	6: phi0
+	7: X0
+Mu 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: (¬(phi0) -> phi0)
+	5: phi0
+	6: phi0
+	7: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: (¬(phi0) -> phi0)
+	5: phi0
+	6: phi0
+	7: ⊥
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: (¬(phi0) -> phi0)
+	5: phi0
+	6: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -719,7 +778,7 @@ Mu 0
 	4: (¬(phi0) -> phi0)
 	5: ¬(phi0)
 	6: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -760,49 +819,6 @@ MetaVar 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: phi0
-SVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: phi0
-	6: X0
-Mu 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: phi0
-	6: (μ X0 . X0)
-// Notation 'Bot'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: phi0
-	6: ⊥
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: (phi0 -> ⊥)
-// Notation 'Negation'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -810,24 +826,7 @@ MetaVar 0
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ¬(phi0)
-	6: phi0
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: (¬(phi0) -> phi0)
-MetaVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: (¬(phi0) -> phi0)
+	5: phi0
 	6: phi0
 SVar 0
 	Stack:
@@ -836,7 +835,7 @@ SVar 0
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: (¬(phi0) -> phi0)
+	5: phi0
 	6: phi0
 	7: X0
 Mu 0
@@ -846,17 +845,17 @@ Mu 0
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: (¬(phi0) -> phi0)
+	5: phi0
 	6: phi0
 	7: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: (¬(phi0) -> phi0)
+	5: phi0
 	6: phi0
 	7: ⊥
 Implies
@@ -866,9 +865,96 @@ Implies
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: (¬(phi0) -> phi0)
+	5: phi0
 	6: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ¬(phi0)
+	6: phi0
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: (¬(phi0) -> phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: (¬(phi0) -> phi0)
+	6: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: (¬(phi0) -> phi0)
+	6: phi0
+	7: phi0
+SVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: (¬(phi0) -> phi0)
+	6: phi0
+	7: phi0
+	8: X0
+Mu 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: (¬(phi0) -> phi0)
+	6: phi0
+	7: phi0
+	8: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: (¬(phi0) -> phi0)
+	6: phi0
+	7: phi0
+	8: ⊥
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: (¬(phi0) -> phi0)
+	6: phi0
+	7: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -897,7 +983,7 @@ Mu 0
 	5: (¬(phi0) -> phi0)
 	6: ¬(phi0)
 	7: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -960,6 +1046,16 @@ MetaVar 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: phi0
+	7: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -969,7 +1065,8 @@ SVar 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: phi0
-	7: X0
+	7: phi0
+	8: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -979,8 +1076,9 @@ Mu 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: phi0
-	7: (μ X0 . X0)
-// Notation 'Bot'
+	7: phi0
+	8: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -989,7 +1087,8 @@ Mu 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: phi0
-	7: ⊥
+	7: phi0
+	8: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -998,8 +1097,9 @@ Implies
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: (phi0 -> ⊥)
-// Notation 'Negation'
+	6: phi0
+	7: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1040,7 +1140,7 @@ Mu 0
 	6: ¬(phi0)
 	7: phi0
 	8: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1082,59 +1182,6 @@ MetaVar 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: phi0
-SVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: phi0
-	8: X0
-Mu 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: phi0
-	8: (μ X0 . X0)
-// Notation 'Bot'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: phi0
-	8: ⊥
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: (phi0 -> ⊥)
-// Notation 'Negation'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1144,7 +1191,7 @@ MetaVar 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ¬(phi0)
+	7: phi0
 	8: phi0
 SVar 0
 	Stack:
@@ -1155,7 +1202,7 @@ SVar 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ¬(phi0)
+	7: phi0
 	8: phi0
 	9: X0
 Mu 0
@@ -1167,10 +1214,10 @@ Mu 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ¬(phi0)
+	7: phi0
 	8: phi0
 	9: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1179,7 +1226,7 @@ Mu 0
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ¬(phi0)
+	7: phi0
 	8: phi0
 	9: ⊥
 Implies
@@ -1191,9 +1238,9 @@ Implies
 	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ¬(phi0)
+	7: phi0
 	8: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1203,7 +1250,6 @@ Implies
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ¬(phi0)
-	8: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1214,7 +1260,18 @@ MetaVar 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ¬(phi0)
-	8: ¬(phi0)
+	8: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: phi0
 	9: phi0
 SVar 0
 	Stack:
@@ -1226,7 +1283,7 @@ SVar 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ¬(phi0)
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: X0
 Mu 0
@@ -1239,10 +1296,10 @@ Mu 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ¬(phi0)
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1252,7 +1309,7 @@ Mu 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ¬(phi0)
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: ⊥
 Implies
@@ -1265,9 +1322,100 @@ Implies
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ¬(phi0)
-	8: ¬(phi0)
+	8: phi0
 	9: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: ¬(phi0)
+	9: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: ¬(phi0)
+	9: phi0
+	10: phi0
+SVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: ¬(phi0)
+	9: phi0
+	10: phi0
+	11: X0
+Mu 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: ¬(phi0)
+	9: phi0
+	10: phi0
+	11: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: ¬(phi0)
+	9: phi0
+	10: phi0
+	11: ⊥
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: ¬(phi0)
+	9: phi0
+	10: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1302,6 +1450,19 @@ MetaVar 0
 	7: ¬(phi0)
 	8: (¬(phi0) -> ¬(phi0))
 	9: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ¬(phi0)
+	8: (¬(phi0) -> ¬(phi0))
+	9: phi0
+	10: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1314,7 +1475,8 @@ SVar 0
 	7: ¬(phi0)
 	8: (¬(phi0) -> ¬(phi0))
 	9: phi0
-	10: X0
+	10: phi0
+	11: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1327,8 +1489,9 @@ Mu 0
 	7: ¬(phi0)
 	8: (¬(phi0) -> ¬(phi0))
 	9: phi0
-	10: (μ X0 . X0)
-// Notation 'Bot'
+	10: phi0
+	11: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1340,7 +1503,8 @@ Mu 0
 	7: ¬(phi0)
 	8: (¬(phi0) -> ¬(phi0))
 	9: phi0
-	10: ⊥
+	10: phi0
+	11: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1352,8 +1516,9 @@ Implies
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ¬(phi0)
 	8: (¬(phi0) -> ¬(phi0))
-	9: (phi0 -> ⊥)
-// Notation 'Negation'
+	9: phi0
+	10: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1399,64 +1564,6 @@ MetaVar 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	8: phi0
-SVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: phi0
-	9: X0
-Mu 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: phi0
-	9: (μ X0 . X0)
-// Notation 'Bot'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: phi0
-	9: ⊥
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: (phi0 -> ⊥)
-// Notation 'Negation'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
-	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
-	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1467,7 +1574,7 @@ MetaVar 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 SVar 0
 	Stack:
@@ -1479,7 +1586,7 @@ SVar 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: X0
 Mu 0
@@ -1492,10 +1599,10 @@ Mu 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1505,7 +1612,7 @@ Mu 0
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: ⊥
 Implies
@@ -1518,9 +1625,9 @@ Implies
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	8: ¬(phi0)
+	8: phi0
 	9: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1531,7 +1638,6 @@ Implies
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	8: ¬(phi0)
-	9: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1543,7 +1649,19 @@ MetaVar 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: phi0
 	10: phi0
 SVar 0
 	Stack:
@@ -1556,7 +1674,7 @@ SVar 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: X0
 Mu 0
@@ -1570,10 +1688,10 @@ Mu 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1584,7 +1702,7 @@ Mu 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: ⊥
 Implies
@@ -1598,9 +1716,107 @@ Implies
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+SVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+	12: X0
+Mu 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+	12: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+	12: ⊥
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1670,6 +1886,18 @@ MetaVar 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
+	8: phi0
+	9: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1681,7 +1909,8 @@ SVar 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: phi0
-	9: X0
+	9: phi0
+	10: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1693,8 +1922,9 @@ Mu 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: phi0
-	9: (μ X0 . X0)
-// Notation 'Bot'
+	9: phi0
+	10: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1705,7 +1935,8 @@ Mu 0
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: phi0
-	9: ⊥
+	9: phi0
+	10: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1716,8 +1947,9 @@ Implies
 	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
-	8: (phi0 -> ⊥)
-// Notation 'Negation'
+	8: phi0
+	9: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1740,6 +1972,19 @@ MetaVar 0
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: ¬(phi0)
 	9: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))) -> ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥))))
+	5: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> (phi0 -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥))))
+	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
+	8: ¬(phi0)
+	9: phi0
+	10: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1752,7 +1997,8 @@ SVar 0
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: ¬(phi0)
 	9: phi0
-	10: X0
+	10: phi0
+	11: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1765,8 +2011,9 @@ Mu 0
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: ¬(phi0)
 	9: phi0
-	10: (μ X0 . X0)
-// Notation 'Bot'
+	10: phi0
+	11: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1778,7 +2025,8 @@ Mu 0
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: ¬(phi0)
 	9: phi0
-	10: ⊥
+	10: phi0
+	11: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1790,8 +2038,9 @@ Implies
 	6: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	7: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	8: ¬(phi0)
-	9: (phi0 -> ⊥)
-// Notation 'Negation'
+	9: phi0
+	10: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1869,6 +2118,15 @@ MetaVar 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥)))
 	5: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥)))
+	5: phi0
+	6: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1877,7 +2135,8 @@ SVar 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥)))
 	5: phi0
-	6: X0
+	6: phi0
+	7: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1886,8 +2145,9 @@ Mu 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥)))
 	5: phi0
-	6: (μ X0 . X0)
-// Notation 'Bot'
+	6: phi0
+	7: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1895,7 +2155,8 @@ Mu 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥)))
 	5: phi0
-	6: ⊥
+	6: phi0
+	7: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -1903,8 +2164,9 @@ Implies
 	2: ⊢ (⊥ -> phi0)
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ ((phi0 -> (¬(phi0) -> phi0)) -> (phi0 -> (¬(phi0) -> ⊥)))
-	5: (phi0 -> ⊥)
-// Notation 'Negation'
+	5: phi0
+	6: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -1953,7 +2215,7 @@ Mu 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2006,7 +2268,7 @@ Mu 0
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
 	6: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2084,7 +2346,7 @@ Mu 0
 	5: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2105,6 +2367,18 @@ MetaVar 1
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: phi1
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
+	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
+	7: ⊥
+	8: phi1
+	9: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2116,7 +2390,8 @@ SVar 0
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: phi1
-	9: X0
+	9: phi0
+	10: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2128,8 +2403,9 @@ Mu 0
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: phi1
-	9: (μ X0 . X0)
-// Notation 'Bot'
+	9: phi0
+	10: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2140,7 +2416,8 @@ Mu 0
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: phi1
-	9: ⊥
+	9: phi0
+	10: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2151,8 +2428,9 @@ Implies
 	5: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
-	8: (phi1 -> ⊥)
-// Notation 'Negation'
+	8: phi1
+	9: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2163,6 +2441,18 @@ Implies
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: ¬(phi1)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
+	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
+	7: ⊥
+	8: ¬(phi1)
+	9: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2174,7 +2464,8 @@ SVar 0
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: ¬(phi1)
-	9: X0
+	9: phi0
+	10: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2186,8 +2477,9 @@ Mu 0
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: ¬(phi1)
-	9: (μ X0 . X0)
-// Notation 'Bot'
+	9: phi0
+	10: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2198,7 +2490,8 @@ Mu 0
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
 	8: ¬(phi1)
-	9: ⊥
+	9: phi0
+	10: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2209,8 +2502,9 @@ Implies
 	5: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊥
-	8: (¬(phi1) -> ⊥)
-// Notation 'Negation'
+	8: ¬(phi1)
+	9: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2291,7 +2585,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (¬(¬(phi1)) -> phi1)) -> ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1)))
 	8: phi1
 	9: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2338,7 +2632,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (¬(¬(phi1)) -> phi1)) -> ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1)))
 	8: (phi1 -> ⊥)
 	9: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2408,7 +2702,7 @@ Mu 0
 	7: ⊢ ((⊥ -> (¬(¬(phi1)) -> phi1)) -> ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1)))
 	8: (((phi1 -> ⊥) -> ⊥) -> phi1)
 	9: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2524,7 +2818,7 @@ Mu 0
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊢ ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1))
 	8: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2547,6 +2841,19 @@ MetaVar 1
 	7: ⊢ ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1))
 	8: ⊥
 	9: phi1
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> (⊥ -> phi1)) -> ((phi0 -> ⊥) -> (phi0 -> phi1)))
+	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
+	7: ⊢ ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1))
+	8: ⊥
+	9: phi1
+	10: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2559,7 +2866,8 @@ SVar 0
 	7: ⊢ ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1))
 	8: ⊥
 	9: phi1
-	10: X0
+	10: phi0
+	11: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2572,8 +2880,9 @@ Mu 0
 	7: ⊢ ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1))
 	8: ⊥
 	9: phi1
-	10: (μ X0 . X0)
-// Notation 'Bot'
+	10: phi0
+	11: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2585,7 +2894,8 @@ Mu 0
 	7: ⊢ ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1))
 	8: ⊥
 	9: phi1
-	10: ⊥
+	10: phi0
+	11: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2597,8 +2907,9 @@ Implies
 	6: ⊢ ((⊥ -> phi1) -> (phi0 -> (⊥ -> phi1)))
 	7: ⊢ ((⊥ -> ¬(¬(phi1))) -> (⊥ -> phi1))
 	8: ⊥
-	9: (phi1 -> ⊥)
-// Notation 'Negation'
+	9: phi1
+	10: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2671,54 +2982,6 @@ MetaVar 0
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: phi0
-SVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: phi0
-	7: X0
-Mu 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: phi0
-	7: (μ X0 . X0)
-// Notation 'Bot'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: phi0
-	7: ⊥
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: (phi0 -> ⊥)
-// Notation 'Negation'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -2727,26 +2990,7 @@ MetaVar 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ¬(phi0)
-	7: phi0
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: (¬(phi0) -> phi0)
-MetaVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: (¬(phi0) -> phi0)
+	6: phi0
 	7: phi0
 SVar 0
 	Stack:
@@ -2756,7 +3000,7 @@ SVar 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: (¬(phi0) -> phi0)
+	6: phi0
 	7: phi0
 	8: X0
 Mu 0
@@ -2767,10 +3011,10 @@ Mu 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: (¬(phi0) -> phi0)
+	6: phi0
 	7: phi0
 	8: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2778,7 +3022,7 @@ Mu 0
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: (¬(phi0) -> phi0)
+	6: phi0
 	7: phi0
 	8: ⊥
 Implies
@@ -2789,9 +3033,105 @@ Implies
 	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: (¬(phi0) -> phi0)
+	6: phi0
 	7: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ¬(phi0)
+	7: phi0
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: (¬(phi0) -> phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: (¬(phi0) -> phi0)
+	7: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: (¬(phi0) -> phi0)
+	7: phi0
+	8: phi0
+SVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: (¬(phi0) -> phi0)
+	7: phi0
+	8: phi0
+	9: X0
+Mu 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: (¬(phi0) -> phi0)
+	7: phi0
+	8: phi0
+	9: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: (¬(phi0) -> phi0)
+	7: phi0
+	8: phi0
+	9: ⊥
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: (¬(phi0) -> phi0)
+	7: phi0
+	8: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2823,7 +3163,7 @@ Mu 0
 	6: (¬(phi0) -> phi0)
 	7: ¬(phi0)
 	8: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2908,7 +3248,7 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
 	7: phi0
 	8: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -2951,7 +3291,7 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
 	7: (phi0 -> ⊥)
 	8: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3004,6 +3344,18 @@ MetaVar 0
 	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
 	7: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	8: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
+	7: (((phi0 -> ⊥) -> ⊥) -> phi0)
+	8: phi0
+	9: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3015,7 +3367,8 @@ SVar 0
 	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
 	7: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	8: phi0
-	9: X0
+	9: phi0
+	10: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3027,8 +3380,9 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
 	7: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	8: phi0
-	9: (μ X0 . X0)
-// Notation 'Bot'
+	9: phi0
+	10: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3039,7 +3393,8 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
 	7: (((phi0 -> ⊥) -> ⊥) -> phi0)
 	8: phi0
-	9: ⊥
+	9: phi0
+	10: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3050,8 +3405,9 @@ Implies
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> ((¬(phi0) -> ⊥) -> phi0)) -> (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0)))
 	7: (((phi0 -> ⊥) -> ⊥) -> phi0)
-	8: (phi0 -> ⊥)
-// Notation 'Negation'
+	8: phi0
+	9: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3147,6 +3503,17 @@ MetaVar 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: phi0
+	8: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3157,7 +3524,8 @@ SVar 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: phi0
-	8: X0
+	8: phi0
+	9: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3168,8 +3536,9 @@ Mu 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: phi0
-	8: (μ X0 . X0)
-// Notation 'Bot'
+	8: phi0
+	9: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3179,7 +3548,8 @@ Mu 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: phi0
-	8: ⊥
+	8: phi0
+	9: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3189,8 +3559,9 @@ Implies
 	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: (phi0 -> ⊥)
-// Notation 'Negation'
+	7: phi0
+	8: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3235,7 +3606,7 @@ Mu 0
 	7: ¬(phi0)
 	8: phi0
 	9: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3281,64 +3652,6 @@ MetaVar 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: phi0
-SVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: phi0
-	9: X0
-Mu 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: phi0
-	9: (μ X0 . X0)
-// Notation 'Bot'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: phi0
-	9: ⊥
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: (phi0 -> ⊥)
-// Notation 'Negation'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3349,7 +3662,7 @@ MetaVar 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 SVar 0
 	Stack:
@@ -3361,7 +3674,7 @@ SVar 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: X0
 Mu 0
@@ -3374,10 +3687,10 @@ Mu 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3387,7 +3700,7 @@ Mu 0
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ¬(phi0)
+	8: phi0
 	9: phi0
 	10: ⊥
 Implies
@@ -3400,9 +3713,9 @@ Implies
 	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ¬(phi0)
+	8: phi0
 	9: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3413,7 +3726,6 @@ Implies
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ¬(phi0)
-	9: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3425,7 +3737,19 @@ MetaVar 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: phi0
 	10: phi0
 SVar 0
 	Stack:
@@ -3438,7 +3762,7 @@ SVar 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: X0
 Mu 0
@@ -3452,10 +3776,10 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3466,7 +3790,7 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: ⊥
 Implies
@@ -3480,9 +3804,107 @@ Implies
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ¬(phi0)
-	9: ¬(phi0)
+	9: phi0
 	10: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+SVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+	12: X0
+Mu 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+	12: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
+	12: ⊥
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: ¬(phi0)
+	10: phi0
+	11: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3520,6 +3942,20 @@ MetaVar 0
 	8: ¬(phi0)
 	9: (¬(phi0) -> ¬(phi0))
 	10: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ¬(phi0)
+	9: (¬(phi0) -> ¬(phi0))
+	10: phi0
+	11: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3533,7 +3969,8 @@ SVar 0
 	8: ¬(phi0)
 	9: (¬(phi0) -> ¬(phi0))
 	10: phi0
-	11: X0
+	11: phi0
+	12: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3547,8 +3984,9 @@ Mu 0
 	8: ¬(phi0)
 	9: (¬(phi0) -> ¬(phi0))
 	10: phi0
-	11: (μ X0 . X0)
-// Notation 'Bot'
+	11: phi0
+	12: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3561,7 +3999,8 @@ Mu 0
 	8: ¬(phi0)
 	9: (¬(phi0) -> ¬(phi0))
 	10: phi0
-	11: ⊥
+	11: phi0
+	12: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3574,8 +4013,9 @@ Implies
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ¬(phi0)
 	9: (¬(phi0) -> ¬(phi0))
-	10: (phi0 -> ⊥)
-// Notation 'Negation'
+	10: phi0
+	11: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3625,69 +4065,6 @@ MetaVar 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	9: phi0
-SVar 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: phi0
-	10: X0
-Mu 0
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: phi0
-	10: (μ X0 . X0)
-// Notation 'Bot'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: phi0
-	10: ⊥
-Implies
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: (phi0 -> ⊥)
-// Notation 'Negation'
-	Stack:
-	0: ⊢ (phi0 -> phi0)
-	1: ⊢ (⊥ -> ⊥)
-	2: ⊢ (⊥ -> phi0)
-	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
-	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
-	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
-	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
-	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
-	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3699,7 +4076,7 @@ MetaVar 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 SVar 0
 	Stack:
@@ -3712,7 +4089,7 @@ SVar 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: X0
 Mu 0
@@ -3726,10 +4103,10 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3740,7 +4117,7 @@ Mu 0
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: ¬(phi0)
+	9: phi0
 	10: phi0
 	11: ⊥
 Implies
@@ -3754,9 +4131,9 @@ Implies
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
-	9: ¬(phi0)
+	9: phi0
 	10: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3768,7 +4145,6 @@ Implies
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	9: ¬(phi0)
-	10: ¬(phi0)
 MetaVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3781,7 +4157,20 @@ MetaVar 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	9: ¬(phi0)
-	10: ¬(phi0)
+	10: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: phi0
 	11: phi0
 SVar 0
 	Stack:
@@ -3795,7 +4184,7 @@ SVar 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	9: ¬(phi0)
-	10: ¬(phi0)
+	10: phi0
 	11: phi0
 	12: X0
 Mu 0
@@ -3810,10 +4199,10 @@ Mu 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	9: ¬(phi0)
-	10: ¬(phi0)
+	10: phi0
 	11: phi0
 	12: (μ X0 . X0)
-// Notation 'Bot'
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3825,7 +4214,7 @@ Mu 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	9: ¬(phi0)
-	10: ¬(phi0)
+	10: phi0
 	11: phi0
 	12: ⊥
 Implies
@@ -3840,9 +4229,114 @@ Implies
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
 	9: ¬(phi0)
-	10: ¬(phi0)
+	10: phi0
 	11: (phi0 -> ⊥)
-// Notation 'Negation'
+Instantiate 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: ¬(phi0)
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: ¬(phi0)
+	11: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: ¬(phi0)
+	11: phi0
+	12: phi0
+SVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: ¬(phi0)
+	11: phi0
+	12: phi0
+	13: X0
+Mu 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: ¬(phi0)
+	11: phi0
+	12: phi0
+	13: (μ X0 . X0)
+Instantiate 
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: ¬(phi0)
+	11: phi0
+	12: phi0
+	13: ⊥
+Implies
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> ((¬(phi0) -> ¬(phi0)) -> ¬(phi0))) -> ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0))))
+	9: ¬(phi0)
+	10: ¬(phi0)
+	11: phi0
+	12: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3918,6 +4412,19 @@ MetaVar 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
+	9: phi0
+	10: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3930,7 +4437,8 @@ SVar 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: phi0
-	10: X0
+	10: phi0
+	11: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3943,8 +4451,9 @@ Mu 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: phi0
-	10: (μ X0 . X0)
-// Notation 'Bot'
+	10: phi0
+	11: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3956,7 +4465,8 @@ Mu 0
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: phi0
-	10: ⊥
+	10: phi0
+	11: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -3968,8 +4478,9 @@ Implies
 	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
-	9: (phi0 -> ⊥)
-// Notation 'Negation'
+	9: phi0
+	10: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -3994,6 +4505,20 @@ MetaVar 0
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: ¬(phi0)
 	10: phi0
+MetaVar 0
+	Stack:
+	0: ⊢ (phi0 -> phi0)
+	1: ⊢ (⊥ -> ⊥)
+	2: ⊢ (⊥ -> phi0)
+	3: ⊢ (((phi0 -> ⊥) -> ⊥) -> phi0)
+	4: ⊢ (phi0 -> (¬(phi0) -> ⊥))
+	5: ⊢ ((phi0 -> ⊥) -> (phi0 -> phi1))
+	6: ⊢ (((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)) -> ((¬(phi0) -> phi0) -> phi0))
+	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
+	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
+	9: ¬(phi0)
+	10: phi0
+	11: phi0
 SVar 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -4007,7 +4532,8 @@ SVar 0
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: ¬(phi0)
 	10: phi0
-	11: X0
+	11: phi0
+	12: X0
 Mu 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -4021,8 +4547,9 @@ Mu 0
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: ¬(phi0)
 	10: phi0
-	11: (μ X0 . X0)
-// Notation 'Bot'
+	11: phi0
+	12: (μ X0 . X0)
+Instantiate 
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
@@ -4035,7 +4562,8 @@ Mu 0
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: ¬(phi0)
 	10: phi0
-	11: ⊥
+	11: phi0
+	12: ⊥
 Implies
 	Stack:
 	0: ⊢ (phi0 -> phi0)
@@ -4048,8 +4576,9 @@ Implies
 	7: ⊢ ((¬(phi0) -> (phi0 -> ⊥)) -> ((¬(phi0) -> phi0) -> (¬(phi0) -> ⊥)))
 	8: ⊢ ((¬(phi0) -> (¬(phi0) -> ¬(phi0))) -> (¬(phi0) -> ¬(phi0)))
 	9: ¬(phi0)
-	10: (phi0 -> ⊥)
-// Notation 'Negation'
+	10: phi0
+	11: (phi0 -> ⊥)
+Instantiate 0
 	Stack:
 	0: ⊢ (phi0 -> phi0)
 	1: ⊢ (⊥ -> ⊥)
