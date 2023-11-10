@@ -9,8 +9,8 @@ from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Mu
-from proof_generation.pretty_printing_interpreter import NotationlessPrettyPrinter, PrettyPrintingInterpreter
+from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions
+from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proof import ProofThunk
 from proof_generation.proofs.propositional import Propositional
 from proof_generation.serializing_interpreter import SerializingInterpreter
@@ -121,18 +121,19 @@ proofs = [(method, ExecutionPhase.Proof) for method in range(len(mock_prop.proof
 
 @pytest.mark.parametrize('test', proofs)
 def test_deserialize_proof(test: tuple[int, ExecutionPhase]) -> None:
+    pretty_options = PrettyOptions(simplify_instantiations=True)
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
     interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
     _ = Propositional(interpreter_ser).proof_expressions()[target]()
     out_ser_deser = StringIO()
-    interpreter_ser_deser = NotationlessPrettyPrinter(phase=phase, out=out_ser_deser)
+    interpreter_ser_deser = PrettyPrintingInterpreter(phase=phase, out=out_ser_deser, pretty_options=pretty_options)
     deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
 
     # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
-    interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
+    interpreter_pretty = PrettyPrintingInterpreter(phase=phase, out=out_pretty, pretty_options=pretty_options)
     _ = Propositional(interpreter_pretty).proof_expressions()[target]()
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
@@ -143,18 +144,19 @@ claims = [(claim, ExecutionPhase.Claim) for claim in mock_prop.claims()]
 
 @pytest.mark.parametrize('test', claims)
 def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
+    pretty_options = PrettyOptions(simplify_instantiations=True)
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
     interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
     _ = Propositional(interpreter_ser).interpreter.pattern(target)
     out_ser_deser = StringIO()
-    interpreter_ser_deser = NotationlessPrettyPrinter(phase=phase, out=out_ser_deser)
+    interpreter_ser_deser = PrettyPrintingInterpreter(phase=phase, out=out_ser_deser, pretty_options=pretty_options)
     deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
 
     # Prettyprint the claim directly, but omit notation
     out_pretty = StringIO()
-    interpreter_pretty = NotationlessPrettyPrinter(phase=phase, out=out_pretty)
+    interpreter_pretty = PrettyPrintingInterpreter(phase=phase, out=out_pretty, pretty_options=pretty_options)
     _ = Propositional(interpreter_pretty).interpreter.pattern(target)
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()

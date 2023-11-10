@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import Implies, MetaVar, Notation, bot, phi0, phi1, phi2
@@ -13,72 +12,11 @@ if TYPE_CHECKING:
     from proof_generation.proof import ProofThunk
 
 
-@dataclass(frozen=True, eq=False)
-class Negation(Notation):
-    phi0: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return Implies(phi0, bot)
-
-    def __str__(self) -> str:
-        return f'¬({str(self.phi0)})'
-
-
-def neg(p: Pattern) -> Pattern:
-    return Negation(p)
-
-
-@dataclass(frozen=True, eq=False)
-class Top(Notation):
-    @classmethod
-    def definition(cls) -> Pattern:
-        return neg(bot)
-
-    def __str__(self) -> str:
-        return '⊤'
-
-
-top = Top()
-
-
-@dataclass(frozen=True, eq=False)
-class And(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return neg(Implies(phi0, neg(phi1)))
-
-    def __str__(self) -> str:
-        return f'({self.phi0} ∧ {self.phi1})'
-
-
-@dataclass(frozen=True, eq=False)
-class Or(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return Implies(neg(phi0), phi1)
-
-    def __str__(self) -> str:
-        return f'({self.phi0} ∨ {self.phi1})'
-
-
-@dataclass(frozen=True, eq=False)
-class Equiv(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return And(Implies(phi0, phi1), Implies(phi1, phi0))
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}) <-> ({str(self.phi1)})'
+neg = Notation('not', 1, Implies(MetaVar(0), bot()), '¬({0})')
+top = Notation('top', 0, neg(bot()), '⊤')
+_and = Notation('and', 2, neg(Implies(phi0, neg(phi1))), '({0} ⋀ {1})')
+_or = Notation('or', 2, Implies(neg(phi0), phi1), '({0} ⋁ {1})')
+equiv = Notation('equiv', 2, _and(Implies(phi0, phi1), Implies(phi1, phi0)), f'({0}) <-> ({1})')
 
 
 def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
@@ -98,11 +36,15 @@ class Propositional(ProofExp):
         return []
 
     @staticmethod
+    def notations() -> list[Notation]:
+        return [bot, neg, top, _and, _or]
+
+    @staticmethod
     def claims() -> list[Pattern]:
         return [
             Implies(phi0, phi0),  # Reflexivity
-            top,  # Top
-            Implies(bot, phi0),  # Bot_elim
+            top(),  # Top
+            Implies(bot(), phi0),  # Bot_elim
             Implies(neg(neg(phi0)), phi0),  # Double Negation elim
             Implies(phi0, neg(neg(phi0))),  # Double Negation intro
             Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
@@ -177,7 +119,7 @@ class Propositional(ProofExp):
 
     def top_intro(self) -> ProofThunk:
         """top"""
-        return self.imp_refl(bot)
+        return self.imp_refl(bot())
 
     def bot_elim(self, p: Pattern = phi0) -> ProofThunk:
         """bot -> p"""
@@ -185,12 +127,12 @@ class Propositional(ProofExp):
             # ((bot -> neg neg p) -> (bot -> p)))
             self.modus_ponens(
                 # (bot -> (neg neg p -> p)) -> ((bot -> neg neg p) -> (bot -> p))
-                self.prop2_inst(bot, neg(neg(p)), p),
+                self.prop2_inst(bot(), neg(neg(p)), p),
                 #  bot -> (neg neg p -> p)
-                self.imp_provable(bot, self.dneg_elim(p)),
+                self.imp_provable(bot(), self.dneg_elim(p)),
             ),
             # (bot -> (neg neg p))
-            self.prop1_inst(bot, neg(p)),
+            self.prop1_inst(bot(), neg(p)),
         )
 
     def top_imp(self, p_pf: ProofThunk) -> ProofThunk:
@@ -199,7 +141,7 @@ class Propositional(ProofExp):
         ----------
           T -> p
         """
-        return self.imp_provable(top, p_pf)
+        return self.imp_provable(top(), p_pf)
 
     def imp_top(self, p: Pattern) -> ProofThunk:
         """p -> T"""
@@ -222,7 +164,7 @@ class Propositional(ProofExp):
     def absurd(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """~p -> (p -> q)"""
         return self.modus_ponens(
-            self.prop2_inst(p, bot, q),
+            self.prop2_inst(p, bot(), q),
             # p -> bot -> q
             self.imp_provable(p, self.bot_elim(q)),
         )
@@ -230,7 +172,7 @@ class Propositional(ProofExp):
     def peirce_bot(self, p: Pattern = phi0) -> ProofThunk:
         """(~p -> p) -> p   or, alternatively   p \\/ p -> p"""
         return self.imp_transitivity(
-            self.modus_ponens(self.prop2_inst(neg(p), p, bot), self.imp_refl(neg(p))), self.dneg_elim(p)
+            self.modus_ponens(self.prop2_inst(neg(p), p, bot()), self.imp_refl(neg(p))), self.dneg_elim(p)
         )
 
     def imp_trans(self, p: Pattern = phi0, q: Pattern = phi1, r: Pattern = phi2) -> ProofThunk:
@@ -323,7 +265,7 @@ class Propositional(ProofExp):
 
     def con3(self, p: Pattern, q: Pattern) -> ProofThunk:
         """(p -> q) -> (~q -> ~p)"""
-        return self.imp_trans(p, q, bot)
+        return self.imp_trans(p, q, bot())
 
     def con3_i(self, pq_pf: ProofThunk) -> ProofThunk:
         """
@@ -349,8 +291,8 @@ class Propositional(ProofExp):
         ------------------
           (q -> p) -> ~q
         """
-        p = Negation.extract(pf.conc)[0]
-        return self.modus_ponens(self.prop2_inst(q, p, bot), self.imp_provable(q, pf))
+        p = neg.assert_matches(pf.conc)[0]
+        return self.modus_ponens(self.prop2_inst(q, p, bot()), self.imp_provable(q, pf))
 
     def con1(self, pf: ProofThunk) -> ProofThunk:
         """
@@ -359,10 +301,12 @@ class Propositional(ProofExp):
           ~q -> p
         """
         np, q = Implies.extract(pf.conc)
-        p = Negation.extract(np)[0]
+        p = neg.assert_matches(np)[0]
         return self.imp_transitivity(
             self.modus_ponens(
-                self.ant_commutativity(self.imp_transitivity(self.prop1_inst(neg(q), np), self.prop2_inst(np, q, bot))),
+                self.ant_commutativity(
+                    self.imp_transitivity(self.prop1_inst(neg(q), np), self.prop2_inst(np, q, bot()))
+                ),
                 pf,
             ),
             self.dneg_elim(p),
@@ -370,7 +314,7 @@ class Propositional(ProofExp):
 
     def con2(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
         """(p -> ~q) -> (q -> ~p)"""
-        return self.imp_transitivity(self.prop2_inst(p, q, bot), self.imim_l(neg(p), self.prop1_inst(q, p)))
+        return self.imp_transitivity(self.prop2_inst(p, q, bot()), self.imim_l(neg(p), self.prop1_inst(q, p)))
 
     def absurd3(self, npq_pf: ProofThunk, nr_pf: ProofThunk) -> ProofThunk:
         """
@@ -388,7 +332,7 @@ class Propositional(ProofExp):
            q -> p -> r
         """
         _, nq = Implies.extract(pnq_pf.conc)
-        q = Negation.extract(nq)[0]
+        q = neg.assert_matches(nq)[0]
         return self.imp_transitivity(self.dneg_intro(q), self.absurd2(pnq_pf, r))
 
     def absurd_i(self, np_pf: ProofThunk, q: Pattern) -> ProofThunk:
@@ -397,7 +341,7 @@ class Propositional(ProofExp):
         -----------
           p -> q
         """
-        p = Negation.extract(np_pf.conc)[0]
+        p = neg.assert_matches(np_pf.conc)[0]
         return self.modus_ponens(self.absurd(p, q), np_pf)
 
     def and_not_r_intro(self, p_pf: ProofThunk, nq_pf: ProofThunk) -> ProofThunk:
@@ -407,7 +351,7 @@ class Propositional(ProofExp):
           ~(p -> q)
         """
         p_pf.conc
-        q = Negation.extract(nq_pf.conc)[0]
+        q = neg.assert_matches(nq_pf.conc)[0]
         return self.imp_transitivity(self.mpcom(p_pf, q), nq_pf)
 
     def imim_l(self, pat: Pattern, h: ProofThunk) -> ProofThunk:
@@ -522,7 +466,7 @@ class Propositional(ProofExp):
         ------------
               p
         """
-        p, q = And.extract(pq_pf.conc)
+        p, q = _and.assert_matches(pq_pf.conc)
         return self.modus_ponens(self.and_l_imp(p, q), pq_pf)
 
     def and_r_imp(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
@@ -535,7 +479,7 @@ class Propositional(ProofExp):
         ------------
               q
         """
-        p, q = And.extract(pq_pf.conc)
+        p, q = _and.assert_matches(pq_pf.conc)
         return self.modus_ponens(self.and_r_imp(p, q), pq_pf)
 
 

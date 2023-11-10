@@ -20,10 +20,9 @@ def generate_proofs(
     for hint in hints:
         axiom = proof_expression.add_axioms(hint, language_semantics)
         assert isinstance(axiom, KRewritingRule)
-
         rewrite_axiom = axiom.pattern
-        assert isinstance(rewrite_axiom, kl.KoreRewrites), f'The hint should contain a pattern, got {rewrite_axiom}'
-        claim = kl.KoreRewrites(rewrite_axiom.phi0, hint.configuration_before, hint.configuration_after)
+        sort, left, right = kl.kore_rewrites.assert_matches(rewrite_axiom)
+        claim = kl.kore_rewrites(sort, hint.configuration_before, hint.configuration_after)
 
         proof_expression.prove_rewrite_step(claim, rewrite_axiom, hint.substitutions)
         claims += 1
