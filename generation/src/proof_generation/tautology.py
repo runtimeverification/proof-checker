@@ -356,6 +356,11 @@ class Tautology(Propositional):
         )
 
     def long_imp_trans(self, abc_pf: ProofThunk, cd_pf: ProofThunk) -> ProofThunk:
+        """
+          a -> b -> c    c -> d
+        -------------------------
+                a -> b -> d
+        """
         a, bc = Implies.extract(abc_pf.conc)
         b, c = Implies.extract(bc)
         c2, d = Implies.extract(cd_pf.conc)
