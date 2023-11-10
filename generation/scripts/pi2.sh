@@ -9,7 +9,7 @@
 #
 ##############################################################################
 
-./scripts/gen-execution-proof-hints.sh $1 $2 $3/proof-hint.bin
+./scripts/gen-execution-proof-hints.sh $1 $2 $3/proof-hint.bin 2> /dev/null
 
 if [[ "$4" == "--pretty" ]]; then
   OPTS="--pretty"
@@ -17,4 +17,4 @@ else
   OPTS=""
 fi
 
-poetry -C generation run python -m "kore_transfer.proof_gen" $3/definition.kore $3/proof-hint.bin $3 --reuse --proof-dir ./ $OPTS
+poetry -C generation run python -m "kore_transfer.proof_gen" $(dirname $1)/$(basename $1 .k)-kompiled/definition.kore $3/proof-hint.bin $3 --reuse --proof-dir ./ $OPTS
