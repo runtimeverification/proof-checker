@@ -14,6 +14,8 @@ from proof_generation.tautology import (
     CFBot,
     CFOr,
     CFVar,
+    Clause,
+    ClauseConjunction,
     MetaVar,
     Tautology,
     clause_list_to_pattern,
@@ -151,7 +153,7 @@ simplify_clause_test_cases = [
 
 
 @pytest.mark.parametrize('cl, resolvent', simplify_clause_test_cases)
-def test_simplify_clause(cl: list[int], resolvent: int) -> None:
+def test_simplify_clause(cl: Clause, resolvent: int) -> None:
     taut = tautology_test_proof_expression()
     final_cl, pf = taut.simplify_clause(cl, resolvent)
     conc = pf().conclusion
@@ -213,7 +215,7 @@ merge_clauses_test_cases = [
 
 
 @pytest.mark.parametrize('list_l, list_r', merge_clauses_test_cases)
-def test_merge_clauses(list_l: list[int], list_r: list[int]) -> None:
+def test_merge_clauses(list_l: Clause, list_r: Clause) -> None:
     taut = tautology_test_proof_expression()
     term_l = clause_to_pattern(list_l)
     term_r = clause_to_pattern(list_r)
@@ -234,7 +236,7 @@ trivial_clause_test_cases = [
 
 
 @pytest.mark.parametrize('test_case', trivial_clause_test_cases)
-def test_prove_trivial_clause(test_case: list[int]) -> None:
+def test_prove_trivial_clause(test_case: Clause) -> None:
     taut = tautology_test_proof_expression()
     pf = taut.prove_trivial_clause(test_case)
     conc = pf().conclusion
@@ -254,7 +256,7 @@ resolution_test_cases = [
 
 
 @pytest.mark.parametrize('clauses, expected_res', resolution_test_cases)
-def test_resolution(clauses: list[list[int]], expected_res: bool | None) -> None:
+def test_resolution(clauses: ClauseConjunction, expected_res: bool | None) -> None:
     taut = tautology_test_proof_expression()
     res = taut.start_resolution_algorithm(clauses)
     if expected_res is None:
