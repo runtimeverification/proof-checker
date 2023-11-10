@@ -181,7 +181,6 @@ class KModule(BuilderScope):
     ) -> KSymbol:
         if name in self._symbols:
             raise ValueError(f'Symbol {name} has been already added!')
-        assert isinstance(output_sort, (KSort, KSortVar))
         if isinstance(output_sort, KSort):
             # It should be either in the module or in imported modules
             assert self.get_sort(output_sort.name) == output_sort
@@ -224,7 +223,6 @@ class KModule(BuilderScope):
     def get_symbol(self, name: str) -> KSymbol:
         if name in self._symbols:
             return self._symbols[name]
-
         for module in self._imported_modules:
             try:
                 symbol = module.get_symbol(name)
