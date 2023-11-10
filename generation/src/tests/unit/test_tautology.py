@@ -18,7 +18,7 @@ from proof_generation.tautology import (
     ClauseConjunction,
     MetaVar,
     Tautology,
-    clause_list_to_pattern,
+    clause_conjunctionto_pattern,
     clause_to_pattern,
     conj_to_pattern,
     foldr_op,
@@ -70,6 +70,18 @@ def tautology_test_proof_expression() -> ProofExp:
     proof_exp.execute_gamma_phase()
     proof_exp.execute_claims_phase()
     return proof_exp
+
+clause_conjunction_to_pattern_test_cases = [
+    ([[2], [1]], And(phi1, phi0)),
+    ([[2, 1]], Or(phi1, phi0)),
+    ([[1, 1], [2, 3, 1]], And(Or(phi0, phi0), Or(phi1, Or(phi2, phi0)))),
+    ([[1, 1], [1], [2]], And(Or(phi0, phi0), And(phi0, phi1))),
+]
+
+@pytest.mark.parametrize('clause_conj, pat', clause_conjunction_to_pattern_test_cases)
+def test_clause_conjunction_to_pattern(clause_conj: ClauseConjunction, pat: Pattern) -> None:
+    assert clause_conjunctionto_pattern(clause_conj) == pat
+
 
 test_patterns = [
     top,
@@ -129,7 +141,7 @@ def test_cnf_converter(p: Pattern) -> None:
 
     # Testing to_clauses
     p_cl, pf_cl_1, pf_cl_2 = taut.to_clauses(p_cnf)
-    res4 = clause_list_to_pattern(p_cl)
+    res4 = clause_conjunctionto_pattern(p_cl)
     pf_cl_1_conc = pf_cl_1().conclusion
     assert pf_cl_1_conc == Implies(res3, res4)
     pf_cl_2_conc = pf_cl_2().conclusion
@@ -266,7 +278,7 @@ def test_resolution(clauses: ClauseConjunction, expected_res: bool | None) -> No
     proved_true, pf = res
     assert expected_res == proved_true
     conc = pf().conclusion
-    term = clause_list_to_pattern(clauses)
+    term = clause_conjunctionto_pattern(clauses)
     if proved_true:
         assert conc == term
     else:

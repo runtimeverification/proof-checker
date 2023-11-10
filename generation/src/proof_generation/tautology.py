@@ -129,7 +129,7 @@ def clause_to_pattern(l: Clause) -> Pattern:
     return foldr_op(Or, [id_to_metavar(id) for id in l])
 
 
-def clause_list_to_pattern(l: ClauseConjunction) -> Pattern:
+def clause_conjunctionto_pattern(l: ClauseConjunction) -> Pattern:
     if not l:
         return top
     return foldr_op(And, [clause_to_pattern(cl) for cl in l])
@@ -838,7 +838,7 @@ class Tautology(Propositional):
                     pf = self.resolution_base(resolvant_term)
             pf = self.resolution_step(pf_l, pf_r, pf)
             return final_term, pf
-        term = clause_list_to_pattern(terms)
+        term = clause_conjunctionto_pattern(terms)
         return terms[res], self.conjunction_implies_nth(term, res, len(terms))
 
     # The returned boolean represents whether the proof is a proof of the original formula (True) or its negation (False)
