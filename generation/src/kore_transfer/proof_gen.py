@@ -40,11 +40,11 @@ def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = Fa
     return kompiled_dir
 
 
-def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: str) -> None:
+def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: str, mode: str) -> None:
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    proof_gen.main(['', 'binary', str(output_dir), file_name])
+    proof_gen.main(['', mode, str(output_dir), file_name])
 
 
 HINTS_DIR_PATH = 'proof-hints'
@@ -70,6 +70,7 @@ def main(
     proof_dir: str,
     reuse_kompiled_dir: bool = False,
     rewrite_proof_files: bool = False,
+    pretty: bool = False
 ) -> None:
     # Kompile sources
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
@@ -84,7 +85,8 @@ def main(
     print('Begin generating proofs ... ')
     generate_proofs(hints_iterator, KoreDefinition, language_definition)
 
-    generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem)
+    generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem, 'pretty' if pretty else 'binary')
+
     print('Done!')
 
 
@@ -95,7 +97,8 @@ if __name__ == '__main__':
     argparser.add_argument('output_dir', type=str, help='Path to the output directory')
     argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
     argparser.add_argument('--clean', action='store_true', default=False, help='Rewrite proofs if they already exist')
+    argparser.add_argument('--pretty', action='store_true', default=False, help='Output in a pretty format')
     argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
 
     args = argparser.parse_args()
-    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.reuse, args.clean)
+    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.reuse, args.clean, args.pretty)
