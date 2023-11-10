@@ -17,3 +17,6 @@ cmake-build-debug
 
 # IntelliJ IDEA files
 .idea
+
+# Cairo
+cairo/target
