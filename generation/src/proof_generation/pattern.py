@@ -512,7 +512,9 @@ class Notation:
 
     def __post_init__(self) -> None:
         if self.definition.metavars():
-            assert max(self.definition.metavars()) < self.arity, f'Notation {self.label}: Number of variables used is greater than Arity.'
+            assert (
+                max(self.definition.metavars()) < self.arity
+            ), f'Notation {self.label}: Number of variables used is greater than Arity.'
 
     def __call__(self, *args: Pattern) -> Pattern:
         assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
