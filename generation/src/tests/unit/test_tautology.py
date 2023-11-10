@@ -5,17 +5,14 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.basic_interpreter import ExecutionPhase
-from proof_generation.stateful_interpreter import StatefulInterpreter
 from proof_generation.pattern import Implies, bot, imp, phi0, phi1, phi2
-from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import And, Equiv, Or, neg, top
+from proof_generation.proofs.propositional import _and, _or, equiv, neg, top
+from proof_generation.stateful_interpreter import StatefulInterpreter
 from proof_generation.tautology import (
     CFAnd,
     CFBot,
     CFOr,
     CFVar,
-    Clause,
-    ClauseConjunction,
     MetaVar,
     Tautology,
     clause_conjunctionto_pattern,
@@ -26,7 +23,7 @@ from proof_generation.tautology import (
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
-    from proof_generation.tautology import ConjForm
+    from proof_generation.tautology import Clause, ClauseConjunction, ConjForm
 
 
 def is_conj_form(t: ConjForm) -> bool:
@@ -65,18 +62,20 @@ def is_cnf(t: ConjForm) -> bool:
     return False
 
 
-def tautology_test_proof_expression() -> ProofExp:
+def tautology_test_proof_expression() -> Tautology:
     proof_exp = Tautology(StatefulInterpreter(ExecutionPhase.Gamma))
     proof_exp.execute_gamma_phase()
     proof_exp.execute_claims_phase()
     return proof_exp
 
+
 clause_conjunction_to_pattern_test_cases = [
-    ([[2], [1]], And(phi1, phi0)),
-    ([[2, 1]], Or(phi1, phi0)),
-    ([[1, 1], [2, 3, 1]], And(Or(phi0, phi0), Or(phi1, Or(phi2, phi0)))),
-    ([[1, 1], [1], [2]], And(Or(phi0, phi0), And(phi0, phi1))),
+    ([[2], [1]], _and(phi1, phi0)),
+    ([[2, 1]], _or(phi1, phi0)),
+    ([[1, 1], [2, 3, 1]], _and(_or(phi0, phi0), _or(phi1, _or(phi2, phi0)))),
+    ([[1, 1], [1], [2]], _and(_or(phi0, phi0), _and(phi0, phi1))),
 ]
+
 
 @pytest.mark.parametrize('clause_conj, pat', clause_conjunction_to_pattern_test_cases)
 def test_clause_conjunction_to_pattern(clause_conj: ClauseConjunction, pat: Pattern) -> None:
@@ -84,15 +83,15 @@ def test_clause_conjunction_to_pattern(clause_conj: ClauseConjunction, pat: Patt
 
 
 test_patterns = [
-    top,
+    top(),
     imp(phi0, phi0),
     neg(imp(neg(phi0), phi0)),
     imp(imp(phi0, phi0), phi0),
-    neg(imp(phi1, imp(bot, bot))),
-    Or(imp(phi0, phi1), neg(phi2)),
-    imp(Or(phi0, phi2), phi0),
-    neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2))))),
-    neg(neg(neg(imp(Or(neg(phi0), phi0), And(phi1, imp(phi1, phi2)))))),
+    neg(imp(phi1, imp(bot(), bot()))),
+    _or(imp(phi0, phi1), neg(phi2)),
+    imp(_or(phi0, phi2), phi0),
+    neg(neg(imp(_or(neg(phi0), phi0), _and(phi1, imp(phi1, phi2))))),
+    neg(neg(neg(imp(_or(neg(phi0), phi0), _and(phi1, imp(phi1, phi2)))))),
 ]
 
 
@@ -169,7 +168,7 @@ def test_simplify_clause(cl: Clause, resolvent: int) -> None:
     taut = tautology_test_proof_expression()
     final_cl, pf = taut.simplify_clause(cl, resolvent)
     conc = pf().conclusion
-    pf_l, pf_r = Equiv.extract(conc)
+    pf_l, pf_r = equiv.assert_matches(conc)
     assert clause_to_pattern(cl) == pf_l
     assert clause_to_pattern(final_cl) == pf_r
     resolvent_present = False
@@ -189,7 +188,7 @@ def test_simplify_clause(cl: Clause, resolvent: int) -> None:
 @pytest.mark.parametrize('l', [1, 2, 5])
 def test_conjunction_implies_nth(l: int) -> None:
     taut = tautology_test_proof_expression()
-    term = foldr_op(And, [MetaVar(i) for i in range(l)])
+    term = foldr_op(_and, [MetaVar(i) for i in range(l)])
     for i in range(l):
         pf = taut.conjunction_implies_nth(term, i, l)
         conc = pf().conclusion
@@ -234,7 +233,7 @@ def test_merge_clauses(list_l: Clause, list_r: Clause) -> None:
     final_term = clause_to_pattern(list_l + list_r)
     pf = taut.merge_clauses(term_l, len(list_l), term_r)
     conc = pf().conclusion
-    assert conc == Equiv(Or(term_l, term_r), final_term)
+    assert conc == equiv(_or(term_l, term_r), final_term)
 
 
 trivial_clause_test_cases = [
@@ -289,13 +288,13 @@ phi3 = MetaVar(3)
 phi4 = MetaVar(4)
 
 tautology_test_cases = [
-    (top, True),
-    (bot, False),
-    (Or(top, phi0), True),
+    (top(), True),
+    (bot(), False),
+    (_or(top(), phi0), True),
     (phi0, None),
     (Implies(phi0, phi0), True),
-    (Or(phi0, neg(phi0)), True),
-    (And(phi0, neg(phi0)), False),
+    (_or(phi0, neg(phi0)), True),
+    (_and(phi0, neg(phi0)), False),
     (
         Implies(
             (Implies(Implies(Implies(Implies(phi0, phi1), neg(phi2)), phi3), phi4)),

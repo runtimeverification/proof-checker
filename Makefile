@@ -85,6 +85,12 @@ else
 endif
 
 
+# Testing
+# =======
+
+test-most: test-unit test-system test-integration
+test: test-most test-zk
+
 # Unit testing
 # ============
 

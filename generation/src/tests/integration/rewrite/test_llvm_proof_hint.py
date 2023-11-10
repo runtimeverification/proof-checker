@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pyk.kllvm.load  # noqa: F401
 
-from rewrite.llvm_proof_hint import LLVMRewriteTrace
+from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 HINTS_DIR_PATH = 'proof-hints'
 

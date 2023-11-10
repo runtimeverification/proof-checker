@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, EVar, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import And, Negation, Or
+from proof_generation.proofs.propositional import Propositional, _and, _or, neg
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
-
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
@@ -18,168 +15,69 @@ phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 
+
 # TODO: Make sure this is handled uniformly
 inhabitant_symbol = Symbol('inhabitant')
 kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
 
 
-@dataclass(frozen=True, eq=False)
-class KoreTop(Notation):
-    phi0: Pattern
+""" kore_top(sort) """
+kore_top = Notation('kore-top', 1, App(inhabitant_symbol, phi0), '(k⊤ {0})')
 
-    @classmethod
-    def definition(cls) -> Pattern:
-        return App(inhabitant_symbol, phi0)
+""" kore_not(sort, pattern) """
+kore_not = Notation('kore-not', 2, _and(neg(phi1), kore_top(phi0)), '(k¬{{0}} {1})')
 
-    def __str__(self) -> str:
-        return f'(k⊤ {self.phi0})'
+""" kore_and(sort, pattern, pattern) """
+kore_and = Notation('kore-and', 3, _and(phi1, phi2), '({0}[{1}] k⋀ {0}[{2}])')
 
+""" kore_or(sort, pattern, pattern) """
+kore_or = Notation('kore-or', 3, _or(phi1, phi2), '({0}[{1}] k⋁ {0}[{2}])')
 
-@dataclass(frozen=True, eq=False)
-class KoreNot(Notation):
-    phi0: Pattern
-    phi1: Pattern
+""" kore_next(sort, pattern) """
+kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '(♦ {0})')
 
-    @classmethod
-    def definition(cls) -> Pattern:
-        return And(Negation(phi1), KoreTop(phi0))
+""" kore_implies(sort, pattern, pattern) """
+kore_implies = Notation('kore-implies', 3, kore_or(phi0, kore_not(phi0, phi1), phi2), '({0}[{1}] k-> {0}[{2}])')
 
-    def __str__(self) -> str:
-        return f'(k¬ {self.phi0})'
+""" kore_rewrites(sort, left, right) """
+kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({0}[{1}] k=> {0}[{2}])')
 
-
-@dataclass(frozen=True, eq=False)
-class KoreAnd(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return And(phi1, phi2)
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k⋀ {str(self.phi0)}[{str(self.phi2)}])'
+""" kore_dv(sort, value) """
+kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), 'dv({0})')
 
 
-@dataclass(frozen=True, eq=False)
-class KoreOr(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
+def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
+    """Constructs an nary application."""
+    p: Pattern = symbol
+    fmt_args: list[str] = []
+    for i in range(0, n):
+        p = App(p, MetaVar(i))
+        fmt_args.append('{' + str(i) + '}')
 
-    @classmethod
-    def definition(cls) -> Pattern:
-        return Or(phi1, phi2)
+    fmt: str
+    if cell:
+        fmt = f'<{symbol.name}> ' + ' '.join(fmt_args) + f' </{symbol.name}>'
+    else:
+        fmt = f'{symbol.name}(' + ', '.join(fmt_args) + ')'
 
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k⋁ {str(self.phi0)}[{str(self.phi2)}])'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreNext(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return App(kore_next_symbol, phi1)
-
-    def __str__(self) -> str:
-        return f'(♦ {str(self.phi1)})'
+    return Notation(symbol.name, n, p, fmt)
 
 
-@dataclass(frozen=True, eq=False)
-class KoreImplies(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return KoreOr(phi0, KoreNot(phi0, phi1), phi2)
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k-> {str(self.phi0)}[{str(self.phi2)}])'
+def nary_cell(symbol: Symbol, n: int) -> Notation:
+    return nary_app(symbol, n, cell=True)
 
 
-@dataclass(frozen=True, eq=False)
-class KoreApplies(Notation):
-    sorts: tuple[Pattern, ...]  # For sorts
-    phi0: Pattern  # For arguments
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        # TODO: We just drop the sort for now
-        # In the Kore we can have an application of a symbol to none or several arguments. We chain them manually
-        # in a single pattern and then save it to phi1. We can't guarantee that there are two or more args as in
-        # the normal application.
-        return phi0
-
-    def __str__(self) -> str:
-        return f'(kapp({str(self.sorts)}) ({str(self.phi0)})'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreRewrites(Notation):
-    phi0: Pattern
-    phi1: Pattern
-    phi2: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return KoreImplies(phi0, phi1, KoreNext(phi0, phi2))
-
-    def __str__(self) -> str:
-        return f'({str(self.phi0)}[{str(self.phi1)}] k=> {str(self.phi0)}[{str(self.phi2)}])'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreDv(Notation):
-    phi0: Pattern
-    phi1: Pattern
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return App(App(kore_dv_symbol, phi0), phi1)
-
-
-@dataclass(frozen=True, eq=False)
-class Cell(Notation):
-    phi0: Symbol  # Symbol for the outer cell
-    phi1: Pattern  # The value of the cell
-
-    @classmethod
-    def definition(cls) -> Pattern:
-        return App(phi0, phi1)
-
-    def __str__(self) -> str:
-        return f'<{str(self.phi0.name)}> {str(self.phi1)} </{str(self.phi0.name)}>'
-
-
-@dataclass(frozen=True, eq=False)
-class KoreNestedCells(Cell):
-    phi0: Symbol  # Symbol for the outer cell
-    phi1: Pattern  # Application chain for inner cells
-
-    def __str__(self) -> str:
-        # We have a chain of cells applied to each other. We need to recover them.
-        # App(App(cell1, cell2), cell3) -> <cell1> </cell1> <cell2> </cell2> <cell3> </cell3>
-        def recover_cells(todo: Pattern | None) -> Iterable[str]:
-            if isinstance(todo, App):
-                # We have a chain of cells
-                yield str(todo.right)
-                yield from recover_cells(todo.left)
-            # TODO: Remove the Metavar from the typecheck
-            elif isinstance(todo, Cell | MetaVar | EVar):
-                # We have a single cell
-                yield str(todo)
-            else:
-                raise ValueError(f'Unexpected pattern {todo}')
-
-        recovered_cells_str = ' '.join(reversed(list(recover_cells(self.phi1))))
-        return f'<{str(self.phi0.name)}> {recovered_cells_str} </{str(self.phi0.name)}>'
+def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ...]]:
+    match p:
+        case Instantiate(_, _):
+            # TODO: Consider something smarter here.
+            return deconstruct_nary_application(p.simplify())
+        case App(l, r):
+            symbol, args = deconstruct_nary_application(l)
+            return symbol, (*args, r)
+        case _:
+            return p, ()
 
 
 # TODO: Add kore-transitivity
@@ -191,6 +89,20 @@ class KoreLemmas(ProofExp):
     @staticmethod
     def claims() -> list[Pattern]:
         return []
+
+    @staticmethod
+    def notations() -> list[Notation]:
+        return [
+            *Propositional.notations(),
+            kore_top,
+            kore_not,
+            kore_and,
+            kore_or,
+            kore_next,
+            kore_implies,
+            kore_rewrites,
+            kore_dv,
+        ]
 
     def proof_expressions(self) -> list[ProofThunk]:
         return []
