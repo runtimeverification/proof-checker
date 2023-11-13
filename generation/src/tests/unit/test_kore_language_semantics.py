@@ -4,7 +4,8 @@ from itertools import count
 
 from pytest import raises, fixture
 
-from proof_generation.pattern import Symbol
+from proof_generation.proofs.kore_lemmas import kore_rewrites
+from proof_generation.pattern import Symbol, Pattern
 from kore_transfer.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
 
 
@@ -166,10 +167,14 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
 
     # TODO: Creating a new modules separetly and importing it to the existing module
     # We expect it is to be tracked by semantics as it was added explicitly
-    newest_module = KModule('newest_module', count())
+    newest_module = KModule('newest_module', new_module.counter)
     with newest_module as nm:
         newest_sort = nm.sort('newest_module_srt')
         newest_symbol = nm.symbol('newest_module_sym', newest_sort)
+
+        pattern = kore_rewrites(newest_sort.aml_symbol, newest_symbol.aml_symbol, newest_symbol.aml_symbol)
+        assert isinstance(pattern, Pattern)
+        rule = nm.rewrite_rule(pattern)
     with simple_semantics.main_module as mm:
         mm.import_module(newest_module)
 
@@ -184,4 +189,9 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
     assert simple_semantics.main_module.get_symbol('newest_module_sym') is newest_symbol
     assert simple_semantics.main_module.get_sort('newest_module_srt') is newest_sort
 
-    # TODO: Test searching axioms
+    # Test accessing added rule
+    assert newest_module.get_axiom(rule.ordinal) == rule
+    assert simple_semantics.main_module.get_axiom(rule.ordinal) == rule
+    assert simple_semantics.get_axiom(rule.ordinal) == rule
+    with raises(ValueError):
+        simple_semantics.get_axiom(rule.ordinal + 1)
