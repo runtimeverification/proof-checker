@@ -2,15 +2,33 @@ from __future__ import annotations
 
 from itertools import count
 
-from pytest import raises
+from pytest import raises, fixture
 
 from proof_generation.pattern import Symbol
 from kore_transfer.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
 
 
+@fixture
+def simple_semantics() -> LanguageSemantics:
+    semantics = LanguageSemantics()
+    with semantics as sem:
+        mod = sem.module('test_module')
+        with mod as mod:
+            srt1 = mod.sort('srt1')
+            srt2 = mod.sort('srt2')
+
+            mod.symbol('sym1', srt1)
+            mod.symbol('sym2', srt2, (srt1,), is_functional=True)
+    return semantics
+
+
 def test_module_creation() -> None:
     semantics = LanguageSemantics()
     with semantics as sem:
+        with raises(ValueError):
+            sem.main_module
+        assert len(sem.modules) == 0
+
         test_name = 'test_module'
         m = sem.module(test_name)
 
@@ -27,8 +45,8 @@ def test_module_sort() -> None:
         # Add a sort
         ssort = tr.sort('trivial_s')
         assert isinstance(ssort, KSort), f'Expect a sort object, got {str(ssort)}'
-        assert ssort in tr.sorts, 'Expect the sort to be in the module'
-        assert len(tr.sorts) == 1, 'Expect the only sort in the module'
+        assert ssort in tr.sorts
+        assert len(tr.sorts) == 1
 
         # It is forbidden to add sorts twice
         with raises(ValueError):
@@ -39,8 +57,8 @@ def test_module_sort() -> None:
             tr.hooked_sort('trivial_s')
 
         hookeds = tr.hooked_sort('trivial_hooked_s')
-        assert hookeds in tr.sorts, 'Expect the hooked sort to be in the module'
-        assert set(tr.sorts) == {ssort, hookeds}, 'Expect two sorts in the module'
+        assert hookeds in tr.sorts
+        assert set(tr.sorts) == {ssort, hookeds}
 
         # It is forbidden to add sorts with the same names as existing hooked sorts
         with raises(ValueError):
@@ -90,17 +108,80 @@ def test_module_symbols() -> None:
         with raises(ValueError):
             tr.symbol('bar', ssort, (KSort('Foo'),), is_functional=True)
 
+        # Testing setting symbol attributes
         fsymbol = tr.symbol('fbar', ssort, (ssort,), is_functional=True)
-        assert fsymbol in tr.symbols, 'Expect the functional symbol to be in the module'
-        assert set(tr.symbols) == {ssymbol, fsymbol}, 'Expect two symbols in the module'
-        assert fsymbol.is_functional, 'Expect the functional symbol to be functional'
+        assert fsymbol in tr.symbols
+        assert set(tr.symbols) == {ssymbol, fsymbol}
+        assert fsymbol.is_functional
 
         csymbol = tr.symbol('cbar', ssort, (ssort,), is_ctor=True)
-        assert csymbol in tr.symbols, 'Expect the constructor symbol to be in the module'
-        assert csymbol.is_ctor, 'Expect the constructor symbol to be a constructor'
+        assert csymbol in tr.symbols
+        assert csymbol.is_ctor
 
         cell_symbol = tr.symbol('cell', ssort, (ssort,), is_cell=True)
-        assert cell_symbol in tr.symbols, 'Expect the cell symbol to be in the module'
-        assert cell_symbol.is_cell, 'Expect the cell symbol to be a cell'
+        assert cell_symbol in tr.symbols
+        assert cell_symbol.is_cell
+
+        # Testing getters for sorts and symbols
+        assert trivial.get_sort('foo') == ssort
+        assert trivial.get_symbol('bar') == ssymbol
+
+        # Testing expected exception types
+        with raises(ValueError):
+            trivial.get_sort('unknown_sort')
+        with raises(ValueError):
+            trivial.get_symbol('unknown_symbol')
 
 
+def test_module_import(simple_semantics: LanguageSemantics) -> None:
+    # Testing expected initial semantics setup
+    assert len(simple_semantics.modules) == 1, 'Expect one module'
+    assert simple_semantics.main_module.name == 'test_module'
+    old_module = simple_semantics.main_module
+
+    # Adding a new module and importing it to the existing one
+    added_symbol = None
+    added_sort = None
+    with simple_semantics as sem:
+        new_module = sem.module('new_module')
+
+        # Populate the new module
+        with new_module as nm:
+            added_sort = nm.sort('new_module_srt')
+            added_symbol = nm.symbol('new_module_sym', added_sort)
+
+    # Expect the counter to be inherited
+    assert new_module.counter == old_module.counter
+
+    # Check that the new module is added to the semantics
+    assert set(simple_semantics.modules) == {new_module, old_module}
+    assert simple_semantics.main_module == new_module
+    assert simple_semantics.get_module('new_module') == new_module
+
+    # Check that the content of the new module is available in the semantics
+    assert added_symbol == simple_semantics.get_symbol('new_module_sym') is not None
+    assert added_sort == simple_semantics.get_sort('new_module_srt') is not None
+    assert added_symbol == simple_semantics.get_symbol('new_module_sym') is not None
+    assert added_sort == simple_semantics.get_sort('new_module_srt') is not None
+
+    # TODO: Creating a new modules separetly and importing it to the existing module
+    # We expect it is to be tracked by semantics as it was added explicitly
+    newest_module = KModule('newest_module', count())
+    with newest_module as nm:
+        newest_sort = nm.sort('newest_module_srt')
+        newest_symbol = nm.symbol('newest_module_sym', newest_sort)
+    with simple_semantics.main_module as mm:
+        mm.import_module(newest_module)
+
+    # Test that the new module is available in the semantics
+    assert newest_module in simple_semantics.modules
+    assert set(simple_semantics.modules) == {old_module, new_module, newest_module}
+    assert simple_semantics.get_module('newest_module') == newest_module
+
+    # Test that the content is gettable
+    assert simple_semantics.get_symbol('newest_module_sym') is newest_symbol
+    assert simple_semantics.get_sort('newest_module_srt') is newest_sort
+    assert simple_semantics.main_module.get_symbol('newest_module_sym') is newest_symbol
+    assert simple_semantics.main_module.get_sort('newest_module_srt') is newest_sort
+
+    # TODO: Test searching axioms
