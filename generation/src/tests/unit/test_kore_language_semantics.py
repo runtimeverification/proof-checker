@@ -4,6 +4,7 @@ from itertools import count
 
 from pytest import raises
 
+from proof_generation.pattern import Symbol
 from kore_transfer.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
 
 
@@ -46,6 +47,23 @@ def test_module_sort() -> None:
             tr.sort('trivial_hooked_s')
 
 
+def test_sorts() -> None:
+    srt = KSort('srt')
+    assert srt.name == 'srt'
+    assert srt.aml_symbol == Symbol('ksort_srt')
+
+
+def test_symbols() -> None:
+    srt = KSort('srt')
+    sym = KSymbol('sym', srt)
+    assert sym.name == 'sym'
+    assert sym.output_sort == srt
+    assert sym.aml_symbol == Symbol('kore_sym')
+    assert not sym.is_functional
+    assert not sym.is_ctor
+    assert not sym.is_cell
+
+
 def test_module_symbols() -> None:
     trivial = KModule('trivial', count())
     with trivial as tr:
@@ -84,3 +102,5 @@ def test_module_symbols() -> None:
         cell_symbol = tr.symbol('cell', ssort, (ssort,), is_cell=True)
         assert cell_symbol in tr.symbols, 'Expect the cell symbol to be in the module'
         assert cell_symbol.is_cell, 'Expect the cell symbol to be a cell'
+
+
