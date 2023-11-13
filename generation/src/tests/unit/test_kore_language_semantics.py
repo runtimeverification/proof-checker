@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from itertools import count
 
-from pytest import raises, fixture
+from pytest import fixture, raises
 
-from proof_generation.proofs.kore_lemmas import kore_rewrites
-from proof_generation.pattern import Symbol, Pattern
 from kore_transfer.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
+from proof_generation.pattern import Pattern, Symbol
+from proof_generation.proofs.kore_lemmas import kore_rewrites
 
 
 @fixture
