@@ -6,8 +6,8 @@ cmake-build-debug
 # User directory for temp files
 /tmp/
 
-# zkLLVM output directory
-/zkllvm/output*
+# Generated cpp binary
+a.out
 
 # VS Code configuration
 /.vscode/
