@@ -40,7 +40,7 @@ def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = Fa
     return kompiled_dir
 
 
-def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: str) -> None:
+def generate_proof_file(proof_gen: ProofExp, output_dir: Path, file_name: str) -> None:
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
@@ -81,10 +81,12 @@ def main(
     # print('Intialize hint stream ... ')
     hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_definition)
 
-    print('Begin generating proofs ... ')
-    generate_proofs(hints_iterator, KoreDefinition, language_definition)
+    kore_def = KoreDefinition()
 
-    generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem)
+    print('Begin generating proofs ... ')
+    generate_proofs(hints_iterator, kore_def, language_definition)
+
+    generate_proof_file(kore_def, Path(proof_dir), Path(k_file).stem)
     print('Done!')
 
 

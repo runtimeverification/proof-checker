@@ -7,7 +7,6 @@ from proof_generation.pattern import Implies, MetaVar, Notation, bot, phi0, phi1
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
@@ -28,41 +27,33 @@ def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
 
 
 class Propositional(ProofExp):
-    def __init__(self, interpreter: BasicInterpreter) -> None:
-        super().__init__(interpreter)
-
-    @staticmethod
-    def axioms() -> list[Pattern]:
-        return []
-
-    @staticmethod
-    def notations() -> list[Notation]:
-        return [bot, neg, top, _and, _or]
-
-    @staticmethod
-    def claims() -> list[Pattern]:
-        return [
-            Implies(phi0, phi0),  # Reflexivity
-            top(),  # Top
-            Implies(bot(), phi0),  # Bot_elim
-            Implies(neg(neg(phi0)), phi0),  # Double Negation elim
-            Implies(phi0, neg(neg(phi0))),  # Double Negation intro
-            Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
-            Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
-            Implies(Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))),  # Implication Transitivity
-        ]
-
-    def proof_expressions(self) -> list[ProofThunk]:
-        return [
-            self.imp_refl(),
-            self.top_intro(),
-            self.bot_elim(),
-            self.dneg_elim(),
-            self.dneg_intro(),
-            self.absurd(),
-            self.peirce_bot(),
-            self.imp_trans(),
-        ]
+    def __init__(self) -> None:
+        super().__init__(
+            axioms=[],
+            notations=[bot, neg, top, _and, _or],
+            claims=[
+                Implies(phi0, phi0),  # Reflexivity
+                top(),  # Top
+                Implies(bot(), phi0),  # Bot_elim
+                Implies(neg(neg(phi0)), phi0),  # Double Negation elim
+                Implies(phi0, neg(neg(phi0))),  # Double Negation intro
+                Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
+                Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
+                Implies(
+                    Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))
+                ),  # Implication Transitivity
+            ],
+            proof_expressions=[
+                self.imp_refl(),
+                self.top_intro(),
+                self.bot_elim(),
+                self.dneg_elim(),
+                self.dneg_intro(),
+                self.absurd(),
+                self.peirce_bot(),
+                self.imp_trans(),
+            ],
+        )
 
     # Proofs
     # ======
@@ -493,4 +484,4 @@ class Propositional(ProofExp):
 
 
 if __name__ == '__main__':
-    Propositional.main(sys.argv)
+    Propositional().main(sys.argv)

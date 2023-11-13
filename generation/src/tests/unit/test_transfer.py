@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from pytest import FixtureRequest
 
     from mm_translate.metamath.parser import Database
-    from proof_generation.pattern import Pattern
+    from proof_generation.basic_interpreter import BasicInterpreter
 
 BENCHMARK_LOCATION = 'mm-benchmarks'
 
@@ -56,29 +56,21 @@ def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
     # TODO: Extract this code in transfer.py to a function
 
     class TranslatedProofSkeleton(ProofExp):
-        @staticmethod
-        def axioms() -> list[Pattern]:
-            return extracted_axioms
+        def __init__(self) -> None:
+            super().__init__(axioms=extracted_axioms, claims=extracted_claims)
 
-        @staticmethod
-        def claims() -> list[Pattern]:
-            return extracted_claims
+        def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+            assert interpreter.phase == ExecutionPhase.Proof
+            exec_proof(converter, 'imp-reflexivity', self, interpreter)
 
-        def execute_proofs_phase(self) -> None:
-            assert self.interpreter.phase == ExecutionPhase.Proof
-            exec_proof(converter, 'imp-reflexivity', self)
-
-    proofexp = TranslatedProofSkeleton(
-        StatefulInterpreter(
-            ExecutionPhase.Gamma,
-            [Claim(claim) for claim in extracted_claims],
-        )
+    proofexp = TranslatedProofSkeleton()
+    interpreter = StatefulInterpreter(
+        ExecutionPhase.Gamma,
+        [Claim(claim) for claim in extracted_claims],
     )
+    proofexp.execute_full(interpreter)
 
-    proofexp.execute_full()
-
-    assert isinstance(proofexp.interpreter, StatefulInterpreter)
-    assert proofexp.interpreter.stack == [Proved(Implies(MetaVar(0), MetaVar(0)))]
+    assert interpreter.stack == [Proved(Implies(MetaVar(0), MetaVar(0)))]
 
 
 @pytest.mark.parametrize('db', ['parsed_transfer_database', 'parsed_transfer_compressed_database'])
@@ -98,26 +90,18 @@ def test_exec_transfer_proof(db: str, request: FixtureRequest) -> None:
 
     # TODO: Extract this code in transfer.py to a function
     class TranslatedProofSkeleton(ProofExp):
-        @staticmethod
-        def axioms() -> list[Pattern]:
-            return extracted_axioms
+        def __init__(self) -> None:
+            super().__init__(axioms=extracted_axioms, claims=extracted_claims)
 
-        @staticmethod
-        def claims() -> list[Pattern]:
-            return extracted_claims
+        def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+            assert interpreter.phase == ExecutionPhase.Proof
+            exec_proof(converter, 'goal', self, interpreter)
 
-        def execute_proofs_phase(self) -> None:
-            assert self.interpreter.phase == ExecutionPhase.Proof
-            exec_proof(converter, 'goal', self)
-
-    proofexp = TranslatedProofSkeleton(
-        StatefulInterpreter(
-            ExecutionPhase.Gamma,
-            [Claim(claim) for claim in extracted_claims],
-        )
+    proofexp = TranslatedProofSkeleton()
+    interpreter = StatefulInterpreter(
+        ExecutionPhase.Gamma,
+        [Claim(claim) for claim in extracted_claims],
     )
+    proofexp.execute_full(interpreter)
 
-    proofexp.execute_full()
-
-    assert isinstance(proofexp.interpreter, StatefulInterpreter)
-    assert proofexp.interpreter.stack == [Proved(converter.get_lemma_by_name('goal').pattern)]
+    assert interpreter.stack == [Proved(converter.get_lemma_by_name('goal').pattern)]
