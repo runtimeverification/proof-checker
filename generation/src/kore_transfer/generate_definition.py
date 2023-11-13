@@ -16,7 +16,7 @@ ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
 
 class KoreDefinition(proof.ProofExp):
     def __init__(self) -> None:
-        super().__init__([], [], [], [])
+        super().__init__()
 
     def add_axioms(self, hint: KoreHint, language_semantics: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
