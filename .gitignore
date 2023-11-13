@@ -7,7 +7,7 @@ cmake-build-debug
 /tmp/
 
 # zkLLVM output directory
-output*
+/zkllvm/output*
 
 # VS Code configuration
 /.vscode/
