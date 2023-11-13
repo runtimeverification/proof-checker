@@ -85,6 +85,12 @@ else
 endif
 
 
+# Testing
+# =======
+
+test-most: test-unit test-system test-integration
+test: test-most test-zk
+
 # Unit testing
 # ============
 
@@ -132,8 +138,10 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 # -------------------------
 
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
+# We assume that there is only one hint file per benchmark
 proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k generation/proof-hints/$*/foo-a.$*.hints .build/kompiled-definitions/$*-kompiled --clean --proof-dir proofs/generated-from-k/
+	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --clean --proof-dir proofs/generated-from-k/
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -142,9 +150,10 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
 # Checking proof generation for K
 # -------------------------------
-
+# We assume that there is only one hint file per benchmark
 .build/proofs/generated-from-k/%.ml-proof: FORCE
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k generation/proof-hints/$*/foo-a.$*.hints .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
+	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof

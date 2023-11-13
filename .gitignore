@@ -1,5 +1,7 @@
 # Build products
 /.build/
+build
+cmake-build-debug
 
 # User directory for temp files
 /tmp/
@@ -12,3 +14,9 @@
 
 # MacOS files
 .DS_Store
+
+# IntelliJ IDEA files
+.idea
+
+# Cairo
+cairo/target

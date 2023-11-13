@@ -3,14 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from frozendict import frozendict
 
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
+phi2 = MetaVar(2)
 sigma0 = Symbol('s0')
 sigma1 = Symbol('s1')
 sigma2 = Symbol('s2')
@@ -52,6 +54,13 @@ sigma2 = Symbol('s2')
             0,
             sigma1,
             ESubst(SSubst(phi0, SVar(0), sigma1), EVar(0), sigma1),
+        ],
+        # Instantiate/Notation
+        [
+            Instantiate(App(phi0, phi1), frozendict({0: phi2})),
+            0,
+            sigma1,
+            App(ESubst(phi2, EVar(0), sigma1), ESubst(phi1, EVar(0), sigma1)),
         ],
     ],
 )
@@ -96,10 +105,36 @@ def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: P
             sigma1,
             SSubst(SSubst(phi0, SVar(0), sigma1), SVar(0), sigma1),
         ],
+        # Instantiate/Notation
+        [
+            Instantiate(App(phi0, phi1), frozendict({0: phi2})),
+            0,
+            sigma1,
+            App(SSubst(phi2, SVar(0), sigma1), SSubst(phi1, SVar(0), sigma1)),
+        ],
     ],
 )
 def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: Pattern) -> None:
     assert pattern.apply_ssubst(svar_id, plug) == expected
+
+
+def test_metavars() -> None:
+    assert phi0.metavars() == {0}
+    assert Implies(phi0, phi1).metavars() == {0, 1}
+    assert App(phi0, phi1).metavars() == {0, 1}
+    assert Exists(0, phi1).metavars() == {1}
+    assert Mu(0, phi1).metavars() == {1}
+    assert Instantiate(phi0, frozendict({0: phi1})).metavars() == {1}
+    assert Instantiate(phi0, frozendict({1: phi1})).metavars() == {0}
+
+    assert ESubst(phi1, EVar(0), phi0).metavars() == {1, 0}
+    assert SSubst(phi1, SVar(0), phi0).metavars() == {1, 0}
+
+    assert ESubst(MetaVar(1), EVar(0), phi0).metavars() == {0, 1}
+    assert ESubst(MetaVar(1, e_fresh=(EVar(0),)), EVar(0), phi0).metavars() == {0, 1}  # TODO: Do we want {1} instead?
+
+    assert SSubst(MetaVar(1), SVar(0), phi0).metavars() == {0, 1}
+    assert SSubst(MetaVar(1, s_fresh=(SVar(0),)), SVar(0), phi0).metavars() == {0, 1}  # TODO: Do we want {1} instead?
 
 
 # Subst 0 for 1 and then 1 for 2
@@ -139,6 +174,9 @@ stack_mixed1 = lambda term: ESubst(SSubst(pattern=term, var=SVar(1), plug=EVar(1
         [stack_mixed1(phi0), {0: SVar(2)}, SVar(2)],
         # This fails if metavar instantiations are not propagated into the plug
         [SSubst(phi0, SVar(0), phi0), {0: SVar(0)}, SVar(0)],
+        [Instantiate(phi0, frozendict({0: phi1})), {1: sigma1}, sigma1],
+        [Instantiate(phi0, frozendict({0: phi0})), {0: sigma1}, sigma1],
+        [Instantiate(phi0, frozendict({0: phi1})), {0: sigma1}, Instantiate(phi0, frozendict({0: phi1}))],
     ],
 )
 def test_instantiate_subst(pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern) -> None:

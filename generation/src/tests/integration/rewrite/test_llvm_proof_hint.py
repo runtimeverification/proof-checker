@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pyk.kllvm.load  # noqa: F401
 
-from rewrite.llvm_proof_hint import LLVMRewriteTrace
+from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 HINTS_DIR_PATH = 'proof-hints'
 
@@ -47,3 +47,9 @@ def test_parse_proof_hint_peano() -> None:
     hint = read_proof_hint('peano/mul_3_5.peano.hints')
 
     assert len(hint.trace) == 58
+
+
+def test_parse_proof_hint_imp5() -> None:
+    hint = read_proof_hint('imp5/empty.imp5.hints')
+
+    assert len(hint.trace) == 1

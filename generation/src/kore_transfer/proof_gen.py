@@ -11,8 +11,8 @@ from pyk.ktool.kompile import kompile
 from kore_transfer.generate_definition import KoreDefinition
 from kore_transfer.generate_hints import get_proof_hints
 from kore_transfer.generate_proof import generate_proofs
-from kore_transfer.kore_converter import KoreConverter
-from rewrite.llvm_proof_hint import LLVMRewriteTrace
+from kore_transfer.language_semantics import LanguageSemantics
+from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
     from pyk.kore.syntax import Axiom, Definition
@@ -76,14 +76,13 @@ def main(
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
-    kore_converter = KoreConverter(kore_definition)
+    language_definition = LanguageSemantics.from_kore_definition(kore_definition)
 
     # print('Intialize hint stream ... ')
-    # TODO: Fix with the real hints
-    hints_iterator = get_proof_hints(read_proof_hint(hints_file), kore_converter)
+    hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_definition)
 
     print('Begin generating proofs ... ')
-    generate_proofs(hints_iterator, KoreDefinition, kore_converter)
+    generate_proofs(hints_iterator, KoreDefinition, language_definition)
 
     generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem)
     print('Done!')

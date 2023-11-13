@@ -6,6 +6,8 @@ from proof_generation.instruction import Instruction
 from proof_generation.io_interpreter import IOInterpreter
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.io_interpreter import IO
@@ -115,12 +117,22 @@ class SerializingInterpreter(IOInterpreter):
         self.out.write(bytes([Instruction.ModusPonens]))
         return ret
 
+    def exists_quantifier(self) -> Proved:
+        ret = super().exists_quantifier()
+        self.out.write(bytes([Instruction.Quantifier]))
+        return ret
+
+    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
+        ret = super().exists_generalization(proved, var)
+        self.out.write(bytes([Instruction.Generalization, var.name]))
+        return ret
+
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         ret = super().instantiate(proved, delta)
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         ret = super().instantiate_pattern(pattern, delta)
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret

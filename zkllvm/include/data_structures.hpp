@@ -2,60 +2,60 @@
 #include <cstdlib>
 #include <iostream>
 
+void *memset_(void *ptr, int value, size_t num) {
+  auto *byte_ptr = (unsigned char *)ptr;
+  auto byte_value = (unsigned char)value;
+
+  for (size_t i = 0; i < num; i++) {
+    byte_ptr[i] = byte_value;
+  }
+
+  return ptr;
+}
+
 template <typename T> struct Node {
   T data;
   Node *next;
 
-  Node(const T &value) : data(value), next(nullptr) {}
+  explicit Node(const T &value) noexcept : data(value), next(nullptr) {}
 
-  bool operator==(const Node &rhs) const { return equal(*this, rhs); }
+  bool operator==(const Node &rhs) const noexcept {
+    if (!next && !rhs.next) {
+      return data == rhs.data;
+    } else if (!next || !rhs.next) {
+      return false;
+    }
+    return data == rhs.data && *next == *rhs.next;
+  }
 
-  bool operator!=(const Node &rhs) { return !(this->operator==(rhs)); }
+  bool operator!=(const Node &rhs) noexcept { return !(this->operator==(rhs)); }
 
-  static Node *create(const T &value) {
+  static Node *create(const T &value) noexcept {
     Node *newNode = static_cast<Node *>(std::malloc(sizeof(Node)));
+    memset_(newNode, 0, sizeof(Node));
     newNode->data = value;
     newNode->next = nullptr;
     return newNode;
   }
 };
 
-template <typename T> bool equal(const Node<T> &lhs, const Node<T> &rhs) {
-
-  if (!lhs.data && !rhs.data) {
-    return true;
-  } else if (!lhs.data || !rhs.data) {
-    return false;
-  }
-  return lhs.data->operator==(*rhs.data) && lhs.next == rhs.next;
-}
-
-template <> bool equal(const Node<uint8_t> &lhs, const Node<uint8_t> &rhs) {
-
-  if (!lhs.data && !rhs.data) {
-    return true;
-  } else if (!lhs.data || !rhs.data) {
-    return false;
-  }
-  return lhs.data == rhs.data && lhs.next == rhs.next;
-}
-
 template <typename T> class LinkedList {
 public:
   Node<T> *head = nullptr;
 
-  LinkedList() : head(nullptr) {}
+  LinkedList() noexcept : head(nullptr) {}
 
-  ~LinkedList() {
+  ~LinkedList() noexcept {
     Node<T> *curr = head;
     while (curr) {
       Node<T> *next = curr->next;
-      std::free(curr);
+      curr->~Node();
+      free(curr);
       curr = next;
     }
   }
 
-  bool operator==(const LinkedList &rhs) const {
+  bool operator==(const LinkedList &rhs) const noexcept {
     if (!head && !rhs.head) {
       return true;
     } else if (!head || !rhs.head) {
@@ -64,9 +64,9 @@ public:
     return (*head == *rhs.head);
   }
 
-  bool operator!=(const LinkedList &rhs) { return !(*this == rhs); }
+  bool operator!=(const LinkedList &rhs) noexcept { return !(*this == rhs); }
 
-  void push(const T &value) {
+  void push(const T &value) noexcept {
     Node<T> *newNode = Node<T>::create(value);
 
     // If the list is empty, set the new node as the head
@@ -79,7 +79,7 @@ public:
     }
   }
 
-  void push_back(const T &value) {
+  void push_back(const T &value) noexcept {
     Node<T> *newNode = Node<T>::create(value);
 
     // If the list is empty, set the new node as the head
@@ -95,7 +95,7 @@ public:
     }
   }
 
-  T pop() {
+  T pop() noexcept {
     assert(head && "Insufficient stack items.");
     T value = head->data;
 
@@ -107,24 +107,21 @@ public:
     return value;
   }
 
-  T front() {
+  void clear() noexcept {
+    while (head) {
+      Node<T> *next = head->next;
+      head->~Node();
+      std::free(head);
+      head = next;
+    }
+  }
+
+  T front() noexcept {
     assert(head && "Insufficient stack items.");
     return head->data;
   }
 
-  static LinkedList *create() {
-    auto newList = static_cast<LinkedList *>(std::malloc(sizeof(LinkedList)));
-    newList->head = nullptr;
-    return newList;
-  }
-
-  static LinkedList *create(const T &value) {
-    LinkedList *list = create();
-    list->push(value);
-    return list;
-  }
-
-  bool contains(const T &value) {
+  bool contains(const T &value) noexcept {
     Node<T> *curr = head;
     while (curr) {
       if (curr->data == value) {
@@ -135,7 +132,7 @@ public:
     return false;
   }
 
-  bool constainsElementOf(LinkedList<T> *otherList) {
+  bool containsElementOf(LinkedList<T> *otherList) noexcept {
     for (auto &item : *this) {
       if (otherList->contains(item)) {
         return true;
@@ -144,7 +141,7 @@ public:
     return false;
   }
 
-  T &get(int index) {
+  T &get(int index) noexcept {
     Node<T> *curr = head;
     for (int i = 0; i < index; i++) {
       curr = curr->next;
@@ -153,9 +150,9 @@ public:
     return curr->data;
   }
 
-  T &operator[](int index) { return get(index); }
+  T &operator[](int index) noexcept { return get(index); }
 
-  size_t size() {
+  size_t size() noexcept {
     size_t count = 0;
     Node<T> *curr = head;
     while (curr) {
@@ -165,37 +162,35 @@ public:
     return count;
   }
 
-  bool empty() { return head == nullptr; }
+  bool empty() noexcept { return head == nullptr; }
 
   class Iterator {
   private:
     Node<T> *current;
 
   public:
-    Iterator(Node<T> *head) : current(head) {}
+    Iterator(Node<T> *head) noexcept : current(head) {}
 
-    T &operator*() { return current->data; }
-    T *operator->() { return &current->data; }
-    bool operator==(const Iterator &other) { return current == other.current; }
-    bool operator!=(const Iterator &other) { return current != other.current; }
+    T &operator*() noexcept { return current->data; }
+    T *operator->() noexcept { return &current->data; }
+    bool operator==(const Iterator &other) noexcept {
+      return current == other.current;
+    }
+    bool operator!=(const Iterator &other) noexcept {
+      return current != other.current;
+    }
 
-    Iterator &operator++() {
+    Iterator &operator++() noexcept {
       current = current->next;
       return *this;
     }
-
-    Iterator next() {
-      Iterator tmp = *this;
-      ++(*this);
-      return tmp;
-    }
   };
 
-  Iterator begin() { return Iterator(head); }
-  Iterator end() { return Iterator(nullptr); }
+  Iterator begin() noexcept { return Iterator(head); }
+  Iterator end() noexcept { return Iterator(nullptr); }
 
 #ifdef DEBUG
-  void print() {
+  void print() noexcept {
     if (!head) {
       std::cout << "[]";
       return;
@@ -207,4 +202,55 @@ public:
     }
   }
 #endif
+};
+
+using Id = int;
+
+class IdList : public LinkedList<Id> {
+public:
+  IdList() noexcept : LinkedList<Id>() {
+    memset_(this, 0, sizeof(IdList));
+  }
+
+  IdList(const Id &value) noexcept : LinkedList<Id>(){
+    head = Node<Id>::create(value);
+  }
+
+  IdList(const IdList &other) noexcept : LinkedList<Id>() {
+    Node<Id> *curr = other.head;
+    while (curr) {
+      push_back(curr->data);
+      curr = curr->next;
+    }
+  }
+
+  // Move constructor
+  IdList(IdList &&other) noexcept : LinkedList<Id>() {
+    head = other.head;
+    other.head = nullptr;
+  }
+
+  IdList &operator=(const IdList &other) noexcept {
+    if (this != &other) {
+      clear();
+      Node<Id> *curr = other.head;
+      while (curr) {
+        push_back(curr->data);
+        curr = curr->next;
+      }
+    }
+    return *this;
+  }
+
+  // Move assignment
+  IdList &operator=(IdList &&other) noexcept {
+    if (this != &other) {
+      clear();
+      head = other.head;
+    }
+    other.head = nullptr;
+
+    return *this;
+  }
+
 };

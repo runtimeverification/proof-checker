@@ -6,6 +6,8 @@ from proof_generation.basic_interpreter import BasicInterpreter
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
     from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
@@ -100,11 +102,6 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def add_notation(self, notation: Pattern) -> Pattern:
-        ret = super().add_notation(notation)
-        self.stack[-1] = notation
-        return ret
-
     def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
         *self.stack, expected_plug, expected_pattern = self.stack
         assert expected_pattern == pattern
@@ -144,6 +141,18 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
+    def exists_quantifier(self) -> Proved:
+        ret = super().exists_quantifier()
+        self.stack.append(ret)
+        return ret
+
+    def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
+        *self.stack, expected = self.stack
+        assert expected == proved, f'expected: {expected}\ngot: {proved}'
+        ret = super().exists_generalization(proved, var)
+        self.stack.append(ret)
+        return ret
+
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         *self.stack, expected_proved = self.stack
         expected_plugs = self.stack[-len(delta) :]
@@ -155,10 +164,12 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: dict[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         *self.stack, expected_pattern = self.stack
-        expected_plugs = self.stack[-len(delta) :]
-        self.stack = self.stack[: -len(delta)]
+        expected_plugs = []
+        if len(delta):
+            expected_plugs = self.stack[-len(delta) :]
+            self.stack = self.stack[: -len(delta)]
 
         assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
@@ -184,8 +195,10 @@ class StatefulInterpreter(BasicInterpreter):
     def publish_proof(self, proved: Proved) -> None:
         super().publish_proof(proved)
         expected_claim, *self.claims = self.claims
-        assert proved.conclusion == expected_claim.pattern, f'{proved.conclusion, expected_claim.pattern}'
-        assert self.stack[-1] == proved
+        assert (
+            proved.conclusion == expected_claim.pattern
+        ), f'{str(proved.conclusion)} != {str(expected_claim.pattern)} \n {str(self.stack)}'
+        assert self.stack[-1] == proved, f'{str(self.stack[-1])} != {str(proved)} \n {str(self.stack)}'
 
     def publish_axiom(self, axiom: Pattern) -> None:
         self.memory.append(Proved(axiom))

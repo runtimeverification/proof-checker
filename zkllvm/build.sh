@@ -79,7 +79,7 @@ ${CLANG_EXE} -target assigner -D__ZKLLVM__ \
 ${LLVM_LINK} -S "${OUTPUT_CLANG}" -o "${OUTPUT_LLVM_LINK_1}"
 ${LLVM_LINK} -S "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.ll" -o "${OUTPUT_LLVM_LINK_2}"
 
-# Generate the circuit and the assignment table
+# # Generate the circuit and the assignment table
 echo "Circuit Function output: "
 ${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output --check
 
