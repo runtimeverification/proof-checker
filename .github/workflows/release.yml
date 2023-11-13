@@ -23,17 +23,17 @@ jobs:
           path: proof-checker-public
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
 
-      - name: Copy risc0 changes to proof-check-public
-        run: cp -r proof-checker/risc0 proof-check-public/
+      - name: Copy risc0
+        run: cp -r proof-checker/risc0 proof-checker-public/
 
-      - name: Copy zkllvm changes to proof-check-public
-        run: cp -r proof-checker/zkllvm proof-check-public/
+      - name: Copy zkllvm
+        run: cp -r proof-checker/zkllvm proof-checker-public/
 
-      - name: Copy cairo changes to proof-check-public
-        run: cp -r proof-checker/cairo proof-check-public/
+      - name: Copy cairo
+        run: cp -r proof-checker/cairo proof-checker-public/
 
       - name: Copy example proofs
-        run: cp -r proof-checker/proofs/ proof-check-public/
+        run: cp -r proof-checker/proofs/ proof-checker-public/
       - name: 'Update Remote Public Repository'
         run: |
           cd proof-checker-public
