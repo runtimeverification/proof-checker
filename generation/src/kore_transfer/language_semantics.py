@@ -56,11 +56,11 @@ class KSortVar:
 @dataclass(frozen=True)
 class KSymbol:
     name: str
-    input_sorts: tuple[KSort | KSortVar, ...]
     output_sort: KSort | KSortVar
-    is_functional: bool
-    is_ctor: bool
-    is_cell: bool
+    input_sorts: tuple[KSort | KSortVar, ...] = field(default_factory=tuple)
+    is_functional: bool = field(default=False)
+    is_ctor: bool = field(default=False)
+    is_cell: bool = field(default=False)
 
     @property
     def aml_symbol(self) -> Symbol:
@@ -188,7 +188,7 @@ class KModule(BuilderScope):
                 # It should be either in the module or in imported modules
                 assert self.get_sort(sort.name) == sort
 
-        symbol = KSymbol(name, input_sorts, output_sort, is_functional, is_ctor, is_cell)
+        symbol = KSymbol(name, output_sort, input_sorts, is_functional, is_ctor, is_cell)
         self._symbols[name] = symbol
         return symbol
 
