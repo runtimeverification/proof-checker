@@ -1,0 +1,51 @@
+;; Here's a setter.
+
+!(def set (lambda (key value pbuffer)
+             (letrec ((aux (lambda (acc pbuffer)
+                             (if pbuffer
+                                 (if (eq key (car pbuffer))
+                                     (aux (cons key (cons value acc))
+                                          (cdr (cdr pbuffer)))
+                                     (aux (cons (car pbuffer)
+                                                (cons (car (cdr pbuffer)) acc))
+                                          (cdr (cdr pbuffer))))
+                                 acc))))
+               (aux () pbuffer))))
+
+
+;; More useful is an update function that modifes a field based on its current value.
+
+!(def update (lambda (key update-fn pbuffer)
+                (letrec ((aux (lambda (acc pbuffer)
+                                (if pbuffer
+                                    (if (eq key (car pbuffer))
+                                        (aux (cons key (cons (update-fn (car (cdr pbuffer))) acc))
+                                             (cdr (cdr pbuffer)))
+                                        (aux (cons (car pbuffer)
+                                                   (cons (car (cdr pbuffer)) acc))
+                                             (cdr (cdr pbuffer))))
+                                    acc))))
+                  (aux () pbuffer))))
+
+;; fst :: (a, b) -> a
+!(def fst (lambda (pair)
+            (car pair)))
+
+;; snd :: (a, b) -> b
+!(def snd (lambda (pair)
+            (car (cdr pair))))
+
+;; trd :: (a, b, c) -> c
+!(def trd (lambda (triple)
+            (car (cdr (cdr triple)))))
+
+; f :: [stack] -> [memory] -> [claims] -> instruction 
+;   -> ([stack] -> [memory] -> [claims])
+; buffer :: [instruction]
+; map :: f -> [stack] -> [memory] -> [claims] -> [instruction] 
+;     -> ([stack] -> [memory] -> [claims])
+!(defrec map (lambda (f stack memory claims buffer)
+                (if (eq buffer nil)
+                    (cons stack (cons memory (cons claims nil)))
+                    (let ((result (f stack memory claims (car buffer))))
+                        (map f (fst result) (snd result) (trd result) (cdr buffer))))))
