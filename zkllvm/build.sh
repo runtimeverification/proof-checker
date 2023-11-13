@@ -21,7 +21,7 @@ FILE=$(basename "${1}")
 FILEPATH=$(dirname "$(realpath "${1}")")
 FILENAME=${FILE%%.*}
 ROOT_DIR=$(dirname "$(realpath "${0}")")/../
-OUTPUTDIR="${ROOT_DIR}/.build/output"
+OUTPUTDIR="${ROOT_DIR}/.build/zkllvm"
 EXT=${FILE##*.}
 INPUT=$2
 
