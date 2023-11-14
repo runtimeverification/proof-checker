@@ -17,7 +17,7 @@ def forall(var: int) -> Notation:
 class Substitution(Propositional):
     def __init__(self) -> None:
         super().__init__()
-        self._notations = [forall(0)]
+        self._notations.extend([forall(0)])
         self._claims = [forall(0)(top())]
         self._proof_expressions = [self.top_univgen()]
 
