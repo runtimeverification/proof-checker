@@ -180,7 +180,7 @@ class ProofExp:
                 out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
                 claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
                 proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
-                pretty_options=PrettyOptions(simplify_instantiations=True),
+                pretty_options=self.pretty_options(),
             )
         )
 
