@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore_lemmas as kl
-from proof_generation.pattern import EVar, MetaVar, Symbol
+from proof_generation.pattern import EVar, MetaVar, Symbol, is_pred
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -445,9 +445,22 @@ class LanguageSemantics(BuilderScope):
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
 
-    def collect_functional_axioms(self, hint: KoreHint) -> tuple[Pattern, ...]:
-        # TODO: TBD during the refactoring, issue # 386
-        return ()
+    def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
+        added_axioms = self._construct_subst_axioms(hint)
+        return self._organize_axioms(added_axioms)
+    def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
+        subst_axioms = []
+        for pattern in hint.substitutions.values():
+            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+            assert isinstance(
+                pattern, kl.KoreApplies | kl.Cell
+            ), f'Expected application of a Kore symbol, got {str(pattern)}'
+            sym, args = kl.deconstruct_nary_application(pattern)
+            assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
+            assert self.get_symbol(sym.name).is_functional
+            converted_pattern = is_pred(pattern)
+            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return subst_axioms
 
     def _convert_pattern(self, scope: ConvertionScope, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
