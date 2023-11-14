@@ -23,5 +23,5 @@ test_data = [
 
 @pytest.mark.parametrize('name,pattern,expected', test_data, ids=(x[0] for x in test_data))
 def test_pretty_print_propositional(name: str, pattern: Pattern, expected: str) -> None:
-    opts = Propositional.pretty_options()
+    opts = Propositional().pretty_options()
     assert pattern.pretty(opts) == expected

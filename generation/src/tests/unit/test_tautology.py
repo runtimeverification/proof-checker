@@ -22,6 +22,7 @@ from proof_generation.tautology import (
 )
 
 if TYPE_CHECKING:
+    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.tautology import Clause, ClauseConjunction, ConjForm
 
@@ -62,11 +63,12 @@ def is_cnf(t: ConjForm) -> bool:
     return False
 
 
-def tautology_test_proof_expression() -> Tautology:
-    proof_exp = Tautology(StatefulInterpreter(ExecutionPhase.Gamma))
-    proof_exp.execute_gamma_phase()
-    proof_exp.execute_claims_phase()
-    return proof_exp
+def tautology_test_proof_expression() -> tuple[Tautology, BasicInterpreter]:
+    proof_exp = Tautology()
+    interpreter = StatefulInterpreter(ExecutionPhase.Gamma)
+    proof_exp.execute_gamma_phase(interpreter)
+    proof_exp.execute_claims_phase(interpreter)
+    return proof_exp, interpreter
 
 
 clause_conjunction_to_pattern_test_cases = [
@@ -97,53 +99,53 @@ test_patterns = [
 
 @pytest.mark.parametrize('p', test_patterns)
 def test_cnf_converter(p: Pattern) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
 
     # Testing to_conj_form
     p_conj, pf1, pf2 = taut.to_conj_form(p)
     if isinstance(p_conj, CFBot):
         if p_conj.negated:
             assert pf2 is None
-            conc = pf1().conclusion
+            conc = pf1(interpreter).conclusion
             assert conc == p
             return
         else:
             assert pf2 is None
-            pf = pf1().conclusion
+            pf = pf1(interpreter).conclusion
             assert pf == neg(p)
             return
     assert pf2 is not None
     res = conj_to_pattern(p_conj)
-    pf1_conc = pf1().conclusion
+    pf1_conc = pf1(interpreter).conclusion
     assert pf1_conc == Implies(p, res)
-    pf2_conc = pf2().conclusion
+    pf2_conc = pf2(interpreter).conclusion
     assert pf2_conc == Implies(res, p)
     assert is_conj_form(p_conj)
 
     # Testing propag_neg
     p_conj2, pf_neg_1, pf_neg_2 = taut.propag_neg(p_conj)
     res2 = conj_to_pattern(p_conj2)
-    pf_neg_1_conc = pf_neg_1().conclusion
+    pf_neg_1_conc = pf_neg_1(interpreter).conclusion
     assert pf_neg_1_conc == Implies(res, res2)
-    pf_neg_2_conc = pf_neg_2().conclusion
+    pf_neg_2_conc = pf_neg_2(interpreter).conclusion
     assert pf_neg_2_conc == Implies(res2, res)
     assert is_conj_neg(p_conj2)
 
     # Testing to_cnf
     p_cnf, pf_cnf_1, pf_cnf_2 = taut.to_cnf(p_conj2)
     res3 = conj_to_pattern(p_cnf)
-    pf_cnf_1_conc = pf_cnf_1().conclusion
+    pf_cnf_1_conc = pf_cnf_1(interpreter).conclusion
     assert pf_cnf_1_conc == Implies(res2, res3)
-    pf_cnf_2_conc = pf_cnf_2().conclusion
+    pf_cnf_2_conc = pf_cnf_2(interpreter).conclusion
     assert pf_cnf_2_conc == Implies(res3, res2)
     assert is_cnf(p_cnf)
 
     # Testing to_clauses
     p_cl, pf_cl_1, pf_cl_2 = taut.to_clauses(p_cnf)
     res4 = clause_conjunctionto_pattern(p_cl)
-    pf_cl_1_conc = pf_cl_1().conclusion
+    pf_cl_1_conc = pf_cl_1(interpreter).conclusion
     assert pf_cl_1_conc == Implies(res3, res4)
-    pf_cl_2_conc = pf_cl_2().conclusion
+    pf_cl_2_conc = pf_cl_2(interpreter).conclusion
     assert pf_cl_2_conc == Implies(res4, res3)
 
 
@@ -165,9 +167,9 @@ simplify_clause_test_cases = [
 
 @pytest.mark.parametrize('cl, resolvent', simplify_clause_test_cases)
 def test_simplify_clause(cl: Clause, resolvent: int) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
     final_cl, pf = taut.simplify_clause(cl, resolvent)
-    conc = pf().conclusion
+    conc = pf(interpreter).conclusion
     pf_l, pf_r = equiv.assert_matches(conc)
     assert clause_to_pattern(cl) == pf_l
     assert clause_to_pattern(final_cl) == pf_r
@@ -187,11 +189,11 @@ def test_simplify_clause(cl: Clause, resolvent: int) -> None:
 
 @pytest.mark.parametrize('l', [1, 2, 5])
 def test_conjunction_implies_nth(l: int) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
     term = foldr_op(_and, [MetaVar(i) for i in range(l)])
     for i in range(l):
         pf = taut.conjunction_implies_nth(term, i, l)
-        conc = pf().conclusion
+        conc = pf(interpreter).conclusion
         assert conc == Implies(term, MetaVar(i))
 
 
@@ -207,7 +209,7 @@ resolvable_test_cases = [
 
 @pytest.mark.parametrize('c1, c2, expect_success', resolvable_test_cases)
 def test_resolvable(c1: frozenset[int], c2: frozenset[int], expect_success: bool) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
     res = taut.resolvable(c1, c2)
     if not expect_success:
         assert res is None
@@ -227,12 +229,12 @@ merge_clauses_test_cases = [
 
 @pytest.mark.parametrize('list_l, list_r', merge_clauses_test_cases)
 def test_merge_clauses(list_l: Clause, list_r: Clause) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
     term_l = clause_to_pattern(list_l)
     term_r = clause_to_pattern(list_r)
     final_term = clause_to_pattern(list_l + list_r)
     pf = taut.merge_clauses(term_l, len(list_l), term_r)
-    conc = pf().conclusion
+    conc = pf(interpreter).conclusion
     assert conc == equiv(_or(term_l, term_r), final_term)
 
 
@@ -248,9 +250,9 @@ trivial_clause_test_cases = [
 
 @pytest.mark.parametrize('test_case', trivial_clause_test_cases)
 def test_prove_trivial_clause(test_case: Clause) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
     pf = taut.prove_trivial_clause(test_case)
-    conc = pf().conclusion
+    conc = pf(interpreter).conclusion
     assert conc == clause_to_pattern(test_case)
 
 
@@ -268,7 +270,7 @@ resolution_test_cases = [
 
 @pytest.mark.parametrize('clauses, expected_res', resolution_test_cases)
 def test_resolution(clauses: ClauseConjunction, expected_res: bool | None) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
     res = taut.start_resolution_algorithm(clauses)
     if expected_res is None:
         assert res is None
@@ -276,7 +278,7 @@ def test_resolution(clauses: ClauseConjunction, expected_res: bool | None) -> No
     assert res is not None
     proved_true, pf = res
     assert expected_res == proved_true
-    conc = pf().conclusion
+    conc = pf(interpreter).conclusion
     term = clause_conjunctionto_pattern(clauses)
     if proved_true:
         assert conc == term
@@ -307,7 +309,7 @@ tautology_test_cases = [
 
 @pytest.mark.parametrize('pat, expected_res', tautology_test_cases)
 def test_tautology_prover(pat: Pattern, expected_res: bool | None) -> None:
-    taut = tautology_test_proof_expression()
+    taut, interpreter = tautology_test_proof_expression()
     res = taut.prove_tautology(pat)
     if expected_res is None:
         assert res is None
@@ -315,7 +317,7 @@ def test_tautology_prover(pat: Pattern, expected_res: bool | None) -> None:
     assert res is not None
     proved_true, pf = res
     assert expected_res == proved_true
-    conc = pf().conclusion
+    conc = pf(interpreter).conclusion
     if proved_true:
         assert conc == pat
     else:

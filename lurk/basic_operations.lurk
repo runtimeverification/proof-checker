@@ -1,0 +1,51 @@
+;; fst :: (a, b) -> a
+!(def fst (lambda (pair)
+            (car pair)))
+
+;; snd :: (a, b) -> b
+!(def snd (lambda (pair)
+            (car (cdr pair))))
+
+;; trd :: (a, b, c) -> c
+!(def trd (lambda (triple)
+            (car (cdr (cdr triple)))))
+
+; f :: [stack] -> [memory] -> [claims] -> instruction 
+;   -> ([stack] -> [memory] -> [claims])
+; buffer :: [instruction]
+;; map :: f -> [stack] -> [memory] -> [claims] -> [instruction] 
+;     -> ([stack] -> [memory] -> [claims])
+!(defrec map (lambda (f stack memory claims buffer)
+                (if (eq buffer nil)
+                    (cons stack (cons memory (cons claims nil)))
+                    (let ((result (f stack memory claims (car buffer))))
+                        (map f (fst result) (snd result) (trd result) (cdr buffer))))))
+
+;; This function is used to set a the value of a key in a pattern.
+;; set :: key -> value -> [a] -> [a]
+!(def set (lambda (key value pattern)
+             (letrec ((aux (lambda (acc pattern)
+                             (if pattern
+                                 (if (eq key (car pattern))
+                                     (aux (cons key (cons value acc))
+                                          (cdr (cdr pattern)))
+                                     (aux (cons (car pattern)
+                                                (cons (car (cdr pattern)) acc))
+                                          (cdr (cdr pattern))))
+                                 acc))))
+               (aux () pattern))))
+
+;; This function is used to update the value with a function that consumes the
+;; current value of a key in a pattern.
+;; update :: key -> (value -> value) -> [a] -> [a]
+!(def update (lambda (key update-fn pattern)
+                (letrec ((aux (lambda (acc pattern)
+                                (if pattern
+                                    (if (eq key (car pattern))
+                                        (aux (cons key (cons (update-fn (car (cdr pattern))) acc))
+                                             (cdr (cdr pattern)))
+                                        (aux (cons (car pattern)
+                                                   (cons (car (cdr pattern)) acc))
+                                             (cdr (cdr pattern))))
+                                    acc))))
+                  (aux () pattern))))

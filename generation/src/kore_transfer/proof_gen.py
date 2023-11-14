@@ -8,10 +8,9 @@ import pyk.kllvm.load  # noqa: F401
 from pyk.kore.kompiled import KompiledKore
 from pyk.ktool.kompile import kompile
 
-from kore_transfer.generate_definition import KoreDefinition
-from kore_transfer.generate_hints import get_proof_hints
-from kore_transfer.generate_proof import generate_proofs
-from kore_transfer.language_semantics import LanguageSemantics
+from kore_transfer.execution_proof_generation import generate_proofs
+from kore_transfer.kore_convertion.language_semantics import LanguageSemantics
+from kore_transfer.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
@@ -40,7 +39,7 @@ def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = Fa
     return kompiled_dir
 
 
-def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: str) -> None:
+def generate_proof_file(proof_gen: ProofExp, output_dir: Path, file_name: str) -> None:
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
@@ -82,9 +81,8 @@ def main(
     hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_definition)
 
     print('Begin generating proofs ... ')
-    generate_proofs(hints_iterator, KoreDefinition, language_definition)
-
-    generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem)
+    kore_def = generate_proofs(hints_iterator, language_definition)
+    generate_proof_file(kore_def, Path(proof_dir), Path(k_file).stem)
     print('Done!')
 
 

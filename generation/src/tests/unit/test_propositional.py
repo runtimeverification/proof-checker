@@ -15,26 +15,29 @@ if TYPE_CHECKING:
 
 
 def make_pt(p: Pattern) -> ProofThunk:
-    return ProofThunk((lambda: Proved(p)), p)
+    return ProofThunk((lambda interpreter: Proved(p)), p)
 
 
 def test_prove_transitivity() -> None:
-    prop = Propositional(BasicInterpreter(phase=ExecutionPhase.Proof))
+    prop = Propositional()
     phi0_implies_phi1 = make_pt(Implies(Symbol('s0'), Symbol('s1')))
     phi1_implies_phi2 = make_pt(Implies(Symbol('s1'), Symbol('s2')))
-    assert prop.imp_transitivity(phi0_implies_phi1, phi1_implies_phi2)().conclusion == Implies(
-        Symbol('s0'), Symbol('s2')
-    )
+    assert prop.imp_transitivity(phi0_implies_phi1, phi1_implies_phi2)(
+        BasicInterpreter(phase=ExecutionPhase.Proof)
+    ).conclusion == Implies(Symbol('s0'), Symbol('s2'))
 
 
 def test_prove_transitivity_via_theory() -> None:
-    th = SmallTheory(StatefulInterpreter(phase=ExecutionPhase.Gamma))
-    th.execute_gamma_phase()
-    th.execute_claims_phase()
-    phi0_implies_phi2 = th.claims()[0]
-    assert th.sym0_implies_sym2_proof()().conclusion == phi0_implies_phi2
+    th = SmallTheory()
+    interpreter = StatefulInterpreter(phase=ExecutionPhase.Gamma)
+    th.execute_gamma_phase(interpreter)
+    th.execute_claims_phase(interpreter)
+    phi0_implies_phi2 = th._claims[0]
+    assert th.sym0_implies_sym2_proof()(interpreter).conclusion == phi0_implies_phi2
 
 
 def test_prove_absurd() -> None:
-    prop = Propositional(BasicInterpreter(phase=ExecutionPhase.Proof))
-    assert prop.absurd()().conclusion == Implies(neg(phi0), Implies(phi0, phi1))
+    prop = Propositional()
+    assert prop.absurd()(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == Implies(
+        neg(phi0), Implies(phi0, phi1)
+    )

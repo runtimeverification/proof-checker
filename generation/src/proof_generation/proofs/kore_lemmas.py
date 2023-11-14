@@ -5,11 +5,10 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import Propositional, _and, _or, neg
+from proof_generation.proofs.propositional import _and, _or, neg
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
-    from proof_generation.proof import ProofThunk
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
@@ -82,31 +81,21 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
-    @staticmethod
-    def axioms() -> list[Pattern]:
-        return []
-
-    @staticmethod
-    def claims() -> list[Pattern]:
-        return []
-
-    @staticmethod
-    def notations() -> list[Notation]:
-        return [
-            *Propositional.notations(),
-            kore_top,
-            kore_not,
-            kore_and,
-            kore_or,
-            kore_next,
-            kore_implies,
-            kore_rewrites,
-            kore_dv,
-        ]
-
-    def proof_expressions(self) -> list[ProofThunk]:
-        return []
+    def __init__(self) -> None:
+        super().__init__()
+        self._notations.extend(
+            [
+                kore_top,
+                kore_not,
+                kore_and,
+                kore_or,
+                kore_next,
+                kore_implies,
+                kore_rewrites,
+                kore_dv,
+            ]
+        )
 
 
 if __name__ == '__main__':
-    KoreLemmas.main(sys.argv)
+    KoreLemmas().main(sys.argv)
