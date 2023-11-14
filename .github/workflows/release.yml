@@ -29,6 +29,9 @@ jobs:
       - name: Copy zkllvm
         run: cp -r proof-checker/zkllvm proof-checker-public/
 
+      - name: Copy cpp
+        run: cp -r proof-checker/cpp proof-checker-public/
+
       - name: Copy cairo
         run: cp -r proof-checker/cairo proof-checker-public/
 
