@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
-from proof_generation.proofs.kore_lemmas import KORE_NOTATIONS
 from kore_transfer.kore_convertion.language_semantics import KRewritingRule
+from proof_generation.proofs.kore_lemmas import KORE_NOTATIONS
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
