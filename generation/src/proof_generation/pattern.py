@@ -264,7 +264,7 @@ class App(Pattern):
         return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def pretty(self, opts: PrettyOptions) -> str:
-        return f'app({self.left.pretty(opts)}, {self.right.pretty(opts)})'
+        return f'({self.left.pretty(opts)} · {self.right.pretty(opts)})'
 
 
 @dataclass(frozen=True)
@@ -413,7 +413,7 @@ class ESubst(Pattern):
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def pretty(self, opts: PrettyOptions) -> str:
-        return f'({self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}])'
+        return f'{self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}]'
 
 
 @dataclass(frozen=True)
@@ -441,7 +441,7 @@ class SSubst(Pattern):
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def pretty(self, opts: PrettyOptions) -> str:
-        return f'({self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}])'
+        return f'{self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}]'
 
 
 InstantiationDict = frozendict[int, Pattern]
@@ -500,7 +500,7 @@ class Instantiate(Pattern):
             return self.simplify().pretty(opts)
         if self.pattern in opts.notations:
             return opts.notations[self.pattern].print_instantiation(self, opts)
-        return f'({str(self.pattern)}[{str(dict(self.inst))}])'
+        return f'{str(self.pattern)}[{str(dict(self.inst))}]'
 
 
 @dataclass(frozen=True)
