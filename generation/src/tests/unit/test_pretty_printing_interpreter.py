@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 test_data = [
     ('Top',                   top(),                                    '⊤'),
     ('Bot_elim',              Implies(bot(), phi0),                     '(⊥ -> phi0)'),
-    ('Double Negation elim',  Implies(neg(neg(phi0)), phi0),            '(¬(¬(phi0)) -> phi0)'),
-    ('Double Negation intro', Implies(phi0, neg(neg(phi0))),            '(phi0 -> ¬(¬(phi0)))'),
-    ('Absurd',                Implies(neg(phi0), Implies(phi0, phi1)),  '(¬(phi0) -> (phi0 -> phi1))'),
-    ('Peirce_bot',            Implies(Implies(neg(phi0), phi0), phi0),  '((¬(phi0) -> phi0) -> phi0)'),
+    ('Double Negation elim',  Implies(neg(neg(phi0)), phi0),            '(¬¬phi0 -> phi0)'),
+    ('Double Negation intro', Implies(phi0, neg(neg(phi0))),            '(phi0 -> ¬¬phi0)'),
+    ('Absurd',                Implies(neg(phi0), Implies(phi0, phi1)),  '(¬phi0 -> (phi0 -> phi1))'),
+    ('Peirce_bot',            Implies(Implies(neg(phi0), phi0), phi0),  '((¬phi0 -> phi0) -> phi0)'),
 ]
 # fmt: on
 
