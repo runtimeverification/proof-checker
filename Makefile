@@ -124,7 +124,7 @@ TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*.ml-proof)
 
 .build/proofs/translated/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_translate.translate" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
+	poetry -C generation run python -m "proof_generation.metamath.translate" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
 
 PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
