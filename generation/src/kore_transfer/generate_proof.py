@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 def generate_proofs(
-    hints: Iterator[KoreHint], proof_expression: type[KoreDefinition], language_semantics: LanguageSemantics
+    hints: Iterator[KoreHint], proof_expression: KoreDefinition, language_semantics: LanguageSemantics
 ) -> None:
     claims = 0
     for hint in hints:

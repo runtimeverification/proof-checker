@@ -136,22 +136,20 @@ def clause_conjunctionto_pattern(l: ClauseConjunction) -> Pattern:
 
 
 class Tautology(Propositional):
-    @staticmethod
-    def claims() -> list[Pattern]:
-        return []
-
-    @staticmethod
-    def axioms() -> list[Pattern]:
-        return [
-            Implies(_and(_and(phi0, phi1), phi2), _and(phi0, _and(phi1, phi2))),
-            Implies(_and(phi0, _and(phi1, phi2)), _and(_and(phi0, phi1), phi2)),
-            Implies(_or(_or(phi0, phi1), phi2), _or(phi0, _or(phi1, phi2))),
-            Implies(_or(phi0, _or(phi1, phi2)), _or(_or(phi0, phi1), phi2)),
-            Implies(_or(_and(phi0, phi1), phi2), _and(_or(phi0, phi2), _or(phi1, phi2))),
-            Implies(_and(_or(phi0, phi2), _or(phi1, phi2)), _or(_and(phi0, phi1), phi2)),
-            Implies(_or(phi0, _and(phi1, phi2)), _and(_or(phi0, phi1), _or(phi0, phi2))),
-            Implies(_and(_or(phi0, phi1), _or(phi0, phi2)), _or(phi0, _and(phi1, phi2))),
-        ]
+    def __init__(self) -> None:
+        super().__init__()
+        self._axioms.extend(
+            [
+                Implies(_and(_and(phi0, phi1), phi2), _and(phi0, _and(phi1, phi2))),
+                Implies(_and(phi0, _and(phi1, phi2)), _and(_and(phi0, phi1), phi2)),
+                Implies(_or(_or(phi0, phi1), phi2), _or(phi0, _or(phi1, phi2))),
+                Implies(_or(phi0, _or(phi1, phi2)), _or(_or(phi0, phi1), phi2)),
+                Implies(_or(_and(phi0, phi1), phi2), _and(_or(phi0, phi2), _or(phi1, phi2))),
+                Implies(_and(_or(phi0, phi2), _or(phi1, phi2)), _or(_and(phi0, phi1), phi2)),
+                Implies(_or(phi0, _and(phi1, phi2)), _and(_or(phi0, phi1), _or(phi0, phi2))),
+                Implies(_and(_or(phi0, phi1), _or(phi0, phi2)), _or(phi0, _and(phi1, phi2))),
+            ]
+        )
 
     def imp_trans_match1(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
         """Same as imp_transitivity but h1 is instantiated to match h2"""

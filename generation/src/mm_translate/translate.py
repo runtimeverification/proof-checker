@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from mm_translate.converter.converter import MetamathConverter
 from mm_translate.converter.representation import AxiomWithAntecedents
@@ -13,11 +14,14 @@ from proof_generation.proof import ProofExp
 from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
+if TYPE_CHECKING:
+    from proof_generation.basic_interpreter import BasicInterpreter
 
-def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp) -> None:
-    assert isinstance(proofexp.interpreter, StatefulInterpreter)
-    interpreter = lambda: proofexp.interpreter
-    stack = lambda: proofexp.interpreter.stack
+
+def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp, interp: BasicInterpreter) -> None:
+    assert isinstance(interp, StatefulInterpreter)
+    interpreter = lambda: interp
+    stack = lambda: interp.stack
 
     def get_delta(metavars: tuple[str, ...]) -> dict[int, Pattern]:
         delta: dict[int, Pattern] = {}
@@ -116,9 +120,9 @@ def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp) ->
                     saved_antecedents.append((str(stack()[-1]), stack()[-1]))
                     interpreter().save(str(stack()[-1]), stack()[-1])
                     interpreter().pop(stack()[-1])
-                proofexp.load_axiom(convert_to_implication(axiom.antecedents, axiom.pattern))()
+                proofexp.load_axiom(convert_to_implication(axiom.antecedents, axiom.pattern))(interpreter())
             else:
-                proofexp.load_axiom(axiom.pattern)()
+                proofexp.load_axiom(axiom.pattern)(interpreter())
 
             # We need to instantiate the axiom depending on what we are given on stack
             if len(axiom.metavars) > 0:
@@ -230,23 +234,20 @@ def main() -> None:
     extracted_claims = [converter.get_lemma_by_name(lemma_name).pattern for lemma_name in converter.lemmas]
 
     class TranslatedProofSkeleton(ProofExp):
-        @classmethod
-        def axioms(cls) -> list[Pattern]:
-            return extracted_axioms
+        def __init__(self) -> None:
+            super().__init__(axioms=extracted_axioms, claims=extracted_claims)
 
-        @classmethod
-        def claims(cls) -> list[Pattern]:
-            return extracted_claims
-
-        def execute_proofs_phase(self) -> None:
-            assert self.interpreter.phase == ExecutionPhase.Proof
-            exec_proof(converter, args.target, self)
+        def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+            assert interpreter.phase == ExecutionPhase.Proof
+            exec_proof(converter, args.target, self, interpreter)
 
     module = os.path.splitext(os.path.basename(args.input))[0]
 
-    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
-    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
-    TranslatedProofSkeleton.main(['', 'memo', str(output_dir), module])
+    proof_skeleton = TranslatedProofSkeleton()
+
+    proof_skeleton.main(['', 'memo', str(output_dir), module])
+    proof_skeleton.main(['', 'memo', str(output_dir), module])
+    proof_skeleton.main(['', 'memo', str(output_dir), module])
 
 
 if __name__ == '__main__':

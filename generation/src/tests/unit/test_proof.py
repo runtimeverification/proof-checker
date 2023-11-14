@@ -54,7 +54,7 @@ def test_instantiate() -> None:
 def test_conclusion() -> None:
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implies(phi0, phi0)
-    prop = Propositional(StatefulInterpreter(phase=ExecutionPhase.Proof))
+    prop = Propositional()
     ProofThunk(
         prop.modus_ponens(
             ProofThunk(
@@ -76,7 +76,7 @@ def test_conclusion() -> None:
             prop.dynamic_inst(prop.prop1(), {1: phi0}),
         ),
         Implies(phi0, phi0),
-    )()
+    )(StatefulInterpreter(phase=ExecutionPhase.Proof))
 
 
 def uncons_metavar_instrs(id: int) -> list[int]:
@@ -87,9 +87,10 @@ def test_prove_imp_refl() -> None:
     out = BytesIO()
     phi0 = MetaVar(0)
     phi0_implies_phi0 = Implies(phi0, phi0)
-    prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out))
+    prop = Propositional()
     proved = prop.publish_proof(prop.imp_refl())
-    assert proved().conclusion == phi0_implies_phi0
+    interpreter = SerializingInterpreter(phase=ExecutionPhase.Proof, claims=[Claim(phi0_implies_phi0)], out=out)
+    assert proved(interpreter).conclusion == phi0_implies_phi0
     # fmt: off
     assert bytes(out.getbuffer()) == bytes([
         *uncons_metavar_instrs(0),             # Stack: ph0
@@ -113,10 +114,7 @@ def test_prove_imp_refl() -> None:
     # fmt: on
 
 
-# Construct a mock ProofExp to extract the claim and proof names
-mock_prop = Propositional(SerializingInterpreter(phase=ExecutionPhase.Proof, out=BytesIO()))
-
-proofs = [(method, ExecutionPhase.Proof) for method in range(len(mock_prop.proof_expressions()))]
+proofs = [(method, ExecutionPhase.Proof) for method in range(len(Propositional()._proof_expressions))]
 
 
 @pytest.mark.parametrize('test', proofs)
@@ -126,7 +124,7 @@ def test_deserialize_proof(test: tuple[int, ExecutionPhase]) -> None:
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
     interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
-    _ = Propositional(interpreter_ser).proof_expressions()[target]()
+    _ = Propositional()._proof_expressions[target](interpreter_ser)
     out_ser_deser = StringIO()
     interpreter_ser_deser = PrettyPrintingInterpreter(phase=phase, out=out_ser_deser, pretty_options=pretty_options)
     deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
@@ -134,12 +132,12 @@ def test_deserialize_proof(test: tuple[int, ExecutionPhase]) -> None:
     # Prettyprint the proof directly, but omit notation
     out_pretty = StringIO()
     interpreter_pretty = PrettyPrintingInterpreter(phase=phase, out=out_pretty, pretty_options=pretty_options)
-    _ = Propositional(interpreter_pretty).proof_expressions()[target]()
+    _ = Propositional()._proof_expressions[target](interpreter_pretty)
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
 
 
-claims = [(claim, ExecutionPhase.Claim) for claim in mock_prop.claims()]
+claims = [(claim, ExecutionPhase.Claim) for claim in Propositional()._claims]
 
 
 @pytest.mark.parametrize('test', claims)
@@ -149,7 +147,7 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
     interpreter_ser = SerializingInterpreter(phase=phase, out=out_ser)
-    _ = Propositional(interpreter_ser).interpreter.pattern(target)
+    _ = interpreter_ser.pattern(target)
     out_ser_deser = StringIO()
     interpreter_ser_deser = PrettyPrintingInterpreter(phase=phase, out=out_ser_deser, pretty_options=pretty_options)
     deserialize_instructions(out_ser.getvalue(), interpreter_ser_deser)
@@ -157,6 +155,6 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     # Prettyprint the claim directly, but omit notation
     out_pretty = StringIO()
     interpreter_pretty = PrettyPrintingInterpreter(phase=phase, out=out_pretty, pretty_options=pretty_options)
-    _ = Propositional(interpreter_pretty).interpreter.pattern(target)
+    _ = interpreter_pretty.pattern(target)
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
