@@ -6,6 +6,9 @@ cmake-build-debug
 # User directory for temp files
 /tmp/
 
+# Generated cpp binary
+a.out
+
 # VS Code configuration
 /.vscode/
 
