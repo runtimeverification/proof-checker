@@ -79,22 +79,21 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
             return p, ()
 
 
+KORE_NOTATIONS = (
+    kore_top,
+    kore_not,
+    kore_and,
+    kore_or,
+    kore_next,
+    kore_implies,
+    kore_rewrites,
+    kore_dv,
+)
+
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__()
-        self._notations.extend(
-            [
-                kore_top,
-                kore_not,
-                kore_and,
-                kore_or,
-                kore_next,
-                kore_implies,
-                kore_rewrites,
-                kore_dv,
-            ]
-        )
+        super().__init__(notations=list(KORE_NOTATIONS))
 
 
 if __name__ == '__main__':
