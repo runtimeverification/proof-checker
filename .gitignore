@@ -3,8 +3,8 @@
 build
 cmake-build-debug
 
-# User directory for temp files
-/tmp/
+# Tmp directories and files
+tmp*
 
 # Generated cpp binary
 a.out
@@ -20,3 +20,9 @@ a.out
 
 # Cairo
 cairo/target
+
+# Python versions used by pyenv
+.python-version
+
+# Kompiled directories
+*-kompiled
