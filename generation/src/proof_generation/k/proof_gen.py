@@ -8,9 +8,9 @@ import pyk.kllvm.load  # noqa: F401
 from pyk.kore.kompiled import KompiledKore
 from pyk.ktool.kompile import kompile
 
-from kore_transfer.execution_proof_generation import generate_proofs
-from kore_transfer.kore_convertion.language_semantics import LanguageSemantics
-from kore_transfer.kore_convertion.rewrite_steps import get_proof_hints
+from proof_generation.k.execution_proof_generation import generate_proofs
+from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
+from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:

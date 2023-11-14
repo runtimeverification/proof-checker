@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from kore_transfer.kore_convertion.rewrite_steps import RewriteStepExpression
+    from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Notation, Pattern, SVar
 
 T = TypeVar('T')
