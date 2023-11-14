@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
 from kore_transfer.kore_convertion.language_semantics import KRewritingRule
+from proof_generation.proofs.kore_lemmas import KORE_NOTATIONS
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -19,7 +20,7 @@ ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
 
 class ExecutionProofExp(proof.ProofExp):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(notations=list(KORE_NOTATIONS))
 
     def add_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
