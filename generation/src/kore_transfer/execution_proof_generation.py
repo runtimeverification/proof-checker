@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
 
 
-class KoreDefinition(proof.ProofExp):
+class ExecutionProofExp(proof.ProofExp):
     def __init__(self) -> None:
         super().__init__()
 
@@ -36,8 +36,8 @@ class KoreDefinition(proof.ProofExp):
         self._proof_expressions.append(self.dynamic_inst(self.load_axiom(axiom), instantiations))
 
 
-def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics) -> KoreDefinition:
-    proof_expression = KoreDefinition()
+def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics) -> ExecutionProofExp:
+    proof_expression = ExecutionProofExp()
     claims = 0
     for hint in hints:
         axiom = proof_expression.add_axioms(hint, language_semantics)
