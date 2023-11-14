@@ -83,7 +83,7 @@ def main(
 
     print('Begin generating proofs ... ')
     kore_def = generate_proofs(hints_iterator, language_definition)
-    generate_proof_file(kore_def, Path(proof_dir), Path(k_file).stem)
+    generate_proof_file(kore_def, Path(proof_dir), Path(k_file).stem, pretty)
     print('Done!')
 
 
@@ -92,6 +92,7 @@ if __name__ == '__main__':
     argparser.add_argument('kfile', type=str, help='Path to the K definition file')
     argparser.add_argument('hints', type=str, help='Path to the binary hints file')
     argparser.add_argument('output_dir', type=str, help='Path to the output directory')
+    argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
     argparser.add_argument(
         '--pretty',
         action='store_true',
@@ -99,7 +100,6 @@ if __name__ == '__main__':
         help='Print the pretty-printed version of proofs instead of the binary ones',
     )
     argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
-    argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
 
     args = argparser.parse_args()
     main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty, args.reuse)
