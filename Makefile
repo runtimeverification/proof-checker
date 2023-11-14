@@ -22,8 +22,8 @@ update-snapshots:
 # Installation and setup
 # ======================
 
-build-checker:
-	cargo build --manifest-path=checker/Cargo.toml
+build-rust:
+	cargo build --manifest-path=rust/Cargo.toml
 
 build-risc0:
 	cargo build --manifest-path=risc0/Cargo.toml
@@ -48,11 +48,11 @@ install-k-kup:
 		echo "K is already installed, skipping installation."; \
 	fi
 
-build: build-checker build-risc0 generation-install
+build: build-rust build-risc0 generation-install
 
 install-k: install-kup install-k-kup
 
-.PHONY: build-checker build-risc0 generation-install install-kup install-k install-k-kup build
+.PHONY: build-rust build-risc0 generation-install install-kup install-k install-k-kup build
 
 # Syntax and formatting checks
 # ============================
