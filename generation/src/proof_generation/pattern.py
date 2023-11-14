@@ -548,4 +548,5 @@ top = Notation('top', 0, neg(bot()), '⊤')
 _and = Notation('and', 2, neg(Implies(phi0, neg(phi1))), '({0} ⋀ {1})')
 _or = Notation('or', 2, Implies(neg(phi0), phi1), '({0} ⋁ {1})')
 equiv = Notation('equiv', 2, _and(Implies(phi0, phi1), Implies(phi1, phi0)), f'({0}) <-> ({1})')
+# TODO NOTE that the following definition is unsound as it captures the free variable 0 in phi0
 is_pred = Notation('is_pred', 1, Exists(0, equiv(EVar(0), phi0)), 'is_pred({0})')
