@@ -9,8 +9,8 @@ from pyk.kore.kompiled import KompiledKore
 from pyk.ktool.kompile import kompile
 
 from kore_transfer.execution_proof_generation import generate_proofs
-from kore_transfer.generate_hints import get_proof_hints
-from kore_transfer.language_semantics import LanguageSemantics
+from kore_transfer.kore_convertion.language_semantics import LanguageSemantics
+from kore_transfer.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:

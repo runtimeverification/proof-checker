@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore_lemmas as kl
-from kore_transfer.language_semantics import KRewritingRule
+from kore_transfer.kore_convertion.language_semantics import KRewritingRule
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from kore_transfer.generate_hints import RewriteStepExpression
-    from kore_transfer.language_semantics import LanguageSemantics
+    from kore_transfer.kore_convertion.language_semantics import LanguageSemantics
+    from kore_transfer.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Pattern
 
 ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
