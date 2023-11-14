@@ -141,8 +141,8 @@ KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 # We assume that there is only one hint file per benchmark
 proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
 	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -154,11 +154,11 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # We assume that there is only one hint file per benchmark
 .build/proofs/generated-from-k/%.ml-proof: FORCE
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
 .build/proofs/generated-from-k/%.pretty-proof: FORCE
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof .build/proofs/generated-from-k/%.pretty-proof
