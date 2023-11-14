@@ -15,7 +15,7 @@ clean-kgenerated-proofs:
 update-snapshots:
 	rsync -u $(wildcard .build/proofs/*.*) proofs
 	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
-	rsync -u $(wildcard .build/generated-from-k/*.ml*) proofs/generated-from-k
+	rsync -u $(wildcard .build/generated-from-k/*.*) proofs/generated-from-k
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 
@@ -153,12 +153,15 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # -------------------------------
 # We assume that there is only one hint file per benchmark
 .build/proofs/generated-from-k/%.ml-proof: FORCE
-	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/; \
+	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
+
+.build/proofs/generated-from-k/%.pretty-proof: FORCE
+	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
 	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
-proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof
+proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof .build/proofs/generated-from-k/%.pretty-proof
 	${DIFF} --label expected "proofs/generated-from-k/$*.pretty-claim" --label actual ".build/proofs/generated-from-k/$*.pretty-claim"
 	${DIFF} --label expected "proofs/generated-from-k/$*.pretty-proof" --label actual ".build/proofs/generated-from-k/$*.pretty-proof"
 	${DIFF} --label expected "proofs/generated-from-k/$*.pretty-gamma" --label actual ".build/proofs/generated-from-k/$*.pretty-gamma"
