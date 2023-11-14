@@ -90,6 +90,7 @@ KORE_NOTATIONS = (
     kore_dv,
 )
 
+
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:

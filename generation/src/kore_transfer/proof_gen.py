@@ -69,7 +69,7 @@ def main(
     output_dir: str,
     proof_dir: str,
     pretty: bool = False,
-    reuse_kompiled_dir: bool = False
+    reuse_kompiled_dir: bool = False,
 ) -> None:
     # Kompile sources
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
