@@ -7,7 +7,7 @@ import proof_generation.proof as proof
 from kore_transfer.language_semantics import KRewritingRule
 
 if TYPE_CHECKING:
-    from kore_transfer.generate_hints import KoreHint
+    from kore_transfer.generate_hints import RewriteStepExpression
     from kore_transfer.language_semantics import LanguageSemantics
     from proof_generation.pattern import Pattern
 
@@ -18,7 +18,7 @@ class KoreDefinition(proof.ProofExp):
     def __init__(self) -> None:
         super().__init__()
 
-    def add_axioms(self, hint: KoreHint, language_semantics: LanguageSemantics) -> KRewritingRule:
+    def add_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
         language_semantics.collect_functional_axioms(hint)

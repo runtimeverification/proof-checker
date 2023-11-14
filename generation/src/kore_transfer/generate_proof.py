@@ -9,12 +9,12 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from kore_transfer.generate_definition import KoreDefinition
-    from kore_transfer.generate_hints import KoreHint
+    from kore_transfer.generate_hints import RewriteStepExpression
     from kore_transfer.language_semantics import LanguageSemantics
 
 
 def generate_proofs(
-    hints: Iterator[KoreHint], proof_expression: KoreDefinition, language_semantics: LanguageSemantics
+    hints: Iterator[RewriteStepExpression], proof_expression: KoreDefinition, language_semantics: LanguageSemantics
 ) -> None:
     claims = 0
     for hint in hints:
