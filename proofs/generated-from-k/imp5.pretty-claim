@@ -1914,7 +1914,7 @@ Instantiate
 	8: phi1
 	9: phi1
 	10: phi0
-	11: ⊥
+	11: ((μ X0 . X0)[{}])
 Implies
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -1927,7 +1927,7 @@ Implies
 	7: phi0
 	8: phi1
 	9: phi1
-	10: (phi0 -> ⊥)
+	10: (phi0 -> ((μ X0 . X0)[{}]))
 Instantiate 0
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -1939,7 +1939,7 @@ Instantiate 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 MetaVar 0
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -1951,7 +1951,7 @@ MetaVar 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: phi0
 Symbol inhabitant
 	Stack:
@@ -1964,7 +1964,7 @@ Symbol inhabitant
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: phi0
 	11: σinhabitant
 MetaVar 0
@@ -1978,7 +1978,7 @@ MetaVar 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: phi0
 	11: σinhabitant
 	12: phi0
@@ -1993,7 +1993,7 @@ App
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: phi0
 	11: app(σinhabitant, phi0)
 Instantiate 0
@@ -2007,7 +2007,7 @@ Instantiate 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 MetaVar 0
 	Stack:
@@ -2020,7 +2020,7 @@ MetaVar 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
 MetaVar 1
@@ -2034,7 +2034,7 @@ MetaVar 1
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
 	12: phi1
@@ -2049,7 +2049,7 @@ MetaVar 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
 	12: phi1
@@ -2065,7 +2065,7 @@ SVar 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
 	12: phi1
@@ -2082,7 +2082,7 @@ Mu 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
 	12: phi1
@@ -2099,12 +2099,12 @@ Instantiate
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
 	12: phi1
 	13: phi0
-	14: ⊥
+	14: ((μ X0 . X0)[{}])
 Implies
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2116,11 +2116,11 @@ Implies
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
 	12: phi1
-	13: (phi0 -> ⊥)
+	13: (phi0 -> ((μ X0 . X0)[{}]))
 Instantiate 0
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2132,10 +2132,10 @@ Instantiate 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
 	11: phi0
-	12: ¬(phi1)
+	12: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 Implies
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2147,9 +2147,9 @@ Implies
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
-	11: (phi0 -> ¬(phi1))
+	11: (phi0 -> ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]))
 MetaVar 0
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2161,9 +2161,9 @@ MetaVar 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
-	11: (phi0 -> ¬(phi1))
+	11: (phi0 -> ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]))
 	12: phi0
 SVar 0
 	Stack:
@@ -2176,9 +2176,9 @@ SVar 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
-	11: (phi0 -> ¬(phi1))
+	11: (phi0 -> ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]))
 	12: phi0
 	13: X0
 Mu 0
@@ -2192,9 +2192,9 @@ Mu 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
-	11: (phi0 -> ¬(phi1))
+	11: (phi0 -> ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]))
 	12: phi0
 	13: (μ X0 . X0)
 Instantiate 
@@ -2208,11 +2208,11 @@ Instantiate
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
-	11: (phi0 -> ¬(phi1))
+	11: (phi0 -> ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]))
 	12: phi0
-	13: ⊥
+	13: ((μ X0 . X0)[{}])
 Implies
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2224,10 +2224,10 @@ Implies
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
-	11: (phi0 -> ¬(phi1))
-	12: (phi0 -> ⊥)
+	11: (phi0 -> ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]))
+	12: (phi0 -> ((μ X0 . X0)[{}]))
 Instantiate 0
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2239,9 +2239,9 @@ Instantiate 0
 	6: phi0
 	7: phi0
 	8: phi1
-	9: ¬(phi1)
+	9: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	10: (k⊤ phi0)
-	11: ¬((phi0 -> ¬(phi1)))
+	11: ((phi0 -> ((μ X0 . X0)[{}]))[{0: Implies(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Instantiate(pattern=Implies(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Instantiate(pattern=Mu(var=0, subpattern=SVar(name=0)), inst=frozendict.frozendict({}))), inst=frozendict.frozendict({0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())})))}])
 Instantiate 0, 1
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2253,7 +2253,7 @@ Instantiate 0, 1
 	6: phi0
 	7: phi0
 	8: phi1
-	9: (¬(phi1) ⋀ (k⊤ phi0))
+	9: (((phi0 -> ((μ X0 . X0)[{}]))[{0: Implies(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Instantiate(pattern=Implies(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Instantiate(pattern=Mu(var=0, subpattern=SVar(name=0)), inst=frozendict.frozendict({}))), inst=frozendict.frozendict({0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())})))}])[{0: Instantiate(pattern=Implies(left=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), right=Instantiate(pattern=Mu(var=0, subpattern=SVar(name=0)), inst=frozendict.frozendict({}))), inst=frozendict.frozendict({0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())})), 1: Instantiate(pattern=App(left=Symbol(name='inhabitant'), right=MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())), inst=frozendict.frozendict({0: MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}))}])
 Instantiate 0, 1
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2376,7 +2376,7 @@ Instantiate
 	10: phi2
 	11: phi0
 	12: phi0
-	13: ⊥
+	13: ((μ X0 . X0)[{}])
 Implies
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2391,7 +2391,7 @@ Implies
 	9: phi1
 	10: phi2
 	11: phi0
-	12: (phi0 -> ⊥)
+	12: (phi0 -> ((μ X0 . X0)[{}]))
 Instantiate 0
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2405,7 +2405,7 @@ Instantiate 0
 	8: phi2
 	9: phi1
 	10: phi2
-	11: ¬(phi0)
+	11: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 MetaVar 1
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2419,7 +2419,7 @@ MetaVar 1
 	8: phi2
 	9: phi1
 	10: phi2
-	11: ¬(phi0)
+	11: ((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 	12: phi1
 Implies
 	Stack:
@@ -2434,7 +2434,7 @@ Implies
 	8: phi2
 	9: phi1
 	10: phi2
-	11: (¬(phi0) -> phi1)
+	11: (((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]) -> phi1)
 Instantiate 0, 1
 	Stack:
 	0: σksort_SortGeneratedTopCell
@@ -2446,7 +2446,7 @@ Instantiate 0, 1
 	6: phi0
 	7: (k¬{0} phi1)
 	8: phi2
-	9: (phi1 ⋁ phi2)
+	9: ((((phi0 -> ((μ X0 . X0)[{}]))[{0: MetaVar(name=0, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}]) -> phi1)[{0: MetaVar(name=1, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=()), 1: MetaVar(name=2, e_fresh=(), s_fresh=(), positive=(), negative=(), app_ctx_holes=())}])
 Instantiate 0, 1, 2
 	Stack:
 	0: σksort_SortGeneratedTopCell
