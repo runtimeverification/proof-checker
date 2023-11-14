@@ -138,6 +138,9 @@ class EVar(Pattern):
     def pretty(self, opts: PrettyOptions) -> str:
         return f'x{self.name}'
 
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
+
     @staticmethod
     def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, EVar):
@@ -171,6 +174,9 @@ class SVar(Pattern):
     def pretty(self, opts: PrettyOptions) -> str:
         return f'X{self.name}'
 
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
+
     @staticmethod
     def deconstruct(pat: Pattern) -> int | None:
         if isinstance(pat, SVar):
@@ -201,6 +207,9 @@ class Symbol(Pattern):
 
     def pretty(self, opts: PrettyOptions) -> str:
         return f'\u03c3{self.name}'
+
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
 
     @staticmethod
     def deconstruct(pat: Pattern) -> str | None:
@@ -236,6 +245,9 @@ class Implies(Pattern):
     def pretty(self, opts: PrettyOptions) -> str:
         return f'({self.left.pretty(opts)} -> {self.right.pretty(opts)})'
 
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
+
 
 def imp(p1: Pattern, p2: Pattern) -> Pattern:
     return Implies(p1, p2)
@@ -266,6 +278,9 @@ class App(Pattern):
     def pretty(self, opts: PrettyOptions) -> str:
         return f'({self.left.pretty(opts)} · {self.right.pretty(opts)})'
 
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
+
 
 @dataclass(frozen=True)
 class Exists(Pattern):
@@ -293,6 +308,9 @@ class Exists(Pattern):
 
     def pretty(self, opts: PrettyOptions) -> str:
         return f'(∃ x{self.var} . {self.subpattern.pretty(opts)})'
+
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
 
     @staticmethod
     def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
@@ -329,6 +347,9 @@ class Mu(Pattern):
 
     def pretty(self, opts: PrettyOptions) -> str:
         return f'(μ X{self.var} . {self.subpattern.pretty(opts)})'
+
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
 
     @staticmethod
     def deconstruct(pat: Pattern) -> tuple[int, Pattern] | None:
@@ -379,6 +400,9 @@ class MetaVar(Pattern):
     def pretty(self, opts: PrettyOptions) -> str:
         return f'phi{self.name}'
 
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
+
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
@@ -415,6 +439,9 @@ class ESubst(Pattern):
     def pretty(self, opts: PrettyOptions) -> str:
         return f'{self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}]'
 
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
+
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
@@ -442,6 +469,9 @@ class SSubst(Pattern):
 
     def pretty(self, opts: PrettyOptions) -> str:
         return f'{self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}]'
+
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
 
 
 InstantiationDict = frozendict[int, Pattern]
@@ -504,6 +534,9 @@ class Instantiate(Pattern):
         for key, val in self.inst.items():
             pretty_inst[key] = val.pretty(opts)
         return f'{str(self.pattern)}[{str(pretty_inst)}]'
+
+    def __str__(self) -> str:
+        return self.pretty(PrettyOptions())
 
 
 @dataclass(frozen=True)
