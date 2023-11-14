@@ -502,7 +502,7 @@ class Instantiate(Pattern):
             return opts.notations[self.pattern].print_instantiation(self, opts)
         pretty_inst = {}
         for (key, val) in self.inst.items():
-            pretty_inst[key] = str(val)
+            pretty_inst[key] = val.pretty(opts)
         return f'{str(self.pattern)}[{str(pretty_inst)}]'
 
 
