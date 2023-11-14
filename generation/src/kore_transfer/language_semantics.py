@@ -56,11 +56,11 @@ class KSortVar:
 @dataclass(frozen=True)
 class KSymbol:
     name: str
-    input_sorts: tuple[KSort | KSortVar, ...]
     output_sort: KSort | KSortVar
-    is_functional: bool
-    is_ctor: bool
-    is_cell: bool
+    input_sorts: tuple[KSort | KSortVar, ...] = field(default_factory=tuple)
+    is_functional: bool = False
+    is_ctor: bool = False
+    is_cell: bool = False
 
     @property
     def aml_symbol(self) -> Symbol:
@@ -146,6 +146,15 @@ class KModule(BuilderScope):
     def symbols(self) -> tuple[KSymbol, ...]:
         return tuple(self._symbols.values())
 
+    @property
+    def modules(self) -> tuple[KModule, ...]:
+        modules = []
+        for module in self._imported_modules:
+            modules.append(module)
+            modules.extend(module.modules)
+        # Ordering nd removing duplicated
+        return tuple(dict.fromkeys(modules))
+
     @builder_method
     def import_module(self, module: KModule) -> None:
         if module in self._imported_modules:
@@ -188,7 +197,7 @@ class KModule(BuilderScope):
                 # It should be either in the module or in imported modules
                 assert self.get_sort(sort.name) == sort
 
-        symbol = KSymbol(name, input_sorts, output_sort, is_functional, is_ctor, is_cell)
+        symbol = KSymbol(name, output_sort, input_sorts, is_functional, is_ctor, is_cell)
         self._symbols[name] = symbol
         return symbol
 
@@ -206,11 +215,17 @@ class KModule(BuilderScope):
         self._axioms[ordinal] = axiom
         return axiom
 
+    def get_module(self, name: str) -> KModule:
+        for module in self.modules:
+            if module.name == name:
+                return module
+        raise ValueError(f'Module {name} not found')
+
     def get_sort(self, name: str) -> KSort:
         if name in self._sorts:
             return self._sorts[name]
 
-        for module in self._imported_modules:
+        for module in self.modules:
             try:
                 sort = module.get_sort(name)
                 return sort
@@ -221,7 +236,7 @@ class KModule(BuilderScope):
     def get_symbol(self, name: str) -> KSymbol:
         if name in self._symbols:
             return self._symbols[name]
-        for module in self._imported_modules:
+        for module in self.modules:
             try:
                 symbol = module.get_symbol(name)
                 return symbol
@@ -233,7 +248,7 @@ class KModule(BuilderScope):
         if ordinal in self._axioms:
             return self._axioms[ordinal]
 
-        for module in self._imported_modules:
+        for module in self.modules:
             try:
                 axiom = module.get_axiom(ordinal)
                 return axiom
@@ -279,11 +294,18 @@ class LanguageSemantics(BuilderScope):
 
     @property
     def modules(self) -> tuple[KModule, ...]:
-        return self._imported_modules
+        modules = set()
+        for module in self._imported_modules:
+            modules.add(module)
+            modules.update(module.modules)
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(modules))
 
     @property
     def main_module(self) -> KModule:
         # TODO: This is a heuristic
+        if len(self._imported_modules) == 0:
+            raise ValueError('No modules have been added')
         return self._imported_modules[-1]
 
     def __enter__(self) -> LanguageSemantics:
@@ -380,7 +402,7 @@ class LanguageSemantics(BuilderScope):
         return module
 
     def get_module(self, name: str) -> KModule:
-        for module in self._imported_modules:
+        for module in self.modules:
             if module.name == name:
                 return module
         raise ValueError(f'Module {name} not found')
@@ -389,10 +411,25 @@ class LanguageSemantics(BuilderScope):
         return self.main_module.get_axiom(ordinal)
 
     def get_sort(self, name: str) -> KSort:
-        return self.main_module.get_sort(name)
+        # Reversing is done for optimization purposes, as we start the search with the main module
+        for module in reversed(self.modules):
+            assert isinstance(module, KModule)  # Oh, typechecker...
+            try:
+                sort = module.get_sort(name)
+                return sort
+            except ValueError:
+                continue
+        raise ValueError(f'Sort {name} not found')
 
     def get_symbol(self, name: str) -> KSymbol:
-        return self.main_module.get_symbol(name)
+        for module in reversed(self.modules):
+            assert isinstance(module, KModule)  # Oh, typechecker...
+            try:
+                symbol = module.get_symbol(name)
+                return symbol
+            except ValueError:
+                continue
+        raise ValueError(f'Sort {name} not found')
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
