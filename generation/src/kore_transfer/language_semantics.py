@@ -445,16 +445,14 @@ class LanguageSemantics(BuilderScope):
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
 
-    def collect_functional_axioms(self, hint: KoreHint) -> Axioms:
+    def collect_functional_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
         added_axioms = self._construct_subst_axioms(hint)
-        return self._organize_axioms(added_axioms)
+        return added_axioms
+
     def _construct_subst_axioms(self, hint: KoreHint) -> list[ConvertedAxiom]:
         subst_axioms = []
         for pattern in hint.substitutions.values():
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            assert isinstance(
-                pattern, kl.KoreApplies | kl.Cell
-            ), f'Expected application of a Kore symbol, got {str(pattern)}'
             sym, args = kl.deconstruct_nary_application(pattern)
             assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
             assert self.get_symbol(sym.name).is_functional

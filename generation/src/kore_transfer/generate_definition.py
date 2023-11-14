@@ -22,8 +22,7 @@ class KoreDefinition(proof.ProofExp):
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
         func_axioms = language_semantics.collect_functional_axioms(hint)
-        for axioms in func_axioms.values():
-            self._axioms.extend([axiom.pattern for axiom in axioms])
+        self._axioms.extend([axiom.pattern for axiom in func_axioms])
         assert isinstance(hint.axiom, KRewritingRule)
         self._axioms.append(hint.axiom.pattern)
         return hint.axiom

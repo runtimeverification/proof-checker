@@ -3,12 +3,13 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implies, MetaVar, Notation, phi0, phi1, phi2, bot, neg, _or, _and
+from proof_generation.pattern import Implies, MetaVar, _and, _or, bot, neg, phi0, phi1, phi2, top
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
+
 
 def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
     ret = {}

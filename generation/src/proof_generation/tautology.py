@@ -7,8 +7,22 @@ from __future__ import annotations
 from itertools import combinations
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implies, Instantiate, MetaVar, match_single, phi0, phi1, phi2
-from proof_generation.proofs.propositional import Propositional, _and, _build_subst, _or, bot, equiv, neg, top
+from proof_generation.pattern import (
+    Implies,
+    Instantiate,
+    MetaVar,
+    _and,
+    _or,
+    bot,
+    equiv,
+    match_single,
+    neg,
+    phi0,
+    phi1,
+    phi2,
+    top,
+)
+from proof_generation.proofs.propositional import Propositional, _build_subst
 
 if TYPE_CHECKING:
     from collections.abc import Callable
