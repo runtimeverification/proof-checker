@@ -26,6 +26,9 @@ jobs:
       - name: Copy risc0
         run: cp -r proof-checker/risc0 proof-checker-public/
 
+      - name: Copy rust
+        run: cp -r proof-checker/rust proof-checker-public/
+
       - name: Copy zkllvm
         run: cp -r proof-checker/zkllvm proof-checker-public/
 
