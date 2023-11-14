@@ -58,9 +58,9 @@ class KSymbol:
     name: str
     output_sort: KSort | KSortVar
     input_sorts: tuple[KSort | KSortVar, ...] = field(default_factory=tuple)
-    is_functional: bool = field(default=False)
-    is_ctor: bool = field(default=False)
-    is_cell: bool = field(default=False)
+    is_functional: bool = False
+    is_ctor: bool = False
+    is_cell: bool = False
 
     @property
     def aml_symbol(self) -> Symbol:
@@ -148,11 +148,12 @@ class KModule(BuilderScope):
 
     @property
     def modules(self) -> tuple[KModule, ...]:
-        modules = set()
+        modules = []
         for module in self._imported_modules:
-            modules.add(module)
-            modules.update(module.modules)
-        return tuple(modules)
+            modules.append(module)
+            modules.extend(module.modules)
+        # Ordering nd removing duplicated
+        return tuple(dict.fromkeys(modules))
 
     @builder_method
     def import_module(self, module: KModule) -> None:
@@ -297,7 +298,8 @@ class LanguageSemantics(BuilderScope):
         for module in self._imported_modules:
             modules.add(module)
             modules.update(module.modules)
-        return tuple(modules)
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(modules))
 
     @property
     def main_module(self) -> KModule:
