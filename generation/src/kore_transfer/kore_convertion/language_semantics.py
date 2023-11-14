@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from kore_transfer.generate_hints import KoreHint
+    from kore_transfer.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Notation, Pattern, SVar
 
 T = TypeVar('T')
@@ -445,7 +445,7 @@ class LanguageSemantics(BuilderScope):
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
 
-    def collect_functional_axioms(self, hint: KoreHint) -> tuple[Pattern, ...]:
+    def collect_functional_axioms(self, hint: RewriteStepExpression) -> tuple[Pattern, ...]:
         # TODO: TBD during the refactoring, issue # 386
         return ()
 

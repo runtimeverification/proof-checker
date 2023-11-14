@@ -8,19 +8,19 @@ from pyk.kllvm import ast as kllvm_kore
 from pyk.kllvm.convert import llvm_to_kore
 
 if TYPE_CHECKING:
-    from pyk.kore.syntax import Pattern
+    import pyk.kore.syntax as kore
 
 
 @dataclass
 class LLVMRewriteStep:
     rule_ordinal: int
-    substitution: tuple[tuple[str, Pattern], ...]
-    post_config: Pattern
+    substitution: tuple[tuple[str, kore.Pattern], ...]
+    post_config: kore.Pattern
 
 
 @dataclass
 class LLVMRewriteTrace:
-    initial_config: Pattern
+    initial_config: kore.Pattern
     trace: tuple[LLVMRewriteStep, ...]
 
     @staticmethod
@@ -53,11 +53,11 @@ class LLVMRewriteTraceParser:
             traces = traces + (self.read_rewrite_step(),)
         return LLVMRewriteTrace(init_config, traces)
 
-    def read_guarded_term(self) -> Pattern:
+    def read_guarded_term(self) -> kore.Pattern:
         self.read_constant(bytes([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]))
         return self.read_term_with_sentinel()
 
-    def read_term_with_sentinel(self) -> Pattern:
+    def read_term_with_sentinel(self) -> kore.Pattern:
         sentinal = bytes(
             [
                 0xCC,
@@ -80,7 +80,7 @@ class LLVMRewriteTraceParser:
         ordinal = self.read_uint64()
         arity = self.read_uint64()
 
-        substitution: tuple[tuple[str, Pattern], ...] = ()
+        substitution: tuple[tuple[str, kore.Pattern], ...] = ()
         for _ in range(arity):
             variable_name = self.read_variable_name()
             target = self.read_term_with_sentinel()
