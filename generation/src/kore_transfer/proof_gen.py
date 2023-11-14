@@ -69,8 +69,7 @@ def main(
     output_dir: str,
     proof_dir: str,
     pretty: bool = False,
-    reuse_kompiled_dir: bool = False,
-    rewrite_proof_files: bool = False,
+    reuse_kompiled_dir: bool = False
 ) -> None:
     # Kompile sources
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
@@ -100,8 +99,7 @@ if __name__ == '__main__':
         help='Print the pretty-printed version of proofs instead of the binary ones',
     )
     argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
-    argparser.add_argument('--clean', action='store_true', default=False, help='Rewrite proofs if they already exist')
     argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
 
     args = argparser.parse_args()
-    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty, args.reuse, args.clean)
+    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty, args.reuse)
