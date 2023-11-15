@@ -508,11 +508,9 @@ class LanguageSemantics(BuilderScope):
                 return kl.kore_or(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, _, args):
                 ksymbol: KSymbol = self.get_symbol(symbol)
-                # TODO: Use this after the new notation format is implemented
-                # aml_notation = ksymbol.aml_notation(args)
                 arg_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
-                return kl.nary_app(ksymbol.aml_symbol, len(arg_patterns), cell=ksymbol.is_cell)(*arg_patterns)
 
+                return ksymbol.aml_notation(*arg_patterns)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return scope.resolve_evar(pattern)
