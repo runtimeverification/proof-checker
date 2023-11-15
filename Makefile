@@ -134,12 +134,19 @@ proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
 
 test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
+# Kompiling Definitions
+# ---------------------
+
+.SECONDEXPANSION:
+.build/kompiled-definitions/%-kompiled/timestamp: generation/k-benchmarks/$$*/$$*.k
+	kompile --backend llvm --output-definition $(dir $@) $<
+
 # Regenerate proofs from K
-# -------------------------
+# ------------------------
 
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 # We assume that there is only one hint file per benchmark
-proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
+proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof .build/kompiled-definitions/%-kompiled/timestamp
 	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
 	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
 	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty

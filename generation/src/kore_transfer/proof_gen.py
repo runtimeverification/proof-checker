@@ -32,10 +32,7 @@ def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = Fa
         print(f'Using existing kompiled directory {path}')
         return Path(path)
     elif reuse_kompiled_dir:
-        print(f'Kompiled directory {path} does not exist. Compiling from scratch.')
-
-    print(f'Kompiling target {k_file} to {output_dir}')
-    kompiled_dir: Path = kompile(main_file=k_file, backend='llvm', output_dir=output_dir)
+        raise(f'Kompiled directory {path} does not exist. Compiling from scratch.')
     return kompiled_dir
 
 
