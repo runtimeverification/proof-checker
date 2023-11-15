@@ -174,7 +174,7 @@ class LLVMRewriteTraceParser:
 
         # TODO: add args
         hook_event = LLVMHookEvent(name=name, args=(), result=result)
-        self.add_to_trace(hook_event, saved_pos)
+        self.add_to_trace(saved_pos, hook_event)
 
     def read_function(self) -> None:
         self.skip_constant(self.func_event_sentinel)
@@ -190,7 +190,7 @@ class LLVMRewriteTraceParser:
 
         # TODO: add args
         func_event = LLVMFunctionEvent(name=name, relative_position=position, args=())
-        self.add_to_trace(func_event, saved_pos)
+        self.add_to_trace(saved_pos, func_event)
 
     def read_rule(self) -> None:
         ordinal = self.read_uint64()
@@ -206,16 +206,16 @@ class LLVMRewriteTraceParser:
 
         # TODO: add args
         rule_event = LLVMRuleEvent(rule_ordinal=ordinal, substitution=substitution)
-        self.add_to_trace(rule_event, saved_pos)
+        self.add_to_trace(saved_pos, rule_event)
 
     def read_config(self) -> kore.Pattern:
         self.skip_constant(self.config_sentinel)
         config = self.read_tailed_term()
-        self.add_to_trace(config, self.current_pos)
+        self.add_to_trace(self.current_pos, config)
         self.current_pos += 1
         return config
 
-    def add_to_trace(self, event: LLVMStepEvent | kore.Pattern, pos: int) -> None:
+    def add_to_trace(self, pos: int, event: LLVMStepEvent | kore.Pattern) -> None:
         self.trace.append((pos, event))
 
     def read_argument(self) -> None:
@@ -232,7 +232,7 @@ class LLVMRewriteTraceParser:
     def read_kore(self) -> kore.Pattern:
         # Kore term prefix: 5 bytes for b'\x7FKORE' + 6 bytes => 11-byte prefix
         # followed by an 8-byte uint64 => 19 bytes total
-        kore_term_length = self.peak_uint64_at(11)
+        kore_term_length = self.peek_uint64_at(11)
         total_length = 11 + 8 + kore_term_length
         raw_term = self.input[:total_length]
         self.skip(total_length)
@@ -268,7 +268,7 @@ class LLVMRewriteTraceParser:
         self.input = self.input[index:]
         return ret
 
-    def peak_uint64_at(self, idx: int) -> int:
+    def peek_uint64_at(self, idx: int) -> int:
         length = 8
         raw = self.input[idx : idx + length]
         little_endian_long_long = '<Q'
