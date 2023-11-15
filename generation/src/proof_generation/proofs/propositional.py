@@ -16,7 +16,7 @@ top = Notation('top', 0, neg(bot()), '⊤')
 _and = Notation('and', 2, neg(Implies(phi0, neg(phi1))), '({0} ⋀ {1})')
 _or = Notation('or', 2, Implies(neg(phi0), phi1), '({0} ⋁ {1})')
 equiv = Notation('equiv', 2, _and(Implies(phi0, phi1), Implies(phi1, phi0)), f'({0} <-> {1})')
-PROPOSITIONAL_NOTATIONS = (neg, top, _and, _or, equiv)
+PROPOSITIONAL_NOTATIONS = (bot, neg, top, _and, _or, equiv)
 
 
 def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
