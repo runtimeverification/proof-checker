@@ -18,12 +18,12 @@
 ;; Axioms
 ;; Prop1: phi0 => (phi1 => phi0)
 ;; Prop2: (phi0 => (phi1 => phi2)) => ((phi0 => phi1) => (phi0 => phi2))
-;; Prop3: (~(~phi0 => phi0)
+;; Prop3: ((~(~phi0)) => phi0)
 !(def prop1 (implies phi0 (implies phi1 phi0)))
 !(def prop2 (implies (implies phi0 (implies phi1 phi2))
                      (implies (implies phi0 phi1)
                               (implies phi0 phi2))))
-!(def prop3 (not (not (implies phi0 phi0))))
+!(def prop3 (implies (not (not phi0)) phi0))
 
 ;; Quantifier: forall x. phi0
 !(def quantifier (implies (esubst phi0 0 (evar 1)) (exists 0 phi0)))
