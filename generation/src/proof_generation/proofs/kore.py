@@ -49,7 +49,7 @@ kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}'
 
 # TODO: Add support for multiple apps of kseq without brackets
 """ kore_kseq(left, right) """
-kore_kseq = Notation('kore-kseq', 2, kore_kseq_symbol, '({0} ~> {1})')
+kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({0} ~> {1})')
 
 
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
