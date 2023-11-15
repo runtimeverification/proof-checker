@@ -159,11 +159,11 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # Checking proof generation for K
 # -------------------------------
 # We assume that there is only one hint file per benchmark
-.build/proofs/generated-from-k/%.ml-proof: FORCE
+.build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
 	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
-.build/proofs/generated-from-k/%.pretty-proof: FORCE
+.build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
 	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
 
@@ -184,11 +184,11 @@ test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 # Proof generation
 # ----------------
 
-.build/proofs/%.ml-proof: FORCE
+.build/proofs/%.ml-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" memo $(dir $@) $*
 
-.build/proofs/%.pretty-proof: FORCE
+.build/proofs/%.pretty-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
 
