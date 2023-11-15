@@ -48,6 +48,7 @@ kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}'
 
 
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
+# Note that @cache is required here as we have to return the same objects for the same arguments for notation comparisons
 @cache
 def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     """Constructs an nary application."""
