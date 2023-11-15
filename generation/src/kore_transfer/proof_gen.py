@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
 from pyk.kore.kompiled import KompiledKore
-from pyk.ktool.kompile import kompile
 
 from kore_transfer.execution_proof_generation import generate_proofs
 from kore_transfer.kore_convertion.language_semantics import LanguageSemantics
@@ -32,7 +31,7 @@ def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = Fa
         print(f'Using existing kompiled directory {path}')
         return Path(path)
     elif reuse_kompiled_dir:
-        raise(f'Kompiled directory {path} does not exist. Compiling from scratch.')
+        raise (f'Kompiled directory {path} does not exist. Compiling from scratch.')
     return kompiled_dir
 
 
