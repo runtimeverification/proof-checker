@@ -7,16 +7,15 @@ from proof_generation.pattern import Implies, MetaVar, Notation, bot, phi0, phi1
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
 
-neg = Notation('not', 1, Implies(MetaVar(0), bot()), '¬({0})')
+neg = Notation('not', 1, Implies(MetaVar(0), bot()), '¬{0}')
 top = Notation('top', 0, neg(bot()), '⊤')
 _and = Notation('and', 2, neg(Implies(phi0, neg(phi1))), '({0} ⋀ {1})')
 _or = Notation('or', 2, Implies(neg(phi0), phi1), '({0} ⋁ {1})')
-equiv = Notation('equiv', 2, _and(Implies(phi0, phi1), Implies(phi1, phi0)), f'({0}) <-> ({1})')
+equiv = Notation('equiv', 2, _and(Implies(phi0, phi1), Implies(phi1, phi0)), f'({0} <-> {1})')
 
 
 def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
@@ -28,41 +27,33 @@ def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
 
 
 class Propositional(ProofExp):
-    def __init__(self, interpreter: BasicInterpreter) -> None:
-        super().__init__(interpreter)
-
-    @staticmethod
-    def axioms() -> list[Pattern]:
-        return []
-
-    @staticmethod
-    def notations() -> list[Notation]:
-        return [bot, neg, top, _and, _or]
-
-    @staticmethod
-    def claims() -> list[Pattern]:
-        return [
-            Implies(phi0, phi0),  # Reflexivity
-            top(),  # Top
-            Implies(bot(), phi0),  # Bot_elim
-            Implies(neg(neg(phi0)), phi0),  # Double Negation elim
-            Implies(phi0, neg(neg(phi0))),  # Double Negation intro
-            Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
-            Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
-            Implies(Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))),  # Implication Transitivity
-        ]
-
-    def proof_expressions(self) -> list[ProofThunk]:
-        return [
-            self.imp_refl(),
-            self.top_intro(),
-            self.bot_elim(),
-            self.dneg_elim(),
-            self.dneg_intro(),
-            self.absurd(),
-            self.peirce_bot(),
-            self.imp_trans(),
-        ]
+    def __init__(self) -> None:
+        super().__init__(
+            axioms=[],
+            notations=[bot, neg, top, _and, _or],
+            claims=[
+                Implies(phi0, phi0),  # Reflexivity
+                top(),  # Top
+                Implies(bot(), phi0),  # Bot_elim
+                Implies(neg(neg(phi0)), phi0),  # Double Negation elim
+                Implies(phi0, neg(neg(phi0))),  # Double Negation intro
+                Implies(neg(phi0), Implies(phi0, phi1)),  # Absurd
+                Implies(Implies(neg(phi0), phi0), phi0),  # Peirce_bot
+                Implies(
+                    Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))
+                ),  # Implication Transitivity
+            ],
+            proof_expressions=[
+                self.imp_refl(),
+                self.top_intro(),
+                self.bot_elim(),
+                self.dneg_elim(),
+                self.dneg_intro(),
+                self.absurd(),
+                self.peirce_bot(),
+                self.imp_trans(),
+            ],
+        )
 
     # Proofs
     # ======
@@ -312,10 +303,6 @@ class Propositional(ProofExp):
             self.dneg_elim(p),
         )
 
-    def con2(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
-        """(p -> ~q) -> (q -> ~p)"""
-        return self.imp_transitivity(self.prop2_inst(p, q, bot()), self.imim_l(neg(p), self.prop1_inst(q, p)))
-
     def absurd3(self, npq_pf: ProofThunk, nr_pf: ProofThunk) -> ProofThunk:
         """
            ~p -> q     ~r
@@ -374,6 +361,19 @@ class Propositional(ProofExp):
         return self.imp_transitivity(
             self.imim_l(c, h1), self.modus_ponens(self.prop2_inst(a, c, d), self.imp_provable(a, h2))
         )
+
+    def imim_r(self, c: Pattern, h: ProofThunk) -> ProofThunk:
+        """
+              (a -> b)
+        ---------------------
+        (c -> a) -> (c -> b)
+        """
+        a, b = Implies.extract(h.conc)
+        return self.imim(self.imp_refl(c), h)
+
+    def con2(self, p: Pattern = phi0, q: Pattern = phi1) -> ProofThunk:
+        """(p -> ~q) -> (q -> ~p)"""
+        return self.imp_transitivity(self.prop2_inst(p, q, bot()), self.imim_l(neg(p), self.prop1_inst(q, p)))
 
     def imim_nnr(self, h1: ProofThunk, h2: ProofThunk) -> ProofThunk:
         """
@@ -484,4 +484,4 @@ class Propositional(ProofExp):
 
 
 if __name__ == '__main__':
-    Propositional.main(sys.argv)
+    Propositional().main(sys.argv)

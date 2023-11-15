@@ -8,10 +8,9 @@ import pyk.kllvm.load  # noqa: F401
 from pyk.kore.kompiled import KompiledKore
 from pyk.ktool.kompile import kompile
 
-from kore_transfer.generate_definition import KoreDefinition
-from kore_transfer.generate_hints import get_proof_hints
-from kore_transfer.generate_proof import generate_proofs
-from kore_transfer.language_semantics import LanguageSemantics
+from kore_transfer.execution_proof_generation import generate_proofs
+from kore_transfer.kore_convertion.language_semantics import LanguageSemantics
+from kore_transfer.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
@@ -40,11 +39,12 @@ def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = Fa
     return kompiled_dir
 
 
-def generate_proof_file(proof_gen: type[ProofExp], output_dir: Path, file_name: str) -> None:
+def generate_proof_file(proof_gen: ProofExp, output_dir: Path, file_name: str, pretty: bool = False) -> None:
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    proof_gen.main(['', 'binary', str(output_dir), file_name])
+    mode = 'pretty' if pretty else 'binary'
+    proof_gen.main(['', mode, str(output_dir), file_name])
 
 
 HINTS_DIR_PATH = 'proof-hints'
@@ -68,8 +68,8 @@ def main(
     hints_file: str,
     output_dir: str,
     proof_dir: str,
+    pretty: bool = False,
     reuse_kompiled_dir: bool = False,
-    rewrite_proof_files: bool = False,
 ) -> None:
     # Kompile sources
     kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
@@ -82,9 +82,8 @@ def main(
     hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_definition)
 
     print('Begin generating proofs ... ')
-    generate_proofs(hints_iterator, KoreDefinition, language_definition)
-
-    generate_proof_file(KoreDefinition, Path(proof_dir), Path(k_file).stem)
+    kore_def = generate_proofs(hints_iterator, language_definition)
+    generate_proof_file(kore_def, Path(proof_dir), Path(k_file).stem, pretty)
     print('Done!')
 
 
@@ -93,9 +92,14 @@ if __name__ == '__main__':
     argparser.add_argument('kfile', type=str, help='Path to the K definition file')
     argparser.add_argument('hints', type=str, help='Path to the binary hints file')
     argparser.add_argument('output_dir', type=str, help='Path to the output directory')
-    argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
-    argparser.add_argument('--clean', action='store_true', default=False, help='Rewrite proofs if they already exist')
     argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
+    argparser.add_argument(
+        '--pretty',
+        action='store_true',
+        default=False,
+        help='Print the pretty-printed version of proofs instead of the binary ones',
+    )
+    argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
 
     args = argparser.parse_args()
-    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.reuse, args.clean)
+    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty, args.reuse)

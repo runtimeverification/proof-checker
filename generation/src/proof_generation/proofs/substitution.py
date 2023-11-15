@@ -7,7 +7,6 @@ from proof_generation.pattern import EVar, Exists, Notation
 from proof_generation.proofs.propositional import Propositional, neg, phi0, top
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
 
@@ -16,20 +15,11 @@ def forall(var: int) -> Notation:
 
 
 class Substitution(Propositional):
-    @staticmethod
-    def axioms() -> list[Pattern]:
-        return []
-
-    @staticmethod
-    def notations() -> list[Notation]:
-        return [*Propositional.notations(), forall(0)]
-
-    @staticmethod
-    def claims() -> list[Pattern]:
-        return [forall(0)(top())]
-
-    def proof_expressions(self) -> list[ProofThunk]:
-        return [self.top_univgen()]
+    def __init__(self) -> None:
+        super().__init__()
+        self._notations.extend([forall(0)])
+        self._claims = [forall(0)(top())]
+        self._proof_expressions = [self.top_univgen()]
 
     def universal_gen(self, phi: ProofThunk, var: EVar) -> ProofThunk:
         """
@@ -65,4 +55,4 @@ class Substitution(Propositional):
 
 
 if __name__ == '__main__':
-    Substitution.main(sys.argv)
+    Substitution().main(sys.argv)

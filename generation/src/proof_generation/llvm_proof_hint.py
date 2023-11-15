@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
-import pyk.kore.syntax as pk
 from pyk.kllvm import ast as kllvm_kore
 from pyk.kllvm.convert import llvm_to_pattern
 
 if TYPE_CHECKING:
     from typing import Final
+    import pyk.kore.syntax as kore
 
 
 @dataclass
@@ -22,28 +22,28 @@ class LLVMStepEvent:
 @dataclass
 class LLVMRuleEvent(LLVMStepEvent):
     rule_ordinal: int
-    substitution: tuple[tuple[str, pk.Pattern], ...]
+    substitution: tuple[tuple[str, kore.Pattern], ...]
 
 
 @dataclass
 class LLVMFunctionEvent(LLVMStepEvent):
     name: str
     relative_position: str
-    args: tuple[pk.Pattern, ...]  # kore term arguments only
+    args: tuple[kore.Pattern, ...]  # kore term arguments only
 
 
 @dataclass
 class LLVMHookEvent(LLVMStepEvent):
     name: str
-    args: tuple[pk.Pattern, ...]  # kore term arguments only
-    result: pk.Pattern
+    args: tuple[kore.Pattern, ...]  # kore term arguments only
+    result: kore.Pattern
 
 
 @dataclass
 class LLVMRewriteTrace:
-    pre_trace: tuple[LLVMStepEvent | pk.Pattern, ...]
-    initial_config: pk.Pattern
-    trace: tuple[LLVMStepEvent | pk.Pattern, ...]
+    pre_trace: tuple[LLVMStepEvent | kore.Pattern, ...]
+    initial_config: kore.Pattern
+    trace: tuple[LLVMStepEvent | kore.Pattern, ...]
 
     @staticmethod
     def parse(input: bytes, debug: bool = False) -> LLVMRewriteTrace:
@@ -85,7 +85,7 @@ class LLVMRewriteTraceParser:
 
     def __init__(self, input: bytes):
         self.input = input
-        self.trace: list[tuple[int, LLVMStepEvent | pk.Pattern]] = []
+        self.trace: list[tuple[int, LLVMStepEvent | kore.Pattern]] = []
         self.init_config_pos = 0
         self.current_pos = 0
 
@@ -116,13 +116,13 @@ class LLVMRewriteTraceParser:
         _, initial_config = self.trace[self.init_config_pos]
         trace = tuple([event for (i, event) in postfix])
 
-        assert isinstance(initial_config, pk.Pattern)
+        assert isinstance(initial_config, kore.Pattern)
         return LLVMRewriteTrace(pre_trace, initial_config, trace)
 
     def print_trace(
         self,
-        prefix: list[tuple[int, LLVMStepEvent | pk.Pattern]],
-        postfix: list[tuple[int, LLVMStepEvent | pk.Pattern]],
+        prefix: list[tuple[int, LLVMStepEvent | kore.Pattern]],
+        postfix: list[tuple[int, LLVMStepEvent | kore.Pattern]],
     ) -> None:
         for i, e in prefix:
             if isinstance(e, LLVMRuleEvent):
@@ -132,7 +132,7 @@ class LLVMRewriteTraceParser:
             elif isinstance(e, LLVMHookEvent):
                 print(f'{i} hook {e.name}')
             else:
-                assert isinstance(e, pk.Pattern)
+                assert isinstance(e, kore.Pattern)
                 print(f'{i} config')
         print(f'init config at {self.init_config_pos}')
         for i, e in postfix:
@@ -143,7 +143,7 @@ class LLVMRewriteTraceParser:
             elif isinstance(e, LLVMHookEvent):
                 print(f'{i} hook {e.name}')
             else:
-                assert isinstance(e, pk.Pattern)
+                assert isinstance(e, kore.Pattern)
                 print(f'{i} config')
 
     def read_step_event(self) -> None:
@@ -198,7 +198,7 @@ class LLVMRewriteTraceParser:
         saved_pos = self.current_pos
         self.current_pos += 1
 
-        substitution: tuple[tuple[str, pk.Pattern], ...] = ()
+        substitution: tuple[tuple[str, kore.Pattern], ...] = ()
         for _ in range(arity):
             variable_name = self.read_variable_name()
             target = self.read_tailed_term()
@@ -208,14 +208,14 @@ class LLVMRewriteTraceParser:
         rule_event = LLVMRuleEvent(rule_ordinal=ordinal, substitution=substitution)
         self.add_to_trace(rule_event, saved_pos)
 
-    def read_config(self) -> pk.Pattern:
+    def read_config(self) -> kore.Pattern:
         self.skip_constant(self.config_sentinel)
         config = self.read_tailed_term()
         self.add_to_trace(config, self.current_pos)
         self.current_pos += 1
         return config
 
-    def add_to_trace(self, event: LLVMStepEvent | pk.Pattern, pos: int) -> None:
+    def add_to_trace(self, event: LLVMStepEvent | kore.Pattern, pos: int) -> None:
         self.trace.append((pos, event))
 
     def read_argument(self) -> None:
@@ -224,12 +224,12 @@ class LLVMRewriteTraceParser:
         else:
             self.read_step_event()
 
-    def read_tailed_term(self) -> pk.Pattern:
+    def read_tailed_term(self) -> kore.Pattern:
         raw_term = self.read_until(self.kore_end_sentinel)
         self.skip_constant(self.kore_end_sentinel)
         return self.to_kore(raw_term)
 
-    def read_kore(self) -> pk.Pattern:
+    def read_kore(self) -> kore.Pattern:
         # Kore term prefix: 5 bytes for b'\x7FKORE' + 6 bytes => 11-byte prefix
         # followed by an 8-byte uint64 => 19 bytes total
         kore_term_length = self.peak_uint64_at(11)
@@ -238,7 +238,7 @@ class LLVMRewriteTraceParser:
         self.skip(total_length)
         return self.to_kore(raw_term)
 
-    def to_kore(self, raw_term: bytes) -> pk.Pattern:
+    def to_kore(self, raw_term: bytes) -> kore.Pattern:
         llvm_pattern = kllvm_kore.Pattern.deserialize(raw_term)
         assert llvm_pattern, ('Could not deserialize binary kore.', input)
         return llvm_to_pattern(llvm_pattern)

@@ -24,10 +24,16 @@ jobs:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
 
       - name: Copy risc0
-        run: cp -r proof-checker/risc0 proof-checker-public/
+        run: cp -r proof-checker/Cargo.toml proof-checker/Cargo.lock proof-checker/risc0 proof-checker-public/
+
+      - name: Copy rust
+        run: cp -r proof-checker/rust proof-checker-public/
 
       - name: Copy zkllvm
         run: cp -r proof-checker/zkllvm proof-checker-public/
+
+      - name: Copy cpp
+        run: cp -r proof-checker/cpp proof-checker-public/
 
       - name: Copy cairo
         run: cp -r proof-checker/cairo proof-checker-public/

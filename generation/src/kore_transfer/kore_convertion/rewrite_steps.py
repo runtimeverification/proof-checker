@@ -11,7 +11,7 @@ from proof_generation.llvm_proof_hint import LLVMRuleEvent
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from kore_transfer.language_semantics import KEquationalRule, KRewritingRule, LanguageSemantics
+    from kore_transfer.kore_convertion.language_semantics import KEquationalRule, KRewritingRule, LanguageSemantics
     from proof_generation.llvm_proof_hint import LLVMRewriteTrace
     from proof_generation.pattern import Pattern
 
@@ -35,7 +35,7 @@ class HookEvent(HintEvent):
     result: Pattern
 
 
-class KoreHint:
+class RewriteStepExpression:
     def __init__(
         self,
         conf_before: Pattern,
@@ -69,7 +69,7 @@ class KoreHint:
 def get_proof_hints(
     llvm_proof_hint: LLVMRewriteTrace,
     language_semantics: LanguageSemantics,
-) -> Iterator[KoreHint]:
+) -> Iterator[RewriteStepExpression]:
     """
     Emits proof hints corresponding to the given LLVM rewrite trace.
     Note that no hints will be generated if the trace is empty.
@@ -90,5 +90,5 @@ def get_proof_hints(
                 axiom = language_semantics.get_axiom(e1.rule_ordinal)
                 substitutions = language_semantics.convert_substitutions(dict(e1.substitution), e1.rule_ordinal)
 
-                hint = KoreHint(pre_config, post_config, axiom, substitutions)
+                hint = RewriteStepExpression(pre_config, post_config, axiom, substitutions)
                 yield hint
