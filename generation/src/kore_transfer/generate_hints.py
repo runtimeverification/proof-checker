@@ -4,6 +4,10 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import pyk.kore.syntax as pk
+
+from proof_generation.llvm_proof_hint import LLVMRuleEvent
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
@@ -35,14 +39,12 @@ class KoreHint:
     def __init__(
         self,
         conf_before: Pattern,
-        fun_events: tuple[HintEvent, ...],
         conf_after: Pattern,
         axiom: KRewritingRule | KEquationalRule,
         substitutions: dict[int, Pattern],
     ) -> None:
         # TODO: Change interface according to the real hint format
         self._pre_configuration: Pattern = conf_before
-        self._fun_events: tuple[HintEvent, ...] = fun_events
         self._post_configuration: Pattern = conf_after
         self._axiom: KRewritingRule | KEquationalRule = axiom
         self._substitutions: dict[int, Pattern] = substitutions
@@ -50,10 +52,6 @@ class KoreHint:
     @property
     def configuration_before(self) -> Pattern:
         return self._pre_configuration
-
-    @property
-    def functional_events(self) -> tuple[HintEvent, ...]:
-        return self._fun_events
 
     @property
     def configuration_after(self) -> Pattern:
@@ -72,23 +70,25 @@ def get_proof_hints(
     llvm_proof_hint: LLVMRewriteTrace,
     language_semantics: LanguageSemantics,
 ) -> Iterator[KoreHint]:
-    """Emits proof hints corresponding to the given LLVM rewrite trace."""
+    """
+    Emits proof hints corresponding to the given LLVM rewrite trace.
+    Note that no hints will be generated if the trace is empty.
+    """
+
+    # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
     pre_config = language_semantics.convert_pattern(llvm_proof_hint.initial_config)
 
-    # Note that no hints will be generated if the trace is empty
     post_config = pre_config
-    for rewrite_step in llvm_proof_hint.trace:
-        # generate the hint using the new format
-        pre_config = post_config
-        post_config = language_semantics.convert_pattern(rewrite_step.post_config)
+    if len(llvm_proof_hint.trace) > 0:
+        for e1, e2 in zip(llvm_proof_hint.trace, llvm_proof_hint.trace[1:], strict=False):
+            # TODO: process function/hook events in llvm_proof_hint.strace
+            if isinstance(e1, LLVMRuleEvent) and isinstance(e2, pk.Pattern):
+                # generate the hint using the new format
+                pre_config = post_config
+                post_config = language_semantics.convert_pattern(e2)
 
-        axiom = language_semantics.get_axiom(rewrite_step.rule_ordinal)
-        substitutions = language_semantics.convert_substitutions(
-            dict(rewrite_step.substitution), rewrite_step.rule_ordinal
-        )
+                axiom = language_semantics.get_axiom(e1.rule_ordinal)
+                substitutions = language_semantics.convert_substitutions(dict(e1.substitution), e1.rule_ordinal)
 
-        # TODO: read function/hook events from the given trace
-        fun_events = ()
-
-        hint = KoreHint(pre_config, fun_events, post_config, axiom, substitutions)
-        yield hint
+                hint = KoreHint(pre_config, post_config, axiom, substitutions)
+                yield hint
