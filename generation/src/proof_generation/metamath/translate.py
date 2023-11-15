@@ -5,10 +5,10 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from mm_translate.converter.converter import MetamathConverter
-from mm_translate.converter.representation import AxiomWithAntecedents
-from mm_translate.metamath.parser import load_database
 from proof_generation.basic_interpreter import ExecutionPhase
+from proof_generation.metamath.converter.converter import MetamathConverter
+from proof_generation.metamath.converter.representation import AxiomWithAntecedents
+from proof_generation.metamath.parser import load_database
 from proof_generation.pattern import Implies, MetaVar, Pattern
 from proof_generation.proof import ProofExp
 from proof_generation.proved import Proved

@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from mm_translate.converter.converter import MetamathConverter
-from mm_translate.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
-from mm_translate.metamath.ast import AxiomaticStatement, Block, ConstantStatement, FloatingStatement
-from mm_translate.metamath.parser import load_database
+from proof_generation.metamath.ast import AxiomaticStatement, Block, ConstantStatement, FloatingStatement
+from proof_generation.metamath.converter.converter import MetamathConverter
+from proof_generation.metamath.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
+from proof_generation.metamath.parser import load_database
 from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, SVar, Symbol
 
 if TYPE_CHECKING:
-    from mm_translate.metamath.ast import Database
+    from proof_generation.metamath.ast import Database
     from proof_generation.pattern import Pattern
 
 BENCHMARK_LOCATION = 'mm-benchmarks'

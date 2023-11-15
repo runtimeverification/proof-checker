@@ -4,7 +4,7 @@ from itertools import count
 
 from pytest import fixture, raises
 
-from kore_transfer.kore_convertion.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
+from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
 from proof_generation.pattern import Pattern, Symbol
 from proof_generation.proofs.kore import KORE_NOTATIONS, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
