@@ -66,10 +66,6 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     return Notation(symbol.name, n, p, fmt)
 
 
-def nary_cell(symbol: Symbol, n: int) -> Notation:
-    return nary_app(symbol, n, cell=True)
-
-
 def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ...]]:
     match p:
         case Instantiate(_, _):

@@ -69,7 +69,11 @@ class KSymbol:
 
     @property
     def aml_notation(self) -> Notation:
-        return kl.nary_app(self.aml_symbol, len(self.input_sorts), self.is_cell)
+        if self.name == 'inj':
+            # TODO: This is a special case.
+            return kl.nary_app(self.aml_symbol, 1, self.is_cell)
+        else:
+            return kl.nary_app(self.aml_symbol, len(self.input_sorts), self.is_cell)
 
 
 @dataclass(frozen=True)
