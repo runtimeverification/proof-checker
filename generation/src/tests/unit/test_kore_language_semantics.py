@@ -94,7 +94,11 @@ def test_symbols() -> None:
     assert not sym.is_functional
     assert not sym.is_ctor
     assert not sym.is_cell
-    assert sym.aml_notation == nary_app(sym.aml_symbol, 0, False)
+    # This is an intentionally strict comparison that also checks that
+    # nary_app caching working and it does work even with different
+    # equivalent instances of the Symbol class
+    # The rest comparisons will be just equality checks
+    assert sym.aml_notation is nary_app(Symbol(sym.aml_symbol.name), 0, False)
 
     # Test the creation of a functional symbol
     srt2 = KSort('srt2')
