@@ -4,23 +4,22 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
-import proof_generation.proofs.kore_lemmas as kl
+import proof_generation.proofs.kore as kl
 from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
-from proof_generation.proofs.kore_lemmas import KORE_NOTATIONS
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-    from proof_generation.pattern import Pattern
+    from proof_generation.pattern import Notation, Pattern
 
 ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
 
 
 class ExecutionProofExp(proof.ProofExp):
-    def __init__(self) -> None:
-        super().__init__(notations=list(KORE_NOTATIONS))
+    def __init__(self, notations: list[Notation]) -> None:
+        super().__init__(notations=notations)
 
     def add_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
@@ -38,7 +37,7 @@ class ExecutionProofExp(proof.ProofExp):
 
 
 def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics) -> ExecutionProofExp:
-    proof_expression = ExecutionProofExp()
+    proof_expression = ExecutionProofExp(list(language_semantics.notations))
     claims = 0
     for hint in hints:
         axiom = proof_expression.add_axioms(hint, language_semantics)
