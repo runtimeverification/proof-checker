@@ -6,11 +6,10 @@ from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
 from pyk.kore.kompiled import KompiledKore
-from pyk.ktool.kompile import kompile
 
-from kore_transfer.execution_proof_generation import generate_proofs
-from kore_transfer.kore_convertion.language_semantics import LanguageSemantics
-from kore_transfer.kore_convertion.rewrite_steps import get_proof_hints
+from proof_generation.k.execution_proof_generation import generate_proofs
+from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
+from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
@@ -24,19 +23,15 @@ def get_kompiled_definition(output_dir: Path) -> Definition:
     return KompiledKore(output_dir).definition
 
 
-def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = False) -> Path:
-    """Kompile given K definition and return path to the kompiled directory."""
+def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
+    """Check that the K definition exists and return path to the kompiled directory."""
 
     path = Path(output_dir)
-    if reuse_kompiled_dir and path.exists() and path.is_dir():
+    if path.exists() and path.is_dir():
         print(f'Using existing kompiled directory {path}')
         return Path(path)
-    elif reuse_kompiled_dir:
-        print(f'Kompiled directory {path} does not exist. Compiling from scratch.')
-
-    print(f'Kompiling target {k_file} to {output_dir}')
-    kompiled_dir: Path = kompile(main_file=k_file, backend='llvm', output_dir=output_dir)
-    return kompiled_dir
+    else:
+        raise AssertionError(f'Kompiled directory {path} does not exist.')
 
 
 def generate_proof_file(proof_gen: ProofExp, output_dir: Path, file_name: str, pretty: bool = False) -> None:
@@ -69,10 +64,9 @@ def main(
     output_dir: str,
     proof_dir: str,
     pretty: bool = False,
-    reuse_kompiled_dir: bool = False,
 ) -> None:
     # Kompile sources
-    kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
+    kompiled_dir: Path = get_kompiled_dir(k_file, output_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
@@ -99,7 +93,6 @@ if __name__ == '__main__':
         default=False,
         help='Print the pretty-printed version of proofs instead of the binary ones',
     )
-    argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
 
     args = argparser.parse_args()
-    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty, args.reuse)
+    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty)

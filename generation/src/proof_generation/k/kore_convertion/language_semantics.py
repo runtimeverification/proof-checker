@@ -7,14 +7,15 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 
 import pyk.kore.syntax as kore
 
-import proof_generation.proofs.kore_lemmas as kl
+import proof_generation.proofs.kore as kl
+import proof_generation.proofs.propositional as prop
 from proof_generation.pattern import EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from kore_transfer.kore_convertion.rewrite_steps import RewriteStepExpression
+    from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Notation, Pattern, SVar
 
 T = TypeVar('T')
@@ -68,7 +69,13 @@ class KSymbol:
 
     @property
     def aml_notation(self) -> Notation:
-        raise NotImplementedError()
+        if self.name == 'inj':
+            # TODO: This is a special case.
+            return kl.nary_app(self.aml_symbol, 1, self.is_cell)
+        elif self.name == 'kseq':
+            return kl.kore_kseq
+        else:
+            return kl.nary_app(self.aml_symbol, len(self.input_sorts), self.is_cell)
 
 
 @dataclass(frozen=True)
@@ -140,11 +147,21 @@ class KModule(BuilderScope):
 
     @property
     def sorts(self) -> tuple[KSort, ...]:
-        return tuple(self._sorts.values())
+        sorts = list(self._sorts.values())
+        for module in self.modules:
+            sorts.extend(module.sorts)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(sorts))
 
     @property
     def symbols(self) -> tuple[KSymbol, ...]:
-        return tuple(self._symbols.values())
+        symbols = list(self._symbols.values())
+        for module in self.modules:
+            symbols.extend(module.symbols)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(symbols))
 
     @property
     def modules(self) -> tuple[KModule, ...]:
@@ -302,11 +319,36 @@ class LanguageSemantics(BuilderScope):
         return tuple(dict.fromkeys(modules))
 
     @property
+    def sorts(self) -> tuple[KSort, ...]:
+        sorts: list[KSort] = []
+        for module in self.modules:
+            sorts.extend(module.sorts)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(sorts))
+
+    @property
+    def symbols(self) -> tuple[KSymbol, ...]:
+        symbols: list[KSymbol] = []
+        for module in self.modules:
+            symbols.extend(module.symbols)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(symbols))
+
+    @property
     def main_module(self) -> KModule:
         # TODO: This is a heuristic
         if len(self._imported_modules) == 0:
             raise ValueError('No modules have been added')
         return self._imported_modules[-1]
+
+    @property
+    def notations(self) -> tuple[Notation, ...]:
+        symbols = self.symbols
+        notations = [sym.aml_notation for sym in symbols]
+
+        return (*prop.PROPOSITIONAL_NOTATIONS, *kl.KORE_NOTATIONS, *dict.fromkeys(notations))
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""
@@ -472,11 +514,9 @@ class LanguageSemantics(BuilderScope):
                 return kl.kore_or(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, _, args):
                 ksymbol: KSymbol = self.get_symbol(symbol)
-                # TODO: Use this after the new notation format is implemented
-                # aml_notation = ksymbol.aml_notation(args)
                 arg_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
-                return kl.nary_app(ksymbol.aml_symbol, len(arg_patterns), cell=ksymbol.is_cell)(*arg_patterns)
 
+                return ksymbol.aml_notation(*arg_patterns)
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return scope.resolve_evar(pattern)
