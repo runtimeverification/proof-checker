@@ -68,6 +68,7 @@ class KSymbol:
 
     @property
     def aml_notation(self) -> Notation:
+        # TODO: Return the new created notation using the n-ary app from the kore.py
         raise NotImplementedError()
 
 
@@ -154,6 +155,12 @@ class KModule(BuilderScope):
             modules.extend(module.modules)
         # Ordering nd removing duplicated
         return tuple(dict.fromkeys(modules))
+
+    @property
+    def notations(self) -> tuple[Notation, ...]:
+        # TODO: Collect notations from symbols
+        # TODO: Add notations from Kore and Propositional files
+        raise NotImplementedError()
 
     @builder_method
     def import_module(self, module: KModule) -> None:
