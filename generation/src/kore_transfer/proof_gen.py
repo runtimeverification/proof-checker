@@ -31,7 +31,7 @@ def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
         print(f'Using existing kompiled directory {path}')
         return Path(path)
     else:
-        raise AssertionError(f'Kompiled directory {path} does not exist. Compiling from scratch.')
+        raise AssertionError(f'Kompiled directory {path} does not exist.')
 
 
 def generate_proof_file(proof_gen: ProofExp, output_dir: Path, file_name: str, pretty: bool = False) -> None:
