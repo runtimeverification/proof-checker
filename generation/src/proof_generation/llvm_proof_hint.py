@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
+import pyk.kore.syntax as kore
 from pyk.kllvm import ast as kllvm_kore
 from pyk.kllvm.convert import llvm_to_pattern
 
 if TYPE_CHECKING:
     from typing import Final
-    import pyk.kore.syntax as kore
 
 
 @dataclass

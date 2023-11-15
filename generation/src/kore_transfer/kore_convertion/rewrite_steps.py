@@ -4,7 +4,7 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import pyk.kore.syntax as pk
+import pyk.kore.syntax as kore
 
 from proof_generation.llvm_proof_hint import LLVMRuleEvent
 
@@ -82,7 +82,7 @@ def get_proof_hints(
     if len(llvm_proof_hint.trace) > 0:
         for e1, e2 in zip(llvm_proof_hint.trace, llvm_proof_hint.trace[1:], strict=False):
             # TODO: process function/hook events in llvm_proof_hint.strace
-            if isinstance(e1, LLVMRuleEvent) and isinstance(e2, pk.Pattern):
+            if isinstance(e1, LLVMRuleEvent) and isinstance(e2, kore.Pattern):
                 # generate the hint using the new format
                 pre_config = post_config
                 post_config = language_semantics.convert_pattern(e2)

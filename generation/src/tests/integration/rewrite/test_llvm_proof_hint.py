@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pyk.kllvm.load  # noqa: F401
-import pyk.kore.syntax as pk
+import pyk.kore.syntax as kore
 
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace, LLVMRuleEvent
 
@@ -36,7 +36,7 @@ def test_parse_proof_hint_single_rewrite() -> None:
 
     # Contents of the k cell in the final configuration
     final_config = hint.trace[1]
-    assert isinstance(final_config, pk.Pattern)
+    assert isinstance(final_config, kore.Pattern)
     k_cell = final_config.patterns[0].dict['args'][0]
     assert k_cell['name'] == 'kseq'
     assert k_cell['args'][0]['args'][0]['name'] == "LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
