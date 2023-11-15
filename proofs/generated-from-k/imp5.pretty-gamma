@@ -40,6 +40,32 @@ Symbol kore_kseq
 	1: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 	2: phi0
 	3: kore_kseq
+MetaVar 0
+	Stack:
+	0: ksort_SortGeneratedTopCell
+	1: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	2: phi0
+	3: kore_kseq
+	4: phi0
+App
+	Stack:
+	0: ksort_SortGeneratedTopCell
+	1: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	2: phi0
+	3: (kore_kseq · phi0)
+MetaVar 1
+	Stack:
+	0: ksort_SortGeneratedTopCell
+	1: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	2: phi0
+	3: (kore_kseq · phi0)
+	4: phi1
+App
+	Stack:
+	0: ksort_SortGeneratedTopCell
+	1: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	2: phi0
+	3: ((kore_kseq · phi0) · phi1)
 Instantiate 0, 1
 	Stack:
 	0: ksort_SortGeneratedTopCell
