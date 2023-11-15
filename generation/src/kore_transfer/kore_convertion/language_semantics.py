@@ -156,12 +156,6 @@ class KModule(BuilderScope):
         # Ordering nd removing duplicated
         return tuple(dict.fromkeys(modules))
 
-    @property
-    def notations(self) -> tuple[Notation, ...]:
-        # TODO: Collect notations from symbols
-        # TODO: Add notations from Kore and Propositional files
-        raise NotImplementedError()
-
     @builder_method
     def import_module(self, module: KModule) -> None:
         if module in self._imported_modules:
@@ -309,11 +303,25 @@ class LanguageSemantics(BuilderScope):
         return tuple(dict.fromkeys(modules))
 
     @property
+    def sorts(self) -> tuple[KSort, ...]:
+        raise NotImplementedError()
+
+    @property
+    def symbols(self) -> tuple[KSymbol, ...]:
+        raise NotImplementedError()
+
+    @property
     def main_module(self) -> KModule:
         # TODO: This is a heuristic
         if len(self._imported_modules) == 0:
             raise ValueError('No modules have been added')
         return self._imported_modules[-1]
+
+    @property
+    def notations(self) -> tuple[Notation, ...]:
+        # TODO: Collect notations from symbols
+        # TODO: Add notations from Kore and Propositional files
+        raise NotImplementedError()
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""
