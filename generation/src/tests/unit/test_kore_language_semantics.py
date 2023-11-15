@@ -6,7 +6,7 @@ from pytest import fixture, raises
 
 from kore_transfer.kore_convertion.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
 from proof_generation.pattern import Pattern, Symbol
-from proof_generation.proofs.kore_lemmas import kore_rewrites
+from proof_generation.proofs.kore import kore_rewrites
 
 
 @fixture

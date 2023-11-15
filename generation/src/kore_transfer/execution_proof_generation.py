@@ -4,9 +4,9 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
-import proof_generation.proofs.kore_lemmas as kl
+import proof_generation.proofs.kore as kl
 from kore_transfer.kore_convertion.language_semantics import KRewritingRule
-from proof_generation.proofs.kore_lemmas import KORE_NOTATIONS
+from proof_generation.proofs.kore import KORE_NOTATIONS
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

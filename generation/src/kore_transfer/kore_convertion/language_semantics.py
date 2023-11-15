@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 
 import pyk.kore.syntax as kore
 
-import proof_generation.proofs.kore_lemmas as kl
+import proof_generation.proofs.kore as kl
 from proof_generation.pattern import EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
