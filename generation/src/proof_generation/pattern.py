@@ -276,7 +276,7 @@ class App(Pattern):
         return App(self.left.apply_ssubst(svar_id, plug), self.right.apply_ssubst(svar_id, plug))
 
     def pretty(self, opts: PrettyOptions) -> str:
-        return f'app({self.left.pretty(opts)}, {self.right.pretty(opts)})'
+        return f'({self.left.pretty(opts)} · {self.right.pretty(opts)})'
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
@@ -437,7 +437,7 @@ class ESubst(Pattern):
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def pretty(self, opts: PrettyOptions) -> str:
-        return f'({self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}])'
+        return f'{self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}]'
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
@@ -468,7 +468,7 @@ class SSubst(Pattern):
         return SSubst(pattern=self, var=SVar(svar_id), plug=plug)
 
     def pretty(self, opts: PrettyOptions) -> str:
-        return f'({self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}])'
+        return f'{self.pattern.pretty(opts)}[{self.plug.pretty(opts)}/{self.var.pretty(opts)}]'
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
@@ -530,7 +530,10 @@ class Instantiate(Pattern):
             return self.simplify().pretty(opts)
         if self.pattern in opts.notations:
             return opts.notations[self.pattern].print_instantiation(self, opts)
-        return f'({str(self.pattern)}[{str(dict(self.inst))}])'
+        pretty_inst = {}
+        for key, val in self.inst.items():
+            pretty_inst[key] = val.pretty(opts)
+        return f'{str(self.pattern)}[{str(pretty_inst)}]'
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
