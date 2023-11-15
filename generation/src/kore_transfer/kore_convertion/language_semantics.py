@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
+import proof_generation.proofs.propositional as prop
 from proof_generation.pattern import EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
@@ -68,8 +69,7 @@ class KSymbol:
 
     @property
     def aml_notation(self) -> Notation:
-        # TODO: Return the new created notation using the n-ary app from the kore.py
-        raise NotImplementedError()
+        return kl.nary_app(self.aml_symbol, len(self.input_sorts), self.is_cell)
 
 
 @dataclass(frozen=True)
@@ -141,11 +141,21 @@ class KModule(BuilderScope):
 
     @property
     def sorts(self) -> tuple[KSort, ...]:
-        return tuple(self._sorts.values())
+        sorts = list(self._sorts.values())
+        for module in self.modules:
+            sorts.extend(module.sorts)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(sorts))
 
     @property
     def symbols(self) -> tuple[KSymbol, ...]:
-        return tuple(self._symbols.values())
+        symbols = list(self._symbols.values())
+        for module in self.modules:
+            symbols.extend(module.symbols)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(symbols))
 
     @property
     def modules(self) -> tuple[KModule, ...]:
@@ -304,11 +314,21 @@ class LanguageSemantics(BuilderScope):
 
     @property
     def sorts(self) -> tuple[KSort, ...]:
-        raise NotImplementedError()
+        sorts: list[KSort] = []
+        for module in self.modules:
+            sorts.extend(module.sorts)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(sorts))
 
     @property
     def symbols(self) -> tuple[KSymbol, ...]:
-        raise NotImplementedError()
+        symbols: list[KSymbol] = []
+        for module in self.modules:
+            symbols.extend(module.symbols)
+
+        # Ordering and removing duplicated
+        return tuple(dict.fromkeys(symbols))
 
     @property
     def main_module(self) -> KModule:
@@ -319,9 +339,10 @@ class LanguageSemantics(BuilderScope):
 
     @property
     def notations(self) -> tuple[Notation, ...]:
-        # TODO: Collect notations from symbols
-        # TODO: Add notations from Kore and Propositional files
-        raise NotImplementedError()
+        symbols = self.symbols
+        notations = [sym.aml_notation for sym in symbols]
+
+        return (*prop.PROPOSITIONAL_NOTATIONS, *kl.KORE_NOTATIONS, *dict.fromkeys(notations))
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""

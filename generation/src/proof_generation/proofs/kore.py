@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from itertools import count
+from functools import cache
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
@@ -47,11 +47,13 @@ kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(
 kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}')
 
 
+# We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
+@cache
 def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     """Constructs an nary application."""
     p: Pattern = symbol
     fmt_args: list[str] = []
-    for i in count(n):
+    for i in range(0, n):
         p = App(p, MetaVar(i))
         fmt_args.append('{' + str(i) + '}')
 
