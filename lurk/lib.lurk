@@ -1,10 +1,20 @@
 !(load "pattern.lurk")
+!(load "term.lurk")
+!(load "data_structures.lurk")
 
 ;; Notation
 !(def bot (mu 0 (svar 0)))
 !(def negate (lambda (pattern) (implies pattern bot)))
 !(def forall (lambda (evar_id pattern) (negate (exists evar_id (negate pattern)))))
 
+;; ExecutionPhase
+;; The current phase of execution should be the key with positive value
+!(def ExecutionPhase '((
+    :Gamma 0
+    :Claim 0
+    :Proof 0
+    ))
+)
 
 ;; Definition: read_u8_vec_aux(buffer, size) = (vec, buffer')
 ;; Use: (read_u8_vec_aux '(3 2 1 0) 2) => ((3 2) (1 0)
@@ -95,7 +105,7 @@
 
                                                       ; (if (eq (pattern_well_formed metavar_pat) nil) nil ;; Error
 
-                                                     (cons (cons metavar_pat stack) (cons memory (cons claims (cons instructions nil))))
+                                                     (cons (push_stack metavar_pat stack) (cons memory (cons claims (cons instructions nil))))
                                                 ) 
                                              ))
                                         (if (= instr_u32 10) ; ESubst
@@ -132,7 +142,7 @@
                                                                                                         (if (eq id nil)
                                                                                                             nil ;; Error
                                                                                                             (let ((metavar_pat (metavar_unconstrained id)))
-                                                                                                                 (cons (cons metavar_pat stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                                                 (cons (push_stack metavar_pat stack) (cons memory (cons claims (cons instructions nil))))
                                                                                                             )
                                                                                                         )
                                                                                                    )
