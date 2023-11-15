@@ -24,7 +24,7 @@ def get_kompiled_definition(output_dir: Path) -> Definition:
 
 
 def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
-    """Kompile given K definition and return path to the kompiled directory."""
+    """Check that the K definition exists and return path to the kompiled directory."""
 
     path = Path(output_dir)
     if path.exists() and path.is_dir():
