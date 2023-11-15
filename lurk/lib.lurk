@@ -126,10 +126,19 @@
                                                                                            (cons stack (cons memory (cons claims (cons instructions nil))))
                                                                                             (if (= instr_u32 30) ; Publish
                                                                                                (cons stack (cons memory (cons claims (cons instructions nil))))
-                                                                                                (if (= instr_u32 31) ; CleanMetaVar
-                                                                                                   (cons stack (cons memory (cons claims (cons instructions nil))))
-                                                                                                    (if (= instr_u32 32) ; NO_OP
-                                                                                                       (cons stack (cons memory (cons claims (cons instructions nil))))
-                                                                                                        nil
-                                                                                                    )))))))))))))))))))))))))))
+                                                                                                (if (= instr_u32 137) ; CleanMetaVar
+                                                                                                   (let ((id (car instructions))
+                                                                                                         (instructions (cdr instructions)))
+                                                                                                        (if (eq id nil)
+                                                                                                            nil ;; Error
+                                                                                                            (let ((metavar_pat (metavar_unconstrained id)))
+                                                                                                                 (cons (cons metavar_pat stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                                            )
+                                                                                                        )
+                                                                                                   )
+                                                                                                   (if (= instr_u32 138) ; NO_OP
+                                                                                                      (cons stack (cons memory (cons claims (cons instructions nil))))
+                                                                                                      nil
+                                                                                                   )))))))))))))))))))))))))))
+
 
