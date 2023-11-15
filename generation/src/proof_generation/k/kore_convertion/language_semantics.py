@@ -72,6 +72,8 @@ class KSymbol:
         if self.name == 'inj':
             # TODO: This is a special case.
             return kl.nary_app(self.aml_symbol, 1, self.is_cell)
+        elif self.name == 'kseq':
+            return kl.kore_kseq
         else:
             return kl.nary_app(self.aml_symbol, len(self.input_sorts), self.is_cell)
 

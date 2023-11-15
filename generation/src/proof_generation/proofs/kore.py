@@ -20,6 +20,7 @@ phi2 = MetaVar(2)
 inhabitant_symbol = Symbol('inhabitant')
 kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
+kore_kseq_symbol = Symbol('kore_kseq')
 
 
 """ kore_top(sort) """
@@ -45,6 +46,10 @@ kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(
 
 """ kore_dv(sort, value) """
 kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}')
+
+# TODO: Add support for multiple apps of kseq without brackets
+""" kore_kseq(left, right) """
+kore_kseq = Notation('kore-kseq', 2, kore_kseq_symbol, '({0} ~> {1})')
 
 
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
