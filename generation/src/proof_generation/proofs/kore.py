@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from itertools import count
 from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
@@ -50,7 +51,7 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     """Constructs an nary application."""
     p: Pattern = symbol
     fmt_args: list[str] = []
-    for i in range(0, n):
+    for i in count(n):
         p = App(p, MetaVar(i))
         fmt_args.append('{' + str(i) + '}')
 
