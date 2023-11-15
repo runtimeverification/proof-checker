@@ -23,16 +23,15 @@ def get_kompiled_definition(output_dir: Path) -> Definition:
     return KompiledKore(output_dir).definition
 
 
-def get_kompiled_dir(k_file: str, output_dir: str, reuse_kompiled_dir: bool = False) -> Path:
+def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
     """Kompile given K definition and return path to the kompiled directory."""
 
     path = Path(output_dir)
-    if reuse_kompiled_dir and path.exists() and path.is_dir():
+    if path.exists() and path.is_dir():
         print(f'Using existing kompiled directory {path}')
         return Path(path)
-    elif reuse_kompiled_dir:
-        raise (f'Kompiled directory {path} does not exist. Compiling from scratch.')
-    return kompiled_dir
+    else:
+        raise AssertionError(f'Kompiled directory {path} does not exist. Compiling from scratch.')
 
 
 def generate_proof_file(proof_gen: ProofExp, output_dir: Path, file_name: str, pretty: bool = False) -> None:
@@ -65,10 +64,9 @@ def main(
     output_dir: str,
     proof_dir: str,
     pretty: bool = False,
-    reuse_kompiled_dir: bool = False,
 ) -> None:
     # Kompile sources
-    kompiled_dir: Path = get_kompiled_dir(k_file, output_dir, reuse_kompiled_dir)
+    kompiled_dir: Path = get_kompiled_dir(k_file, output_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
@@ -95,7 +93,6 @@ if __name__ == '__main__':
         default=False,
         help='Print the pretty-printed version of proofs instead of the binary ones',
     )
-    argparser.add_argument('--reuse', action='store_true', default=False, help='Reuse the existing kompiled directory')
 
     args = argparser.parse_args()
-    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty, args.reuse)
+    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty)
