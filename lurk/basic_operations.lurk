@@ -10,16 +10,20 @@
 !(def trd (lambda (triple)
             (car (cdr (cdr triple)))))
 
-; f :: [stack] -> [memory] -> [claims] -> instruction 
+;; fth :: (a, b, c, d) -> d
+!(def fth (lambda (quadruple)
+            (car (cdr (cdr (cdr quadruple))))))
+
+; f :: [stack] -> [memory] -> [claims] -> [instruction]
 ;   -> ([stack] -> [memory] -> [claims])
 ; buffer :: [instruction]
-;; map :: f -> [stack] -> [memory] -> [claims] -> [instruction] 
-;     -> ([stack] -> [memory] -> [claims])
+;; map :: f -> [stack] -> [memory] -> [claims] -> [instruction]
+;     -> ([stack] -> [memory] -> [claims] -> [instruction])
 !(defrec map (lambda (f stack memory claims buffer)
                 (if (eq buffer nil)
-                    (cons stack (cons memory (cons claims nil)))
-                    (let ((result (f stack memory claims (car buffer))))
-                        (map f (fst result) (snd result) (trd result) (cdr buffer))))))
+                    (cons stack (cons memory (cons claims (cons buffer nil))))
+                    (let ((result (f stack memory claims buffer)))
+                         (map f (fst result) (snd result) (trd result) (fth result))))))
 
 ;; This function is used to set a the value of a key in a pattern.
 ;; set :: key -> value -> [a] -> [a]
