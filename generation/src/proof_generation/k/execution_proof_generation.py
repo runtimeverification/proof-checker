@@ -21,12 +21,13 @@ class ExecutionProofExp(proof.ProofExp):
     def __init__(self, notations: list[Notation]) -> None:
         super().__init__(notations=notations)
 
-    def add_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
+    def add_kore_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
-        language_semantics.collect_functional_axioms(hint)
+        func_axioms = language_semantics.collect_functional_axioms(hint)
+        self.add_axioms([axiom.pattern for axiom in func_axioms])
         assert isinstance(hint.axiom, KRewritingRule)
-        self._axioms.append(hint.axiom.pattern)
+        self.add_axiom(hint.axiom.pattern)
         return hint.axiom
 
     def prove_rewrite_step(self, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]) -> None:
@@ -40,7 +41,7 @@ def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: 
     proof_expression = ExecutionProofExp(list(language_semantics.notations))
     claims = 0
     for hint in hints:
-        axiom = proof_expression.add_axioms(hint, language_semantics)
+        axiom = proof_expression.add_kore_axioms(hint, language_semantics)
         assert isinstance(axiom, KRewritingRule)
         rewrite_axiom = axiom.pattern
         sort, _, _ = kl.kore_rewrites.assert_matches(rewrite_axiom)
