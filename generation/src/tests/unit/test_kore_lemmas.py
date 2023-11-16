@@ -1,7 +1,7 @@
 from frozendict import frozendict
 
 from proof_generation.pattern import App, Instantiate, MetaVar, Notation, PrettyOptions, Symbol
-from proof_generation.proofs.kore_lemmas import deconstruct_nary_application, nary_app, nary_cell
+from proof_generation.proofs.kore import deconstruct_nary_application, nary_app
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
@@ -9,7 +9,7 @@ phi2 = MetaVar(2)
 
 foo_symbol = Symbol('foo')
 foo_app = nary_app(foo_symbol, 3)
-foo_cell = nary_cell(foo_symbol, 3)
+foo_cell = nary_app(foo_symbol, 3, True)
 
 bar_symbol = Symbol('bar')
 bar = Notation('bar', 0, bar_symbol, 'bar')

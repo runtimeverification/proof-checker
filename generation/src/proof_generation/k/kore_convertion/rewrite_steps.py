@@ -11,7 +11,7 @@ from proof_generation.llvm_proof_hint import LLVMRuleEvent
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from kore_transfer.kore_convertion.language_semantics import KEquationalRule, KRewritingRule, LanguageSemantics
+    from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule, LanguageSemantics
     from proof_generation.llvm_proof_hint import LLVMRewriteTrace
     from proof_generation.pattern import Pattern
 

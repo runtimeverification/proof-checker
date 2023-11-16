@@ -4,8 +4,8 @@ from dataclasses import dataclass, field
 from io import StringIO
 from typing import TYPE_CHECKING, TypeVar
 
-from mm_translate.utils.printer import Printer
-from mm_translate.utils.visitor import ResultT, Visitor
+from proof_generation.metamath.utils.printer import Printer
+from proof_generation.metamath.utils.visitor import ResultT, Visitor
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping

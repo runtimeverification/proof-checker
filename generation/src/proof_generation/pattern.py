@@ -206,7 +206,7 @@ class Symbol(Pattern):
         return self
 
     def pretty(self, opts: PrettyOptions) -> str:
-        return f'\u03c3{self.name}'
+        return self.name
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
