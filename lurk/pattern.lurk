@@ -134,9 +134,9 @@
     )
 )
 
-;; Definition: e_subst(evar_id, subpattern, plug) = Pattern{inst = 10, id = evar_id, subpattern = subpattern, plug = plug}
-;; Use: !(def new_e_subst (e_subst evar_id subpattern plug))
-!(def e_subst 
+;; Definition: esubst(evar_id, subpattern, plug) = Pattern{inst = 10, id = evar_id, subpattern = subpattern, plug = plug}
+;; Use: !(def new_esubst (esubst evar_id subpattern plug))
+!(def esubst 
     (lambda (evar_id subpattern plug) 
         (set :inst 10
         (set :id evar_id 
@@ -146,9 +146,9 @@
     )
 )
 
-;; Definition: s_subst(svar_id, subpattern, plug) = Pattern{inst = 11, id = svar_id, subpattern = subpattern, plug = plug}
-;; Use: !(def new_s_subst (s_subst svar_id subpattern plug))
-!(def s_subst 
+;; Definition: ssubst(svar_id, subpattern, plug) = Pattern{inst = 11, id = svar_id, subpattern = subpattern, plug = plug}
+;; Use: !(def new_ssubst (ssubst svar_id subpattern plug))
+!(def ssubst 
     (lambda (svar_id subpattern plug) 
         (set :inst 11
         (set :id svar_id 
