@@ -54,6 +54,42 @@ class ProofExp:
         self._claims = [] if claims is None else claims
         self._proof_expressions = [] if proof_expressions is None else proof_expressions
 
+    def add_axiom(self, axiom: Pattern) -> None:
+        self._axioms.append(axiom)
+
+    def add_axioms(self, axioms: list[Pattern]) -> None:
+        self._axioms.extend(axioms)
+
+    def get_axioms(self) -> list[Pattern]:
+        return self._axioms
+
+    def add_notation(self, notation: Notation) -> None:
+        self._notations.append(notation)
+
+    def add_notations(self, notations: list[Notation]) -> None:
+        self._notations.extend(notations)
+
+    def get_notations(self) -> list[Notation]:
+        return self._notations
+
+    def add_claim(self, claim: Pattern) -> None:
+        self._claims.append(claim)
+
+    def add_claims(self, claims: list[Pattern]) -> None:
+        self._claims.extend(claims)
+
+    def get_claims(self) -> list[Pattern]:
+        return self._claims
+
+    def add_proof_expression(self, proof_expression: ProofThunk) -> None:
+        self._proof_expressions.append(proof_expression)
+
+    def add_proof_expressions(self, proof_expressions: list[ProofThunk]) -> None:
+        self._proof_expressions.extend(proof_expressions)
+
+    def get_proof_expressions(self) -> list[ProofThunk]:
+        return self._proof_expressions
+
     # Proof Rules
     # -----------
 

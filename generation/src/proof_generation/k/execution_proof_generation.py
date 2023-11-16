@@ -26,6 +26,15 @@ class ExecutionProofExp(proof.ProofExp):
         """Returns the initial configuration."""
         return self._init_config
 
+    def add_kore_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
+        """Add axioms to the definition."""
+        # TODO: We don't use them until the substitutions are implemented
+        func_axioms = language_semantics.collect_functional_axioms(hint)
+        self.add_axioms([axiom.pattern for axiom in func_axioms])
+        assert isinstance(hint.axiom, KRewritingRule)
+        self.add_axiom(hint.axiom.pattern)
+        return hint.axiom
+
     @property
     def current_configuration(self) -> Pattern:
         """Returns the current configuration."""
@@ -67,8 +76,9 @@ class ExecutionProofExp(proof.ProofExp):
             if proof_expr is None:
                 proof_expr = ExecutionProofExp(language_semantics, hint.configuration_before)
 
-            if isinstance(hint.axiom, KRewritingRule):
-                proof_expr.rewrite_event(hint.axiom, hint.substitutions)
+            rule = proof_expr.add_kore_axioms(hint, language_semantics)
+            if isinstance(rule, KRewritingRule):
+                proof_expr.rewrite_event(rule, hint.substitutions)
             else:
                 # TODO: Remove the stub
                 raise NotImplementedError('TODO: Add support for equational rules')
