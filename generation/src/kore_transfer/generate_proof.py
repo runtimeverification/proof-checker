@@ -18,7 +18,7 @@ def generate_proofs(
 ) -> None:
     claims = 0
     for hint in hints:
-        axiom = proof_expression.add_axioms(hint, language_semantics)
+        axiom = proof_expression.add_kore_axioms(hint, language_semantics)
         assert isinstance(axiom, KRewritingRule)
         rewrite_axiom = axiom.pattern
         sort, left, right = kl.kore_rewrites.assert_matches(rewrite_axiom)

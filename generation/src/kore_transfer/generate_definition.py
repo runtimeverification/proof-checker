@@ -18,13 +18,13 @@ class KoreDefinition(proof.ProofExp):
     def __init__(self) -> None:
         super().__init__()
 
-    def add_axioms(self, hint: KoreHint, language_semantics: LanguageSemantics) -> KRewritingRule:
+    def add_kore_axioms(self, hint: KoreHint, language_semantics: LanguageSemantics) -> KRewritingRule:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
         func_axioms = language_semantics.collect_functional_axioms(hint)
-        self._axioms.extend([axiom.pattern for axiom in func_axioms])
+        self.add_axioms([axiom.pattern for axiom in func_axioms])
         assert isinstance(hint.axiom, KRewritingRule)
-        self._axioms.append(hint.axiom.pattern)
+        self.add_axiom(hint.axiom.pattern)
         return hint.axiom
 
     def prove_rewrite_step(self, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]) -> None:

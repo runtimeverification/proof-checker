@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore_lemmas as kl
-from proof_generation.pattern import EVar, MetaVar, Symbol, is_pred
+from proof_generation.pattern import EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -456,7 +456,7 @@ class LanguageSemantics(BuilderScope):
             sym, args = kl.deconstruct_nary_application(pattern)
             assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
             assert self.get_symbol(sym.name).is_functional
-            converted_pattern = is_pred(pattern)
+            converted_pattern = kl.functional(pattern)
             subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return subst_axioms
 
