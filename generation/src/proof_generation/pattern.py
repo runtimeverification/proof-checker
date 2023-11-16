@@ -654,7 +654,6 @@ class SSubst(Pattern):
 
     def evar_is_app_ctx_hole(self, name: int) -> bool:
         # We assume that at least one instance will be replaced
-        # TODO Implementing this case requires a
         return (self.pattern.evar_is_app_ctx_hole(name) and self.plug.evar_is_fresh(name)) or (
             self.pattern.svar_is_app_ctx_hole(self.var.name)
             and self.plug.evar_is_app_ctx_hole(name)
