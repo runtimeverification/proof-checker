@@ -149,7 +149,18 @@
                                                                            (let ((term (car (get :stack stack))))
                                                                                  (cons stack (cons (push_memory term memory) (cons claims (cons instructions nil)))))
                                                                            (if (= instr_u32 29) ; Load
-                                                                              nil
+                                                                              (let ((index (car instructions))
+                                                                                    (instructions (cdr instructions)))
+                                                                                    (if (eq index nil)
+                                                                                       nil ;; Error
+                                                                                       (let ((term (nth index (get :memory memory))))
+                                                                                            (if (eq term nil)
+                                                                                               nil ;; Error
+                                                                                               (cons (push_stack term stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                            )
+                                                                                       )
+                                                                                    )
+                                                                              )
                                                                               (if (= instr_u32 30) ; Publish
                                                                                  (if (eq (get :Gamma phase) 1)
                                                                                     (let ((temp (pop_stack_pattern stack))
