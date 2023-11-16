@@ -30,7 +30,7 @@ jobs:
         run: |
           PYK_VERSION="$(cat deps/pyk_release)"
           sed -i 's!pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "[v0-9\.]*" }!pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "'${PYK_VERSION}'" }!' generation/pyproject.toml
-          poetry update
+          poetry -C generation update
           git add --update && git commit -m "poetry: sync poetry files pyk version ${PYK_VERSION}" || true
       - name: 'Update K release file'
         run: |
