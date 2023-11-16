@@ -483,6 +483,51 @@ class Propositional(ProofExp):
         p, q = _and.assert_matches(pq_pf.conc)
         return self.modus_ponens(self.and_r_imp(p, q), pq_pf)
 
+    def imp_to_and(self, pqr_pf: ProofThunk) -> ProofThunk:
+        """
+          p -> (q -> r)
+        -----------------
+          p /\\ q -> r
+        """
+        p, qr = Implies.extract(pqr_pf.conc)
+        q, r = Implies.extract(qr)
+        pnrnq_pf = self.modus_ponens(self.imim_r(p, self.con3(q, r)), pqr_pf)
+        nrpnq_pf = self.ant_commutativity(pnrnq_pf)
+        return self.con1(nrpnq_pf)
+
+    def ian(self, p: Pattern, q: Pattern) -> ProofThunk:
+        """p -> (q -> p /\\ q)"""
+        pnq = Implies(p, neg(q))
+        return self.modus_ponens(self.imim_r(p, self.con2(pnq, q)), self.ant_commutativity(self.imp_refl(pnq)))
+
+    def sylc(self, bcd_pf: ProofThunk, ab_pf: ProofThunk, ac_pf: ProofThunk) -> ProofThunk:
+        """
+          b -> c -> d    a -> b    a -> c
+        -----------------------------------
+                      a -> d
+        """
+        b, cd = Implies.extract(bcd_pf.conc)
+        c, d = Implies.extract(cd)
+        a, b2 = Implies.extract(ab_pf.conc)
+        assert b == b2
+        a2, c2 = Implies.extract(ac_pf.conc)
+        assert a == a2
+        assert c == c2
+        return self.modus_ponens(
+            self.modus_ponens(self.prop2_inst(a, c, d), self.imp_transitivity(ab_pf, bcd_pf)), ac_pf
+        )
+
+    def iand(self, pq_pf: ProofThunk, pr_pf: ProofThunk) -> ProofThunk:
+        """
+          p -> q   p -> r
+        -------------------
+           p -> q /\\ r
+        """
+        p, q = Implies.extract(pq_pf.conc)
+        p2, r = Implies.extract(pr_pf.conc)
+        assert p == p2
+        return self.sylc(self.ian(q, r), pq_pf, pr_pf)
+
 
 if __name__ == '__main__':
     Propositional().main(sys.argv)

@@ -140,8 +140,6 @@ class Tautology(Propositional):
         super().__init__()
         self._axioms.extend(
             [
-                Implies(_and(_and(phi0, phi1), phi2), _and(phi0, _and(phi1, phi2))),
-                Implies(_and(phi0, _and(phi1, phi2)), _and(_and(phi0, phi1), phi2)),
                 Implies(_or(_or(phi0, phi1), phi2), _or(phi0, _or(phi1, phi2))),
                 Implies(_or(phi0, _or(phi1, phi2)), _or(_or(phi0, phi1), phi2)),
                 Implies(_or(_and(phi0, phi1), phi2), _and(_or(phi0, phi2), _or(phi1, phi2))),
@@ -171,35 +169,41 @@ class Tautology(Propositional):
 
     def and_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a /\\ b) /\\ c -> a /\\ (b /\\ c)"""
-        return self.dynamic_inst(self.load_axiom_by_index(0), _build_subst([pat1, pat2, pat3]))
+        return self.iand(
+            self.imp_transitivity(self.and_l_imp(_and(pat1, pat2), pat3), self.and_l_imp(pat1, pat2)),
+            self.imim_and_l(pat3, self.and_r_imp(pat1, pat2)),
+        )
 
     def and_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a /\\ (b /\\ c) -> (a /\\ b) /\\ c"""
-        return self.dynamic_inst(self.load_axiom_by_index(1), _build_subst([pat1, pat2, pat3]))
+        return self.iand(
+            self.imim_and_r(pat1, self.and_l_imp(pat2, pat3)),
+            self.imp_transitivity(self.and_r_imp(pat1, _and(pat2, pat3)), self.and_r_imp(pat2, pat3)),
+        )
 
     def or_assoc_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a \\/ b) \\/ c -> a \\/ (b \\/ c)"""
-        return self.dynamic_inst(self.load_axiom_by_index(2), _build_subst([pat1, pat2, pat3]))
+        return self.dynamic_inst(self.load_axiom_by_index(0), _build_subst([pat1, pat2, pat3]))
 
     def or_assoc_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a \\/ (b \\/ c) -> (a \\/ b) \\/ c"""
-        return self.dynamic_inst(self.load_axiom_by_index(3), _build_subst([pat1, pat2, pat3]))
+        return self.dynamic_inst(self.load_axiom_by_index(1), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_r(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a /\\ b) \\/ c -> (a \\/ c) /\\ (b \\/ c)"""
-        return self.dynamic_inst(self.load_axiom_by_index(4), _build_subst([pat1, pat2, pat3]))
+        return self.dynamic_inst(self.load_axiom_by_index(2), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_r_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a \\/ c) /\\ (b \\/ c) -> (a /\\ b) \\/ c"""
-        return self.dynamic_inst(self.load_axiom_by_index(5), _build_subst([pat1, pat2, pat3]))
+        return self.dynamic_inst(self.load_axiom_by_index(3), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_l(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a \\/ (b /\\ c) -> (a \\/ b) /\\ (a \\/ c)"""
-        return self.dynamic_inst(self.load_axiom_by_index(6), _build_subst([pat1, pat2, pat3]))
+        return self.dynamic_inst(self.load_axiom_by_index(4), _build_subst([pat1, pat2, pat3]))
 
     def or_distr_l_rev(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """(a \\/ b) /\\ (a \\/ c) -> a \\/ (b /\\ c)"""
-        return self.dynamic_inst(self.load_axiom_by_index(7), _build_subst([pat1, pat2, pat3]))
+        return self.dynamic_inst(self.load_axiom_by_index(5), _build_subst([pat1, pat2, pat3]))
 
     def and_assoc(self, pat1: Pattern = phi0, pat2: Pattern = phi1, pat3: Pattern = phi2) -> ProofThunk:
         """a /\\ (b /\\ c) <-> (a /\\ b) /\\ c"""
