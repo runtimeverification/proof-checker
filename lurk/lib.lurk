@@ -2,8 +2,8 @@
 
 ;; Notation
 !(def bot (mu 0 (svar 0)))
-!(def not (lambda (pattern) (implies pattern bot)))
-!(def forall (lambda (evar_id pattern) (not (exists evar_id (not pattern)))))
+!(def negate (lambda (pattern) (implies pattern bot)))
+!(def forall (lambda (evar_id pattern) (negate (exists evar_id (negate pattern)))))
 
 ;; execute_instructions
 
@@ -23,7 +23,7 @@
 !(def prop2 (implies (implies phi0 (implies phi1 phi2))
                      (implies (implies phi0 phi1)
                               (implies phi0 phi2))))
-!(def prop3 (implies (not (not phi0)) phi0))
+!(def prop3 (implies (negate (negate phi0)) phi0))
 
 ;; Quantifier: forall x. phi0
 !(def quantifier (implies (esubst phi0 0 (evar 1)) (exists 0 phi0)))

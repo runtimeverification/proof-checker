@@ -76,18 +76,14 @@
 ;; logical and
 !(def and (lambda (cond1 cond2)
              (if cond1
-                 (if cond2
-                     t
-                     nil)
+                 cond2
                  nil)))
 
 ;; logical or
 !(def or (lambda (cond1 cond2)
             (if cond1
                 t
-                (if cond2
-                    t
-                    nil))))
+                cond2)))
 
 ;; logical not
 !(def not (lambda (cond)
