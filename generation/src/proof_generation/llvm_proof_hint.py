@@ -82,12 +82,13 @@ class LLVMRewriteTraceParser:
     hook_res_sentinel: Final = bytes([0xBB] * 8)
     side_condn_sentinel: Final = bytes([0xEE] * 8)
     kore_term_prefix: Final = b'\x7FKORE'
+    null_byte: Final = b'\x00'
 
     def __init__(self, input: bytes):
         self.input = input
         self.trace: list[tuple[int, LLVMStepEvent | kore.Pattern]] = []
         self.init_config_pos = 0
-        self.current_pos = 0
+        self.entry_index = 0
 
     def read_proof_trace(self, debug: bool) -> LLVMRewriteTrace:
         # read the prefix trace (step events)
@@ -163,8 +164,8 @@ class LLVMRewriteTraceParser:
     def read_hook(self) -> None:
         self.skip_constant(self.hook_event_sentinel)
         name = self.read_c_string()
-        saved_pos = self.current_pos
-        self.current_pos += 1
+        saved_index = self.entry_index
+        self.entry_index += 1
 
         while not self.end_of_arguments():
             self.read_argument()
@@ -174,14 +175,14 @@ class LLVMRewriteTraceParser:
 
         # TODO: add args
         hook_event = LLVMHookEvent(name=name, args=(), result=result)
-        self.add_to_trace(saved_pos, hook_event)
+        self.add_to_trace(saved_index, hook_event)
 
     def read_function(self) -> None:
         self.skip_constant(self.func_event_sentinel)
         name = self.read_c_string()
         position = self.read_c_string()
-        saved_pos = self.current_pos
-        self.current_pos += 1
+        saved_index = self.entry_index
+        self.entry_index += 1
 
         while not self.end_of_arguments():
             self.read_argument()
@@ -190,13 +191,13 @@ class LLVMRewriteTraceParser:
 
         # TODO: add args
         func_event = LLVMFunctionEvent(name=name, relative_position=position, args=())
-        self.add_to_trace(saved_pos, func_event)
+        self.add_to_trace(saved_index, func_event)
 
     def read_rule(self) -> None:
         ordinal = self.read_uint64()
         arity = self.read_uint64()
-        saved_pos = self.current_pos
-        self.current_pos += 1
+        saved_index = self.entry_index
+        self.entry_index += 1
 
         substitution: tuple[tuple[str, kore.Pattern], ...] = ()
         for _ in range(arity):
@@ -206,17 +207,17 @@ class LLVMRewriteTraceParser:
 
         # TODO: add args
         rule_event = LLVMRuleEvent(rule_ordinal=ordinal, substitution=substitution)
-        self.add_to_trace(saved_pos, rule_event)
+        self.add_to_trace(saved_index, rule_event)
 
     def read_config(self) -> kore.Pattern:
         self.skip_constant(self.config_sentinel)
         config = self.read_tailed_term()
-        self.add_to_trace(self.current_pos, config)
-        self.current_pos += 1
+        self.add_to_trace(self.entry_index, config)
+        self.entry_index += 1
         return config
 
-    def add_to_trace(self, pos: int, event: LLVMStepEvent | kore.Pattern) -> None:
-        self.trace.append((pos, event))
+    def add_to_trace(self, index: int, event: LLVMStepEvent | kore.Pattern) -> None:
+        self.trace.append((index, event))
 
     def read_argument(self) -> None:
         if self.peek(self.kore_term_prefix):
@@ -247,8 +248,8 @@ class LLVMRewriteTraceParser:
         return self.read_c_string()
 
     def read_c_string(self) -> str:
-        ret = str(self.read_until(b'\x00'), 'ascii')
-        self.skip_constant(b'\x00')
+        ret = str(self.read_until(self.null_byte), 'ascii')
+        self.skip_constant(self.null_byte)
         return ret
 
     def skip_constant(self, constant: bytes) -> None:
