@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from lark import Lark, Token, Transformer
 
-from mm_translate.metamath.ast import (
+from proof_generation.metamath.ast import (
     Application,
     AxiomaticStatement,
     BaseAST,
@@ -24,7 +24,7 @@ from mm_translate.metamath.ast import (
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from mm_translate.metamath.ast import Statement, Term, Terms
+    from proof_generation.metamath.ast import Statement, Term, Terms
 
 
 class ASTTransformer(Transformer[Token, BaseAST]):

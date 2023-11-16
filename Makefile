@@ -15,15 +15,15 @@ clean-kgenerated-proofs:
 update-snapshots:
 	rsync -u $(wildcard .build/proofs/*.*) proofs
 	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
-	rsync -u $(wildcard .build/generated-from-k/*.*) proofs/generated-from-k
+	rsync -u $(wildcard .build/proofs/generated-from-k/*.*) proofs/generated-from-k
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
 
 # Installation and setup
 # ======================
 
-build-checker:
-	cargo build --manifest-path=checker/Cargo.toml
+build-rust:
+	cargo build --manifest-path=rust/Cargo.toml
 
 build-risc0:
 	cargo build --manifest-path=risc0/Cargo.toml
@@ -48,11 +48,11 @@ install-k-kup:
 		echo "K is already installed, skipping installation."; \
 	fi
 
-build: build-checker build-risc0 generation-install
+build: build-rust build-risc0 generation-install
 
 install-k: install-kup install-k-kup
 
-.PHONY: build-checker build-risc0 generation-install install-kup install-k install-k-kup build
+.PHONY: build-rust build-risc0 generation-install install-kup install-k install-k-kup build
 
 # Syntax and formatting checks
 # ============================
@@ -124,7 +124,7 @@ TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*.ml-proof)
 
 .build/proofs/translated/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "mm_translate.translate" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
+	poetry -C generation run python -m "proof_generation.metamath.translate" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
 
 PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
@@ -134,15 +134,22 @@ proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
 
 test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 
+# Kompiling Definitions
+# ---------------------
+
+.SECONDEXPANSION:
+.build/kompiled-definitions/%-kompiled/timestamp: generation/k-benchmarks/$$*/$$*.k
+	kompile --backend llvm --output-definition $(dir $@) $<
+
 # Regenerate proofs from K
-# -------------------------
+# ------------------------
 
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 # We assume that there is only one hint file per benchmark
-proofs/generated-from-k/%.ml-proof.kgenerate: proofs/generated-from-k/%.ml-proof
+proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/%-kompiled/timestamp proofs/generated-from-k/%.ml-proof
 	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -152,13 +159,13 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # Checking proof generation for K
 # -------------------------------
 # We assume that there is only one hint file per benchmark
-.build/proofs/generated-from-k/%.ml-proof: FORCE
+.build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
-.build/proofs/generated-from-k/%.pretty-proof: FORCE
+.build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "kore_transfer.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
+	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof .build/proofs/generated-from-k/%.pretty-proof
@@ -177,11 +184,11 @@ test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 # Proof generation
 # ----------------
 
-.build/proofs/%.ml-proof: FORCE
+.build/proofs/%.ml-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" memo $(dir $@) $*
 
-.build/proofs/%.pretty-proof: FORCE
+.build/proofs/%.pretty-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
 	poetry -C generation run python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
 

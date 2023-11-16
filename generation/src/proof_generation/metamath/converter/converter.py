@@ -6,17 +6,7 @@ from typing import TYPE_CHECKING
 
 from mypy_extensions import VarArg
 
-from mm_translate.converter.representation import (
-    Axiom,
-    AxiomWithAntecedents,
-    Lemma,
-    LemmaWithAntecedents,
-    Notation,
-    Proof,
-)
-from mm_translate.converter.scope import GlobalScope, Scope, to_notation_scope
-from mm_translate.converter.vardict import VarDict
-from mm_translate.metamath.ast import (
+from proof_generation.metamath.ast import (
     Application,
     AxiomaticStatement,
     Block,
@@ -29,13 +19,23 @@ from mm_translate.metamath.ast import (
     Term,
     VariableStatement,
 )
+from proof_generation.metamath.converter.representation import (
+    Axiom,
+    AxiomWithAntecedents,
+    Lemma,
+    LemmaWithAntecedents,
+    Notation,
+    Proof,
+)
+from proof_generation.metamath.converter.scope import GlobalScope, Scope, to_notation_scope
+from proof_generation.metamath.converter.vardict import VarDict
 from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from mm_translate.converter.scope import NotationScope
-    from mm_translate.metamath.ast import Database
+    from proof_generation.metamath.ast import Database
+    from proof_generation.metamath.converter.scope import NotationScope
     from proof_generation.proof import BasicInterpreter
 
 
