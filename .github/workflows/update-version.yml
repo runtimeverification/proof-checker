@@ -29,12 +29,12 @@ jobs:
       - name: 'Update pyk release tag'
         run: |
           PYK_VERSION="$(cat deps/pyk_release)"
-          sed -i 's!pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "[v0-9\.]*" }!pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "'${PYK_VERSION}'" }!' pyproject.toml
+          sed -i 's!pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "[v0-9\.]*" }!pyk = { git = "https://github.com/runtimeverification/pyk.git", tag = "'${PYK_VERSION}'" }!' generation/pyproject.toml
           poetry update
           git add --update && git commit -m "poetry: sync poetry files pyk version ${PYK_VERSION}" || true
       - name: 'Update K release file'
         run: |
-          K_VERSION=$(poetry run python3 -c 'import pyk; print(pyk.K_VERSION)')
+          K_VERSION=$(poetry -C generation run python3 -c 'import pyk; print(pyk.K_VERSION)')
           echo ${K_VERSION} > deps/k_release
           git add deps/k_release && git commit -m "deps/k_release: sync release file version ${K_VERSION}" || true
       - name: 'Update K submodule'
