@@ -128,11 +128,11 @@
                                           (if (= instr_u32 11) ; SSubst
                                              nil
                                              (if (= instr_u32 12) ; Prop1
-                                                nil
+                                                (cons (push_stack (Proved_ prop1) stack) (cons memory (cons claims (cons instructions nil))))
                                                 (if (= instr_u32 13) ; Prop2
-                                                   nil
+                                                   (cons (push_stack (Proved_ prop2) stack) (cons memory (cons claims (cons instructions nil))))
                                                    (if (= instr_u32 14) ; Prop3
-                                                      nil
+                                                      (cons (push_stack (Proved_ prop3) stack) (cons memory (cons claims (cons instructions nil))))
                                                       (if (= instr_u32 15) ; Quantifier
                                                          nil
                                                          (if (= instr_u32 19) ; Existence
