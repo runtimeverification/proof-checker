@@ -4,7 +4,7 @@ from itertools import count
 
 from pytest import fixture, raises
 
-from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
+from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSortVar, KSymbol, LanguageSemantics
 from proof_generation.pattern import Pattern, Symbol
 from proof_generation.proofs.kore import KORE_NOTATIONS, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
@@ -128,6 +128,24 @@ def test_symbols() -> None:
     assert not cell_sym.is_ctor
     assert cell_sym.is_cell
     assert cell_sym.aml_notation == nary_app(cell_sym.aml_symbol, 2, True)
+
+
+def test_symbol_params() -> None:
+    sort1 = KSort('sort1')
+    sort2 = KSortVar('var1')
+    sort3 = KSortVar('var2')
+
+    symbol1 = KSymbol('symbol1', sort1)
+    assert symbol1.input_sorts == ()
+    assert symbol1.sort_params == ()
+
+    symbol2 = KSymbol('symbol2', sort1, (sort1, sort2))
+    assert symbol2.input_sorts == (sort1, sort2)
+    assert symbol2.sort_params == (sort2,)
+
+    symbol3 = KSymbol('symbol3', sort3, (sort1, sort2), is_functional=True)
+    assert symbol3.input_sorts == (sort1, sort2)
+    assert symbol3.sort_params == (sort2, sort3)
 
 
 def test_module_symbols() -> None:
