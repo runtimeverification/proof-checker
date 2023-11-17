@@ -418,7 +418,7 @@ class LanguageSemantics(BuilderScope):
 
                                 # TODO: Remove side conditions for now
                                 preprocessed_pattern = kore.Rewrites(
-                                    pattern.sort, pattern.left.left, pattern.right.left
+                                    pattern.sort, pattern.left.ops[0], pattern.right.ops[0]
                                 )
                                 scope = ConvertionScope()
                                 parsed_pattern = semantics._convert_pattern(scope, preprocessed_pattern)
@@ -500,16 +500,20 @@ class LanguageSemantics(BuilderScope):
                 right_rw_pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_rewrites(rewrite_sort.aml_symbol, left_rw_pattern, right_rw_pattern)
-            case kore.And(sort, left, right):
+            case kore.And(sort, ops):
+                # TODO: generalize to more than two operands, if needed
+                assert len(ops) == 2, f'Expected a kore "And" term with two operands, found one with {len(ops)}!'
                 and_sort: KSort = self.get_sort(sort.name)
-                left_and_pattern: Pattern = self._convert_pattern(scope, left)
-                right_and_pattern: Pattern = self._convert_pattern(scope, right)
+                left_and_pattern: Pattern = self._convert_pattern(scope, ops[0])
+                right_and_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
                 return kl.kore_and(and_sort.aml_symbol, left_and_pattern, right_and_pattern)
-            case kore.Or(sort, left, right):
+            case kore.Or(sort, ops):
+                # TODO: generalize to more than two operands, if needed
+                assert len(ops) == 2, f'Expected a kore "Or" term with two operands, found one with {len(ops)}!'
                 or_sort: KSort = self.get_sort(sort.name)
-                left_or_pattern: Pattern = self._convert_pattern(scope, left)
-                right_or_pattern: Pattern = self._convert_pattern(scope, right)
+                left_or_pattern: Pattern = self._convert_pattern(scope, ops[0])
+                right_or_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
                 return kl.kore_or(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
             case kore.App(symbol, _, args):

@@ -105,6 +105,7 @@ else
 fi
 
 # Execute the interpreter and generate proof hints
+rm -f "$OUT"
 if ! ${temp_kompiled_dir}/interpreter "$temp_file" -1 "$OUT" --proof-output; then
   echo "Error: Interpreter command failed."
   remove_files "${all_temps[@]}"
