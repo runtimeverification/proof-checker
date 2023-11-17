@@ -1,41 +1,30 @@
 ;;; Proof checker
 ;;; =============
 
-!(def Stack '(( :stack nil )))
-!(def Memory '(( :memory nil )))
-!(def Claims '(( :claims nil )))
+!(def Stack nil)
+!(def Memory nil)
+!(def Claims nil)
 
 ;;; Stack utilities
 ;;; ===============
 
 ;; Definition: push(term, stack) = stack'
 ;; Use: (push (Pattern_ '(1 2 3)) Stack) => (:stack ((:type 0 :pattern (1 2 3))))
-!(def push_stack 
-   (lambda (term stack)
-      (set :stack (cons term (get :stack stack)) (car Stack))
-   )
-)
+!(def push_stack (lambda (term stack) (cons term stack)))
 
 ;; Definition: pop(stack) = (term, stack')
 ;; Use: (pop (push (Pattern_ '(1 2 3)) Stack)) => ((:type 0 :pattern (1 2 3)) :stack nil)
-!(def pop_stack 
-   (lambda (stack)
-      (let ((term (car (get :stack stack)))
-            (stack (cdr (get :stack stack))))
-         (cons term (set :stack stack (car Stack)))
-      )
-   )
-)
+!(def pop_stack (lambda (stack) (cons (car stack) (cdr stack))))
 
 ;; Definition: pop_stack_proved(stack) = if (term.type == 1) then (term, stack') else nil
 ;; Use: (pop_stack_proved (push (Pattern_ '(1 2 3)) Stack)) => nil
 ;; Use: (pop_stack_proved (push (Proved_ '(1 2 3)) Stack)) => ((:type 1 :pattern (1 2 3)) :stack nil)
 !(def pop_stack_proved 
    (lambda (stack)
-      (let ((term (car (get :stack stack)))
-            (stack (cdr (get :stack stack))))
+      (let ((term (car stack))
+            (stack (cdr stack)))
          (if (= (get :type term) 1)
-            (cons term (set :stack stack (car Stack)))
+            (cons term stack)
             nil
          )
       )
@@ -47,56 +36,24 @@
 ;; Use: (pop_stack_pattern (push (Proved_ '(1 2 3)) Stack)) => nil
 !(def pop_stack_pattern 
    (lambda (stack)
-      (let ((term (car (get :stack stack)))
-            (stack (cdr (get :stack stack))))
+      (let ((term (car stack))
+            (stack (cdr stack)))
          (if (= (get :type term) 0)
-            (cons term (set :stack stack (car Stack)))
+            (cons term stack)
             nil
          )
       )
    )
 )
 
-;;; Memory utilities
-;;; ================
 
-;; Definition: push(term, memory) = memory'
-;; Use: (push (Pattern_ '(1 2 3)) Memory) => (:memory ((:type 0 :pattern (1 2 3))))
-!(def push_memory 
-   (lambda (term memory)
-      (set :memory (cons term (get :memory memory)) (car Memory))
-   )
-)
+;;; Memory and Claims utilities
+;;; ===========================
 
-;; Definition: pop(memory) = (term, memory')
-;; Use: (pop (push (Pattern_ '(1 2 3)) Memory)) => ((:type 0 :pattern (1 2 3)) :memory nil)
-!(def pop_memory 
-   (lambda (memory)
-      (let ((term (car (get :memory memory)))
-            (memory (cdr (get :memory memory))))
-         (cons term (set :memory memory (car Memory)))
-      )
-   )
-)
+;; Definition: push(pattern, list) = claims'
+;; Use: (push pattern Claims) => ((pattern) Claims)
+!(def push (lambda (pattern claims) (cons pattern claims)))
 
-;;; Claims utilities
-;;; ================
-
-;; Definition: push(pattern, claims) = claims'
-;; Use: (push pattern Claims) => (:claims (pattern))
-!(def push_claim 
-   (lambda (pattern claims)
-      (set :claims (cons pattern (get :claims claims)) (car Claims))
-   )
-)
-
-;; Definition: pop(claims) = (pattern, claims')
-;; Use: (pop (push pattern Claims)) => (pattern :claims nil)
-!(def pop_claim
-   (lambda (claims)
-      (let ((pattern (car (get :claims claims)))
-            (claims (cdr (get :claims claims))))
-         (cons pattern (set :claims claims (car Claims)))
-      )
-   )
-)
+;; Definition: pop(list) = (pattern, list')
+;; Use: (pop (push pattern nil)) => ((pattern) bil)
+!(def pop (lambda (claims) (cons (car claims) (cdr claims))))

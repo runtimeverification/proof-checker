@@ -9,16 +9,16 @@
 
 ;; ExecutionPhase
 ;; The current phase of execution should be the key with positive value
-!(def ExecutionPhase '((
+!(def ExecutionPhase '(
     :Gamma 0
     :Claim 0
     :Proof 0
-    ))
+    )
 )
 
-!(def Gamma_phase (set :Gamma 1 (car ExecutionPhase)))
-!(def Claim_phase (set :Claim 1 (car ExecutionPhase)))
-!(def Proof_phase (set :Proof 1 (car ExecutionPhase)))
+!(def Gamma_phase (set :Gamma 1 ExecutionPhase))
+!(def Claim_phase (set :Claim 1 ExecutionPhase))
+!(def Proof_phase (set :Proof 1 ExecutionPhase))
 
 ;; Definition: read_u8_vec_aux(buffer, size) = (vec, buffer')
 ;; Use: (read_u8_vec_aux '(3 2 1 0) 2) => ((3 2) (1 0)
@@ -146,14 +146,14 @@
                                                                      (if (= instr_u32 27) ; Pop
                                                                         nil
                                                                         (if (= instr_u32 28) ; Save
-                                                                           (let ((term (car (get :stack stack))))
-                                                                                 (cons stack (cons (push_memory term memory) (cons claims (cons instructions nil)))))
+                                                                           (let ((term (car stack)))
+                                                                                (cons stack (cons (push term memory) (cons claims (cons instructions nil)))))
                                                                            (if (= instr_u32 29) ; Load
                                                                               (let ((index (car instructions))
                                                                                     (instructions (cdr instructions)))
                                                                                     (if (eq index nil)
                                                                                        nil ;; Error
-                                                                                       (let ((term (nth index (get :memory memory))))
+                                                                                       (let ((term (nth index memory)))
                                                                                             (if (eq term nil)
                                                                                                nil ;; Error
                                                                                                (cons (push_stack term stack) (cons memory (cons claims (cons instructions nil))))
@@ -169,7 +169,7 @@
 
                                                                                           (pattern (get :Pattern term))
                                                                                           )
-                                                                                          (cons stack (cons (push_memory (Proved_ pattern) memory) (cons claims (cons instructions nil))))
+                                                                                          (cons stack (cons (push (Proved_ pattern) memory) (cons claims (cons instructions nil))))
                                                                                     )
                                                                                     (if (eq (get :Claim phase) 1)
                                                                                           (let ((temp (pop_stack_pattern stack))
@@ -178,10 +178,10 @@
 
                                                                                                 (pattern (get :Pattern term))
                                                                                              )
-                                                                                             (cons stack (cons memory (cons (push_claim pattern claims) (cons instructions nil))))
+                                                                                             (cons stack (cons memory (cons (push pattern claims) (cons instructions nil))))
                                                                                           )
                                                                                           (if (eq (get :Proof phase) 1)
-                                                                                             (let ((temp (pop_claim claims)) ; TODO: Should we add a check to see if the claims are empty?
+                                                                                             (let ((temp (pop claims)) ; TODO: Should we add a check to see if the claims are empty?
                                                                                                    (pattern (car temp))
                                                                                                    (claims (cdr temp))
 
