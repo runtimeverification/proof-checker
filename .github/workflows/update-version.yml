@@ -2,7 +2,6 @@ name: 'Update Version'
 on:
   push:
     branches:
-      - 'update-deps'
       - '_update-deps/runtimeverification/pyk'
   workflow_dispatch:
 concurrency:
