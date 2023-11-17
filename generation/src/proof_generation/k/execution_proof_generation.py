@@ -14,8 +14,6 @@ if TYPE_CHECKING:
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Notation, Pattern
 
-ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
-
 
 class ExecutionProofExp(proof.ProofExp):
     def __init__(self, notations: list[Notation]) -> None:
