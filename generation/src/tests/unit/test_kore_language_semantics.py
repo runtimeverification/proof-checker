@@ -6,7 +6,7 @@ from pytest import fixture, raises
 
 from proof_generation.k.kore_convertion.language_semantics import AxiomType, KModule, KSort, KSymbol, LanguageSemantics
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
+from proof_generation.pattern import EVar, Pattern, Symbol, phi1
 from proof_generation.proofs.kore import KORE_NOTATIONS, functional, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
