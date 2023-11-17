@@ -48,7 +48,7 @@ class LLVMRewriteTrace:
     @staticmethod
     def parse(input: bytes, debug: bool = False) -> LLVMRewriteTrace:
         parser = LLVMRewriteTraceParser(input)
-        ret = parser.read_proof_trace(debug)
+        ret = parser.read_execution_hint(debug)
         assert parser.eof()
         return ret
 
@@ -90,7 +90,7 @@ class LLVMRewriteTraceParser:
         self.init_config_pos = 0
         self.entry_index = 0
 
-    def read_proof_trace(self, debug: bool) -> LLVMRewriteTrace:
+    def read_execution_hint(self, debug: bool) -> LLVMRewriteTrace:
         # read the prefix trace (step events)
         while not self.peek(self.config_sentinel):
             self.read_step_event()
