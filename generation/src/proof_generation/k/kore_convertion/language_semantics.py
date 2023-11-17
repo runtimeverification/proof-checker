@@ -487,7 +487,8 @@ class LanguageSemantics(BuilderScope):
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
             sym, args = kl.deconstruct_nary_application(pattern)
             assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
-            assert self.get_symbol(sym.name).is_functional
+            assert sym.name.startswith('kore_')
+            assert self.get_symbol(sym.name.removeprefix('kore_')).is_functional
             converted_pattern = kl.functional(pattern)
             subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return subst_axioms
