@@ -298,16 +298,10 @@ class ConvertionScope:
 
 
 class LanguageSemantics(BuilderScope):
-    GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
 
     def __init__(self) -> None:
         self._imported_modules: tuple[KModule, ...] = ()
         self._cached_axiom_scopes: dict[int, ConvertionScope] = {}
-
-        # TODO: Should be removed after the refactoring
-        self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
-        self._functional_symbols: set[Symbol] = set()
-        self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
 
     @property
     def modules(self) -> tuple[KModule, ...]:
