@@ -110,7 +110,6 @@ test-system: test-integration test-proof-gen test-proof-translate test-proof-kge
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
 test-integration:
-	make -C generation clean-hints
 	make -C generation generate-hints
 	make -C generation test-integration
 
