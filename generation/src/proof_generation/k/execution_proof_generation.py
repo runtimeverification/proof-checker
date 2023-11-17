@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
@@ -27,11 +26,15 @@ class ExecutionProofExp(proof.ProofExp):
         self._axioms.append(hint.axiom.pattern)
         return hint.axiom
 
-    def prove_rewrite_step(self, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]) -> None:
+    def prove_rewrite_step(
+        self, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]
+    ) -> proof.ProofThunk:
         """Take a single rewrite step and emit a proof for it."""
         assert len(self._axioms) > 0, 'No axioms to prove the rewrite step'
         self._claims.append(claim)
-        self._proof_expressions.append(self.dynamic_inst(self.load_axiom(axiom), instantiations))
+        proof = self.dynamic_inst(self.load_axiom(axiom), instantiations)
+        self._proof_expressions.append(proof)
+        return proof
 
 
 def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics) -> ExecutionProofExp:
