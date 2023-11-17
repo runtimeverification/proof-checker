@@ -75,3 +75,12 @@ def test_double_rewrite_semantics(double_rewrite: tuple[list[RewriteStepExpressi
     assert proof_expr._axioms == [hints[0].axiom.pattern, hints[1].axiom.pattern]
     assert proof_expr._claims == [claim1, claim2]
     assert [p.conc for p in proof_expr._proof_expressions] == [p.conc for p in (proof1, proof2)]
+
+    # Test pretty printing
+    opts = proof_expr.pretty_options()
+    expected_string1 = '(kore_a() k=> kore_b()):ksort_some_sort'
+    expected_string2 = '(kore_b() k=> kore_c()):ksort_some_sort'
+    assert hints[0].axiom.pattern.pretty(opts) == expected_string1
+    assert hints[1].axiom.pattern.pretty(opts) == expected_string2
+    assert claim1.pretty(opts) == expected_string1
+    assert claim2.pretty(opts) == expected_string2
