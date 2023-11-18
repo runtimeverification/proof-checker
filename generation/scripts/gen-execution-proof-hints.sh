@@ -82,6 +82,15 @@ else
   exit 1
 fi
 
+# Produce the instrumented interpreter binary
+if llvm-kompile --proof-hint-instrumentation "$temp_kompiled_dir"/definition.kore "$temp_kompiled_dir"/dt main -- -o "$temp_kompiled_dir"/interpreter; then
+  echo "Instrumented interpreter generated successfully."
+else
+  echo "Error: Generating instrumented interpreter for $DEF failed."
+  remove_files "${all_temps[@]}"
+  exit 1
+fi
+
 # Create a temporary file for intermediate results
 temp_file=$(mktemp)
 all_temps+=(${temp_file})
