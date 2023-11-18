@@ -53,14 +53,18 @@ class LLVMRewriteTrace:
         return ret
 
 
+EXPECTED_HINTS_VERSION: Final = 1
+
+
 class LLVMRewriteTraceParser:
     """
-    proof_trace ::= step_event* config events*
+    proof_trace ::= header step_event* config events*
+    header      ::= "HINT" <4-byte version number>
     step_event  ::= hook | function | rule
     event       ::= step_event | config
     hook        ::= WORD(0xAA) name argument* WORD(0xBB) kore_term
     function    ::= WORD(0xDD) name location argument* WORD(0x11)
-    rule        ::= ordinal arity variable*
+    rule        ::= WORD(0x22) ordinal arity variable*
     config      ::= WORD(0xFF) tailed_term
     argument    ::= step_event | kore_term
     variable    ::= name tailed_term
@@ -80,6 +84,7 @@ class LLVMRewriteTraceParser:
     func_end_sentinel: Final = bytes([0x11] * 8)
     hook_event_sentinel: Final = bytes([0xAA] * 8)
     hook_res_sentinel: Final = bytes([0xBB] * 8)
+    rule_event_sentinel: Final = bytes([0x22] * 8)
     side_condn_sentinel: Final = bytes([0xEE] * 8)
     kore_term_prefix: Final = b'\x7FKORE'
     null_byte: Final = b'\x00'
@@ -91,6 +96,10 @@ class LLVMRewriteTraceParser:
         self.entry_index = 0
 
     def read_execution_hint(self, debug: bool) -> LLVMRewriteTrace:
+        # read the header
+        version = self.read_header()
+        assert version == EXPECTED_HINTS_VERSION, f'Expected version {EXPECTED_HINTS_VERSION}, found version {version}'
+
         # read the prefix trace (step events)
         while not self.peek(self.config_sentinel):
             self.read_step_event()
@@ -104,6 +113,10 @@ class LLVMRewriteTraceParser:
             self.read_event()
 
         return self.build_llvm_trace(debug)
+
+    def read_header(self) -> int:
+        self.skip_constant(b'HINT')
+        return self.read_uint(32)
 
     def build_llvm_trace(self, debug: bool) -> LLVMRewriteTrace:
         self.trace.sort(key=lambda e: e[0])
@@ -194,8 +207,9 @@ class LLVMRewriteTraceParser:
         self.add_to_trace(saved_index, func_event)
 
     def read_rule(self) -> None:
-        ordinal = self.read_uint64()
-        arity = self.read_uint64()
+        self.skip_constant(self.rule_event_sentinel)
+        ordinal = self.read_uint(64)
+        arity = self.read_uint(64)
         saved_index = self.entry_index
         self.entry_index += 1
 
@@ -256,12 +270,13 @@ class LLVMRewriteTraceParser:
         assert self.input[: len(constant)] == constant
         self.input = self.input[len(constant) :]
 
-    def read_uint64(self) -> int:
-        index = 8
+    def read_uint(self, size: int) -> int:
+        assert size in {32, 64}
+        little_endian = {32: '<I', 64: '<Q'}
+        index = size // 8
         raw = self.input[:index]
         self.input = self.input[index:]
-        little_endian_long_long = '<Q'
-        return struct.unpack(little_endian_long_long, raw)[0]
+        return struct.unpack(little_endian[size], raw)[0]
 
     def read_until(self, constant: bytes) -> bytes:
         index = self.input.find(constant)
