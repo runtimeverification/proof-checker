@@ -1,16 +1,16 @@
-;; fst :: (a, b) -> a
+;; fst :: [a:as] -> a
 !(def fst (lambda (pair)
             (car pair)))
 
-;; snd :: (a, b) -> b
+;; snd :: [a:b:xs] -> b
 !(def snd (lambda (pair)
             (car (cdr pair))))
 
-;; trd :: (a, b, c) -> c
+;; trd :: [a:b:c:xs] -> c
 !(def trd (lambda (triple)
             (car (cdr (cdr triple)))))
 
-;; fth :: (a, b, c, d) -> d
+;; fth :: [a:b:c:d:xs] -> d
 !(def fth (lambda (quadruple)
             (car (cdr (cdr (cdr quadruple))))))
 
