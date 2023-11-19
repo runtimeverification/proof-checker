@@ -177,10 +177,10 @@
                                                                            (stack (cdr temp))
 
                                                                            (temp (loop_to_ids_plugs n instructions stack ids plugs))
-                                                                           (stack (fst temp))
-                                                                           (instructions (snd temp))
-                                                                           (ids (trd temp))
-                                                                           (plugs (fth temp))
+                                                                           (stack (car temp))
+                                                                           (instructions (car (cdr temp)))
+                                                                           (ids (car (cdr (cdr temp))))
+                                                                           (plugs (car (cdr (cdr (cdr temp)))))
 
                                                                            (metaterm (instantiate_internal metaterm_pattern ids plugs))
                                                                           )
@@ -276,13 +276,13 @@
          (memory Memory)
          (claims Claims)
          (gamma (execute_instructions gamma_buffer stack memory claims Gamma_phase))
-         (memory (snd gamma))
+         (memory (car (cdr gamma)))
          (claim (execute_instructions claims_buffer stack memory claims Claim_phase))
-         (memory (snd claim))
-         (claims (trd claim))
+         (memory (car (cdr claim)))
+         (claims (car (cdr (cdr claim))))
          (proof (execute_instructions proof_buffer stack memory claims Proof_phase))
         )
-        (if (eq (get :claims (trd proof)) nil)
+        (if (eq (get :claims (car (cdr (cdr proof)))) nil)
            t
            nil
         )
