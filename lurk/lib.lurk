@@ -192,6 +192,13 @@
                                                                               )
                                                                           )
                                                                      )
+                                                                     (if (= instr_u32 27) ; Pop only the first item
+                                                                        (let ((temp (pop_stack stack))
+                                                                              (stack (cdr temp))
+                                                                              )
+                                                                              (cons stack (cons memory (cons claims (cons instructions nil))))
+                                                                        )
+
                                                                         (if (= instr_u32 28) ; Save
                                                                            (let ((term (car stack)))
                                                                                 (cons stack (cons (push term memory) (cons claims (cons instructions nil)))))
