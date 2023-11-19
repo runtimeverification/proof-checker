@@ -57,15 +57,12 @@ class KSortVar:
 @dataclass(frozen=True)
 class KSymbol:
     name: str
+    sort_params: tuple[KSortVar, ...]
     output_sort: KSort | KSortVar
     input_sorts: tuple[KSort | KSortVar, ...] = field(default_factory=tuple)
     is_functional: bool = False
     is_ctor: bool = False
     is_cell: bool = False
-
-    @property
-    def sort_params(self) -> tuple[KSortVar, ...]:
-        return tuple(sort for sort in self.input_sorts + (self.output_sort,) if isinstance(sort, KSortVar))
 
     @property
     def aml_symbol(self) -> Symbol:
@@ -198,6 +195,7 @@ class KModule(BuilderScope):
     def symbol(
         self,
         name: str,
+        sort_params: tuple[KSortVar, ...],
         output_sort: KSort | KSortVar,
         input_sorts: tuple[KSort | KSortVar, ...] = (),
         is_functional: bool = False,
@@ -215,7 +213,7 @@ class KModule(BuilderScope):
                 # It should be either in the module or in imported modules
                 assert self.get_sort(sort.name) == sort
 
-        symbol = KSymbol(name, output_sort, input_sorts, is_functional, is_ctor, is_cell)
+        symbol = KSymbol(name, sort_params, output_sort, input_sorts, is_functional, is_ctor, is_cell)
         self._symbols[name] = symbol
         return symbol
 
@@ -375,27 +373,33 @@ class LanguageSemantics(BuilderScope):
                                 module.sort(sentence.name)
                         elif isinstance(sentence, kore.SymbolDecl):
 
-                            def convert_ksort(ksort: kore.Sort) -> KSort | KSortVar:
+                            def convert_ksort(
+                                name_to_sortvar: dict[str, KSortVar], ksort: kore.Sort
+                            ) -> KSort | KSortVar:
                                 match ksort:
                                     case kore.SortVar(name):
-                                        return KSortVar(name)
+                                        return name_to_sortvar[name]
                                     case kore.SortApp(name):
                                         return module.get_sort(name)
                                     case _:
                                         raise NotImplementedError(f'Sort {repr(ksort)} is not supported')
 
+                            ksort_params = tuple(KSortVar(v.name) for v in sentence.symbol.vars)
+                            ksort_var_map = {v.name: v for v in ksort_params}
+
                             symbol = sentence.symbol.name
-                            input_sorts: list[KSort | KSortVar] = [
-                                convert_ksort(ksort) for ksort in sentence.param_sorts
-                            ]
-                            output_sort: KSort | KSortVar = convert_ksort(sentence.sort)
+                            input_sorts: tuple[KSort | KSortVar, ...] = tuple(
+                                convert_ksort(ksort_var_map, ksort) for ksort in sentence.param_sorts
+                            )
+                            output_sort: KSort | KSortVar = convert_ksort(ksort_var_map, sentence.sort)
                             attrs = [attr.symbol for attr in sentence.attrs if isinstance(attr, kore.App)]
 
                             # TODO: Support cells
                             module.symbol(
                                 symbol,
+                                ksort_params,
                                 output_sort,
-                                tuple(input_sorts),
+                                input_sorts,
                                 'functional' in attrs,
                                 'constructor' in attrs,
                                 'cell' in attrs,
