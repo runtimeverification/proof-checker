@@ -36,18 +36,14 @@
                     nil)))
 
 ;; This function is used to set a the value of a key in a pattern.
-;; set :: key -> value -> [a] -> [a]
-!(def set (lambda (key value pattern)
-             (letrec ((aux (lambda (acc pattern)
-                             (if pattern
-                                 (if (eq key (car pattern))
-                                     (aux (cons key (cons value acc))
-                                          (cdr (cdr pattern)))
-                                     (aux (cons (car pattern)
-                                                (cons (car (cdr pattern)) acc))
-                                          (cdr (cdr pattern))))
-                                 acc))))
-               (aux () pattern))))
+!(defrec set (lambda (key value pattern)
+                (if pattern
+                    (if (eq key (car pattern))
+                        (cons key (cons value (cdr (cdr pattern))))
+                        (cons (car pattern)
+                              (cons (car (cdr pattern))
+                                    (set key value (cdr (cdr pattern))))))
+                    (cons key (cons value nil)))))
 
 ;; This function is used to update the value with a function that consumes the
 ;; current value of a key in a pattern.
