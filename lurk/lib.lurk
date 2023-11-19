@@ -265,3 +265,26 @@
                                                                                        (cons stack (cons memory (cons claims (cons '() nil))))
                                                                                        nil
                                                                                     )))))))))))))))))))))))))))
+
+;; Definition: execute_instructions(buffer, stack, memory, claims, phase) = (stack', memory', claims', instructions')
+!(def execute_instructions (lambda (buffer stack memory claims phase) 
+   (map (switch_case phase) stack memory claims buffer)))
+
+;; Definition: verify(gamma_buffer, claims_buffer, proof_buffer) = bool
+!(def verify (lambda (gamma_buffer claims_buffer proof_buffer)
+   (let ((stack Stack)
+         (memory Memory)
+         (claims Claims)
+         (gamma (execute_instructions gamma_buffer stack memory claims Gamma_phase))
+         (memory (snd gamma))
+         (claim (execute_instructions claims_buffer stack memory claims Claim_phase))
+         (memory (snd claim))
+         (claims (trd claim))
+         (proof (execute_instructions proof_buffer stack memory claims Proof_phase))
+        )
+        (if (eq (get :claims (trd proof)) nil)
+           t
+           nil
+        )
+   )
+))
