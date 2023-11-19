@@ -196,38 +196,36 @@
                                                                               (if (= instr_u32 30) ; Publish
                                                                                  (if (eq phase 0)
                                                                                     (let ((temp (pop_stack_pattern stack))
-                                                                                          (term (car temp))
+                                                                                          (pattern (car temp))
                                                                                           (stack (cdr temp))
-
-                                                                                          (pattern (get :Pattern term))
                                                                                           )
                                                                                           (cons stack (cons (push (Proved_ pattern) memory) (cons claims (cons instructions nil))))
                                                                                     )
                                                                                     (if (eq phase 1)
                                                                                           (let ((temp (pop_stack_pattern stack))
-                                                                                                (term (car temp))
+                                                                                                (pattern (car temp))
                                                                                                 (stack (cdr temp))
-
-                                                                                                (pattern (get :Pattern term))
-                                                                                             )
-                                                                                             (cons stack (cons memory (cons (push pattern claims) (cons instructions nil))))
+                                                                                               )
+                                                                                             (cons stack (cons memory (cons (push_claim pattern claims) (cons instructions nil))))
                                                                                           )
                                                                                           (if (eq phase 2)
                                                                                              (let ((temp (pop claims)) ; TODO: Should we add a check to see if the claims are empty?
                                                                                                    (pattern (car temp))
                                                                                                    (claims (cdr temp))
-
-                                                                                                   (temp (pop_stack_proved stack)) ; TODO: Should we add a check to see if the stack is empty?
-                                                                                                   (term (car temp))
-                                                                                                   (stack (cdr temp))
-
-                                                                                                   (theorem (get :Pattern term))
-                                                                                                   )
-                                                                                                   (if (eq pattern theorem))
-                                                                                                   (cons stack (cons memory (cons claims (cons instructions nil))))
-                                                                                                   nil ;; Error
+                                                                                                  )
+                                                                                                  (if (eq pattern nil)
+                                                                                                     nil ;; Error
+                                                                                                     (let ((temp (pop_stack_proved stack)) ; TODO: Should we add a check to see if the stack is empty?
+                                                                                                           (theorem (car temp))
+                                                                                                           (stack (cdr temp))
+                                                                                                          )
+                                                                                                          (if (eq pattern theorem)
+                                                                                                             (cons stack (cons memory (cons claims (cons instructions nil))))
+                                                                                                             nil ;; Error
+                                                                                                          )
+                                                                                                     )
+                                                                                                 )
                                                                                              )
-                                                                                             nil ;; Error
                                                                                           )
                                                                                     )
                                                                                  )
