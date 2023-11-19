@@ -41,8 +41,13 @@
 )
 
 
-;;; Memory and Claims utilities
-;;; ===========================
+;; Definition: push(term, memory) = memory'
+;; Use: (push (Pattern_ '(1 2 3)) Memory) => (:memory ((:type 0 :pattern (1 2 3))))
+!(def push_memory 
+   (lambda (term memory)
+      (set :memory (ncons term (get :memory memory)) (car Memory))
+   )
+)
 
 ;; Definition: push(pattern, list) = claims'
 ;; Use: (push pattern Claims) => ((pattern) Claims)
