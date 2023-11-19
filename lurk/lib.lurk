@@ -146,7 +146,22 @@
                                                          (if (= instr_u32 19) ; Existence
                                                             nil
                                                             (if (= instr_u32 21) ; ModusPonens
-                                                               nil
+                                                               (let ((temp (pop_stack_proved stack))
+                                                                     (premise2 (car temp))
+                                                                     (stack (cdr temp))
+                                                                     
+                                                                     (temp (pop_stack_proved stack))
+                                                                     (premise1 (car temp))
+                                                                     (stack (cdr temp))
+                                                                     )
+                                                                     (if (not (= (get :inst premise1) 5))
+                                                                        nil
+                                                                        (if (not (eq (get :left premise1) premise2))
+                                                                           nil
+                                                                           (cons(push_stack (Proved_ (get :right premise1)) stack) (cons memory (cons claims (cons instructions nil))))
+                                                                        )
+                                                                     )
+                                                               )
                                                                (if (= instr_u32 22) ; Generalization
                                                                   nil
                                                                   (if (= instr_u32 26) ; Instantiate
