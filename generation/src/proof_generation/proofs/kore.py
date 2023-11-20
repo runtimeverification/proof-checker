@@ -84,16 +84,7 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
             return p, ()
 
 
-KORE_NOTATIONS = (
-    kore_top,
-    kore_not,
-    kore_and,
-    kore_or,
-    kore_next,
-    kore_implies,
-    kore_rewrites,
-    kore_dv,
-)
+KORE_NOTATIONS = (kore_top, kore_not, kore_and, kore_or, kore_next, kore_implies, kore_rewrites, kore_dv, kore_kseq)
 
 
 # TODO: Add kore-transitivity
