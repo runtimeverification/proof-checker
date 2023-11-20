@@ -1,4 +1,4 @@
-!(load "pattern.lurk")
+!(load "pattern_impl.lurk")
 !(load "term.lurk")
 !(load "data_structures.lurk")
 
@@ -107,9 +107,10 @@
                                                    (metavar_pat (metavar id e_fresh s_fresh positive negative app_ctx_holes))
                                                    )
 
-                                                   ; (if (eq (pattern_well_formed metavar_pat) nil) nil ;; Error
-
-                                                   (cons (push_stack (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
+                                                   (if (eq (pattern_well_formed metavar_pat) nil)
+                                                      nil ;; Error
+                                                      (cons (push_stack (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
+                                                   )
                                              ) 
                                           ))
                                        (if (= instr_u32 10) ; ESubst
@@ -202,6 +203,3 @@
                                                                                        (cons stack (cons memory (cons claims (cons '() nil))))
                                                                                        nil
                                                                                     )))))))))))))))))))))))))))
-
-!(def Instructions )
-(map (switch_case Claim_phase) Stack Memory Claims '( 137 0 137 0 5 28 30 ))
