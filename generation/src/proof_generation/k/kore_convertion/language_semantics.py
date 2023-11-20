@@ -298,7 +298,6 @@ class ConvertionScope:
 
 
 class LanguageSemantics(BuilderScope):
-
     def __init__(self) -> None:
         self._imported_modules: tuple[KModule, ...] = ()
         self._cached_axiom_scopes: dict[int, ConvertionScope] = {}
