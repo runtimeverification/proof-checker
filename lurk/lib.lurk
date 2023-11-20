@@ -2,10 +2,6 @@
 !(load "term.lurk")
 !(load "data_structures.lurk")
 
-;; Notation
-!(def bot (mu 0 (svar 0)))
-!(def negate (lambda (pattern) (implies pattern bot)))
-!(def forall (lambda (evar_id pattern) (negate (exists evar_id (negate pattern)))))
 
 ;; ExecutionPhase
 !(def Gamma_phase 0)
@@ -32,6 +28,7 @@
       (let ((size (car buffer)) 
             (buffer (cdr buffer)))
            (read_u8_vec_aux buffer size))))
+
 
 ;; execute_instructions
 
