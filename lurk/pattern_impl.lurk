@@ -160,12 +160,12 @@
                                                         nil))))))))))))))
 
 ;; pattern_positive :: svar -> pattern -> bool
-!(defrec pattern_positive
+!(def pattern_positive
     (lambda (svar pattern)
         (pattern_positivity :positive svar pattern)))
 
 ;; pattern_negative :: svar -> pattern -> bool
-!(defrec pattern_negative
+!(def pattern_negative
     (lambda (svar pattern)
         (pattern_positivity :negative svar pattern)))
 
