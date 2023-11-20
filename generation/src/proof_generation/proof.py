@@ -57,8 +57,14 @@ class ProofExp:
     def add_axiom(self, axiom: Pattern) -> None:
         self._axioms.append(axiom)
 
+    def add_assumption(self, axiom: Pattern) -> None:
+        self.add_axiom(axiom)
+
     def add_axioms(self, axioms: list[Pattern]) -> None:
         self._axioms.extend(axioms)
+
+    def add_assumptions(self, axioms: list[Pattern]) -> None:
+        self.add_axioms(axioms)
 
     def get_axioms(self) -> list[Pattern]:
         return self._axioms

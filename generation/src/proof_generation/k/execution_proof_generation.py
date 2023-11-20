@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
+from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
+from proof_generation.pattern import Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -21,11 +22,26 @@ class ExecutionProofExp(proof.ProofExp):
     def __init__(self, notations: list[Notation]) -> None:
         super().__init__(notations=notations)
 
-    def add_kore_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
+    @staticmethod
+    def collect_functional_axioms(semantics: LanguageSemantics, hint: RewriteStepExpression) -> list[ConvertedAxiom]:
+        subst_axioms = []
+        for pattern in hint.substitutions.values():
+            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+            sym, args = kl.deconstruct_nary_application(pattern)
+            assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
+            assert sym.name.startswith('kore_')
+            assert semantics.get_symbol(sym.name.removeprefix('kore_')).is_functional
+            converted_pattern = kl.functional(pattern)
+            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return subst_axioms
+
+    def add_assumptions_for_rewrite_step(
+        self, hint: RewriteStepExpression, language_semantics: LanguageSemantics
+    ) -> KRewritingRule:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
-        func_axioms = language_semantics.collect_functional_axioms(hint)
-        self.add_axioms([axiom.pattern for axiom in func_axioms])
+        func_axioms = ExecutionProofExp.collect_functional_axioms(language_semantics, hint)
+        self.add_assumptions([axiom.pattern for axiom in func_axioms])
         assert isinstance(hint.axiom, KRewritingRule)
         self.add_axiom(hint.axiom.pattern)
         return hint.axiom
@@ -41,7 +57,7 @@ def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: 
     proof_expression = ExecutionProofExp(list(language_semantics.notations))
     claims = 0
     for hint in hints:
-        axiom = proof_expression.add_kore_axioms(hint, language_semantics)
+        axiom = proof_expression.add_assumptions_for_rewrite_step(hint, language_semantics)
         assert isinstance(axiom, KRewritingRule)
         rewrite_axiom = axiom.pattern
         sort, _, _ = kl.kore_rewrites.assert_matches(rewrite_axiom)

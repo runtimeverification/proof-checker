@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Notation, Pattern, SVar
 
 T = TypeVar('T')
@@ -486,22 +485,6 @@ class LanguageSemantics(BuilderScope):
             name = scope.lookup_metavar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
-
-    def collect_functional_axioms(self, hint: RewriteStepExpression) -> list[ConvertedAxiom]:
-        added_axioms = self._construct_subst_axioms(hint)
-        return added_axioms
-
-    def _construct_subst_axioms(self, hint: RewriteStepExpression) -> list[ConvertedAxiom]:
-        subst_axioms = []
-        for pattern in hint.substitutions.values():
-            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            sym, args = kl.deconstruct_nary_application(pattern)
-            assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
-            assert sym.name.startswith('kore_')
-            assert self.get_symbol(sym.name.removeprefix('kore_')).is_functional
-            converted_pattern = kl.functional(pattern)
-            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
-        return subst_axioms
 
     def _convert_pattern(self, scope: ConvertionScope, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
