@@ -201,7 +201,7 @@
 
                                                                         (if (= instr_u32 28) ; Save
                                                                            (let ((term (car stack)))
-                                                                                (cons stack (cons (push term memory) (cons claims (cons instructions nil)))))
+                                                                              (cons stack (cons (push_memory term memory) (cons claims (cons instructions nil)))))
                                                                            (if (= instr_u32 29) ; Load
                                                                               (let ((index (car instructions))
                                                                                     (instructions (cdr instructions)))
@@ -257,7 +257,7 @@
                                                                                           (if (eq id nil)
                                                                                              nil ;; Error
                                                                                              (let ((metavar_pat (metavar_unconstrained id)))
-                                                                                                   (cons (push_stack (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                                  (cons (push_stack (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
                                                                                              )
                                                                                           )
                                                                                     )
