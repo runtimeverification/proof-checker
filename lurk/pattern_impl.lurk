@@ -79,7 +79,7 @@
                                                     nil)))))))))))))
 
 !(defrec pattern_positivity
-    (lambda (positivity svar pattern)
+    (lambda (func_name svar pattern)
         (let ((instr_u32    (get :inst pattern))
               (p_id         (get :id pattern))
               (p_s_fresh    (get :s_fresh pattern))
@@ -89,7 +89,7 @@
               (p_negative   (get :negative pattern))
               (p_subpattern (get :subpattern pattern))
               (p_plug       (get :plug pattern)))
-            (if (eq :positive  positivity)
+            (if (eq :positive func_name)
                 ; pattern_positive
                 (if (= instr_u32 2) ; Evar
                     t
