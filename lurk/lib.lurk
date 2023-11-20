@@ -27,7 +27,7 @@
 
 ;; Definition: read_u8_vec(buffer) = (vec, buffer')
 ;; Use: (read_u8_vec '(2 3 2 1 0)) => ((3 2) (1 0))
-!(defrec read_u8_vec 
+!(def read_u8_vec 
    (lambda (buffer) 
       (let ((size (car buffer)) 
             (buffer (cdr buffer)))
