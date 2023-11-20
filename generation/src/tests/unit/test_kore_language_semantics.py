@@ -4,6 +4,7 @@ from itertools import count
 
 from pytest import fixture, raises
 
+from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import AxiomType, KModule, KSort, KSymbol, LanguageSemantics
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import EVar, Pattern, Symbol, phi1
@@ -337,14 +338,14 @@ def test_collect_functional_axioms() -> None:
             krule2 = mod.rewrite_rule(kore_rewrites(sort.aml_symbol, e.definition, f.definition))
             krule_phi1 = mod.rewrite_rule(kore_rewrites(sort.aml_symbol, a(phi1), b(phi1)))
 
-            axioms = sem.collect_functional_axioms(
+            axioms = ExecutionProofExp.collect_functional_axioms(
+                sem,
                 RewriteStepExpression(
                     a(c),
-                    (),
                     b(c),
                     krule,
                     {0: c},
-                )
+                ),
             )
             assert len(axioms) == 1
             axiom = axioms[0]
@@ -352,39 +353,40 @@ def test_collect_functional_axioms() -> None:
             assert axiom.pattern == functional(c)
 
             with raises(AssertionError):
-                # Not yet supported
-                sem.collect_functional_axioms(
+                # Not yet supported (At the time of writing we only
+                # support generation of functional assumptions for symbols)
+                ExecutionProofExp.collect_functional_axioms(
+                    sem,
                     RewriteStepExpression(
                         a(EVar(1)),
-                        (),
                         b(EVar(1)),
                         krule,
                         {0: EVar(1)},
-                    )
+                    ),
                 )
 
-            axioms = sem.collect_functional_axioms(
+            axioms = ExecutionProofExp.collect_functional_axioms(
+                sem,
                 RewriteStepExpression(
                     a(d(c)),
-                    (),
                     b(d(c)),
                     krule_phi1,
                     {1: d(c)},
-                )
+                ),
             )
             assert len(axioms) == 1
             axiom = axioms[0]
             assert axiom.kind == AxiomType.FunctionalSymbol
             assert axiom.pattern == functional(d(c))
 
-            axioms = sem.collect_functional_axioms(
+            axioms = ExecutionProofExp.collect_functional_axioms(
+                sem,
                 RewriteStepExpression(
                     e(a(c), c),
-                    (),
                     f(a(c), c),
                     krule2,
                     {0: a(c), 1: c},
-                )
+                ),
             )
             assert len(axioms) == 2
             for axiom in axioms:
