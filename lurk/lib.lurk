@@ -8,17 +8,9 @@
 !(def forall (lambda (evar_id pattern) (negate (exists evar_id (negate pattern)))))
 
 ;; ExecutionPhase
-;; The current phase of execution should be the key with positive value
-!(def ExecutionPhase '(
-    :Gamma 0
-    :Claim 0
-    :Proof 0
-    )
-)
-
-!(def Gamma_phase (set :Gamma 1 ExecutionPhase))
-!(def Claim_phase (set :Claim 1 ExecutionPhase))
-!(def Proof_phase (set :Proof 1 ExecutionPhase))
+!(def Gamma_phase 0)
+!(def Claim_phase 1)
+!(def Proof_phase 2)
 
 ;; Definition: read_u8_vec_aux(buffer, size) = (vec, buffer')
 ;; Use: (read_u8_vec_aux '(3 2 1 0) 2) => ((3 2) (1 0)
@@ -162,7 +154,7 @@
                                                                                     )
                                                                               )
                                                                               (if (= instr_u32 30) ; Publish
-                                                                                 (if (eq (get :Gamma phase) 1)
+                                                                                 (if (eq phase 0)
                                                                                     (let ((temp (pop_stack_pattern stack))
                                                                                           (term (car temp))
                                                                                           (stack (cdr temp))
@@ -171,7 +163,7 @@
                                                                                           )
                                                                                           (cons stack (cons (push (Proved_ pattern) memory) (cons claims (cons instructions nil))))
                                                                                     )
-                                                                                    (if (eq (get :Claim phase) 1)
+                                                                                    (if (eq phase 1)
                                                                                           (let ((temp (pop_stack_pattern stack))
                                                                                                 (term (car temp))
                                                                                                 (stack (cdr temp))
@@ -180,7 +172,7 @@
                                                                                              )
                                                                                              (cons stack (cons memory (cons (push pattern claims) (cons instructions nil))))
                                                                                           )
-                                                                                          (if (eq (get :Proof phase) 1)
+                                                                                          (if (eq phase 2)
                                                                                              (let ((temp (pop claims)) ; TODO: Should we add a check to see if the claims are empty?
                                                                                                    (pattern (car temp))
                                                                                                    (claims (cdr temp))
@@ -214,4 +206,5 @@
                                                                                        nil
                                                                                     )))))))))))))))))))))))))))
 
-
+!(def Instructions )
+(map (switch_case Claim_phase) Stack Memory Claims '( 137 0 137 0 5 28 30 ))
