@@ -21,12 +21,9 @@
 ;; Use: (pop_stack_proved (push (Proved_ '(1 2 3)) Stack)) => ((:type 1 :pattern (1 2 3)) :stack nil)
 !(def pop_stack_proved 
    (lambda (stack)
-      (let ((term (car stack))
-            (stack (cdr stack)))
-         (if (= (get :type term) 1)
-            (cons term stack)
-            nil
-         )
+      (if (= (get :type (car stack)) 1)
+         (cons (car stack) (cdr stack))
+         nil
       )
    )
 )
@@ -36,12 +33,9 @@
 ;; Use: (pop_stack_pattern (push (Proved_ '(1 2 3)) Stack)) => nil
 !(def pop_stack_pattern 
    (lambda (stack)
-      (let ((term (car stack))
-            (stack (cdr stack)))
-         (if (= (get :type term) 0)
-            (cons term stack)
-            nil
-         )
+      (if (= (get :type (car stack)) 0)
+         (cons (car stack) (cdr stack))
+         nil
       )
    )
 )
