@@ -22,7 +22,7 @@
 !(def pop_stack_proved 
    (lambda (stack)
       (if (= (get :type (car stack)) 1)
-         (cons (car stack) (cdr stack))
+         (cons (car stack) (cdr stack)) ; TODO: Simplify it
          nil
       )
    )
@@ -34,7 +34,7 @@
 !(def pop_stack_pattern 
    (lambda (stack)
       (if (= (get :type (car stack)) 0)
-         (cons (car stack) (cdr stack))
+         (cons (car stack) (cdr stack)) ; TODO: Simplify it
          nil
       )
    )
