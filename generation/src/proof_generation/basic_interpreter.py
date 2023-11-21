@@ -114,12 +114,6 @@ class BasicInterpreter:
             case Mu(var, subpattern):
                 return self.mu(var, self.pattern(subpattern))
             case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
-                # TODO: The results should be passed to self.metavar
-                self.patterns(e_fresh)
-                self.patterns(s_fresh)
-                self.patterns(positive)
-                self.patterns(negative)
-                self.patterns(app_ctx_holes)
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
             case Instantiate(subpattern, subst):
                 for inst in subst.values():
@@ -127,9 +121,6 @@ class BasicInterpreter:
                 return self.instantiate_pattern(self.pattern(subpattern), subst)
 
         raise NotImplementedError(f'{type(p)}')
-
-    def patterns(self, ps: tuple[Pattern, ...]) -> tuple[Pattern, ...]:
-        return tuple(self.pattern(p) for p in ps)
 
     def prop1(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
