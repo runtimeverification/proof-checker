@@ -170,7 +170,7 @@
                                                                            (ids nil)
                                                                            (plugs nil)
 
-                                                                           (temp (pop_stack stack))
+                                                                           (temp (pop_stack stack)) ; TODO: inline this call
                                                                            (metaterm (car temp))
                                                                            (metaterm_pattern (get :pattern metaterm))
                                                                            (metaterm_type (get :type metaterm))
@@ -193,7 +193,7 @@
                                                                           )
                                                                      )
                                                                      (if (= instr_u32 27) ; Pop only the first item
-                                                                        (let ((temp (pop_stack stack))
+                                                                        (let ((temp (pop_stack stack)) ; TODO: inline this call
                                                                               (stack (cdr temp))
                                                                               )
                                                                               (cons stack (cons memory (cons claims (cons instructions nil))))
