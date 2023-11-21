@@ -90,15 +90,13 @@
                   (if (= instr_u32 5) ; Implication
                      (let ((pop1 (pop_stack_pattern stack))
                            (right (car pop1))
-                           (stack (cdr pop1))
                            
-                           (pop2 (pop_stack_pattern stack))
+                           (pop2 (pop_stack_pattern (cdr pop1)))
                            (left (car pop2))
-                           (stack (cdr pop2))
 
                            (implication (implies left right))
                            )
-                           (cons (push_stack (Pattern_ implication) stack) (cons memory (cons claims (cons instructions nil))))
+                           (cons (push_stack (Pattern_ implication) (cdr pop2)) (cons memory (cons claims (cons instructions nil))))
                      )
                      (if (= instr_u32 6) ; Application
                         nil
@@ -170,11 +168,10 @@
                                                                            (ids nil)
                                                                            (plugs nil)
 
-                                                                           (temp (pop_stack stack)) ; TODO: inline this call
-                                                                           (metaterm (car temp))
+                                                                           (metaterm (car stack))
                                                                            (metaterm_pattern (get :pattern metaterm))
                                                                            (metaterm_type (get :type metaterm))
-                                                                           (stack (cdr temp))
+                                                                           (stack (cdr stack))
 
                                                                            (temp (loop_to_ids_plugs n instructions stack ids plugs))
                                                                            (stack (car temp))
@@ -193,12 +190,7 @@
                                                                           )
                                                                      )
                                                                      (if (= instr_u32 27) ; Pop only the first item
-                                                                        (let ((temp (pop_stack stack)) ; TODO: inline this call
-                                                                              (stack (cdr temp))
-                                                                              )
-                                                                              (cons stack (cons memory (cons claims (cons instructions nil))))
-                                                                        )
-
+                                                                        (cons (cdr stack) (cons memory (cons claims (cons instructions nil))))
                                                                         (if (= instr_u32 28) ; Save
                                                                            (let ((term (car stack)))
                                                                               (cons stack (cons (push_memory term memory) (cons claims (cons instructions nil)))))
