@@ -193,7 +193,7 @@
                                                                         (cons (cdr stack) (cons memory (cons claims (cons instructions nil))))
                                                                         (if (= instr_u32 28) ; Save
                                                                            (let ((term (car stack)))
-                                                                              (cons stack (cons (push_memory term memory) (cons claims (cons instructions nil)))))
+                                                                              (cons stack (cons (append term memory) (cons claims (cons instructions nil)))))
                                                                            (if (= instr_u32 29) ; Load
                                                                               (let ((index (car instructions))
                                                                                     (instructions (cdr instructions)))
@@ -220,12 +220,11 @@
                                                                                                 (pattern (car temp))
                                                                                                 (stack (cdr temp))
                                                                                                )
-                                                                                             (cons stack (cons memory (cons (push_claim pattern claims) (cons instructions nil))))
+                                                                                             (cons stack (cons memory (cons (cons pattern claims) (cons instructions nil))))
                                                                                           )
                                                                                           (if (eq phase 2)
-                                                                                             (let ((temp (pop claims)) ; TODO: Should we add a check to see if the claims are empty?
-                                                                                                   (pattern (car temp))
-                                                                                                   (claims (cdr temp))
+                                                                                             (let ((pattern (car claims))
+                                                                                                   (claims (cdr claims))
                                                                                                   )
                                                                                                   (if (eq pattern nil)
                                                                                                      nil ;; Error
