@@ -1,7 +1,12 @@
+POETRY     := poetry -C generation
+POETRY_RUN := $(POETRY) run
+
+default: check test-unit
 all: check test-unit test-system test-zk
-.PHONY: all
+.PHONY: all default
 .SECONDARY:
 FORCE:
+
 
 clean-proofs:
 	rm -rf .build/proofs
@@ -12,12 +17,28 @@ clean-translated-proofs:
 clean-kgenerated-proofs:
 	rm -rf .build/proofs/generated-from-k
 
+clean-python:
+	rm -rf generation/dist generation/.coverage generation/cov-* generation/.mypy_cache generation/.pytest_cache
+	find -type d -name __pycache__ -prune -exec rm -rf {} \;
+
 update-snapshots:
 	rsync -u $(wildcard .build/proofs/*.*) proofs
 	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
 	rsync -u $(wildcard .build/proofs/generated-from-k/*.*) proofs/generated-from-k
 
-.PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs
+.PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs clean-python
+
+# Python set up
+# =============
+
+build-poetry:
+	# See: https://github.com/python-poetry/poetry/issues/8699
+	(cd generation; poetry build)
+
+poetry-install:
+	$(POETRY) install
+
+.PHONY: poetry-install build-poetry
 
 # Installation and setup
 # ======================
@@ -28,9 +49,6 @@ build-rust:
 build-risc0:
 	cargo build --manifest-path=risc0/Cargo.toml
 
-generation-install:
-	make -C generation poetry-install
-
 install-kup:
 	@if ! command -v kup &> /dev/null; then \
 		echo "kup is not installed, installing..."; \
@@ -39,15 +57,14 @@ install-kup:
 		echo "kup is already installed, skipping installation."; \
 	fi
 
-k-version-output := $(shell make -C generation k-version)
 install-k-kup:
 	kup install k --version v$(shell $(POETRY_RUN) python3 -c "import pyk; print(pyk.K_VERSION)"); \
 
-build: build-rust build-risc0 generation-install
+build: build-poetry build-rust build-risc0 poetry-install
 
 install-k: install-kup install-k-kup
 
-.PHONY: build-rust build-risc0 generation-install install-kup install-k install-k-kup build
+.PHONY: build-rust build-risc0 poetry-install install-kup install-k install-k-kup build
 
 # Syntax and formatting checks
 # ============================
@@ -55,16 +72,12 @@ install-k: install-kup install-k-kup
 check: check-cargo check-python
 check-cargo:
 	cargo fmt --check
-check-python:
-	make -C generation check
 
 .PHONY: check check-cargo check-python
 
 format: format-cargo format-python
 format-cargo:
 	cargo fmt
-format-python:
-	make -C generation format
 
 .PHONY: format format-cargo format-python
 
@@ -92,10 +105,113 @@ test: test-most test-zk
 test-unit: test-unit-python test-unit-cargo
 test-unit-cargo:
 	$(CARGO) test
-test-unit-python:
-	make -C generation test-unit
 
 .PHONY: test-unit test-unit-cargo test-unit-python
+
+# Python checks and tests
+# =======================
+
+TEST_ARGS :=
+
+test-python: poetry-install
+	$(POETRY_RUN) pytest generation/src/tests --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
+
+test-unit-python: poetry-install
+	$(POETRY_RUN) pytest generation/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
+
+test-integration-python: poetry-install
+	$(POETRY_RUN) pytest generation/src/tests/integration --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
+
+# Coverage
+
+COV_ARGS :=
+
+cov: cov-all
+
+cov-%: TEST_ARGS += --cov=proof_generation --no-cov-on-fail --cov-branch --cov-report=term
+
+cov-all: TEST_ARGS += --cov-report=html:cov-all-html $(COV_ARGS)
+cov-all: test-all
+
+cov-unit: TEST_ARGS += --cov-report=html:cov-unit-html $(COV_ARGS)
+cov-unit: test-unit
+
+cov-integration: TEST_ARGS += --cov-report=html:cov-integration-html $(COV_ARGS)
+cov-integration: test-integration
+
+
+# Checks and formatting
+
+format-python: autoflake isort black
+check-python: check-flake8 check-mypy check-autoflake check-isort check-black pyupgrade
+
+check-flake8: poetry-install
+	$(POETRY_RUN) flake8 generation/src
+
+check-mypy: poetry-install
+	$(POETRY_RUN) mypy generation/src --strict-equality
+
+autoflake: poetry-install
+	$(POETRY_RUN) autoflake --quiet --in-place generation/src
+
+check-autoflake: poetry-install
+	$(POETRY_RUN) autoflake --quiet --check generation/src
+
+isort: poetry-install
+	$(POETRY_RUN) isort generation/src
+
+check-isort: poetry-install
+	$(POETRY_RUN) isort --check generation/src
+
+black: poetry-install
+	$(POETRY_RUN) black generation/src
+
+check-black: poetry-install
+	$(POETRY_RUN) black --check generation/src
+
+# Optional tools
+
+PYTHON_FILES := $(shell find generation/src -type f -name '*.py')
+
+pyupgrade: poetry-install
+	$(POETRY_RUN) pyupgrade --py310-plus $(PYTHON_FILES)
+
+# Proof Hints
+# ===========
+
+# Target only this specific subset of programs that are currently supported:
+PROOF_HINTS=generation/proof-hints/peano/mul_3_5.peano.hints \
+			generation/proof-hints/single-rewrite/foo-a.single-rewrite.hints \
+			generation/proof-hints/double-rewrite/foo-a.double-rewrite.hints \
+			generation/proof-hints/trivial/0_rewrites.trivial.hints \
+			generation/proof-hints/trivial/1_rewrite.trivial.hints \
+			generation/proof-hints/trivial/2_rewrites.trivial.hints \
+			generation/proof-hints/imp5/empty.imp5.hints \
+			generation/proof-hints/imp5-rw-succ/transfer.imp5-rw-succ.hints \
+			generation/proof-hints/imp5-rw-literal/transfer.imp5-rw-literal.hints \
+			generation/proof-hints/simple/input.simple.hints
+
+# Eventually, we want to support all input programs using something like the following:
+# ALL_K_FILES=$(wildcard k-benchmarks/*/*)
+# K_DEFS=$(wildcard k-benchmarks/*/*.k)
+# INPUT_PROGRAMS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
+# PROOF_HINTS=$(addsuffix .hints, $(patsubst k-benchmarks%,proof-hints%,${INPUT_PROGRAMS}))
+
+
+# Proof Hint Generation from LLVM
+generation/proof-hints/%.hints: generation/k-benchmarks/%
+	mkdir -p generation/proof-hints/$(dir $*)
+	./generation/scripts/gen-execution-proof-hints.sh \
+		generation/k-benchmarks/$(dir $*)$(patsubst %/,%, $(dir $*)).k \
+		generation/k-benchmarks/$* \
+		generation/proof-hints/$*.hints
+
+generate-hints: $(PROOF_HINTS)
+
+clean-hints:
+	rm -f $(PROOF_HINTS)
+
+.PHONY: generate-hints clean-hints
 
 
 # System testing
@@ -104,9 +220,7 @@ test-unit-python:
 test-system: test-integration test-proof-gen test-proof-translate test-proof-kgen test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
-test-integration:
-	make -C generation generate-hints
-	make -C generation test-integration
+test-integration: generate-hints test-integration-python
 
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
@@ -119,7 +233,7 @@ TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*.ml-proof)
 
 .build/proofs/translated/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.metamath.translate" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
+	$(POETRY_RUN) python -m "proof_generation.metamath.translate" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
 
 PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
@@ -144,8 +258,8 @@ KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 # We assume that there is only one hint file per benchmark
 proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/%-kompiled/timestamp proofs/generated-from-k/%.ml-proof
 	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
-	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -157,11 +271,11 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # We assume that there is only one hint file per benchmark
 .build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
 .build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
 	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
-	poetry -C generation run python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof .build/proofs/generated-from-k/%.pretty-proof
@@ -182,11 +296,11 @@ test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 
 .build/proofs/%.ml-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" memo $(dir $@) $*
+	$(POETRY_RUN) python -m "proof_generation.proofs.$*" memo $(dir $@) $*
 
 .build/proofs/%.pretty-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
-	poetry -C generation run python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
+	$(POETRY_RUN) python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
