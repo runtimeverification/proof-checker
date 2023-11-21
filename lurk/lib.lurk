@@ -41,12 +41,7 @@
 
 ;; Definition: read_u8_vec(buffer) = (vec, buffer')
 ;; Use: (read_u8_vec '(2 3 2 1 0)) => ((3 2) (1 0))
-!(def read_u8_vec
-   (lambda (buffer)
-      (let ((size (car buffer))
-            (buffer (cdr buffer)))
-           (read_u8_vec_aux buffer size))))
-
+!(def read_u8_vec (lambda (buffer) (read_u8_vec_aux (cdr buffer) (car buffer))))
 
 ;; execute_instructions
 
@@ -247,15 +242,12 @@
                                                                                           (instructions (cdr instructions)))
                                                                                           (if (eq id nil)
                                                                                              nil ;; Error
-                                                                                             (let ((metavar_pat (metavar_unconstrained id)))
-                                                                                                  (cons (cons (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
-                                                                                             )
+                                                                                             (cons (cons (Pattern_ (metavar_unconstrained id)) stack) (cons memory (cons claims (cons instructions nil))))
+
                                                                                           )
                                                                                     )
-                                                                                    (if (= instr_u32 138) ; NO_OP
-                                                                                       (cons stack (cons memory (cons claims (cons '() nil))))
-                                                                                       nil
-                                                                                    )))))))))))))))))))))))))))
+                                                                                    nil
+                                                                                 ))))))))))))))))))))))))))
 
 ;; Definition: execute_instructions(buffer, stack, memory, claims, phase) = (stack', memory', claims', instructions')
 !(def execute_instructions (lambda (buffer stack memory claims phase)

@@ -1,34 +1,12 @@
 
 !(load "basic_operations.lurk")
 
-;; Lurk's Pattern definition
-!(def Pattern '(
-  ;; Ints
-  :inst 0               ; All
-  :id 0                 ; EVar, SVar, Symbol, Mu, Exists, MetaVar
-                        ; ESubst (evar_id), SSubst (svar_id)
-  ;; IdLists
-  :e_fresh nil          ; MetaVar
-  :s_fresh nil          ; MetaVar
-  :positive nil         ; MetaVar
-  :negative nil         ; MetaVar
-  :app_ctx_holes nil    ; MetaVar
-  
-  ;; Patterns
-  :left nil             ; Implication, Application   
-  :right nil            ; Implication, Application
-  :subpattern nil       ; Exists, Mu, ESubst (pattern), SSubst (pattern)
-  :plug nil             ; ESubst, SSubst
-  )
-)
-
 ;; Definition: evar(evar_id) = Pattern{inst = 2, id = evar_id}
 ;; Use: !(def new_evar (evar evar_id))
 !(def evar 
     (lambda (evar_id) 
-        (set :inst 2 
-        (set :id evar_id Pattern)
-        )
+        (cons :inst (cons 2 
+        (cons :id (cons evar_id nil ))))
     )
 )
 
@@ -36,9 +14,8 @@
 ;; Use: !(def new_svar (svar svar_id))
 !(def svar 
     (lambda (svar_id) 
-        (set :inst 3 
-        (set :id svar_id Pattern)
-        )
+       (cons :inst (cons 3 
+       (cons :id (cons svar_id nil ))))
     )
 )
 
@@ -46,9 +23,8 @@
 ;; Use: !(def new_symbol (symbol symbol_id))
 !(def symbol 
     (lambda (symbol_id) 
-        (set :inst 4 
-        (set :id symbol_id Pattern)
-        )
+        (cons :inst (cons 4
+        (cons :id (cons symbol_id nil ))))
     )
 )
 
@@ -56,10 +32,9 @@
 ;; Use: !(def new_implies (implies p1 p2))
 !(def implies 
     (lambda (p1 p2) 
-        (set :inst 5 
-        (set :left p1 
-        (set :right p2 Pattern)
-        ))
+        (cons :inst (cons 5 
+        (cons :left (cons p1 
+        (cons :right (cons p2  nil))))))
     )
 )
 
@@ -67,10 +42,9 @@
 ;; Use: !(def new_app (app p1 p2))
 !(def app 
     (lambda (p1 p2) 
-        (set :inst 6 
-        (set :left p1 
-        (set :right p2 Pattern)
-        ))
+        (cons :inst (cons 6
+        (cons :left (cons p1
+        (cons :right (cons p2  nil))))))
     )
 )
 
@@ -78,10 +52,9 @@
 ;; Use: !(def new_mu (mu var subpattern))
 !(def mu 
     (lambda (var subpattern) 
-        (set :inst 7 
-        (set :id var 
-        (set :subpattern subpattern Pattern)
-        ))
+        (cons :inst (cons 7
+        (cons :id (cons var 
+        (cons :subpattern (cons subpattern nil))))))
     )
 )
 
@@ -89,10 +62,9 @@
 ;; Use: !(def new_exists (exists var subpattern))
 !(def exists 
     (lambda (var subpattern) 
-        (set :inst 8 
-        (set :id var 
-        (set :subpattern subpattern Pattern)
-        ))
+       (cons :inst (cons 8 
+       (cons :id (cons var
+       (cons :subpattern (cons subpattern nil))))))
     )
 )
 
@@ -100,9 +72,13 @@
 ;; Use: !(def new_metavar_unconstrained (metavar_unconstrained new_id))
 !(def metavar_unconstrained 
     (lambda (new_id) 
-        (set :inst 9 
-        (set :id new_id Pattern)
-        )
+        (cons :inst (cons 9
+        (cons :id (cons new_id
+        (cons :e_fresh (cons nil
+        (cons :s_fresh (cons nil
+        (cons :positive (cons nil
+        (cons :negative (cons nil
+        (cons :app_ctx_holes nil)))))))))))))
     )
 )
 
@@ -110,14 +86,13 @@
 ;; Use: !(def new_metavar (metavar new_id e_fresh s_fresh positive negative app_ctx_holes))
 !(def metavar 
     (lambda (new_id e_fresh s_fresh positive negative app_ctx_holes) 
-        (set :inst 9 
-        (set :id new_id 
-        (set :e_fresh e_fresh 
-        (set :s_fresh s_fresh 
-        (set :positive positive 
-        (set :negative negative 
-        (set :app_ctx_holes app_ctx_holes Pattern)
-        ))))))
+        (cons :inst (cons 9
+        (cons :id (cons new_id
+        (cons :e_fresh (cons e_fresh
+        (cons :s_fresh (cons s_fresh
+        (cons :positive (cons positive
+        (cons :negative (cons negative
+        (cons :app_ctx_holes (cons app_ctx_holes nil))))))))))))))
     )
 )
 
@@ -125,12 +100,13 @@
 ;; Use: !(def new_metavar_s_fresh (metavar_s_fresh new_id s_fresh positive negative))
 !(def metavar_s_fresh 
     (lambda (new_id s_fresh positive negative) 
-        (set :inst 9 
-        (set :id new_id 
-        (set :s_fresh (cons s_fresh nil) 
-        (set :positive positive 
-        (set :negative negative Pattern)
-        ))))
+        (cons :inst (cons 9 
+        (cons :id (cons new_id
+        (cons :e_fresh (cons nil 
+        (cons :s_fresh (cons s_fresh 
+        (cons :positive (cons positive 
+        (cons :negative (cons negative
+        (cons :app_ctx_holes nil)))))))))))))
     )
 )
 
@@ -138,11 +114,10 @@
 ;; Use: !(def new_esubst (esubst evar_id subpattern plug))
 !(def esubst 
     (lambda (evar_id subpattern plug) 
-        (set :inst 10
-        (set :id evar_id 
-        (set :subpattern subpattern 
-        (set :plug plug Pattern)
-        )))
+        (cons :inst (cons 10
+        (cons :id (cons evar_id
+        (cons :subpattern (cons subpattern
+        (cons :plug (cons plug nil))))))))
     )
 )
 
@@ -150,11 +125,10 @@
 ;; Use: !(def new_ssubst (ssubst svar_id subpattern plug))
 !(def ssubst 
     (lambda (svar_id subpattern plug) 
-        (set :inst 11
-        (set :id svar_id 
-        (set :subpattern subpattern 
-        (set :plug plug Pattern)
-        )))
+        (cons :inst (cons 11 
+        (cons :id (cons svar_id
+        (cons :subpattern (cons subpattern
+        (cons :plug (cons plug nil))))))))
     )
 )
 

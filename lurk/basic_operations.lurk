@@ -19,31 +19,6 @@
                         (get key (cdr pattern)))
                     nil)))
 
-;; This function is used to set a the value of a key in a pattern.
-!(defrec set (lambda (key value pattern)
-                (if pattern
-                    (if (eq key (car pattern))
-                        (cons key (cons value (cdr (cdr pattern))))
-                        (cons (car pattern)
-                              (cons (car (cdr pattern))
-                                    (set key value (cdr (cdr pattern))))))
-                    (cons key (cons value nil)))))
-
-;; This function is used to update the value with a function that consumes the
-;; current value of a key in a pattern.
-;; update :: key -> (value -> value) -> [a] -> [a]
-!(def update (lambda (key update-fn pattern)
-                (letrec ((aux (lambda (acc pattern)
-                                (if pattern
-                                    (if (eq key (car pattern))
-                                        (aux (cons key (cons (update-fn (car (cdr pattern))) acc))
-                                             (cdr (cdr pattern)))
-                                        (aux (cons (car pattern)
-                                                   (cons (car (cdr pattern)) acc))
-                                             (cdr (cdr pattern))))
-                                    acc))))
-                  (aux () pattern))))
-
 ;; This function is used to check if a list contains an element
 ;; contains :: ele -> [a] -> bool
 !(defrec contains (lambda (ele list)
