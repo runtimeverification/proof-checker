@@ -4,7 +4,7 @@ from itertools import count
 
 from pytest import fixture, raises
 
-from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSymbol, LanguageSemantics
+from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSortVar, KSymbol, LanguageSemantics
 from proof_generation.pattern import Pattern, Symbol
 from proof_generation.proofs.kore import KORE_NOTATIONS, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
@@ -20,7 +20,7 @@ def simple_semantics() -> LanguageSemantics:
             srt2 = mod.sort('srt2')
 
             mod.symbol('sym1', srt1)
-            mod.symbol('sym2', srt2, (srt1,), is_functional=True)
+            mod.symbol('sym2', srt2, input_sorts=(srt1,), is_functional=True)
     return semantics
 
 
@@ -87,7 +87,7 @@ def test_sorts() -> None:
 def test_symbols() -> None:
     # Test the basic case
     srt1 = KSort('srt1')
-    sym = KSymbol('sym', srt1)
+    sym = KSymbol('sym', (), srt1)
     assert sym.name == 'sym'
     assert sym.output_sort == srt1
     assert sym.aml_symbol == Symbol('kore_sym')
@@ -102,7 +102,7 @@ def test_symbols() -> None:
 
     # Test the creation of a functional symbol
     srt2 = KSort('srt2')
-    fsym = KSymbol('fsym', srt1, (srt1, srt2), is_functional=True)
+    fsym = KSymbol('fsym', (), srt1, (srt1, srt2), is_functional=True)
     assert fsym.name == 'fsym'
     assert fsym.output_sort == srt1
     assert fsym.input_sorts == (srt1, srt2)
@@ -113,13 +113,13 @@ def test_symbols() -> None:
     assert fsym.aml_notation == nary_app(fsym.aml_symbol, 2, False)
 
     # Test the usage of flags
-    csym = KSymbol('csym', srt1, (srt1, srt2), is_ctor=True)
+    csym = KSymbol('csym', (), srt1, (srt1, srt2), is_ctor=True)
     assert not csym.is_functional
     assert csym.is_ctor
     assert not csym.is_cell
 
     # Test the creation of a cell
-    cell_sym = KSymbol('cell', srt1, (srt1, srt2), is_functional=True, is_cell=True)
+    cell_sym = KSymbol('cell', (), srt1, (srt1, srt2), is_functional=True, is_cell=True)
     assert cell_sym.name == 'cell'
     assert cell_sym.output_sort == srt1
     assert cell_sym.input_sorts == (srt1, srt2)
@@ -128,6 +128,36 @@ def test_symbols() -> None:
     assert not cell_sym.is_ctor
     assert cell_sym.is_cell
     assert cell_sym.aml_notation == nary_app(cell_sym.aml_symbol, 2, True)
+
+
+def test_symbol_params() -> None:
+    sort1 = KSort('sort1')
+    sort2 = KSortVar('var1')
+    sort3 = KSortVar('var2')
+
+    symbol1 = KSymbol('symbol1', (), sort1)
+    assert symbol1.input_sorts == ()
+    assert symbol1.sort_params == ()
+    assert symbol1.aml_symbol == Symbol('kore_symbol1')
+    assert symbol1.aml_notation == nary_app(Symbol('kore_symbol1'), 0, False)
+
+    symbol2 = KSymbol('symbol2', (sort2,), sort1, (sort1, sort2))
+    assert symbol2.input_sorts == (sort1, sort2)
+    assert symbol2.sort_params == (sort2,)
+    assert symbol2.aml_symbol == Symbol('kore_symbol2')
+    assert symbol2.aml_notation == nary_app(Symbol('kore_symbol2'), 3, False)
+
+    symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2), is_functional=True)
+    assert symbol3.input_sorts == (sort1, sort2)
+    assert symbol3.sort_params == (sort2, sort3)
+    assert symbol3.aml_symbol == Symbol('kore_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('kore_symbol3'), 4, False)
+
+    symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2, sort2), is_functional=True, is_cell=True)
+    assert symbol3.input_sorts == (sort1, sort2, sort2)
+    assert symbol3.sort_params == (sort2, sort3)
+    assert symbol3.aml_symbol == Symbol('kore_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('kore_symbol3'), 5, True)
 
 
 def test_module_symbols() -> None:
@@ -154,21 +184,27 @@ def test_module_symbols() -> None:
         with raises(ValueError):
             tr.symbol('bar', KSort('Foo1'))
         with raises(ValueError):
-            tr.symbol('bar', ssort, (KSort('Foo'),), is_functional=True)
+            tr.symbol('bar', ssort, input_sorts=(KSort('Foo'),), is_functional=True)
 
         # Testing setting symbol attributes
-        fsymbol = tr.symbol('fbar', ssort, (ssort,), is_functional=True)
+        fsymbol = tr.symbol('fbar', ssort, input_sorts=(ssort,), is_functional=True)
         assert fsymbol in tr.symbols
         assert set(tr.symbols) == {ssymbol, fsymbol}
         assert fsymbol.is_functional
 
-        csymbol = tr.symbol('cbar', ssort, (ssort,), is_ctor=True)
+        csymbol = tr.symbol('cbar', ssort, input_sorts=(ssort,), is_ctor=True)
         assert csymbol in tr.symbols
         assert csymbol.is_ctor
 
-        cell_symbol = tr.symbol('cell', ssort, (ssort,), is_cell=True)
+        cell_symbol = tr.symbol('cell', ssort, input_sorts=(ssort,), is_cell=True)
         assert cell_symbol in tr.symbols
         assert cell_symbol.is_cell
+
+        param_sort = KSortVar('param')
+        param_symbol = tr.symbol('param', ssort, sort_params=(param_sort,), input_sorts=(param_sort,))
+        assert param_symbol in tr.symbols
+        assert param_symbol.sort_params == (param_sort,)
+        assert param_symbol.input_sorts == (param_sort,)
 
         # Testing getters for sorts and symbols
         assert trivial.get_sort('foo') == ssort
