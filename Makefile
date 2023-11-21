@@ -41,12 +41,7 @@ install-kup:
 
 k-version-output := $(shell make -C generation k-version)
 install-k-kup:
-	@if ! command -v kompile &> /dev/null; then \
-		echo "K is not installed, installing..."; \
-		kup install k --version v$(k-version-output); \
-	else \
-		echo "K is already installed, skipping installation."; \
-	fi
+	kup install k --version v$(shell $(POETRY_RUN) python3 -c "import pyk; print(pyk.K_VERSION)"); \
 
 build: build-rust build-risc0 generation-install
 
