@@ -513,11 +513,12 @@ class LanguageSemantics(BuilderScope):
                 right_or_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
                 return kl.kore_or(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
-            case kore.App(symbol, _, args):
+            case kore.App(symbol, ksorts, args):
                 ksymbol: KSymbol = self.get_symbol(symbol)
+                sort_params: list[Pattern] = [self.get_sort(sort.name).aml_symbol for sort in ksorts]
                 arg_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
 
-                return ksymbol.aml_notation(*arg_patterns)
+                return ksymbol.aml_notation(*(sort_params + arg_patterns))
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return scope.resolve_evar(pattern)
