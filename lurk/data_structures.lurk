@@ -8,17 +8,13 @@
 ;;; Stack utilities
 ;;; ===============
 
-;; Definition: pop(stack) = (term, stack')
-;; Use: (pop (push (Pattern_ '(1 2 3)) Stack)) => ((:type 0 :pattern (1 2 3)) nil)
-!(def pop_stack (lambda (stack) (cons (car stack) (cdr stack))))
-
 ;; Definition: pop_stack_proved(stack) = if (term.type == 1) then (term, stack') else nil
 ;; Use: (pop_stack_proved (push (Pattern_ '(1 2 3)) Stack)) => nil
 ;; Use: (pop_stack_proved (push (Proved_ '(1 2 3)) Stack)) => ((1 2 3)) nil)
 !(def pop_stack_proved
    (lambda (stack)
-      (if (= (get :type (car stack)) 1)
-         (cons (get :pattern (car stack)) (cdr stack))
+      (if (= (car (car stack)) 1)
+         (cons (car (cdr (car stack))) (cdr stack))
          nil
       )
    )
@@ -29,8 +25,8 @@
 ;; Use: (pop_stack_pattern (push (Proved_ '(1 2 3)) Stack)) => nil
 !(def pop_stack_pattern
    (lambda (stack)
-      (if (= (get :type (car stack)) 0)
-         (cons (get :pattern (car stack)) (cdr stack)) ; TODO: Simplify it
+      (if (= (car (car stack)) 0)
+         (cons (car (cdr (car stack))) (cdr stack)) ; TODO: Simplify it
          nil
       )
    )
