@@ -73,7 +73,7 @@ class KSymbol:
         if self.name == 'kseq':
             return kl.kore_kseq
         else:
-            return kl.nary_app(self.aml_symbol, len(self.input_sorts), self.is_cell)
+            return kl.nary_app(self.aml_symbol, len(self.sort_params) + len(self.input_sorts), self.is_cell)
 
 
 @dataclass(frozen=True)
@@ -195,8 +195,9 @@ class KModule(BuilderScope):
     def symbol(
         self,
         name: str,
-        sort_params: tuple[KSortVar, ...],
         output_sort: KSort | KSortVar,
+        *,  # Force to use named parameters
+        sort_params: tuple[KSortVar, ...] = (),
         input_sorts: tuple[KSort | KSortVar, ...] = (),
         is_functional: bool = False,
         is_ctor: bool = False,
@@ -397,12 +398,12 @@ class LanguageSemantics(BuilderScope):
                             # TODO: Support cells
                             module.symbol(
                                 symbol,
-                                ksort_params,
                                 output_sort,
-                                input_sorts,
-                                'functional' in attrs,
-                                'constructor' in attrs,
-                                'cell' in attrs,
+                                sort_params=ksort_params,
+                                input_sorts=input_sorts,
+                                is_functional='functional' in attrs,
+                                is_ctor='constructor' in attrs,
+                                is_cell='cell' in attrs,
                             )
                         elif isinstance(sentence, kore.Axiom):
                             # Add axioms
