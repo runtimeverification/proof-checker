@@ -129,42 +129,6 @@ class LLVMRewriteTraceParser:
 
         return LLVMRewriteTrace(tuple(self.pre_trace), self.initial_config, tuple(self.trace))
 
-    def dump_trace(
-        self,
-        show_terms: bool = False,
-    ) -> None:
-        def dump(text: str, depth: int, end: str = '\n') -> None:
-            print(f'{"  " * depth}{text}', end=end)
-
-        def dump_event(event: LLVMStepEvent | kore.Pattern, depth: int) -> None:
-            if isinstance(event, LLVMRuleEvent):
-                dump(f'Rule: {event.rule_ordinal} {len(event.substitution)}', depth)
-                for v, t in event.substitution:
-                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
-            elif isinstance(event, LLVMSideCondEvent):
-                dump(f'Side Condition: {event.rule_ordinal} {len(event.substitution)}', depth)
-                for v, t in event.substitution:
-                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
-            elif isinstance(event, LLVMFunctionEvent):
-                dump(f'Function: {event.name} @ {event.relative_position}', depth)
-                for arg in event.args:
-                    dump_event(arg, depth + 1)
-            elif isinstance(event, LLVMHookEvent):
-                dump(f'Hook: {event.name}', depth)
-                for arg in event.args:
-                    dump_event(arg, depth + 1)
-                dump(f'Result: {event.result if show_terms else "[kore]"}', depth + 1)
-            else:
-                assert isinstance(event, kore.Pattern)
-                dump(f'Config: {event if show_terms else "[kore]"}', depth)
-
-        depth = 0
-        for step_event in self.pre_trace:
-            dump_event(step_event, depth)
-        dump(f'Init config: {self.initial_config if show_terms else "[kore]"}', depth)
-        for event in self.trace:
-            dump_event(event, depth)
-
     def read_header(self) -> int:
         self.skip_constant(b'HINT')
         return self.read_uint(32)
@@ -305,6 +269,42 @@ class LLVMRewriteTraceParser:
 
     def end_of_arguments(self) -> bool:
         return self.peek(self.func_end_sentinel) or self.peek(self.hook_res_sentinel)
+
+    def dump_trace(
+        self,
+        show_terms: bool = False,
+    ) -> None:
+        def dump(text: str, depth: int, end: str = '\n') -> None:
+            print(f'{"  " * depth}{text}', end=end)
+
+        def dump_event(event: LLVMStepEvent | kore.Pattern, depth: int) -> None:
+            if isinstance(event, LLVMRuleEvent):
+                dump(f'Rule: {event.rule_ordinal} {len(event.substitution)}', depth)
+                for v, t in event.substitution:
+                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
+            elif isinstance(event, LLVMSideCondEvent):
+                dump(f'Side Condition: {event.rule_ordinal} {len(event.substitution)}', depth)
+                for v, t in event.substitution:
+                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
+            elif isinstance(event, LLVMFunctionEvent):
+                dump(f'Function: {event.name} @ {event.relative_position}', depth)
+                for arg in event.args:
+                    dump_event(arg, depth + 1)
+            elif isinstance(event, LLVMHookEvent):
+                dump(f'Hook: {event.name}', depth)
+                for arg in event.args:
+                    dump_event(arg, depth + 1)
+                dump(f'Result: {event.result if show_terms else "[kore]"}', depth + 1)
+            else:
+                assert isinstance(event, kore.Pattern)
+                dump(f'Config: {event if show_terms else "[kore]"}', depth)
+
+        depth = 0
+        for step_event in self.pre_trace:
+            dump_event(step_event, depth)
+        dump(f'Init config: {self.initial_config if show_terms else "[kore]"}', depth)
+        for event in self.trace:
+            dump_event(event, depth)
 
 
 # A driver for local testing
