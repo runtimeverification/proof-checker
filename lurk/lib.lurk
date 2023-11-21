@@ -14,7 +14,7 @@
                (term (car temp))
                (stack (cdr temp))
                )
-               (loop_to_ids_plugs (- n 1) instructions stack (ncons id ids) (ncons term plugs))
+               (loop_to_ids_plugs (- n 1) instructions stack (append id ids) (append term plugs))
          )
       )
    )

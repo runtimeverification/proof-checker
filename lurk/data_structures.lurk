@@ -43,7 +43,7 @@
 
 ;; Definition: push(term, memory) = memory'
 ;; Use: (push (Pattern_ '(1 2 3)) Memory) => ((:type 0 :pattern (1 2 3)))
-!(def push_memory (lambda (term memory) (ncons term memory)))
+!(def push_memory (lambda (term memory) (append term memory)))
 
 ;; Definition: push(pattern, list) = claims'
 ;; Use: (push pattern Claims) => ((pattern) Claims)

@@ -113,12 +113,12 @@
                        0)))
 
 ;; cons in the reverse order
-;; ncons :: (a, [a]) -> [a]
-!(defrec ncons
+;; append :: (a, [a]) -> [a]
+!(defrec append
    (lambda (elem list)
       (if (eq list nil)
          (cons elem nil)
-         (cons (car list) (ncons elem (cdr list)))
+         (cons (car list) (append elem (cdr list)))
       )
    )
 )
