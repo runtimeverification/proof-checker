@@ -56,6 +56,7 @@ class KSortVar:
 @dataclass(frozen=True)
 class KSymbol:
     name: str
+    sort_params: tuple[KSortVar, ...]
     output_sort: KSort | KSortVar
     input_sorts: tuple[KSort | KSortVar, ...] = field(default_factory=tuple)
     is_functional: bool = False
@@ -68,13 +69,10 @@ class KSymbol:
 
     @property
     def aml_notation(self) -> Notation:
-        if self.name == 'inj':
-            # TODO: This is a special case.
-            return kl.nary_app(self.aml_symbol, 1, self.is_cell)
-        elif self.name == 'kseq':
+        if self.name == 'kseq':
             return kl.kore_kseq
         else:
-            return kl.nary_app(self.aml_symbol, len(self.input_sorts), self.is_cell)
+            return kl.nary_app(self.aml_symbol, len(self.sort_params) + len(self.input_sorts), self.is_cell)
 
 
 @dataclass(frozen=True)
@@ -197,6 +195,8 @@ class KModule(BuilderScope):
         self,
         name: str,
         output_sort: KSort | KSortVar,
+        *,  # Force to use named parameters
+        sort_params: tuple[KSortVar, ...] = (),
         input_sorts: tuple[KSort | KSortVar, ...] = (),
         is_functional: bool = False,
         is_ctor: bool = False,
@@ -213,7 +213,7 @@ class KModule(BuilderScope):
                 # It should be either in the module or in imported modules
                 assert self.get_sort(sort.name) == sort
 
-        symbol = KSymbol(name, output_sort, input_sorts, is_functional, is_ctor, is_cell)
+        symbol = KSymbol(name, sort_params, output_sort, input_sorts, is_functional, is_ctor, is_cell)
         self._symbols[name] = symbol
         return symbol
 
@@ -372,40 +372,37 @@ class LanguageSemantics(BuilderScope):
                             else:
                                 module.sort(sentence.name)
                         elif isinstance(sentence, kore.SymbolDecl):
-                            symbol = sentence.symbol.name
-                            param_sorts: list[KSort | KSortVar] = []
-                            for param_sort in sentence.param_sorts:
-                                match param_sort:
+
+                            def convert_ksort(
+                                name_to_sortvar: dict[str, KSortVar], ksort: kore.Sort
+                            ) -> KSort | KSortVar:
+                                match ksort:
                                     case kore.SortVar(name):
-                                        param_sorts.append(KSortVar(name))
+                                        return name_to_sortvar[name]
                                     case kore.SortApp(name):
-                                        param_sorts.append(module.get_sort(name))
+                                        return module.get_sort(name)
                                     case _:
-                                        raise NotImplementedError(f'Sort {param_sort} is not supported')
-                            if isinstance(sentence.sort, kore.SortVar):
-                                mapping = {s.name: s for s in param_sorts}
-                                # TODO: This is a bit unexpected but despite the actual syntax like:
-                                #  symbol inj{From, To}(From) : To [sortInjection{}()]
-                                # The sort parameter list doesn't contain the last parameter To. So we saving it back
-                                # assert sentence.sort.name in mapping
-                                sort: KSort | KSortVar
-                                if sentence.sort.name not in mapping:
-                                    sort = KSortVar(sentence.sort.name)
-                                    param_sorts.append(sort)
-                                else:
-                                    sort = mapping[sentence.sort.name]
-                            else:
-                                sort = module.get_sort(sentence.sort.name)
+                                        raise NotImplementedError(f'Sort {repr(ksort)} is not supported')
+
+                            ksort_params = tuple(KSortVar(v.name) for v in sentence.symbol.vars)
+                            ksort_var_map = {v.name: v for v in ksort_params}
+
+                            symbol = sentence.symbol.name
+                            input_sorts: tuple[KSort | KSortVar, ...] = tuple(
+                                convert_ksort(ksort_var_map, ksort) for ksort in sentence.param_sorts
+                            )
+                            output_sort: KSort | KSortVar = convert_ksort(ksort_var_map, sentence.sort)
                             attrs = [attr.symbol for attr in sentence.attrs if isinstance(attr, kore.App)]
 
                             # TODO: Support cells
                             module.symbol(
                                 symbol,
-                                sort,
-                                tuple(param_sorts),
-                                'functional' in attrs,
-                                'constructor' in attrs,
-                                'cell' in attrs,
+                                output_sort,
+                                sort_params=ksort_params,
+                                input_sorts=input_sorts,
+                                is_functional='functional' in attrs,
+                                is_ctor='constructor' in attrs,
+                                is_cell='cell' in attrs,
                             )
                         elif isinstance(sentence, kore.Axiom):
                             # Add axioms
@@ -511,11 +508,12 @@ class LanguageSemantics(BuilderScope):
                 right_or_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
                 return kl.kore_or(or_sort.aml_symbol, left_or_pattern, right_or_pattern)
-            case kore.App(symbol, _, args):
+            case kore.App(symbol, ksorts, args):
                 ksymbol: KSymbol = self.get_symbol(symbol)
+                sort_params: list[Pattern] = [self.get_sort(sort.name).aml_symbol for sort in ksorts]
                 arg_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
 
-                return ksymbol.aml_notation(*arg_patterns)
+                return ksymbol.aml_notation(*(sort_params + arg_patterns))
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return scope.resolve_evar(pattern)
