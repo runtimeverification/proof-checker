@@ -166,10 +166,10 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
         [],
         [MetaVar(0), MetaVar(1)],
         [Symbol('a')],
-        [MetaVar(1, (EVar(0), EVar(1)), (SVar(1),))],
+        [MetaVar(1, e_fresh=(EVar(0), EVar(1)), s_fresh=(SVar(1),))],
     ],
 )
-def test_serialization(pats: list[Pattern]) -> None:
+def test_interpreter_proof_state(pats: list[Pattern]) -> None:
     interpreter_ser = SerializingInterpreter(
         phase=ExecutionPhase.Gamma, claims=[Claim(pattern) for pattern in pats], out=BytesIO(), claim_out=BytesIO(), proof_out=BytesIO()
     )
