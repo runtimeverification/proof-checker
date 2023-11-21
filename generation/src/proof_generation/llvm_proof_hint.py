@@ -39,21 +39,21 @@ class LLVMSideCondEvent(LLVMRewriteEvent):
 class LLVMFunctionEvent(LLVMStepEvent):
     name: str
     relative_position: str
-    args: tuple[LLVMStepEvent | kore.Pattern, ...]
+    args: tuple[Argument, ...]
 
 
 @dataclass
 class LLVMHookEvent(LLVMStepEvent):
     name: str
-    args: tuple[LLVMStepEvent | kore.Pattern, ...]
+    args: tuple[Argument, ...]
     result: kore.Pattern
 
 
 @dataclass
 class LLVMRewriteTrace:
-    pre_trace: tuple[LLVMStepEvent | kore.Pattern, ...]
+    pre_trace: tuple[Argument, ...]
     initial_config: kore.Pattern
-    trace: tuple[LLVMStepEvent | kore.Pattern, ...]
+    trace: tuple[Argument, ...]
 
     @staticmethod
     def parse(input: bytes, debug: bool = False) -> LLVMRewriteTrace:
@@ -62,6 +62,8 @@ class LLVMRewriteTrace:
         assert parser.eof()
         return ret
 
+
+Argument = LLVMStepEvent | kore.Pattern
 
 EXPECTED_HINTS_VERSION: Final = 1
 
@@ -105,7 +107,7 @@ class LLVMRewriteTraceParser:
         self.input = input
         self.pre_trace: list[LLVMStepEvent] = []
         self.init_config_pos = 0
-        self.trace: list[LLVMStepEvent | kore.Pattern] = []
+        self.trace: list[Argument] = []
 
     def read_execution_hint(self, debug: bool) -> LLVMRewriteTrace:
         # read the header
@@ -145,7 +147,7 @@ class LLVMRewriteTraceParser:
         else:
             raise ValueError(f'Unexpected input: {self.input.hex()}')
 
-    def read_event(self) -> kore.Pattern | LLVMStepEvent:
+    def read_event(self) -> Argument:
         if self.peek(self.config_sentinel):
             return self.read_config()
         else:
@@ -201,7 +203,7 @@ class LLVMRewriteTraceParser:
         self.skip_constant(self.config_sentinel)
         return self.read_tailed_term()
 
-    def read_argument(self) -> kore.Pattern | LLVMStepEvent:
+    def read_argument(self) -> Argument:
         if self.peek(self.kore_term_prefix):
             return self.read_kore()
         else:
@@ -277,7 +279,7 @@ class LLVMRewriteTraceParser:
         def dump(text: str, depth: int, end: str = '\n') -> None:
             print(f'{"  " * depth}{text}', end=end)
 
-        def dump_event(event: LLVMStepEvent | kore.Pattern, depth: int) -> None:
+        def dump_event(event: Argument, depth: int) -> None:
             if isinstance(event, LLVMRuleEvent):
                 dump(f'Rule: {event.rule_ordinal} {len(event.substitution)}', depth)
                 for v, t in event.substitution:
