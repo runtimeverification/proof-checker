@@ -49,7 +49,7 @@
                                  )
                                  (if (and (eq inst_left nil) (eq inst_right nil))
                                     nil
-                                    (if (and (eq inst_left nil) (not (eq inst_right nil)))
+                                    (if (eq inst_left nil)
                                         (implies left inst_right)
                                         (if (eq inst_right nil)
                                             (implies inst_left right)
