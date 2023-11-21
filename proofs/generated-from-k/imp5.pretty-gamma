@@ -2288,59 +2288,126 @@ Symbol ksort_SortGeneratedTopCell
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
+Symbol ksort_SortBlock
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
+	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	3: ksort_SortGeneratedTopCell
+	4: ksort_SortBlock
+Symbol ksort_SortKItem
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
+	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	3: ksort_SortGeneratedTopCell
+	4: ksort_SortBlock
+	5: ksort_SortKItem
 Symbol kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block
 Instantiate 
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
 Symbol kore_inj
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
-	5: kore_inj
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	7: kore_inj
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
-	5: kore_inj
-	6: phi0
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	7: kore_inj
+	8: phi0
 App
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
-	5: (kore_inj · phi0)
-Instantiate 0
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	7: (kore_inj · phi0)
+MetaVar 1
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	7: (kore_inj · phi0)
+	8: phi1
+App
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
+	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	3: ksort_SortGeneratedTopCell
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	7: ((kore_inj · phi0) · phi1)
+MetaVar 2
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
+	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	3: ksort_SortGeneratedTopCell
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	7: ((kore_inj · phi0) · phi1)
+	8: phi2
+App
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
+	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	3: ksort_SortGeneratedTopCell
+	4: ksort_SortBlock
+	5: ksort_SortKItem
+	6: kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()
+	7: (((kore_inj · phi0) · phi1) · phi2)
+Instantiate 0, 1, 2
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
+	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	3: ksort_SortGeneratedTopCell
+	4: kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	4: kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 	5: phi0
 Symbol kore_kseq
 	Stack:
@@ -2348,7 +2415,7 @@ Symbol kore_kseq
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	4: kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 	5: phi0
 	6: kore_kseq
 MetaVar 0
@@ -2357,7 +2424,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	4: kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 	5: phi0
 	6: kore_kseq
 	7: phi0
@@ -2367,7 +2434,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	4: kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 	5: phi0
 	6: (kore_kseq · phi0)
 MetaVar 1
@@ -2376,7 +2443,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	4: kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 	5: phi0
 	6: (kore_kseq · phi0)
 	7: phi1
@@ -2386,7 +2453,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
+	4: kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block())
 	5: phi0
 	6: ((kore_kseq · phi0) · phi1)
 Instantiate 0, 1
@@ -2395,14 +2462,14 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
+	4: (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
 Symbol kore_Lbl'-LT-'k'-GT-'
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
+	4: (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
 	5: kore_Lbl'-LT-'k'-GT-'
 MetaVar 0
 	Stack:
@@ -2410,7 +2477,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
+	4: (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
 	5: kore_Lbl'-LT-'k'-GT-'
 	6: phi0
 App
@@ -2419,7 +2486,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
+	4: (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0)
 	5: (kore_Lbl'-LT-'k'-GT-' · phi0)
 Instantiate 0
 	Stack:
@@ -2427,14 +2494,14 @@ Instantiate 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 MetaVar 1
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 Symbol kore_Lbl'-LT-'T'-GT-'
 	Stack:
@@ -2442,7 +2509,7 @@ Symbol kore_Lbl'-LT-'T'-GT-'
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: kore_Lbl'-LT-'T'-GT-'
 MetaVar 0
@@ -2451,7 +2518,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: kore_Lbl'-LT-'T'-GT-'
 	7: phi0
@@ -2461,7 +2528,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: (kore_Lbl'-LT-'T'-GT-' · phi0)
 MetaVar 1
@@ -2470,7 +2537,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: (kore_Lbl'-LT-'T'-GT-' · phi0)
 	7: phi1
@@ -2480,7 +2547,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: ((kore_Lbl'-LT-'T'-GT-' · phi0) · phi1)
 Instantiate 0, 1
@@ -2489,14 +2556,14 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
+	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 MetaVar 2
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
+	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	5: phi2
 Symbol kore_Lbl'-LT-'generatedTop'-GT-'
 	Stack:
@@ -2504,7 +2571,7 @@ Symbol kore_Lbl'-LT-'generatedTop'-GT-'
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
+	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	5: phi2
 	6: kore_Lbl'-LT-'generatedTop'-GT-'
 MetaVar 0
@@ -2513,7 +2580,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
+	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	5: phi2
 	6: kore_Lbl'-LT-'generatedTop'-GT-'
 	7: phi0
@@ -2523,7 +2590,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
+	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	5: phi2
 	6: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
 MetaVar 1
@@ -2532,7 +2599,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
+	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	5: phi2
 	6: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
 	7: phi1
@@ -2542,7 +2609,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
+	4: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	5: phi2
 	6: ((kore_Lbl'-LT-'generatedTop'-GT-' · phi0) · phi1)
 Instantiate 0, 1
@@ -2551,14 +2618,14 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 Symbol kore_Lbl'-LT-'k'-GT-'
 	Stack:
@@ -2566,7 +2633,7 @@ Symbol kore_Lbl'-LT-'k'-GT-'
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: kore_Lbl'-LT-'k'-GT-'
 MetaVar 0
@@ -2575,7 +2642,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: kore_Lbl'-LT-'k'-GT-'
 	7: phi0
@@ -2585,7 +2652,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: (kore_Lbl'-LT-'k'-GT-' · phi0)
 Instantiate 0
@@ -2594,7 +2661,7 @@ Instantiate 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'>
 MetaVar 1
 	Stack:
@@ -2602,7 +2669,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'>
 	6: phi1
 Symbol kore_Lbl'-LT-'T'-GT-'
@@ -2611,7 +2678,7 @@ Symbol kore_Lbl'-LT-'T'-GT-'
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'>
 	6: phi1
 	7: kore_Lbl'-LT-'T'-GT-'
@@ -2621,7 +2688,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'>
 	6: phi1
 	7: kore_Lbl'-LT-'T'-GT-'
@@ -2632,7 +2699,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'>
 	6: phi1
 	7: (kore_Lbl'-LT-'T'-GT-' · phi0)
@@ -2642,7 +2709,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'>
 	6: phi1
 	7: (kore_Lbl'-LT-'T'-GT-' · phi0)
@@ -2653,7 +2720,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'>
 	6: phi1
 	7: ((kore_Lbl'-LT-'T'-GT-' · phi0) · phi1)
@@ -2663,7 +2730,7 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 MetaVar 2
 	Stack:
@@ -2671,7 +2738,7 @@ MetaVar 2
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	6: phi2
 Symbol kore_Lbl'-LT-'generatedTop'-GT-'
@@ -2680,7 +2747,7 @@ Symbol kore_Lbl'-LT-'generatedTop'-GT-'
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	6: phi2
 	7: kore_Lbl'-LT-'generatedTop'-GT-'
@@ -2690,7 +2757,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	6: phi2
 	7: kore_Lbl'-LT-'generatedTop'-GT-'
@@ -2701,7 +2768,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	6: phi2
 	7: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
@@ -2711,7 +2778,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	6: phi2
 	7: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
@@ -2722,7 +2789,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'>
 	6: phi2
 	7: ((kore_Lbl'-LT-'generatedTop'-GT-' · phi0) · phi1)
@@ -2732,7 +2799,7 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 MetaVar 0
 	Stack:
@@ -2740,7 +2807,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 MetaVar 1
@@ -2749,7 +2816,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2759,7 +2826,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2770,7 +2837,7 @@ MetaVar 2
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2782,7 +2849,7 @@ Symbol kore_next
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2795,7 +2862,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2809,7 +2876,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2822,7 +2889,7 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2833,7 +2900,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2845,7 +2912,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2858,7 +2925,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2872,7 +2939,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2887,7 +2954,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2903,7 +2970,7 @@ SVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2920,7 +2987,7 @@ Mu 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2937,7 +3004,7 @@ Instantiate
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2954,7 +3021,7 @@ Implies
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2970,7 +3037,7 @@ Instantiate 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -2985,7 +3052,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3001,7 +3068,7 @@ Symbol inhabitant
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3018,7 +3085,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3036,7 +3103,7 @@ App
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3053,7 +3120,7 @@ Instantiate 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3069,7 +3136,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3086,7 +3153,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3104,7 +3171,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3123,7 +3190,7 @@ SVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3143,7 +3210,7 @@ Mu 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3163,7 +3230,7 @@ Instantiate
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3183,7 +3250,7 @@ Implies
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3202,7 +3269,7 @@ Instantiate 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3220,7 +3287,7 @@ Implies
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3237,7 +3304,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3255,7 +3322,7 @@ SVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3274,7 +3341,7 @@ Mu 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3293,7 +3360,7 @@ Instantiate
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3312,7 +3379,7 @@ Implies
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3330,7 +3397,7 @@ Instantiate 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3347,7 +3414,7 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3362,7 +3429,7 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3375,7 +3442,7 @@ MetaVar 2
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3389,7 +3456,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3404,7 +3471,7 @@ MetaVar 2
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3420,7 +3487,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3437,7 +3504,7 @@ MetaVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3455,7 +3522,7 @@ SVar 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3474,7 +3541,7 @@ Mu 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3493,7 +3560,7 @@ Instantiate
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3512,7 +3579,7 @@ Implies
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3530,7 +3597,7 @@ Instantiate 0
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3547,7 +3614,7 @@ MetaVar 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3565,7 +3632,7 @@ Implies
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3582,7 +3649,7 @@ Instantiate 0, 1
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3597,7 +3664,7 @@ Instantiate 0, 1, 2
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: phi0
 	7: phi1
@@ -3609,7 +3676,7 @@ Instantiate 0, 1, 2
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	3: ksort_SortGeneratedTopCell
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	6: (phi1 k-> ♦phi2):phi0
 Instantiate 0, 1, 2
@@ -3617,5 +3684,5 @@ Instantiate 0, 1, 2
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'s'-GT-'> kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int(0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt, 0:ksort_SortInt) </kore_Lbl'-LT-'s'-GT-'>"}]
 	2: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
-	3: (<kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'> k=> <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>):ksort_SortGeneratedTopCell
+	3: (<kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortBlock, ksort_SortKItem, kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'> k=> <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'T'-GT-'> <kore_Lbl'-LT-'k'-GT-'> phi0 </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'T'-GT-'> phi2 </kore_Lbl'-LT-'generatedTop'-GT-'>):ksort_SortGeneratedTopCell
 Publish

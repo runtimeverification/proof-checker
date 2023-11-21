@@ -1121,59 +1121,120 @@ Symbol ksort_SortGeneratedTopCell
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
+Symbol ksort_SortFoo
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: ksort_SortFoo
+Symbol ksort_SortKItem
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: ksort_SortFoo
+	4: ksort_SortKItem
 Symbol kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
 Instantiate 
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
 Symbol kore_inj
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
-	4: kore_inj
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	6: kore_inj
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
-	4: kore_inj
-	5: phi0
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	6: kore_inj
+	7: phi0
 App
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
-	4: (kore_inj · phi0)
-Instantiate 0
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	6: (kore_inj · phi0)
+MetaVar 1
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	6: (kore_inj · phi0)
+	7: phi1
+App
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	6: ((kore_inj · phi0) · phi1)
+MetaVar 2
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	6: ((kore_inj · phi0) · phi1)
+	7: phi2
+App
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: ksort_SortFoo
+	4: ksort_SortKItem
+	5: kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	6: (((kore_inj · phi0) · phi1) · phi2)
+Instantiate 0, 1, 2
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	4: phi0
 Symbol kore_kseq
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	4: phi0
 	5: kore_kseq
 MetaVar 0
@@ -1181,7 +1242,7 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	4: phi0
 	5: kore_kseq
 	6: phi0
@@ -1190,7 +1251,7 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	4: phi0
 	5: (kore_kseq · phi0)
 MetaVar 1
@@ -1198,7 +1259,7 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	4: phi0
 	5: (kore_kseq · phi0)
 	6: phi1
@@ -1207,7 +1268,7 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	4: phi0
 	5: ((kore_kseq · phi0) · phi1)
 Instantiate 0, 1
@@ -1215,20 +1276,20 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 Symbol kore_Lbl'-LT-'k'-GT-'
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 	4: kore_Lbl'-LT-'k'-GT-'
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 	4: kore_Lbl'-LT-'k'-GT-'
 	5: phi0
 App
@@ -1236,27 +1297,27 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 	4: (kore_Lbl'-LT-'k'-GT-' · phi0)
 Instantiate 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 MetaVar 1
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	4: phi1
 Symbol kore_Lbl'-LT-'generatedTop'-GT-'
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	4: phi1
 	5: kore_Lbl'-LT-'generatedTop'-GT-'
 MetaVar 0
@@ -1264,7 +1325,7 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	4: phi1
 	5: kore_Lbl'-LT-'generatedTop'-GT-'
 	6: phi0
@@ -1273,7 +1334,7 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	4: phi1
 	5: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
 MetaVar 1
@@ -1281,7 +1342,7 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	4: phi1
 	5: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
 	6: phi1
@@ -1290,7 +1351,7 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	4: phi1
 	5: ((kore_Lbl'-LT-'generatedTop'-GT-' · phi0) · phi1)
 Instantiate 0, 1
@@ -1298,68 +1359,135 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+Symbol ksort_SortFoo
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+Symbol ksort_SortKItem
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
 Symbol kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
 Instantiate 
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
 Symbol kore_inj
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
-	5: kore_inj
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	7: kore_inj
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
-	5: kore_inj
-	6: phi0
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	7: kore_inj
+	8: phi0
 App
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
-	5: (kore_inj · phi0)
-Instantiate 0
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	7: (kore_inj · phi0)
+MetaVar 1
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	7: (kore_inj · phi0)
+	8: phi1
+App
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	7: ((kore_inj · phi0) · phi1)
+MetaVar 2
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	7: ((kore_inj · phi0) · phi1)
+	8: phi2
+App
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: ksort_SortFoo
+	5: ksort_SortKItem
+	6: kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()
+	7: (((kore_inj · phi0) · phi1) · phi2)
+Instantiate 0, 1, 2
+	Stack:
+	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
+	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
+	2: ksort_SortGeneratedTopCell
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	5: phi0
 Symbol kore_kseq
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	5: phi0
 	6: kore_kseq
 MetaVar 0
@@ -1367,8 +1495,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	5: phi0
 	6: kore_kseq
 	7: phi0
@@ -1377,8 +1505,8 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	5: phi0
 	6: (kore_kseq · phi0)
 MetaVar 1
@@ -1386,8 +1514,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	5: phi0
 	6: (kore_kseq · phi0)
 	7: phi1
@@ -1396,8 +1524,8 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo())
 	5: phi0
 	6: ((kore_kseq · phi0) · phi1)
 Instantiate 0, 1
@@ -1405,23 +1533,23 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 Symbol kore_Lbl'-LT-'k'-GT-'
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 	5: kore_Lbl'-LT-'k'-GT-'
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 	5: kore_Lbl'-LT-'k'-GT-'
 	6: phi0
 App
@@ -1429,31 +1557,31 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0)
 	5: (kore_Lbl'-LT-'k'-GT-' · phi0)
 Instantiate 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 MetaVar 1
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 Symbol kore_Lbl'-LT-'generatedTop'-GT-'
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: kore_Lbl'-LT-'generatedTop'-GT-'
 MetaVar 0
@@ -1461,8 +1589,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: kore_Lbl'-LT-'generatedTop'-GT-'
 	7: phi0
@@ -1471,8 +1599,8 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
 MetaVar 1
@@ -1480,8 +1608,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: (kore_Lbl'-LT-'generatedTop'-GT-' · phi0)
 	7: phi1
@@ -1490,8 +1618,8 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'>
 	5: phi1
 	6: ((kore_Lbl'-LT-'generatedTop'-GT-' · phi0) · phi1)
 Instantiate 0, 1
@@ -1499,23 +1627,23 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 MetaVar 0
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 MetaVar 1
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 MetaVar 0
@@ -1523,8 +1651,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: phi0
@@ -1533,8 +1661,8 @@ MetaVar 2
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: phi0
@@ -1544,8 +1672,8 @@ Symbol kore_next
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: phi0
@@ -1556,8 +1684,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: phi0
@@ -1569,8 +1697,8 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: phi0
@@ -1581,8 +1709,8 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1591,8 +1719,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1602,8 +1730,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1614,8 +1742,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1627,8 +1755,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1641,8 +1769,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1656,8 +1784,8 @@ SVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1672,8 +1800,8 @@ Mu 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1688,8 +1816,8 @@ Instantiate
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1704,8 +1832,8 @@ Implies
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1719,8 +1847,8 @@ Instantiate 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1733,8 +1861,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1748,8 +1876,8 @@ Symbol inhabitant
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1764,8 +1892,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1781,8 +1909,8 @@ App
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1797,8 +1925,8 @@ Instantiate 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1812,8 +1940,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1828,8 +1956,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1845,8 +1973,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1863,8 +1991,8 @@ SVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1882,8 +2010,8 @@ Mu 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1901,8 +2029,8 @@ Instantiate
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1920,8 +2048,8 @@ Implies
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1938,8 +2066,8 @@ Instantiate 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1955,8 +2083,8 @@ Implies
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1971,8 +2099,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -1988,8 +2116,8 @@ SVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2006,8 +2134,8 @@ Mu 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2024,8 +2152,8 @@ Instantiate
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2042,8 +2170,8 @@ Implies
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2059,8 +2187,8 @@ Instantiate 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2075,8 +2203,8 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2089,8 +2217,8 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2101,8 +2229,8 @@ MetaVar 2
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2114,8 +2242,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2128,8 +2256,8 @@ MetaVar 2
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2143,8 +2271,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2159,8 +2287,8 @@ MetaVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2176,8 +2304,8 @@ SVar 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2194,8 +2322,8 @@ Mu 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2212,8 +2340,8 @@ Instantiate
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2230,8 +2358,8 @@ Implies
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2247,8 +2375,8 @@ Instantiate 0
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2263,8 +2391,8 @@ MetaVar 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2280,8 +2408,8 @@ Implies
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2296,8 +2424,8 @@ Instantiate 0, 1
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2310,8 +2438,8 @@ Instantiate 0, 1, 2
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: phi0
 	6: phi1
 	7: ♦phi2
@@ -2321,12 +2449,12 @@ Instantiate 0, 1, 2
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
 	2: ksort_SortGeneratedTopCell
-	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
-	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	3: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
+	4: <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>
 	5: (phi1 k-> ♦phi2):phi0
 Instantiate 0, 1, 2
 	Stack:
 	0: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: "<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>"}]
 	1: (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '((phi0 -> (μ X0 . X0)[{}])[{0: \'(μ X0 . X0)[{}]\'}][{}] · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'x0', 1: 'phi0'}])[{0: 'kore_dotk()'}]
-	2: (<kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'> k=> <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>):ksort_SortGeneratedTopCell
+	2: (<kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'> k=> <kore_Lbl'-LT-'generatedTop'-GT-'> <kore_Lbl'-LT-'k'-GT-'> (kore_inj(ksort_SortFoo, ksort_SortKItem, kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo()) ~> phi0) </kore_Lbl'-LT-'k'-GT-'> phi1 </kore_Lbl'-LT-'generatedTop'-GT-'>):ksort_SortGeneratedTopCell
 Publish
