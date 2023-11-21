@@ -19,8 +19,8 @@ def simple_semantics() -> LanguageSemantics:
             srt1 = mod.sort('srt1')
             srt2 = mod.sort('srt2')
 
-            mod.symbol('sym1', (), srt1)
-            mod.symbol('sym2', (), srt2, (srt1,), is_functional=True)
+            mod.symbol('sym1', srt1)
+            mod.symbol('sym2', srt2, input_sorts=(srt1,), is_functional=True)
     return semantics
 
 
@@ -138,14 +138,26 @@ def test_symbol_params() -> None:
     symbol1 = KSymbol('symbol1', (), sort1)
     assert symbol1.input_sorts == ()
     assert symbol1.sort_params == ()
+    assert symbol1.aml_symbol == Symbol('kore_symbol1')
+    assert symbol1.aml_notation == nary_app(Symbol('kore_symbol1'), 0, False)
 
     symbol2 = KSymbol('symbol2', (sort2,), sort1, (sort1, sort2))
     assert symbol2.input_sorts == (sort1, sort2)
     assert symbol2.sort_params == (sort2,)
+    assert symbol2.aml_symbol == Symbol('kore_symbol2')
+    assert symbol2.aml_notation == nary_app(Symbol('kore_symbol2'), 3, False)
 
     symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2), is_functional=True)
     assert symbol3.input_sorts == (sort1, sort2)
     assert symbol3.sort_params == (sort2, sort3)
+    assert symbol3.aml_symbol == Symbol('kore_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('kore_symbol3'), 4, False)
+
+    symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2, sort2), is_functional=True, is_cell=True)
+    assert symbol3.input_sorts == (sort1, sort2, sort2)
+    assert symbol3.sort_params == (sort2, sort3)
+    assert symbol3.aml_symbol == Symbol('kore_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('kore_symbol3'), 5, True)
 
 
 def test_module_symbols() -> None:
@@ -155,38 +167,44 @@ def test_module_symbols() -> None:
 
         # Add a symbol
         ssort = tr.sort('foo')
-        ssymbol = tr.symbol('bar', (), ssort)
+        ssymbol = tr.symbol('bar', ssort)
         assert isinstance(ssymbol, KSymbol), f'Expect a symbol object, got {str(ssort)}'
         assert ssymbol in tr.symbols, 'Expect the symbol to be in the module'
         assert len(tr.symbols) == 1, 'Expect the only symbol in the module'
 
         # It is forbidden to add symbols twice
         with raises(ValueError):
-            tr.symbol('bar', (), ssort)
+            tr.symbol('bar', ssort)
         with raises(ValueError):
-            tr.symbol('bar', (), KSort('Foo'))
+            tr.symbol('bar', KSort('Foo'))
         with raises(ValueError):
-            tr.symbol('bar', (), KSort('Foo1'), is_functional=True)
+            tr.symbol('bar', KSort('Foo1'), is_functional=True)
 
         # It is forbidden to add symbols with unknown sorts
         with raises(ValueError):
-            tr.symbol('bar', (), KSort('Foo1'))
+            tr.symbol('bar', KSort('Foo1'))
         with raises(ValueError):
-            tr.symbol('bar', (), ssort, (KSort('Foo'),), is_functional=True)
+            tr.symbol('bar', ssort, input_sorts=(KSort('Foo'),), is_functional=True)
 
         # Testing setting symbol attributes
-        fsymbol = tr.symbol('fbar', (), ssort, (ssort,), is_functional=True)
+        fsymbol = tr.symbol('fbar', ssort, input_sorts=(ssort,), is_functional=True)
         assert fsymbol in tr.symbols
         assert set(tr.symbols) == {ssymbol, fsymbol}
         assert fsymbol.is_functional
 
-        csymbol = tr.symbol('cbar', (), ssort, (ssort,), is_ctor=True)
+        csymbol = tr.symbol('cbar', ssort, input_sorts=(ssort,), is_ctor=True)
         assert csymbol in tr.symbols
         assert csymbol.is_ctor
 
-        cell_symbol = tr.symbol('cell', (), ssort, (ssort,), is_cell=True)
+        cell_symbol = tr.symbol('cell', ssort, input_sorts=(ssort,), is_cell=True)
         assert cell_symbol in tr.symbols
         assert cell_symbol.is_cell
+
+        param_sort = KSortVar('param')
+        param_symbol = tr.symbol('param', ssort, sort_params=(param_sort,), input_sorts=(param_sort,))
+        assert param_symbol in tr.symbols
+        assert param_symbol.sort_params == (param_sort,)
+        assert param_symbol.input_sorts == (param_sort,)
 
         # Testing getters for sorts and symbols
         assert trivial.get_sort('foo') == ssort
@@ -219,7 +237,7 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
         # Populate the new module
         with new_module as nm:
             added_sort = nm.sort('new_module_srt')
-            added_symbol = nm.symbol('new_module_sym', (), added_sort)
+            added_symbol = nm.symbol('new_module_sym', added_sort)
             ever_created_sorts.add(added_sort)
             ever_created_symbols.add(added_symbol)
 
@@ -250,7 +268,7 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
     newest_module = KModule('newest_module', new_module.counter)
     with newest_module as nm:
         newest_sort = nm.sort('newest_module_srt')
-        newest_symbol = nm.symbol('newest_module_sym', (), newest_sort)
+        newest_symbol = nm.symbol('newest_module_sym', newest_sort)
         ever_created_sorts.add(newest_sort)
         ever_created_symbols.add(newest_symbol)
 
