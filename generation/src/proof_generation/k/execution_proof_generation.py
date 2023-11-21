@@ -20,7 +20,6 @@ class ExecutionProofExp(proof.ProofExp):
         self._curr_config = init_config
         self.language_semantics = language_semantics
         super().__init__(notations=list(language_semantics.notations))
-        # TODO: Add Invariant: Holds a proof for `init_config =>* curr_config`
 
     @property
     def initial_configuration(self) -> Pattern:
