@@ -1,4 +1,4 @@
-!(defrec check_plugs_pos (lambda (check p idList) 
+!(defrec check_plugs_pos (lambda (check p idList)
     (if (eq idList nil)
         nil
         (if (not(check (car idList) p))

@@ -4,7 +4,7 @@
 !(load "instantiate_in_place.lurk")
 
 ;; Auxiliar functions
-!(defrec loop_to_ids_plugs 
+!(defrec loop_to_ids_plugs
    (lambda (n instructions stack ids plugs)
       (if (= n 0)
          (cons stack (cons instructions (cons ids (cons plugs nil))))
@@ -29,21 +29,21 @@
 ;; Definition: read_u8_vec_aux(buffer, size) = (vec, buffer')
 ;; Use: (read_u8_vec_aux '(3 2 1 0) 2) => ((3 2) (1 0)
 !(defrec read_u8_vec_aux
-   (lambda (buffer size) 
+   (lambda (buffer size)
            (if (eq buffer nil)
                nil
                (if (= size 0)
                    (cons nil (cons buffer nil))
                    (let ((ret (read_u8_vec_aux (cdr buffer) (- size 1))))
-                        (cons 
+                        (cons
                            (cons (car buffer) (car ret))
                            (cdr ret)))))))
 
 ;; Definition: read_u8_vec(buffer) = (vec, buffer')
 ;; Use: (read_u8_vec '(2 3 2 1 0)) => ((3 2) (1 0))
-!(def read_u8_vec 
-   (lambda (buffer) 
-      (let ((size (car buffer)) 
+!(def read_u8_vec
+   (lambda (buffer)
+      (let ((size (car buffer))
             (buffer (cdr buffer)))
            (read_u8_vec_aux buffer size))))
 
@@ -77,7 +77,7 @@
 ;; Definition: switch_case(phase, stack, memory, claims, instructions) = (stack', memory', claims', instructions')
 ;; Use: (switch_case phase stack memory claims instructions)
 ;; Ex: (switch_case '(1) '(1) '(1) '(2 3 5 7))
-!(def switch_case 
+!(def switch_case
    (lambda (phase stack memory claims instructions)
       (let ((instr_u32 (car instructions))
             (instructions (cdr instructions)))
@@ -90,7 +90,7 @@
                   (if (= instr_u32 5) ; Implication
                      (let ((pop1 (pop_stack_pattern stack))
                            (right (car pop1))
-                           
+
                            (pop2 (pop_stack_pattern (cdr pop1)))
                            (left (car pop2))
 
@@ -119,7 +119,7 @@
                                                    (instructions (cdr instructions))
                                                    (app_ctx_holes (car (read_u8_vec instructions)))
                                                    (instructions (cdr instructions))
-                                                   
+
                                                    (metavar_pat (metavar id e_fresh s_fresh positive negative app_ctx_holes))
                                                    )
 
@@ -127,7 +127,7 @@
                                                       nil ;; Error
                                                       (cons (cons (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
                                                    )
-                                             ) 
+                                             )
                                           ))
                                        (if (= instr_u32 10) ; ESubst
                                           nil
@@ -147,7 +147,7 @@
                                                                (let ((temp (pop_stack_proved stack))
                                                                      (premise2 (car temp))
                                                                      (stack (cdr temp))
-                                                                     
+
                                                                      (temp (pop_stack_proved stack))
                                                                      (premise1 (car temp))
                                                                      (stack (cdr temp))
@@ -259,7 +259,7 @@
                                                                                     )))))))))))))))))))))))))))
 
 ;; Definition: execute_instructions(buffer, stack, memory, claims, phase) = (stack', memory', claims', instructions')
-!(def execute_instructions (lambda (buffer stack memory claims phase) 
+!(def execute_instructions (lambda (buffer stack memory claims phase)
    (map (switch_case phase) stack memory claims buffer)))
 
 ;; Definition: verify(gamma_buffer, claims_buffer, proof_buffer) = bool
