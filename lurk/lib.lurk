@@ -96,7 +96,7 @@
 
                            (implication (implies left right))
                            )
-                           (cons (push_stack (Pattern_ implication) (cdr pop2)) (cons memory (cons claims (cons instructions nil))))
+                           (cons (cons (Pattern_ implication) (cdr pop2)) (cons memory (cons claims (cons instructions nil))))
                      )
                      (if (= instr_u32 6) ; Application
                         nil
@@ -125,7 +125,7 @@
 
                                                    (if (eq (pattern_well_formed metavar_pat) nil)
                                                       nil ;; Error
-                                                      (cons (push_stack (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
+                                                      (cons (cons (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
                                                    )
                                              ) 
                                           ))
@@ -134,11 +134,11 @@
                                           (if (= instr_u32 11) ; SSubst
                                              nil
                                              (if (= instr_u32 12) ; Prop1
-                                                (cons (push_stack (Proved_ prop1) stack) (cons memory (cons claims (cons instructions nil))))
+                                                (cons (cons (Proved_ prop1) stack) (cons memory (cons claims (cons instructions nil))))
                                                 (if (= instr_u32 13) ; Prop2
-                                                   (cons (push_stack (Proved_ prop2) stack) (cons memory (cons claims (cons instructions nil))))
+                                                   (cons (cons (Proved_ prop2) stack) (cons memory (cons claims (cons instructions nil))))
                                                    (if (= instr_u32 14) ; Prop3
-                                                      (cons (push_stack (Proved_ prop3) stack) (cons memory (cons claims (cons instructions nil))))
+                                                      (cons (cons (Proved_ prop3) stack) (cons memory (cons claims (cons instructions nil))))
                                                       (if (= instr_u32 15) ; Quantifier
                                                          nil
                                                          (if (= instr_u32 19) ; Existence
@@ -156,7 +156,7 @@
                                                                         nil
                                                                         (if (not (eq (get :left premise1) premise2))
                                                                            nil
-                                                                           (cons(push_stack (Proved_ (get :right premise1)) stack) (cons memory (cons claims (cons instructions nil))))
+                                                                           (cons(cons (Proved_ (get :right premise1)) stack) (cons memory (cons claims (cons instructions nil))))
                                                                         )
                                                                      )
                                                                )
@@ -182,9 +182,9 @@
                                                                            (metaterm (instantiate_internal metaterm_pattern ids plugs))
                                                                           )
                                                                           (if (eq metaterm_type 0)
-                                                                              (cons (push_stack (Pattern_ metaterm) stack) (cons memory (cons claims (cons instructions nil))))
+                                                                              (cons (cons (Pattern_ metaterm) stack) (cons memory (cons claims (cons instructions nil))))
                                                                               (if (eq metaterm_type 1)
-                                                                                 (cons (push_stack (Proved_ metaterm) stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                 (cons (cons (Proved_ metaterm) stack) (cons memory (cons claims (cons instructions nil))))
                                                                                  nil ;; Error
                                                                               )
                                                                           )
@@ -202,7 +202,7 @@
                                                                                        (let ((term (nth index memory)))
                                                                                             (if (eq term nil)
                                                                                                nil ;; Error
-                                                                                               (cons (push_stack term stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                               (cons (cons term stack) (cons memory (cons claims (cons instructions nil))))
                                                                                             )
                                                                                        )
                                                                                     )
@@ -249,7 +249,7 @@
                                                                                           (if (eq id nil)
                                                                                              nil ;; Error
                                                                                              (let ((metavar_pat (metavar_unconstrained id)))
-                                                                                                  (cons (push_stack (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                                  (cons (cons (Pattern_ metavar_pat) stack) (cons memory (cons claims (cons instructions nil))))
                                                                                              )
                                                                                           )
                                                                                     )

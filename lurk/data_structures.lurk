@@ -8,10 +8,6 @@
 ;;; Stack utilities
 ;;; ===============
 
-;; Definition: push(term, stack) = stack'
-;; Use: (push (Pattern_ '(1 2 3)) Stack) => (:stack ((:type 0 :pattern (1 2 3))))
-!(def push_stack (lambda (term stack) (cons term stack)))
-
 ;; Definition: pop(stack) = (term, stack')
 ;; Use: (pop (push (Pattern_ '(1 2 3)) Stack)) => ((:type 0 :pattern (1 2 3)) nil)
 !(def pop_stack (lambda (stack) (cons (car stack) (cdr stack))))
