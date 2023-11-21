@@ -62,8 +62,8 @@ def test_parse_proof_hint_peano() -> None:
     # 16 initialization events
     assert len(hint.pre_trace) == 16
 
-    # 618 post-initial-configuration events
-    assert len(hint.trace) == 618
+    # 718 post-initial-configuration events
+    assert len(hint.trace) == 718
 
 
 def test_parse_proof_hint_imp5() -> None:
