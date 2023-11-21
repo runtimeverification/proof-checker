@@ -265,7 +265,7 @@
          (claims (car (cdr (cdr claim))))
          (proof (execute_instructions proof_buffer stack memory claims Proof_phase))
         )
-        (if (eq (get :claims (car (cdr (cdr proof)))) nil)
+        (if (eq (car (cdr (cdr proof))) nil)
            t
            nil
         )
