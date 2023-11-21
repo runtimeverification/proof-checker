@@ -17,8 +17,8 @@ def read_proof_hint(filepath: str) -> LLVMRewriteTrace:
 def test_parse_proof_hint_single_rewrite() -> None:
     hint = read_proof_hint('single-rewrite/foo-a.single-rewrite.hints')
 
-    # 16 initialization events
-    assert len(hint.pre_trace) == 16
+    # 11 initialization events
+    assert len(hint.pre_trace) == 11
 
     # 2 post-initial-configuration events
     assert len(hint.trace) == 2
@@ -47,9 +47,9 @@ def test_parse_proof_hint_trivial() -> None:
     names = ['0_rewrites.trivial', '1_rewrite.trivial', '2_rewrites.trivial']
     hints = [read_proof_hint('trivial/' + name + '.hints') for name in names]
 
-    # 16 initialization events
+    # 11 initialization events
     for i in range(len(hints)):
-        assert len(hints[i].pre_trace) == 16
+        assert len(hints[i].pre_trace) == 11
 
     for i in range(len(hints)):
         # a pair of (rule, config) for each non-functional rewrite step
@@ -59,18 +59,18 @@ def test_parse_proof_hint_trivial() -> None:
 def test_parse_proof_hint_peano() -> None:
     hint = read_proof_hint('peano/mul_3_5.peano.hints')
 
-    # 16 initialization events
-    assert len(hint.pre_trace) == 16
+    # 11 initialization events
+    assert len(hint.pre_trace) == 11
 
-    # 718 post-initial-configuration events
-    assert len(hint.trace) == 718
+    # 361 post-initial-configuration events
+    assert len(hint.trace) == 361
 
 
 def test_parse_proof_hint_imp5() -> None:
     hint = read_proof_hint('imp5/empty.imp5.hints')
 
-    # 20 initialization events
-    assert len(hint.pre_trace) == 20
+    # 15 initialization events
+    assert len(hint.pre_trace) == 15
 
     # 2 post-initial-configuration events
     assert len(hint.trace) == 2
