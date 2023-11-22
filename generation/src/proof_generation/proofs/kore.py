@@ -4,7 +4,7 @@ import sys
 from functools import cache
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
+from proof_generation.pattern import App, Instantiate, MetaVar, Mu, Notation, SVar, Symbol
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import _and, _or, neg
 
@@ -41,8 +41,29 @@ kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '♦{1}')
 """ kore_implies(sort, pattern, pattern) """
 kore_implies = Notation('kore-implies', 3, kore_or(phi0, kore_not(phi0, phi1), phi2), '({1} k-> {2}):{0}')
 
+
+def kore_svar(name: int) -> Notation:
+    """kore_svar(name)(sort)"""
+    return Notation(f'kore-sVar_{name}', 1, _and(SVar(name), kore_top(phi0)), f'ksVar_{name}')
+
+
+def kore_mu(name: int) -> Notation:
+    """kore_mu(name)(sort, pattern)"""
+    return Notation(f'kore-mu_{name}', 2, Mu(name, phi1), f'(kμ X{name} . {{1}})')
+
+
 """ kore_rewrites(sort, left, right) """
 kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({1} k=> {2}):{0}')
+
+""" kore_rewrites_star(sort, left, right) """
+kore_rewrites_star = Notation(
+    'kore-rewrites-star',
+    3,
+    kore_implies(
+        phi0, phi1, kore_mu(0)(phi0, kore_or(phi0, MetaVar(2, s_fresh=(SVar(0),)), kore_next(phi0, kore_svar(0)(phi0))))
+    ),
+    '({1} k=>* {2}):{0}',
+)
 
 """ kore_dv(sort, value) """
 kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}')
