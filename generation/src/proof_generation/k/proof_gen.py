@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import pyk.kllvm.load  # noqa: F401
 from pyk.kore.kompiled import KompiledKore
 
-from proof_generation.k.execution_proof_generation import generate_proofs
+from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
 from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
@@ -70,13 +70,13 @@ def main(
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
-    language_definition = LanguageSemantics.from_kore_definition(kore_definition)
+    language_semantics = LanguageSemantics.from_kore_definition(kore_definition)
 
     # print('Intialize hint stream ... ')
-    hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_definition)
+    hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_semantics)
 
     print('Begin generating proofs ... ')
-    kore_def = generate_proofs(hints_iterator, language_definition)
+    kore_def = ExecutionProofExp.from_proof_hints(hints_iterator, language_semantics)
     generate_proof_file(kore_def, Path(proof_dir), Path(k_file).stem, pretty)
     print('Done!')
 
