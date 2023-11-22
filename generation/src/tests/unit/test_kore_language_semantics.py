@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from itertools import count
 
-from pytest import fixture, raises
+import pytest
 
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import (
@@ -14,12 +14,12 @@ from proof_generation.k.kore_convertion.language_semantics import (
     LanguageSemantics,
 )
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import EVar, Pattern, Symbol, phi1
+from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
 from proof_generation.proofs.kore import KORE_NOTATIONS, functional, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 
-@fixture
+@pytest.fixture
 def simple_semantics() -> LanguageSemantics:
     semantics = LanguageSemantics()
     with semantics as sem:
@@ -36,7 +36,7 @@ def simple_semantics() -> LanguageSemantics:
 def test_module_creation() -> None:
     semantics = LanguageSemantics()
     with semantics as sem:
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             sem.main_module
         assert len(sem.modules) == 0
 
@@ -71,11 +71,11 @@ def test_module_sort() -> None:
         assert len(tr.sorts) == 1
 
         # It is forbidden to add sorts twice
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.sort('trivial_s')
 
         # It is forbidden to add hooked sorts with the same names as existing sorts
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.hooked_sort('trivial_s')
 
         hookeds = tr.hooked_sort('trivial_hooked_s')
@@ -83,7 +83,7 @@ def test_module_sort() -> None:
         assert set(tr.sorts) == {ssort, hookeds}
 
         # It is forbidden to add sorts with the same names as existing hooked sorts
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.sort('trivial_hooked_s')
 
 
@@ -182,17 +182,17 @@ def test_module_symbols() -> None:
         assert len(tr.symbols) == 1, 'Expect the only symbol in the module'
 
         # It is forbidden to add symbols twice
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.symbol('bar', ssort)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.symbol('bar', KSort('Foo'))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.symbol('bar', KSort('Foo1'), is_functional=True)
 
         # It is forbidden to add symbols with unknown sorts
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.symbol('bar', KSort('Foo1'))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             tr.symbol('bar', ssort, input_sorts=(KSort('Foo'),), is_functional=True)
 
         # Testing setting symbol attributes
@@ -220,9 +220,9 @@ def test_module_symbols() -> None:
         assert trivial.get_symbol('bar') == ssymbol
 
         # Testing expected exception types
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             trivial.get_sort('unknown_sort')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             trivial.get_symbol('unknown_symbol')
 
 
@@ -302,7 +302,7 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
     assert newest_module.get_axiom(rule.ordinal) == rule
     assert simple_semantics.main_module.get_axiom(rule.ordinal) == rule
     assert simple_semantics.get_axiom(rule.ordinal) == rule
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         simple_semantics.get_axiom(rule.ordinal + 1)
 
     # Test final sets of sorts, symbols and notations
@@ -359,7 +359,7 @@ def test_collect_functional_axioms() -> None:
             assert axiom.kind == AxiomType.FunctionalSymbol
             assert axiom.pattern == functional(c)
 
-            with raises(AssertionError):
+            with pytest.raises(AssertionError):
                 # Not yet supported (At the time of writing we only
                 # support generation of functional assumptions for symbols)
                 ExecutionProofExp.collect_functional_axioms(
@@ -400,3 +400,13 @@ def test_collect_functional_axioms() -> None:
                 assert axiom.kind == AxiomType.FunctionalSymbol
             assert axioms[0].pattern == functional(a(c))
             assert axioms[1].pattern == functional(c)
+
+
+@pytest.mark.parametrize(
+    'pat, pretty_pat',
+    [
+        (functional(phi0), 'functional(phi0)'),
+    ],
+)
+def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
+    assert str(pat) == pretty_pat
