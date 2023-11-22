@@ -45,6 +45,7 @@ class LLVMFunctionEvent(LLVMStepEvent):
 @dataclass
 class LLVMHookEvent(LLVMStepEvent):
     name: str
+    relative_position: str
     args: tuple[Argument, ...]
     result: kore.Pattern
 
@@ -65,7 +66,7 @@ class LLVMRewriteTrace:
 
 Argument = LLVMStepEvent | kore.Pattern
 
-EXPECTED_HINTS_VERSION: Final = 1
+EXPECTED_HINTS_VERSION: Final = 2
 
 
 class LLVMRewriteTraceParser:
@@ -74,7 +75,7 @@ class LLVMRewriteTraceParser:
     header      ::= "HINT" <4-byte version number>
     step_event  ::= hook | function | rule | side_cond
     event       ::= step_event | config
-    hook        ::= WORD(0xAA) name argument* WORD(0xBB) kore_term
+    hook        ::= WORD(0xAA) name location argument* WORD(0xBB) kore_term
     function    ::= WORD(0xDD) name location argument* WORD(0x11)
     rule        ::= WORD(0x22) match
     side_cond   ::= WORD(0xEE) match
@@ -156,6 +157,7 @@ class LLVMRewriteTraceParser:
     def read_hook(self) -> LLVMHookEvent:
         self.skip_constant(self.hook_event_sentinel)
         name = self.read_c_string()
+        position = self.read_c_string()
 
         args = []
         while not self.end_of_arguments():
@@ -163,7 +165,7 @@ class LLVMRewriteTraceParser:
 
         self.skip_constant(self.hook_res_sentinel)
         result = self.read_kore()
-        return LLVMHookEvent(name=name, args=tuple(args), result=result)
+        return LLVMHookEvent(name=name, relative_position=position, args=tuple(args), result=result)
 
     def read_function(self) -> LLVMFunctionEvent:
         self.skip_constant(self.func_event_sentinel)
@@ -293,7 +295,7 @@ class LLVMRewriteTraceParser:
                 for arg in event.args:
                     dump_event(arg, depth + 1)
             elif isinstance(event, LLVMHookEvent):
-                dump(f'Hook: {event.name}', depth)
+                dump(f'Hook: {event.name} @ {event.relative_position}', depth)
                 for arg in event.args:
                     dump_event(arg, depth + 1)
                 dump(f'Result: {event.result if show_terms else "[kore]"}', depth + 1)
