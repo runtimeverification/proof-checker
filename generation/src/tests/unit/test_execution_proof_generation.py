@@ -175,10 +175,11 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     assert proof_expr._proof_expressions[1].conc == claim2
 
     # Test generating proofs function
-    proof_expr = proof_expr.from_proof_hints(iter(hints), semantics)
-    assert proof_expr._axioms == [hints[0].axiom.pattern, hints[1].axiom.pattern]
-    assert proof_expr._claims == [claim1, claim2]
-    assert [p.conc for p in proof_expr._proof_expressions] == [claim1, claim2]
+    generated_proof_expr = ExecutionProofExp.from_proof_hints(iter(hints), semantics)
+    assert isinstance(generated_proof_expr, ExecutionProofExp)
+    assert generated_proof_expr._axioms == [hints[0].axiom.pattern, hints[1].axiom.pattern]
+    assert generated_proof_expr._claims == [claim1, claim2]
+    assert [p.conc for p in generated_proof_expr._proof_expressions] == [claim1, claim2]
 
 
 pretty_print_testing = [
