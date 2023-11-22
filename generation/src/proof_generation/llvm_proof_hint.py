@@ -20,30 +20,41 @@ class LLVMStepEvent:
 
 
 @dataclass
-class LLVMRuleEvent(LLVMStepEvent):
+class LLVMRewriteEvent(LLVMStepEvent):
     rule_ordinal: int
     substitution: tuple[tuple[str, kore.Pattern], ...]
+
+
+@dataclass
+class LLVMRuleEvent(LLVMRewriteEvent):
+    pass
+
+
+@dataclass
+class LLVMSideCondEvent(LLVMRewriteEvent):
+    pass
 
 
 @dataclass
 class LLVMFunctionEvent(LLVMStepEvent):
     name: str
     relative_position: str
-    args: tuple[kore.Pattern, ...]  # kore term arguments only
+    args: tuple[Argument, ...]
 
 
 @dataclass
 class LLVMHookEvent(LLVMStepEvent):
     name: str
-    args: tuple[kore.Pattern, ...]  # kore term arguments only
+    relative_position: str
+    args: tuple[Argument, ...]
     result: kore.Pattern
 
 
 @dataclass
 class LLVMRewriteTrace:
-    pre_trace: tuple[LLVMStepEvent | kore.Pattern, ...]
+    pre_trace: tuple[Argument, ...]
     initial_config: kore.Pattern
-    trace: tuple[LLVMStepEvent | kore.Pattern, ...]
+    trace: tuple[Argument, ...]
 
     @staticmethod
     def parse(input: bytes, debug: bool = False) -> LLVMRewriteTrace:
@@ -53,14 +64,22 @@ class LLVMRewriteTrace:
         return ret
 
 
+Argument = LLVMStepEvent | kore.Pattern
+
+EXPECTED_HINTS_VERSION: Final = 2
+
+
 class LLVMRewriteTraceParser:
     """
-    proof_trace ::= step_event* config events*
-    step_event  ::= hook | function | rule
+    proof_trace ::= header step_event* config events*
+    header      ::= "HINT" <4-byte version number>
+    step_event  ::= hook | function | rule | side_cond
     event       ::= step_event | config
-    hook        ::= WORD(0xAA) name argument* WORD(0xBB) kore_term
+    hook        ::= WORD(0xAA) name location argument* WORD(0xBB) kore_term
     function    ::= WORD(0xDD) name location argument* WORD(0x11)
-    rule        ::= ordinal arity variable*
+    rule        ::= WORD(0x22) match
+    side_cond   ::= WORD(0xEE) match
+    match       ::= ordinal arity variable*
     config      ::= WORD(0xFF) tailed_term
     argument    ::= step_event | kore_term
     variable    ::= name tailed_term
@@ -80,124 +99,99 @@ class LLVMRewriteTraceParser:
     func_end_sentinel: Final = bytes([0x11] * 8)
     hook_event_sentinel: Final = bytes([0xAA] * 8)
     hook_res_sentinel: Final = bytes([0xBB] * 8)
-    side_condn_sentinel: Final = bytes([0xEE] * 8)
+    rule_event_sentinel: Final = bytes([0x22] * 8)
+    side_cond_event_sentinel: Final = bytes([0xEE] * 8)
     kore_term_prefix: Final = b'\x7FKORE'
     null_byte: Final = b'\x00'
 
     def __init__(self, input: bytes):
         self.input = input
-        self.trace: list[tuple[int, LLVMStepEvent | kore.Pattern]] = []
+        self.pre_trace: list[LLVMStepEvent] = []
         self.init_config_pos = 0
-        self.entry_index = 0
+        self.trace: list[Argument] = []
 
     def read_execution_hint(self, debug: bool) -> LLVMRewriteTrace:
+        # read the header
+        version = self.read_header()
+        assert version == EXPECTED_HINTS_VERSION, f'Expected version {EXPECTED_HINTS_VERSION}, found version {version}'
+
         # read the prefix trace (step events)
         while not self.peek(self.config_sentinel):
-            self.read_step_event()
+            self.pre_trace.append(self.read_step_event())
 
         # read the initial configuration
-        self.init_config_pos = len(self.trace)
+        self.init_config_pos = len(self.pre_trace)
         self.initial_config = self.read_config()
 
         # read the rest of the trace (all events)
         while not self.eof():
-            self.read_event()
-
-        return self.build_llvm_trace(debug)
-
-    def build_llvm_trace(self, debug: bool) -> LLVMRewriteTrace:
-        self.trace.sort(key=lambda e: e[0])
-        prefix = self.trace[: self.init_config_pos]
-        postfix = self.trace[self.init_config_pos + 1 :]
+            self.trace.append(self.read_event())
 
         if debug:
-            self.print_trace(prefix, postfix)
+            self.dump_trace()
 
-        pre_trace = tuple([event for (i, event) in prefix])
-        _, initial_config = self.trace[self.init_config_pos]
-        trace = tuple([event for (i, event) in postfix])
+        return LLVMRewriteTrace(tuple(self.pre_trace), self.initial_config, tuple(self.trace))
 
-        assert isinstance(initial_config, kore.Pattern)
-        return LLVMRewriteTrace(pre_trace, initial_config, trace)
+    def read_header(self) -> int:
+        self.skip_constant(b'HINT')
+        return self.read_uint(32)
 
-    def print_trace(
-        self,
-        prefix: list[tuple[int, LLVMStepEvent | kore.Pattern]],
-        postfix: list[tuple[int, LLVMStepEvent | kore.Pattern]],
-    ) -> None:
-        for i, e in prefix:
-            if isinstance(e, LLVMRuleEvent):
-                print(f'{i} rule {e.rule_ordinal}')
-            elif isinstance(e, LLVMFunctionEvent):
-                print(f'{i} function {e.name}')
-            elif isinstance(e, LLVMHookEvent):
-                print(f'{i} hook {e.name}')
-            else:
-                assert isinstance(e, kore.Pattern)
-                print(f'{i} config')
-        print(f'init config at {self.init_config_pos}')
-        for i, e in postfix:
-            if isinstance(e, LLVMRuleEvent):
-                print(f'{i} rule {e.rule_ordinal}')
-            elif isinstance(e, LLVMFunctionEvent):
-                print(f'{i} function {e.name}')
-            elif isinstance(e, LLVMHookEvent):
-                print(f'{i} hook {e.name}')
-            else:
-                assert isinstance(e, kore.Pattern)
-                print(f'{i} config')
-
-    def read_step_event(self) -> None:
+    def read_step_event(self) -> LLVMStepEvent:
         if self.peek(self.hook_event_sentinel):
-            self.read_hook()
+            return self.read_hook()
         elif self.peek(self.func_event_sentinel):
-            self.read_function()
+            return self.read_function()
+        elif self.peek(self.rule_event_sentinel):
+            return self.read_rule()
+        elif self.peek(self.side_cond_event_sentinel):
+            return self.read_side_cond()
         else:
-            self.read_rule()
+            raise ValueError(f'Unexpected input: {self.input.hex()}')
 
-    def read_event(self) -> None:
+    def read_event(self) -> Argument:
         if self.peek(self.config_sentinel):
-            self.read_config()
+            return self.read_config()
         else:
-            self.read_step_event()
+            return self.read_step_event()
 
-    def read_hook(self) -> None:
+    def read_hook(self) -> LLVMHookEvent:
         self.skip_constant(self.hook_event_sentinel)
         name = self.read_c_string()
-        saved_index = self.entry_index
-        self.entry_index += 1
+        position = self.read_c_string()
 
+        args = []
         while not self.end_of_arguments():
-            self.read_argument()
+            args.append(self.read_argument())
 
         self.skip_constant(self.hook_res_sentinel)
         result = self.read_kore()
+        return LLVMHookEvent(name=name, relative_position=position, args=tuple(args), result=result)
 
-        # TODO: add args
-        hook_event = LLVMHookEvent(name=name, args=(), result=result)
-        self.add_to_trace(saved_index, hook_event)
-
-    def read_function(self) -> None:
+    def read_function(self) -> LLVMFunctionEvent:
         self.skip_constant(self.func_event_sentinel)
         name = self.read_c_string()
         position = self.read_c_string()
-        saved_index = self.entry_index
-        self.entry_index += 1
 
+        args = []
         while not self.end_of_arguments():
-            self.read_argument()
+            args.append(self.read_argument())
 
         self.skip_constant(self.func_end_sentinel)
+        return LLVMFunctionEvent(name=name, relative_position=position, args=tuple(args))
 
-        # TODO: add args
-        func_event = LLVMFunctionEvent(name=name, relative_position=position, args=())
-        self.add_to_trace(saved_index, func_event)
+    def read_rule(self) -> LLVMRuleEvent:
+        self.skip_constant(self.rule_event_sentinel)
+        ordinal, substitution = self.read_match()
+        return LLVMRuleEvent(rule_ordinal=ordinal, substitution=substitution)
 
-    def read_rule(self) -> None:
-        ordinal = self.read_uint64()
-        arity = self.read_uint64()
-        saved_index = self.entry_index
-        self.entry_index += 1
+    def read_side_cond(self) -> LLVMSideCondEvent:
+        self.skip_constant(self.side_cond_event_sentinel)
+        ordinal, substitution = self.read_match()
+        return LLVMSideCondEvent(rule_ordinal=ordinal, substitution=substitution)
+
+    def read_match(self) -> tuple[int, tuple[tuple[str, kore.Pattern], ...]]:
+        ordinal = self.read_uint(64)
+        arity = self.read_uint(64)
 
         substitution: tuple[tuple[str, kore.Pattern], ...] = ()
         for _ in range(arity):
@@ -205,25 +199,17 @@ class LLVMRewriteTraceParser:
             target = self.read_tailed_term()
             substitution = substitution + ((variable_name, target),)
 
-        # TODO: add args
-        rule_event = LLVMRuleEvent(rule_ordinal=ordinal, substitution=substitution)
-        self.add_to_trace(saved_index, rule_event)
+        return ordinal, substitution
 
     def read_config(self) -> kore.Pattern:
         self.skip_constant(self.config_sentinel)
-        config = self.read_tailed_term()
-        self.add_to_trace(self.entry_index, config)
-        self.entry_index += 1
-        return config
+        return self.read_tailed_term()
 
-    def add_to_trace(self, index: int, event: LLVMStepEvent | kore.Pattern) -> None:
-        self.trace.append((index, event))
-
-    def read_argument(self) -> None:
+    def read_argument(self) -> Argument:
         if self.peek(self.kore_term_prefix):
-            self.read_kore()
+            return self.read_kore()
         else:
-            self.read_step_event()
+            return self.read_step_event()
 
     def read_tailed_term(self) -> kore.Pattern:
         raw_term = self.read_until(self.kore_end_sentinel)
@@ -256,12 +242,13 @@ class LLVMRewriteTraceParser:
         assert self.input[: len(constant)] == constant
         self.input = self.input[len(constant) :]
 
-    def read_uint64(self) -> int:
-        index = 8
+    def read_uint(self, size: int) -> int:
+        assert size in {32, 64}
+        little_endian = {32: '<I', 64: '<Q'}
+        index = size // 8
         raw = self.input[:index]
         self.input = self.input[index:]
-        little_endian_long_long = '<Q'
-        return struct.unpack(little_endian_long_long, raw)[0]
+        return struct.unpack(little_endian[size], raw)[0]
 
     def read_until(self, constant: bytes) -> bytes:
         index = self.input.find(constant)
@@ -286,6 +273,42 @@ class LLVMRewriteTraceParser:
 
     def end_of_arguments(self) -> bool:
         return self.peek(self.func_end_sentinel) or self.peek(self.hook_res_sentinel)
+
+    def dump_trace(
+        self,
+        show_terms: bool = False,
+    ) -> None:
+        def dump(text: str, depth: int, end: str = '\n') -> None:
+            print(f'{"  " * depth}{text}', end=end)
+
+        def dump_event(event: Argument, depth: int) -> None:
+            if isinstance(event, LLVMRuleEvent):
+                dump(f'Rule: {event.rule_ordinal} {len(event.substitution)}', depth)
+                for v, t in event.substitution:
+                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
+            elif isinstance(event, LLVMSideCondEvent):
+                dump(f'Side Condition: {event.rule_ordinal} {len(event.substitution)}', depth)
+                for v, t in event.substitution:
+                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
+            elif isinstance(event, LLVMFunctionEvent):
+                dump(f'Function: {event.name} @ {event.relative_position}', depth)
+                for arg in event.args:
+                    dump_event(arg, depth + 1)
+            elif isinstance(event, LLVMHookEvent):
+                dump(f'Hook: {event.name} @ {event.relative_position}', depth)
+                for arg in event.args:
+                    dump_event(arg, depth + 1)
+                dump(f'Result: {event.result if show_terms else "[kore]"}', depth + 1)
+            else:
+                assert isinstance(event, kore.Pattern)
+                dump(f'Config: {event if show_terms else "[kore]"}', depth)
+
+        depth = 0
+        for step_event in self.pre_trace:
+            dump_event(step_event, depth)
+        dump(f'Init config: {self.initial_config if show_terms else "[kore]"}', depth)
+        for event in self.trace:
+            dump_event(event, depth)
 
 
 # A driver for local testing
