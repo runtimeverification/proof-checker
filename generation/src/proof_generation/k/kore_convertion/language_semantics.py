@@ -297,9 +297,9 @@ class ConvertionScope:
             self._metavars[name] = MetaVar(name=len(self._metavars))
         return self._metavars[name]
 
-    def lookup_metavar(self, name: str) -> MetaVar:
-        assert name in self._metavars.keys(), f'Variable name {name} not found in meta vars dict!'
-        return self._metavars[name]
+    def lookup_evar(self, name: str) -> EVar:
+        assert name in self._evars.keys(), f'Variable name {name} not found in eVars dict!'
+        return self._evars[name]
 
 
 class LanguageSemantics(BuilderScope):
@@ -493,8 +493,7 @@ class LanguageSemantics(BuilderScope):
         substitutions = {}
         scope = self._cached_axiom_scopes[axiom_ordinal]
         for var_name, kore_pattern in subst.items():
-            # TODO: Replace it with the EVar later
-            name = scope.lookup_metavar(var_name).name
+            name = scope.lookup_evar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
 
@@ -530,9 +529,7 @@ class LanguageSemantics(BuilderScope):
 
                 return ksymbol.aml_notation(*(sort_params + arg_patterns))
             case kore.EVar(name, _):
-                # TODO: Revisit when we have sorting implemented!
-                # return scope.resolve_evar(pattern)
-                return scope.resolve_metavar(name)
+                return scope.resolve_evar(name)
             case kore.Top(sort):
                 top_sort_symbol: Pattern = self.get_sort(sort.name).aml_symbol
                 return kl.kore_top(top_sort_symbol)
