@@ -168,19 +168,21 @@ class ProofExp:
 
         return ProofThunk(proved_exp, proved.conc)
 
-    def execute_gamma_phase(self, interpreter: BasicInterpreter) -> None:
+    def execute_gamma_phase(self, interpreter: BasicInterpreter, move_into_claim: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma
         for axiom in self._axioms:
             interpreter.publish_axiom(interpreter.pattern(axiom))
         self.check_interpreting(interpreter)
-        interpreter.into_claim_phase()
+        if move_into_claim:
+            interpreter.into_claim_phase()
 
-    def execute_claims_phase(self, interpreter: BasicInterpreter) -> None:
+    def execute_claims_phase(self, interpreter: BasicInterpreter, move_into_proof: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self._claims):
             interpreter.publish_claim(interpreter.pattern(claim))
         self.check_interpreting(interpreter)
-        interpreter.into_proof_phase()
+        if move_into_proof:
+            interpreter.into_proof_phase()
 
     def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
         assert interpreter.phase == ExecutionPhase.Proof
