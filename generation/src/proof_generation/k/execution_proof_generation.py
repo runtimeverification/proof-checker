@@ -59,7 +59,7 @@ class ExecutionProofExp(proof.ProofExp):
         sort, _, _ = kl.kore_rewrites.assert_matches(rewrite_axiom)
         claim = kl.kore_rewrites(sort, hint.configuration_before, hint.configuration_after)
         self.add_claim(claim)
-
+        # The actual proof of the step claim:
         step_pf = self.load_axiom(rewrite_axiom)
         subst = hint.substitutions
         for name in subst:
@@ -69,6 +69,7 @@ class ExecutionProofExp(proof.ProofExp):
             functional_assumption = self.load_axiom(functional_pat)
             universalized = self.univ_gene(name, step_pf)
             step_pf = self.functional_subst(universalized, functional_assumption)
+        self.add_proof_expression(step_pf)
 
 
 def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics) -> ExecutionProofExp:
