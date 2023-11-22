@@ -4,6 +4,7 @@ from itertools import count
 
 import pytest
 
+import proof_generation.proofs.kore as k
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
@@ -15,7 +16,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
 )
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
-from proof_generation.proofs.kore import KORE_NOTATIONS, functional, kore_rewrites, nary_app
+from proof_generation.proofs.kore import KORE_NOTATIONS, KoreLemmas, functional, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 
@@ -405,8 +406,13 @@ def test_collect_functional_axioms() -> None:
 @pytest.mark.parametrize(
     'pat, pretty_pat',
     [
-        (functional(phi0), 'functional(phi0)'),
+        (k.ceil(phi0), '⌈ phi0 ⌉'),
+        (k.floor(phi0), '⌊ phi0 ⌋'),
+        (k.subset(phi0, phi1), '(phi0 ⊆ phi1)'),
+        (k.equals(phi0, phi1), '(phi0 = phi1)'),
+        (k.functional(phi0), 'functional(phi0)'),
     ],
 )
 def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
-    assert str(pat) == pretty_pat
+    pretty_opt = KoreLemmas().pretty_options()
+    assert pat.pretty(pretty_opt) == pretty_pat
