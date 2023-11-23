@@ -339,44 +339,38 @@ def test_collect_functional_axioms() -> None:
         with module as mod:
             sort = mod.sort('sort')
             a_symbol = mod.symbol('a', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
-            b_symbol = mod.symbol('b', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
-            c_symbol = mod.symbol('c', sort, input_sorts=(), is_functional=True, is_ctor=True)
-            d_symbol = mod.symbol('d', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
-            e_symbol = mod.symbol('e', sort, input_sorts=(sort, sort), is_functional=True, is_ctor=True)
-            f_symbol = mod.symbol('f', sort, input_sorts=(sort, sort), is_functional=True, is_ctor=True)
+            b_symbol = mod.symbol('c', sort, input_sorts=(), is_functional=True, is_ctor=True)
+            c_symbol = mod.symbol('d', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
             a = a_symbol.aml_notation
-            b_symbol.aml_notation
-            c = c_symbol.aml_symbol
-            d = d_symbol.aml_notation
-            e_symbol.aml_notation
-            f_symbol.aml_notation
+            b = b_symbol.aml_symbol
+            c = c_symbol.aml_notation
 
             axioms = ExecutionProofExp.collect_functional_axioms(
                 sem,
-                {0: c},
+                {0: b},
             )
             assert len(axioms) == 1
             axiom = axioms[0]
             assert axiom.kind == AxiomType.FunctionalSymbol
-            assert axiom.pattern == functional(c)
+            assert axiom.pattern == functional(b)
 
             with raises(AssertionError):
                 # Not yet supported (At the time of writing we only
                 # support generation of functional assumptions for symbols)
                 ExecutionProofExp.collect_functional_axioms(sem, {0: EVar(1)})
 
-            axioms = ExecutionProofExp.collect_functional_axioms(sem, {1: d(c)})
+            axioms = ExecutionProofExp.collect_functional_axioms(sem, {1: c(b)})
             assert len(axioms) == 1
             axiom = axioms[0]
             assert axiom.kind == AxiomType.FunctionalSymbol
-            assert axiom.pattern == functional(d(c))
+            assert axiom.pattern == functional(c(b))
 
-            axioms = ExecutionProofExp.collect_functional_axioms(sem, {0: a(c), 1: c})
+            axioms = ExecutionProofExp.collect_functional_axioms(sem, {0: a(b), 1: b})
             assert len(axioms) == 2
             for axiom in axioms:
                 assert axiom.kind == AxiomType.FunctionalSymbol
-            assert axioms[0].pattern == functional(a(c))
-            assert axioms[1].pattern == functional(c)
+            assert axioms[0].pattern == functional(a(b))
+            assert axioms[1].pattern == functional(b)
 
 
 @mark.parametrize(
