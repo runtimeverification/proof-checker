@@ -88,7 +88,7 @@ class ExecutionProofExp(proof.ProofExp):
     @staticmethod
     def from_proof_hints(
         hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
-    ) -> ExecutionProofExp:
+    ) -> proof.ProofExp:
         """Constructs a proof expression from a list of rewrite hints."""
         proof_expr: ExecutionProofExp | None = None
         for hint in hints:
@@ -101,5 +101,8 @@ class ExecutionProofExp(proof.ProofExp):
                 # TODO: Remove the stub
                 raise NotImplementedError('TODO: Add support for equational rules')
 
-        assert proof_expr is not None, 'The proof expression is empty, ho hints were provided.'
-        return proof_expr
+        if proof_expr is None:
+            print('WARNING: The proof expression is empty, ho hints were provided.')
+            return proof.ProofExp(notations=list(language_semantics.notations))
+        else:
+            return proof_expr
