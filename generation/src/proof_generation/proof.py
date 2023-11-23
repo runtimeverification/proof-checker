@@ -55,46 +55,54 @@ class ProofExp:
         self._proof_expressions = [] if proof_expressions is None else proof_expressions
 
     def add_axiom(self, axiom: Pattern) -> None:
-        self._axioms.append(axiom)
+        if axiom not in self._axioms:
+            self._axioms.append(axiom)
 
     def add_assumption(self, axiom: Pattern) -> None:
         self.add_axiom(axiom)
 
     def add_axioms(self, axioms: list[Pattern]) -> None:
-        self._axioms.extend(axioms)
+        for axiom in axioms:
+            self.add_axiom(axiom)
 
     def add_assumptions(self, axioms: list[Pattern]) -> None:
         self.add_axioms(axioms)
 
     def get_axioms(self) -> list[Pattern]:
-        return self._axioms
+        return list(self._axioms)  # Avoid reference leaking
 
     def add_notation(self, notation: Notation) -> None:
-        self._notations.append(notation)
+        if notation not in self._notations:
+            self._notations.append(notation)
 
     def add_notations(self, notations: list[Notation]) -> None:
-        self._notations.extend(notations)
+        for notation in notations:
+            self.add_notation(notation)
 
     def get_notations(self) -> list[Notation]:
-        return self._notations
+        return list(self._notations)  # Avoid reference leaking
 
     def add_claim(self, claim: Pattern) -> None:
+        assert claim not in self._claims
         self._claims.append(claim)
 
     def add_claims(self, claims: list[Pattern]) -> None:
-        self._claims.extend(claims)
+        for claim in claims:
+            self.add_claim(claim)
 
     def get_claims(self) -> list[Pattern]:
-        return self._claims
+        return list(self._claims)  # Avoid reference leaking
 
     def add_proof_expression(self, proof_expression: ProofThunk) -> None:
+        assert proof_expression not in self._proof_expressions
         self._proof_expressions.append(proof_expression)
 
     def add_proof_expressions(self, proof_expressions: list[ProofThunk]) -> None:
-        self._proof_expressions.extend(proof_expressions)
+        for proof_expression in proof_expressions:
+            self.add_proof_expression(proof_expression)
 
     def get_proof_expressions(self) -> list[ProofThunk]:
-        return self._proof_expressions
+        return list(self._proof_expressions)  # Avoid reference leaking
 
     # Proof Rules
     # -----------
