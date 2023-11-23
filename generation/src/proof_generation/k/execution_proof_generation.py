@@ -28,28 +28,27 @@ class ExecutionProofExp(proof.ProofExp):
         return self._init_config
 
     @staticmethod
-    def collect_functional_axioms(semantics: LanguageSemantics, hint: RewriteStepExpression) -> list[ConvertedAxiom]:
+    def collect_functional_axioms(
+        language_semantics: LanguageSemantics, substitutions: dict[int, Pattern]
+    ) -> list[ConvertedAxiom]:
         subst_axioms = []
-        for pattern in hint.substitutions.values():
+        for pattern in substitutions.values():
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
-            sym, args = kl.deconstruct_nary_application(pattern)
+            sym, _ = kl.deconstruct_nary_application(pattern)
             assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
+            # TODO: Implement resolving KSymbols and KSorts
             assert sym.name.startswith('kore_')
-            assert semantics.get_symbol(sym.name.removeprefix('kore_')).is_functional
+            assert language_semantics.get_symbol(sym.name.removeprefix('kore_')).is_functional
             converted_pattern = kl.functional(pattern)
             subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return subst_axioms
 
-    def add_assumptions_for_rewrite_step(
-        self, hint: RewriteStepExpression, language_semantics: LanguageSemantics
-    ) -> KRewritingRule:
+    def add_assumptions_for_rewrite_step(self, rule: KRewritingRule, substitutions: dict[int, Pattern]) -> None:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
-        func_axioms = ExecutionProofExp.collect_functional_axioms(language_semantics, hint)
+        func_axioms = self.collect_functional_axioms(self.language_semantics, substitutions)
         self.add_assumptions([axiom.pattern for axiom in func_axioms])
-        assert isinstance(hint.axiom, KRewritingRule)
-        self.add_axiom(hint.axiom.pattern)
-        return hint.axiom
+        self.add_axiom(rule.pattern)
 
     @property
     def current_configuration(self) -> Pattern:
@@ -69,11 +68,15 @@ class ExecutionProofExp(proof.ProofExp):
             lhs == self.current_configuration
         ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
 
-        # Add the axiom, claim and the proof
-        self._axioms.append(rule.pattern)
-        self._claims.append(instantiated_axiom)
+        # Add the axioms
+        self.add_assumptions_for_rewrite_step(rule, substitution)
+
+        # Add the claim
+        self.add_claim(instantiated_axiom)
+
+        # Add the proof
         proof = self.dynamic_inst(self.load_axiom(rule.pattern), substitution)
-        self._proof_expressions.append(proof)
+        self.add_proof_expression(proof)
         self._curr_config = rhs
         return proof
 
@@ -92,9 +95,8 @@ class ExecutionProofExp(proof.ProofExp):
             if proof_expr is None:
                 proof_expr = ExecutionProofExp(language_semantics, hint.configuration_before)
 
-            rule = proof_expr.add_assumptions_for_rewrite_step(hint, language_semantics)
-            if isinstance(rule, KRewritingRule):
-                proof_expr.rewrite_event(rule, hint.substitutions)
+            if isinstance(hint.axiom, KRewritingRule):
+                proof_expr.rewrite_event(hint.axiom, hint.substitutions)
             else:
                 # TODO: Remove the stub
                 raise NotImplementedError('TODO: Add support for equational rules')
