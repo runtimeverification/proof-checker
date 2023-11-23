@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from itertools import count
 
-from pytest import fixture, raises
+from pytest import fixture, raises, mark
 
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import (
@@ -13,8 +13,8 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSymbol,
     LanguageSemantics,
 )
-from proof_generation.pattern import EVar, Pattern, Symbol, phi1
-from proof_generation.proofs.kore import KORE_NOTATIONS, functional, kore_rewrites, nary_app
+from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
+from proof_generation.proofs.kore import KORE_NOTATIONS, kore_rewrites, nary_app, ceil, floor, subset, equals, functional, KoreLemmas
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 
@@ -340,9 +340,6 @@ def test_collect_functional_axioms() -> None:
             d = d_symbol.aml_notation
             e = e_symbol.aml_notation
             f = f_symbol.aml_notation
-            mod.rewrite_rule(kore_rewrites(sort.aml_symbol, a.definition, b.definition))
-            mod.rewrite_rule(kore_rewrites(sort.aml_symbol, e.definition, f.definition))
-            mod.rewrite_rule(kore_rewrites(sort.aml_symbol, a(phi1), b(phi1)))
 
             axioms = ExecutionProofExp.collect_functional_axioms(
                 sem,
@@ -370,3 +367,17 @@ def test_collect_functional_axioms() -> None:
                 assert axiom.kind == AxiomType.FunctionalSymbol
             assert axioms[0].pattern == functional(a(c))
             assert axioms[1].pattern == functional(c)
+
+@mark.parametrize(
+    'pat, pretty_pat',
+    [
+        (ceil(phi0), '⌈ phi0 ⌉'),
+        (floor(phi0), '⌊ phi0 ⌋'),
+        (subset(phi0, phi1), '(phi0 ⊆ phi1)'),
+        (equals(phi0, phi1), '(phi0 = phi1)'),
+        (functional(phi0), 'functional(phi0)'),
+    ],
+)
+def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
+    pretty_opt = KoreLemmas().pretty_options()
+    assert pat.pretty(pretty_opt) == pretty_pat

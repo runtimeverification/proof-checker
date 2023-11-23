@@ -177,7 +177,6 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
 
     # Test generating proofs function
     generated_proof_expr = ExecutionProofExp.from_proof_hints(iter(hints), semantics)
-    assert isinstance(generated_proof_expr, ExecutionProofExp)
     # TODO: Test other assumptions after the functional substitution is fully implemented
     assert set(generated_proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
     assert generated_proof_expr._claims == [claim1, claim2]
