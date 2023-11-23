@@ -91,7 +91,7 @@ class ExecutionProofExp(proof.ProofExp):
         return
 
     @staticmethod
-    def from_proof_hints(  # Replaced generate_proofs
+    def from_proof_hints(
         hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
     ) -> ExecutionProofExp:
         """Constructs a proof expression from a list of rewrite hints."""
