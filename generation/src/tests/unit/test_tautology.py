@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.basic_interpreter import ExecutionPhase
-from proof_generation.pattern import Implies, bot, imp, phi0, phi1, phi2
-from proof_generation.proofs.propositional import _and, _or, equiv, neg, top
+from proof_generation.pattern import Implies, _and, _or, bot, equiv, imp, neg, phi0, phi1, phi2, top
 from proof_generation.stateful_interpreter import StatefulInterpreter
 from proof_generation.tautology import (
     CFAnd,

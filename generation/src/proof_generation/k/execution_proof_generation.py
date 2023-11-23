@@ -1,53 +1,108 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
+from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
+from proof_generation.pattern import Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-    from proof_generation.pattern import Notation, Pattern
-
-ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
+    from proof_generation.pattern import Pattern
 
 
 class ExecutionProofExp(proof.ProofExp):
-    def __init__(self, notations: list[Notation]) -> None:
-        super().__init__(notations=notations)
+    def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+        self._init_config = init_config
+        self._curr_config = init_config
+        self.language_semantics = language_semantics
+        super().__init__(notations=list(language_semantics.notations))
 
-    def add_axioms(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> KRewritingRule:
+    @property
+    def initial_configuration(self) -> Pattern:
+        """Returns the initial configuration."""
+        return self._init_config
+
+    @staticmethod
+    def collect_functional_axioms(
+        language_semantics: LanguageSemantics, substitutions: dict[int, Pattern]
+    ) -> list[ConvertedAxiom]:
+        subst_axioms = []
+        for pattern in substitutions.values():
+            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+            sym, _ = kl.deconstruct_nary_application(pattern)
+            assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
+            # TODO: Implement resolving KSymbols and KSorts
+            assert sym.name.startswith('kore_')
+            assert language_semantics.get_symbol(sym.name.removeprefix('kore_')).is_functional
+            converted_pattern = kl.functional(pattern)
+            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return subst_axioms
+
+    def add_assumptions_for_rewrite_step(self, rule: KRewritingRule, substitutions: dict[int, Pattern]) -> None:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
-        language_semantics.collect_functional_axioms(hint)
-        assert isinstance(hint.axiom, KRewritingRule)
-        self._axioms.append(hint.axiom.pattern)
-        return hint.axiom
+        func_axioms = self.collect_functional_axioms(self.language_semantics, substitutions)
+        self.add_assumptions([axiom.pattern for axiom in func_axioms])
+        self.add_axiom(rule.pattern)
 
-    def prove_rewrite_step(self, claim: Pattern, axiom: Pattern, instantiations: dict[int, Pattern]) -> None:
-        """Take a single rewrite step and emit a proof for it."""
-        assert len(self._axioms) > 0, 'No axioms to prove the rewrite step'
-        self._claims.append(claim)
-        self._proof_expressions.append(self.dynamic_inst(self.load_axiom(axiom), instantiations))
+    @property
+    def current_configuration(self) -> Pattern:
+        """Returns the current configuration."""
+        return self._curr_config
 
+    def rewrite_event(self, rule: KRewritingRule, substitution: dict[int, Pattern]) -> proof.ProofThunk:
+        """Extends the proof with an additional rewrite step."""
+        # Check that the rule is krewrites
+        instantiated_axiom = rule.pattern.instantiate(substitution)
+        match = kl.kore_rewrites.assert_matches(instantiated_axiom)
+        lhs = match[1]
+        rhs = match[2]
 
-def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics) -> ExecutionProofExp:
-    proof_expression = ExecutionProofExp(list(language_semantics.notations))
-    claims = 0
-    for hint in hints:
-        axiom = proof_expression.add_axioms(hint, language_semantics)
-        assert isinstance(axiom, KRewritingRule)
-        rewrite_axiom = axiom.pattern
-        sort, _, _ = kl.kore_rewrites.assert_matches(rewrite_axiom)
-        claim = kl.kore_rewrites(sort, hint.configuration_before, hint.configuration_after)
+        # Check that the lhs matches the current configuration
+        assert (
+            lhs == self.current_configuration
+        ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
 
-        proof_expression.prove_rewrite_step(claim, rewrite_axiom, hint.substitutions)
-        claims += 1
+        # Add the axioms
+        self.add_assumptions_for_rewrite_step(rule, substitution)
 
-    print(f'Generated {claims} claims')
-    return proof_expression
+        # Add the claim
+        self.add_claim(instantiated_axiom)
+
+        # Add the proof
+        proof = self.dynamic_inst(self.load_axiom(rule.pattern), substitution)
+        self.add_proof_expression(proof)
+        self._curr_config = rhs
+        return proof
+
+    def finalize(self) -> None:
+        """Prepare proof expression for the final reachability claim"""
+        # TODO: Prove the final reachability claim
+        return
+
+    @staticmethod
+    def from_proof_hints(
+        hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
+    ) -> proof.ProofExp | ExecutionProofExp:
+        """Constructs a proof expression from a list of rewrite hints."""
+        proof_expr: ExecutionProofExp | None = None
+        for hint in hints:
+            if proof_expr is None:
+                proof_expr = ExecutionProofExp(language_semantics, hint.configuration_before)
+
+            if isinstance(hint.axiom, KRewritingRule):
+                proof_expr.rewrite_event(hint.axiom, hint.substitutions)
+            else:
+                # TODO: Remove the stub
+                raise NotImplementedError('TODO: Add support for equational rules')
+
+        if proof_expr is None:
+            print('WARNING: The proof expression is empty, ho hints were provided.')
+            return proof.ProofExp(notations=list(language_semantics.notations))
+        else:
+            return proof_expr
