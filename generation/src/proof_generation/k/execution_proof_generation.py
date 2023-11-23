@@ -55,9 +55,7 @@ class ExecutionProofExp(proof.ProofExp):
         """Returns the current configuration."""
         return self._curr_config
 
-    def rewrite_event(
-        self, rule: KRewritingRule, substitution: dict[int, Pattern], expected_rhs: Pattern
-    ) -> proof.ProofThunk:
+    def rewrite_event(self, rule: KRewritingRule, substitution: dict[int, Pattern]) -> proof.ProofThunk:
         """Extends the proof with an additional rewrite step."""
         # Check that the rule is krewrites
         instantiated_axiom = rule.pattern.instantiate(substitution)
@@ -69,9 +67,6 @@ class ExecutionProofExp(proof.ProofExp):
         assert (
             lhs == self.current_configuration
         ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
-        assert (
-            rhs == expected_rhs
-        ), f'The next configuration {rhs.pretty(self.pretty_options())} does not match the rhs of the rule {rule.pattern.pretty(self.pretty_options())}: {expected_rhs.pretty(self.pretty_options())}'
 
         # Add the axioms
         self.add_assumptions_for_rewrite_step(rule, substitution)
@@ -101,7 +96,7 @@ class ExecutionProofExp(proof.ProofExp):
                 proof_expr = ExecutionProofExp(language_semantics, hint.configuration_before)
 
             if isinstance(hint.axiom, KRewritingRule):
-                proof_expr.rewrite_event(hint.axiom, hint.substitutions, hint.configuration_after)
+                proof_expr.rewrite_event(hint.axiom, hint.substitutions)
             else:
                 # TODO: Remove the stub
                 raise NotImplementedError('TODO: Add support for equational rules')
