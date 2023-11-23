@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Notation, Pattern, SVar
 
 T = TypeVar('T')
@@ -476,10 +475,6 @@ class LanguageSemantics(BuilderScope):
             name = scope.lookup_metavar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
-
-    def collect_functional_axioms(self, hint: RewriteStepExpression) -> tuple[Pattern, ...]:
-        # TODO: TBD during the refactoring, issue # 386
-        return ()
 
     def _convert_pattern(self, scope: ConvertionScope, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""

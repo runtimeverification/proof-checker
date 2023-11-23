@@ -159,7 +159,7 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
     assert proof_expr.initial_configuration == hints[0].configuration_before
     assert proof_expr.current_configuration == hints[0].configuration_after
-    assert proof_expr._axioms == [hints[0].axiom.pattern]
+    assert hints[0].axiom.pattern in proof_expr._axioms
     assert proof_expr._claims == [claim1]
     assert len(proof_expr._proof_expressions) == 1
     assert proof_expr._proof_expressions[0].conc == claim1
@@ -169,7 +169,8 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
     assert proof_expr.initial_configuration == hints[0].configuration_before
     assert proof_expr.current_configuration == hints[1].configuration_after
-    assert proof_expr._axioms == [hints[0].axiom.pattern, hints[1].axiom.pattern]
+    # TODO: Test other assumptions after the functional substitution is fully implemented
+    assert set(proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
     assert proof_expr._claims == [claim1, claim2]
     assert len(proof_expr._proof_expressions) == 2
     assert proof_expr._proof_expressions[1].conc == claim2
@@ -177,7 +178,8 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     # Test generating proofs function
     generated_proof_expr = ExecutionProofExp.from_proof_hints(iter(hints), semantics)
     assert isinstance(generated_proof_expr, ExecutionProofExp)
-    assert generated_proof_expr._axioms == [hints[0].axiom.pattern, hints[1].axiom.pattern]
+    # TODO: Test other assumptions after the functional substitution is fully implemented
+    assert set(generated_proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
     assert generated_proof_expr._claims == [claim1, claim2]
     assert [p.conc for p in generated_proof_expr._proof_expressions] == [claim1, claim2]
 
