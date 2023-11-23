@@ -4,10 +4,17 @@ from itertools import count
 
 import pytest
 
-import proof_generation.proofs.kore as k
-from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSortVar, KSymbol, LanguageSemantics
-from proof_generation.pattern import Pattern, Symbol, phi0, phi1
-from proof_generation.proofs.kore import KORE_NOTATIONS, KoreLemmas, kore_rewrites, nary_app
+from proof_generation.k.execution_proof_generation import ExecutionProofExp
+from proof_generation.k.kore_convertion.language_semantics import (
+    AxiomType,
+    KModule,
+    KSort,
+    KSortVar,
+    KSymbol,
+    LanguageSemantics,
+)
+from proof_generation.pattern import EVar, Pattern, Symbol, phi1
+from proof_generation.proofs.kore import KORE_NOTATIONS, KoreLemmas, functional, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 
@@ -336,63 +343,33 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
 #             krule = mod.rewrite_rule(kore_rewrites(sort.aml_symbol, a.definition, b.definition))
 #             krule2 = mod.rewrite_rule(kore_rewrites(sort.aml_symbol, e.definition, f.definition))
 #             krule_phi1 = mod.rewrite_rule(kore_rewrites(sort.aml_symbol, a(phi1), b(phi1)))
-#
+
 #             axioms = ExecutionProofExp.collect_functional_axioms(
 #                 sem,
-#                 RewriteStepExpression(
-#                     a(c),
-#                     b(c),
-#                     krule,
-#                     {0: c},
-#                 ),
+#                 {0: c},
 #             )
 #             assert len(axioms) == 1
 #             axiom = axioms[0]
 #             assert axiom.kind == AxiomType.FunctionalSymbol
 #             assert axiom.pattern == functional(c)
-#
-#             with pytest.raises(AssertionError):
+
+#             with raises(AssertionError):
 #                 # Not yet supported (At the time of writing we only
 #                 # support generation of functional assumptions for symbols)
-#                 ExecutionProofExp.collect_functional_axioms(
-#                     sem,
-#                     RewriteStepExpression(
-#                         a(EVar(1)),
-#                         b(EVar(1)),
-#                         krule,
-#                         {0: EVar(1)},
-#                     ),
-#                 )
-#
-#             axioms = ExecutionProofExp.collect_functional_axioms(
-#                 sem,
-#                 RewriteStepExpression(
-#                     a(d(c)),
-#                     b(d(c)),
-#                     krule_phi1,
-#                     {1: d(c)},
-#                 ),
-#             )
+#                 ExecutionProofExp.collect_functional_axioms(sem, {0: EVar(1)})
+
+#             axioms = ExecutionProofExp.collect_functional_axioms(sem, {1: d(c)})
 #             assert len(axioms) == 1
 #             axiom = axioms[0]
 #             assert axiom.kind == AxiomType.FunctionalSymbol
 #             assert axiom.pattern == functional(d(c))
-#
-#             axioms = ExecutionProofExp.collect_functional_axioms(
-#                 sem,
-#                 RewriteStepExpression(
-#                     e(a(c), c),
-#                     f(a(c), c),
-#                     krule2,
-#                     {0: a(c), 1: c},
-#                 ),
-#             )
+
+#             axioms = ExecutionProofExp.collect_functional_axioms(sem, {0: a(c), 1: c})
 #             assert len(axioms) == 2
 #             for axiom in axioms:
 #                 assert axiom.kind == AxiomType.FunctionalSymbol
 #             assert axioms[0].pattern == functional(a(c))
 #             assert axioms[1].pattern == functional(c)
-
 
 @pytest.mark.parametrize(
     'pat, pretty_pat',
@@ -407,3 +384,4 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
 def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
     pretty_opt = KoreLemmas().pretty_options()
     assert pat.pretty(pretty_opt) == pretty_pat
+

@@ -112,6 +112,7 @@ KORE_NOTATIONS = (
     kore_implies,
     kore_rewrites,
     kore_dv,
+    kore_kseq,
     ceil,
     floor,
     subset,

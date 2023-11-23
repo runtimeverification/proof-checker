@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
+from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
 from proof_generation.pattern import Symbol
 
 if TYPE_CHECKING:
@@ -13,16 +12,25 @@ if TYPE_CHECKING:
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-    from proof_generation.pattern import Notation, Pattern
-
-ProofMethod = Callable[[proof.ProofExp], proof.ProofThunk]
+    from proof_generation.pattern import Pattern
 
 
 class ExecutionProofExp(proof.ProofExp):
-    def __init__(self, notations: list[Notation]) -> None:
-        super().__init__(notations=notations)
+    def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+        self._init_config = init_config
+        self._curr_config = init_config
+        self.language_semantics = language_semantics
+        super().__init__(notations=list(language_semantics.notations))
 
-    # TODO: Implement the 2 proof rules/lemmas below
+    @property
+    def initial_configuration(self) -> Pattern:
+        """Returns the initial configuration."""
+        return self._init_config
+
+    @property
+    def current_configuration(self) -> Pattern:
+        """Returns the current configuration."""
+        return self._curr_config
 
     def univ_gene(self, name: int, p: proof.ProofThunk) -> proof.ProofThunk:
         """
@@ -51,17 +59,23 @@ class ExecutionProofExp(proof.ProofExp):
         assert k_sym is not None
         assert k_sym.is_functional
 
-    def prove_rewrite_step(self, hint: RewriteStepExpression, language_semantics: LanguageSemantics) -> None:
-        """Take a single rewrite step and emit a proof for it."""
-        assert isinstance(hint.axiom, KRewritingRule)
-        rewrite_axiom = hint.axiom.pattern
-        self.add_axiom(rewrite_axiom)
-        sort, _, _ = kl.kore_rewrites.assert_matches(rewrite_axiom)
-        claim = kl.kore_rewrites(sort, hint.configuration_before, hint.configuration_after)
-        self.add_claim(claim)
-        # The actual proof of the step claim:
+    def rewrite_event(self, rule: KRewritingRule, substitution: dict[int, Pattern]) -> proof.ProofThunk:
+        """Extends the proof with an additional rewrite step."""
+        # Check that the rule is krewrites
+        sort, lhs, rhs = sort, _, _ = kl.kore_rewrites.assert_matches(rule.pattern)
+
+        # Check that the lhs matches the current configuration
+        # TODO: Move it to the part after the substitution
+        # assert (
+        #     lhs == self.current_configuration
+        # ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
+
+        # Add the axioms
+        self.add_axiom(rule.pattern)
+
+        # Compute the proof
         step_pf = self.load_axiom(rewrite_axiom)
-        subst = hint.substitutions
+        subst = substitution
         for name in subst:
             self.assert_functional_pattern(language_semantics, subst[name])
             functional_pat = kl.functional(subst[name])
@@ -69,15 +83,40 @@ class ExecutionProofExp(proof.ProofExp):
             functional_assumption = self.load_axiom(functional_pat)
             universalized = self.univ_gene(name, step_pf)
             step_pf = self.functional_subst(universalized, functional_assumption)
+
+        # Add claim
+        claim = step_pf.conc
+        self.add_claim(claim)
+        # TODO: Move here the assertion
+
+        # Add the proof
         self.add_proof_expression(step_pf)
+        self._curr_config = rhs
+        return step_pf
 
+    def finalize(self) -> None:
+        """Prepare proof expression for the final reachability claim"""
+        # TODO: Prove the final reachability claim
+        return
 
-def generate_proofs(hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics) -> ExecutionProofExp:
-    proof_expression = ExecutionProofExp(list(language_semantics.notations))
-    claims = 0
-    for hint in hints:
-        proof_expression.prove_rewrite_step(hint, language_semantics)
-        claims += 1
+    @staticmethod
+    def from_proof_hints(
+        hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
+    ) -> proof.ProofExp | ExecutionProofExp:
+        """Constructs a proof expression from a list of rewrite hints."""
+        proof_expr: ExecutionProofExp | None = None
+        for hint in hints:
+            if proof_expr is None:
+                proof_expr = ExecutionProofExp(language_semantics, hint.configuration_before)
 
-    print(f'Generated {claims} claims')
-    return proof_expression
+            if isinstance(hint.axiom, KRewritingRule):
+                proof_expr.rewrite_event(hint.axiom, hint.substitutions)
+            else:
+                # TODO: Remove the stub
+                raise NotImplementedError('TODO: Add support for equational rules')
+
+        if proof_expr is None:
+            print('WARNING: The proof expression is empty, ho hints were provided.')
+            return proof.ProofExp(notations=list(language_semantics.notations))
+        else:
+            return proof_expr
