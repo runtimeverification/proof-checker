@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
-import proof_generation.proofs.propositional as prop
 from proof_generation.pattern import EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
@@ -47,7 +46,6 @@ class KSort:
         return Symbol('ksort_' + self.name)
 
 
-# TODO: Remove this class
 @dataclass(frozen=True)
 class KSortVar:
     name: str
@@ -346,7 +344,7 @@ class LanguageSemantics(BuilderScope):
         symbols = self.symbols
         notations = [sym.aml_notation for sym in symbols]
 
-        return (*prop.PROPOSITIONAL_NOTATIONS, *kl.KORE_NOTATIONS, *dict.fromkeys(notations))
+        return tuple(dict.fromkeys(notations))
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""

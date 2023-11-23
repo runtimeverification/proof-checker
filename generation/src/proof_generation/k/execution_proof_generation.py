@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
+import proof_generation.proofs.substitution as subst
+from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
 from proof_generation.pattern import Symbol
 
 if TYPE_CHECKING:
@@ -15,12 +16,12 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 
-class ExecutionProofExp(proof.ProofExp):
+class ExecutionProofExp(subst.Substitution):
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
-        super().__init__(notations=list(language_semantics.notations))
+        super().__init__(notations=list(language_semantics.notations) + list(kl.KORE_NOTATIONS))
 
     @property
     def initial_configuration(self) -> Pattern:
@@ -74,10 +75,10 @@ class ExecutionProofExp(proof.ProofExp):
         self.add_axiom(rule.pattern)
 
         # Compute the proof
-        step_pf = self.load_axiom(rewrite_axiom)
+        step_pf = self.load_axiom(rule.pattern)
         subst = substitution
         for name in subst:
-            self.assert_functional_pattern(language_semantics, subst[name])
+            self.assert_functional_pattern(self.language_semantics, subst[name])
             functional_pat = kl.functional(subst[name])
             self.add_assumption(functional_pat)
             functional_assumption = self.load_axiom(functional_pat)

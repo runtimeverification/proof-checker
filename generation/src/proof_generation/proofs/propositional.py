@@ -7,7 +7,7 @@ from proof_generation.pattern import Implies, MetaVar, _and, _or, bot, equiv, ne
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.pattern import Notation, Pattern
     from proof_generation.proof import ProofThunk
 
 
@@ -23,10 +23,16 @@ def _build_subst(pats: list[Pattern]) -> dict[int, Pattern]:
 
 
 class Propositional(ProofExp):
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        axioms: list[Pattern] | None = None,
+        notations: list[Notation] | None = None,
+        claims: list[Pattern] | None = None,
+        proof_expressions: list[ProofThunk] | None = None,
+    ) -> None:
         super().__init__(
-            axioms=[],
-            notations=list(PROPOSITIONAL_NOTATIONS),
+            axioms=axioms,
+            notations=list(PROPOSITIONAL_NOTATIONS) + (notations if notations else []),
             claims=[
                 Implies(phi0, phi0),  # Reflexivity
                 top(),  # Top
@@ -38,7 +44,8 @@ class Propositional(ProofExp):
                 Implies(
                     Implies(phi0, phi1), Implies(Implies(phi1, phi2), Implies(phi0, phi2))
                 ),  # Implication Transitivity
-            ],
+            ]
+            + (claims if claims else []),
             proof_expressions=[
                 self.imp_refl(),
                 self.top_intro(),
@@ -48,7 +55,8 @@ class Propositional(ProofExp):
                 self.absurd(),
                 self.peirce_bot(),
                 self.imp_trans(),
-            ],
+            ]
+            + (proof_expressions if proof_expressions else []),
         )
 
     # Proofs

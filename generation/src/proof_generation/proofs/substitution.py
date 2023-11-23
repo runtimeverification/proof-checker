@@ -7,6 +7,7 @@ from proof_generation.pattern import EVar, Exists, Notation
 from proof_generation.proofs.propositional import Propositional, neg, phi0, top
 
 if TYPE_CHECKING:
+    from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
 
@@ -15,8 +16,14 @@ def forall(var: int) -> Notation:
 
 
 class Substitution(Propositional):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        axioms: list[Pattern] | None = None,
+        notations: list[Notation] | None = None,
+        claims: list[Pattern] | None = None,
+        proof_expressions: list[ProofThunk] | None = None,
+    ) -> None:
+        super().__init__(axioms, notations, claims, proof_expressions)
         self._notations.extend([forall(0)])
         self._claims = [forall(0)(top())]
         self._proof_expressions = [self.top_univgen()]
