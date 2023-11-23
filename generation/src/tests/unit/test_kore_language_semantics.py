@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from itertools import count
 
-from pytest import fixture, raises, mark
+from pytest import fixture, mark, raises
 
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import (
@@ -14,7 +14,17 @@ from proof_generation.k.kore_convertion.language_semantics import (
     LanguageSemantics,
 )
 from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
-from proof_generation.proofs.kore import KORE_NOTATIONS, kore_rewrites, nary_app, ceil, floor, subset, equals, functional, KoreLemmas
+from proof_generation.proofs.kore import (
+    KORE_NOTATIONS,
+    KoreLemmas,
+    ceil,
+    equals,
+    floor,
+    functional,
+    kore_rewrites,
+    nary_app,
+    subset,
+)
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 
@@ -335,11 +345,11 @@ def test_collect_functional_axioms() -> None:
             e_symbol = mod.symbol('e', sort, input_sorts=(sort, sort), is_functional=True, is_ctor=True)
             f_symbol = mod.symbol('f', sort, input_sorts=(sort, sort), is_functional=True, is_ctor=True)
             a = a_symbol.aml_notation
-            b = b_symbol.aml_notation
+            b_symbol.aml_notation
             c = c_symbol.aml_symbol
             d = d_symbol.aml_notation
-            e = e_symbol.aml_notation
-            f = f_symbol.aml_notation
+            e_symbol.aml_notation
+            f_symbol.aml_notation
 
             axioms = ExecutionProofExp.collect_functional_axioms(
                 sem,
@@ -367,6 +377,7 @@ def test_collect_functional_axioms() -> None:
                 assert axiom.kind == AxiomType.FunctionalSymbol
             assert axioms[0].pattern == functional(a(c))
             assert axioms[1].pattern == functional(c)
+
 
 @mark.parametrize(
     'pat, pretty_pat',

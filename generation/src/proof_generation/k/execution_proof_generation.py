@@ -55,7 +55,9 @@ class ExecutionProofExp(proof.ProofExp):
         """Returns the current configuration."""
         return self._curr_config
 
-    def rewrite_event(self, rule: KRewritingRule, substitution: dict[int, Pattern], expected_rhs: Pattern) -> proof.ProofThunk:
+    def rewrite_event(
+        self, rule: KRewritingRule, substitution: dict[int, Pattern], expected_rhs: Pattern
+    ) -> proof.ProofThunk:
         """Extends the proof with an additional rewrite step."""
         # Check that the rule is krewrites
         instantiated_axiom = rule.pattern.instantiate(substitution)
@@ -89,7 +91,7 @@ class ExecutionProofExp(proof.ProofExp):
         return
 
     @staticmethod
-    def from_proof_hints( # Replaced generate_proofs
+    def from_proof_hints(  # Replaced generate_proofs
         hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
     ) -> ExecutionProofExp:
         """Constructs a proof expression from a list of rewrite hints."""

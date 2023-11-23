@@ -156,7 +156,7 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
 
     # Make the first rewrite step
     assert isinstance(hints[0].axiom, KRewritingRule)
-    proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
+    proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions, hints[0].configuration_after)
     assert proof_expr.initial_configuration == hints[0].configuration_before
     assert proof_expr.current_configuration == hints[0].configuration_after
     assert hints[0].axiom.pattern in proof_expr._axioms
@@ -166,7 +166,7 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
 
     # Test the second rewrite step
     assert isinstance(hints[1].axiom, KRewritingRule)
-    proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
+    proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions, hints[1].configuration_after)
     assert proof_expr.initial_configuration == hints[0].configuration_before
     assert proof_expr.current_configuration == hints[1].configuration_after
     # TODO: Test other assumptions after the functional substitution is fully implemented
@@ -233,14 +233,14 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
 
     # First rewrite step
     assert isinstance(hints[0].axiom, KRewritingRule)
-    proved = proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
+    proved = proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions, hints[0].configuration_after)
     assert hints[0].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[0]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[1]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[0]
 
     # Second rewrite step
     assert isinstance(hints[1].axiom, KRewritingRule)
-    proved = proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
+    proved = proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions, hints[1].configuration_after)
     assert hints[1].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[1]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[2]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
