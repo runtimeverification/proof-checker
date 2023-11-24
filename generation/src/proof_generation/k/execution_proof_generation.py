@@ -6,6 +6,7 @@ import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
 from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
 from proof_generation.pattern import Symbol
+from proof_generation.proofs.definedness import functional
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -39,7 +40,7 @@ class ExecutionProofExp(proof.ProofExp):
             k_sym = language_semantics.resolve_to_ksymbol(sym)
             assert k_sym is not None
             assert k_sym.is_functional
-            converted_pattern = kl.functional(pattern)
+            converted_pattern = functional(pattern)
             subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return subst_axioms
 
