@@ -7,6 +7,7 @@ import proof_generation.proofs.kore as kl
 from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
 from proof_generation.pattern import Symbol
 from proof_generation.proofs.definedness import functional
+from proof_generation.proofs.substitution import Substitution
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
 class ExecutionProofExp(proof.ProofExp):
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+        self.subst_proofexp = Substitution()
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
