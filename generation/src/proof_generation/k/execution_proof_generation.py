@@ -21,7 +21,10 @@ class ExecutionProofExp(subst.Substitution):
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
-        super().__init__(notations=list(language_semantics.notations) + list(kl.KORE_NOTATIONS))
+
+        super().__init__(
+            notations=list(language_semantics.notations) + list(kl.KORE_NOTATIONS),
+        )
 
     @property
     def initial_configuration(self) -> Pattern:
@@ -66,29 +69,29 @@ class ExecutionProofExp(subst.Substitution):
         sort, lhs, rhs = sort, _, _ = kl.kore_rewrites.assert_matches(rule.pattern)
 
         # Check that the lhs matches the current configuration
-        # TODO: Move it to the part after the substitution
-        # assert (
-        #     lhs == self.current_configuration
-        # ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
 
         # Add the axioms
         self.add_axiom(rule.pattern)
 
         # Compute the proof
         step_pf = self.load_axiom(rule.pattern)
-        subst = substitution
-        for name in subst:
-            self.assert_functional_pattern(self.language_semantics, subst[name])
-            functional_pat = kl.functional(subst[name])
+        for name, plug in substitution.items():
+            self.assert_functional_pattern(self.language_semantics, plug)
+            functional_pat = kl.functional(plug)
             self.add_assumption(functional_pat)
             functional_assumption = self.load_axiom(functional_pat)
             universalized = self.univ_gene(name, step_pf)
             step_pf = self.functional_subst(universalized, functional_assumption)
 
         # Add claim
-        claim = step_pf.conc
+        claim = rule.pattern
+        for name, plug in substitution.items():
+            claim = claim.apply_esubst(name, plug)
         self.add_claim(claim)
-        # TODO: Move here the assertion
+
+        assert (
+            lhs == self.current_configuration
+        ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
 
         # Add the proof
         self.add_proof_expression(step_pf)
@@ -103,7 +106,7 @@ class ExecutionProofExp(subst.Substitution):
     @staticmethod
     def from_proof_hints(
         hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
-    ) -> proof.ProofExp | ExecutionProofExp:
+    ) -> proof.ProofExp:
         """Constructs a proof expression from a list of rewrite hints."""
         proof_expr: ExecutionProofExp | None = None
         for hint in hints:
