@@ -68,13 +68,13 @@ kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(
 kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}')
 
 """ kore_ceil(sort, pattern) """
-kore_ceil = Notation('kore-ceil', 3, _and(ceil(phi2), kore_top(phi1)), '⌈{1}:{2}⌉:{0}')
+kore_ceil = Notation('kore-ceil', 3, _and(ceil(phi2), kore_top(phi1)), 'k⌈ {2}:{0} ⌉:{1}')
 
 """ kore_floor(sort, pattern) """
-kore_floor = Notation('kore-floor', 3, kore_not(phi1, kore_ceil(phi0, phi1, kore_not(phi0, phi2))), '⌊{1}:{2}⌋:{0}')
+kore_floor = Notation('kore-floor', 3, kore_not(phi1, kore_ceil(phi0, phi1, kore_not(phi0, phi2))), 'k⌊ {2}:{0} ⌋:{1}')
 
 """ kore_iff(sort, left, right) """
-kore_iff = Notation('kore-iff', 3, kore_and(phi0, kore_implies(phi0, phi1, phi2), kore_implies(phi0, phi2, phi1)), '({1} k<=> {2}):{0}')
+kore_iff = Notation('kore-iff', 3, kore_and(phi0, kore_implies(phi0, phi1, phi2), kore_implies(phi0, phi2, phi1)), '({1} k<-> {2}):{0}')
 
 """ kore_equals(sort, left, right) """
 kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, phi2, phi3)), '({1} k= {2}):{0}')
