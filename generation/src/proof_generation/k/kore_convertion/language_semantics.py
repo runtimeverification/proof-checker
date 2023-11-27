@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Notation, Pattern, SVar
 
 T = TypeVar('T')
@@ -67,6 +66,12 @@ class KSymbol:
     @property
     def aml_symbol(self) -> Symbol:
         return Symbol('kore_' + self.name)
+
+    @staticmethod
+    def unwrap_kore_name(sym: Symbol) -> str | None:
+        if not sym.name.startswith('kore_'):
+            return None
+        return sym.name.removeprefix('kore_')
 
     @property
     def aml_notation(self) -> Notation:
@@ -298,16 +303,9 @@ class ConvertionScope:
 
 
 class LanguageSemantics(BuilderScope):
-    GENERATED_TOP_SYMBOL = "Lbl'-LT-'generatedTop'-GT-'"
-
     def __init__(self) -> None:
         self._imported_modules: tuple[KModule, ...] = ()
         self._cached_axiom_scopes: dict[int, ConvertionScope] = {}
-
-        # TODO: Should be removed after the refactoring
-        self._axioms_cache: dict[kore.Axiom, ConvertedAxiom] = {}
-        self._functional_symbols: set[Symbol] = set()
-        self._cell_symbols: set[str] = {self.GENERATED_TOP_SYMBOL}
 
     @property
     def modules(self) -> tuple[KModule, ...]:
@@ -470,6 +468,15 @@ class LanguageSemantics(BuilderScope):
                 continue
         raise ValueError(f'Sort {name} not found')
 
+    def resolve_to_ksymbol(self, symbol: Symbol) -> KSymbol | None:
+        kore_name = KSymbol.unwrap_kore_name(symbol)
+        if kore_name is None:
+            return None
+        try:
+            return self.get_symbol(kore_name)
+        except ValueError:
+            return None
+
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""
         scope = ConvertionScope()
@@ -483,10 +490,6 @@ class LanguageSemantics(BuilderScope):
             name = scope.lookup_metavar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
-
-    def collect_functional_axioms(self, hint: RewriteStepExpression) -> tuple[Pattern, ...]:
-        # TODO: TBD during the refactoring, issue # 386
-        return ()
 
     def _convert_pattern(self, scope: ConvertionScope, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""

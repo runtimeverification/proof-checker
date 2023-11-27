@@ -2,11 +2,29 @@ from __future__ import annotations
 
 from itertools import count
 
-from pytest import fixture, raises
+from pytest import fixture, mark, raises
 
-from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSortVar, KSymbol, LanguageSemantics
-from proof_generation.pattern import Pattern, Symbol
-from proof_generation.proofs.kore import KORE_NOTATIONS, kore_rewrites, nary_app
+from proof_generation.k.execution_proof_generation import ExecutionProofExp
+from proof_generation.k.kore_convertion.language_semantics import (
+    AxiomType,
+    KModule,
+    KSort,
+    KSortVar,
+    KSymbol,
+    LanguageSemantics,
+)
+from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
+from proof_generation.proofs.kore import (
+    KORE_NOTATIONS,
+    KoreLemmas,
+    ceil,
+    equals,
+    floor,
+    functional,
+    kore_rewrites,
+    nary_app,
+    subset,
+)
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 
@@ -312,3 +330,59 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
         *set(PROPOSITIONAL_NOTATIONS),
         *{s.aml_notation for s in ever_created_symbols},
     }
+
+
+def test_collect_functional_axioms() -> None:
+    semantics = LanguageSemantics()
+    with semantics as sem:
+        module = sem.module('test')
+        with module as mod:
+            sort = mod.sort('sort')
+            a_symbol = mod.symbol('a', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
+            b_symbol = mod.symbol('c', sort, input_sorts=(), is_functional=True, is_ctor=True)
+            c_symbol = mod.symbol('d', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
+            a = a_symbol.aml_notation
+            b = b_symbol.aml_symbol
+            c = c_symbol.aml_notation
+
+            axioms = ExecutionProofExp.collect_functional_axioms(
+                sem,
+                {0: b},
+            )
+            assert len(axioms) == 1
+            axiom = axioms[0]
+            assert axiom.kind == AxiomType.FunctionalSymbol
+            assert axiom.pattern == functional(b)
+
+            with raises(AssertionError):
+                # Not yet supported (At the time of writing we only
+                # support generation of functional assumptions for symbols)
+                ExecutionProofExp.collect_functional_axioms(sem, {0: EVar(1)})
+
+            axioms = ExecutionProofExp.collect_functional_axioms(sem, {1: c(b)})
+            assert len(axioms) == 1
+            axiom = axioms[0]
+            assert axiom.kind == AxiomType.FunctionalSymbol
+            assert axiom.pattern == functional(c(b))
+
+            axioms = ExecutionProofExp.collect_functional_axioms(sem, {0: a(b), 1: b})
+            assert len(axioms) == 2
+            for axiom in axioms:
+                assert axiom.kind == AxiomType.FunctionalSymbol
+            assert axioms[0].pattern == functional(a(b))
+            assert axioms[1].pattern == functional(b)
+
+
+@mark.parametrize(
+    'pat, pretty_pat',
+    [
+        (ceil(phi0), '⌈ phi0 ⌉'),
+        (floor(phi0), '⌊ phi0 ⌋'),
+        (subset(phi0, phi1), '(phi0 ⊆ phi1)'),
+        (equals(phi0, phi1), '(phi0 = phi1)'),
+        (functional(phi0), 'functional(phi0)'),
+    ],
+)
+def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
+    pretty_opt = KoreLemmas().pretty_options()
+    assert pat.pretty(pretty_opt) == pretty_pat
