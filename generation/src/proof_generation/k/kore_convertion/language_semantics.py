@@ -86,21 +86,45 @@ class KEquationalRule:
     ordinal: int
     pattern: Pattern
 
+    def __post_init__(self) -> None:
+        # Trigger matching assertions right after creation of the object
+        self.deconstructed
+
     @property
     def requires(self) -> Pattern:
-        raise NotImplementedError()
+        _, requires, _ = kl.kore_implies.assert_matches(self.pattern)
+        return requires
 
     @property
-    def lhs(self) -> Pattern:
-        raise NotImplementedError()
+    def left(self) -> Pattern:
+        _, left, _, _ = self.deconstructed
+        return left
 
     @property
-    def rhs(self) -> Pattern:
-        raise NotImplementedError()
+    def right(self) -> Pattern:
+        _, _, right, _ = self.deconstructed
+        return right
 
     @property
     def ensures(self) -> Pattern | None:
-        raise NotImplementedError()
+        _, _, _, ensures = self.deconstructed
+        return ensures
+
+    @property
+    def deconstructed(self) -> tuple[Pattern, Pattern, Pattern, Pattern | None]:
+        _, requires, right = kl.kore_implies.assert_matches(self.pattern)
+        if eq_match := kl.kore_equals.matches(right):
+            _, _, eq_left, eq_right = eq_match
+            ensures = None
+        else:
+            _, and_lhs, and_rhs = kl.kore_and.assert_matches(right)
+            if eq_match := kl.kore_equals.matches(and_lhs):
+                _, _, eq_left, eq_right = eq_match
+                ensures = and_rhs
+            else:
+                _, _, eq_left, eq_right = kl.kore_equals.assert_matches(and_rhs)
+                ensures = and_lhs
+        return requires, eq_left, eq_right, ensures
 
 
 class BuilderScope:
@@ -234,7 +258,7 @@ class KModule(BuilderScope):
         return symbol
 
     @builder_method
-    def equational_rewrite(self, pattern: Pattern) -> KEquationalRule:
+    def equational_rule(self, pattern: Pattern) -> KEquationalRule:
         ordinal = next(self.counter)
         axiom = KEquationalRule(ordinal, pattern)
         self._axioms[ordinal] = axiom
@@ -383,12 +407,17 @@ class LanguageSemantics(BuilderScope):
 
     @staticmethod
     def is_rewrite_rule(pattern: kore.Pattern) -> bool:
-        return isinstance(pattern, kore.Rewrites) and isinstance(pattern.left, kore.And) and isinstance(pattern.right, kore.And)
+        return (
+            isinstance(pattern, kore.Rewrites)
+            and isinstance(pattern.left, kore.And)
+            and isinstance(pattern.right, kore.And)
+        )
 
     @staticmethod
     def is_equational_rule(pattern: kore.Pattern) -> bool:
         return isinstance(pattern, kore.Implies) and (
-            isinstance(pattern.right, kore.Equals) or (isinstance(pattern.right, kore.And) and any(isinstance(op, kore.Equals) for op in pattern.right.ops))
+            isinstance(pattern.right, kore.Equals)
+            or (isinstance(pattern.right, kore.And) and any(isinstance(op, kore.Equals) for op in pattern.right.ops))
         )
 
     @staticmethod
@@ -454,15 +483,15 @@ class LanguageSemantics(BuilderScope):
                                 )
                                 scope = ConvertionScope()
                                 parsed_pattern = semantics._convert_pattern(scope, preprocessed_pattern)
-                                axiom = module.rewrite_rule(parsed_pattern)
-                                semantics._cached_axiom_scopes[axiom.ordinal] = scope
+                                rw_axiom = module.rewrite_rule(parsed_pattern)
+                                semantics._cached_axiom_scopes[rw_axiom.ordinal] = scope
                             elif semantics.is_equational_rule(sentence.pattern):
                                 pattern = sentence.pattern
 
                                 scope = ConvertionScope()
                                 parsed_pattern = semantics._convert_pattern(scope, pattern)
-                                axiom = module.equational_rewrite(parsed_pattern)
-                                semantics._cached_axiom_scopes[axiom.ordinal] = scope
+                                eq_axiom = module.equational_rule(parsed_pattern)
+                                semantics._cached_axiom_scopes[eq_axiom.ordinal] = scope
                             else:
                                 next(module.counter)
             return semantics
