@@ -137,16 +137,22 @@ KORE_NOTATIONS = (
     kore_implies,
     kore_rewrites,
     kore_dv,
-    kore_kseq,
     kore_ceil,
     kore_floor,
-    kore_equals,
     kore_iff,
+    kore_equals,
+    kore_kseq,
+    kore_in,
+    kore_bottom,
+    kore_exists,
     ceil,
     floor,
     subset,
     equals,
     functional,
+    included,
+    in_sort,
+    sorted_exists
 )
 
 
