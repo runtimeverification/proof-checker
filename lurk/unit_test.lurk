@@ -9,3 +9,6 @@
 !(load "test_wellformedness_positive.lurk")
 
 !(load "test_publish.lurk")
+
+!(load "test_apply_esubst.lurk")
+!(load "test_apply_ssubst.lurk")
