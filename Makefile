@@ -19,7 +19,7 @@ clean-kgenerated-proofs:
 
 clean-python:
 	rm -rf generation/dist generation/.coverage generation/cov-* generation/.mypy_cache generation/.pytest_cache
-	find -type d -name __pycache__ -prune -exec rm -rf {} \;
+	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 update-snapshots:
 	rsync -u $(wildcard .build/proofs/*.*) proofs
