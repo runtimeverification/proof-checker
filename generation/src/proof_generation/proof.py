@@ -166,7 +166,6 @@ class ProofExp:
 
         return ProofThunk(proved_exp, axiom_term)
 
-    # TODO: Remove this method once it's no longer used. It is dangerous
     def load_axiom_by_index(self, i: int) -> ProofThunk:
         return self.load_axiom(self._axioms[i])
 
