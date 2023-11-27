@@ -7,3 +7,5 @@
 !(load "test_positivity.lurk")
 !(load "test_wellformedness_fresh.lurk")
 !(load "test_wellformedness_positive.lurk")
+
+!(load "test_publish.lurk")
