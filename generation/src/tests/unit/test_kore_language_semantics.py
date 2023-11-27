@@ -14,7 +14,16 @@ from proof_generation.k.kore_convertion.language_semantics import (
     LanguageSemantics,
 )
 from proof_generation.pattern import EVar, Pattern, Symbol, phi1
-from proof_generation.proofs.kore import KORE_NOTATIONS, functional, kore_rewrites, nary_app
+from proof_generation.proofs.kore import (
+    KORE_NOTATIONS,
+    functional,
+    kore_and,
+    kore_equals,
+    kore_implies,
+    kore_rewrites,
+    kore_top,
+    nary_app,
+)
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 
@@ -29,6 +38,8 @@ def simple_semantics() -> LanguageSemantics:
 
             mod.symbol('sym1', srt1)
             mod.symbol('sym2', srt2, input_sorts=(srt1,), is_functional=True)
+            mod.symbol('sym3', srt1)
+            mod.symbol('sym4', srt2)
     return semantics
 
 
@@ -225,6 +236,81 @@ def test_module_symbols() -> None:
             trivial.get_symbol('unknown_symbol')
 
 
+def test_rules(simple_semantics: LanguageSemantics) -> None:
+    sort1 = simple_semantics.get_sort('srt1')
+    sort2 = simple_semantics.get_sort('srt2')
+    sym1 = simple_semantics.get_symbol('sym1')  # Sort1
+    sym2 = simple_semantics.get_symbol('sym2')  # Sort1 -> Sort2
+    sym3 = simple_semantics.get_symbol('sym3')  # Srot1
+    sym4 = simple_semantics.get_symbol('sym4')  # Sort2
+    mod = simple_semantics.main_module
+
+    rewrite_pattern = kore_rewrites(sort1.aml_symbol, sym1.aml_symbol, sym2.aml_notation(sym1.aml_symbol))
+    requires1 = kore_top(sort1.aml_symbol)
+    left1 = sym1.aml_notation()
+    right1 = sym3.aml_notation()
+    ensures1 = None
+    requires2 = kore_top(sort1.aml_symbol)
+    left2 = sym4.aml_notation()
+    right2 = sym2.aml_notation(sym1.aml_symbol)
+    ensures2 = kore_top(sort2.aml_symbol)
+    equation_pattern1 = kore_implies(
+        sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, right1)
+    )
+    equation_pattern2 = kore_implies(
+        sort2.aml_symbol,
+        requires2,
+        kore_and(sort2.aml_symbol, kore_equals(sort2.aml_symbol, sort2.aml_symbol, left2, right2), ensures2),
+    )
+    equation_pattern3 = kore_implies(
+        sort2.aml_symbol,
+        requires2,
+        kore_and(sort2.aml_symbol, ensures2, kore_equals(sort2.aml_symbol, sort2.aml_symbol, right2, left2)),
+    )
+
+    with mod as m:
+        rewrite_rule = m.rewrite_rule(rewrite_pattern)
+        equation_rule1 = m.equational_rule(equation_pattern1)
+        equation_rule2 = m.equational_rule(equation_pattern2)
+        equation_rule3 = m.equational_rule(equation_pattern3)
+
+    # Check ordinals
+    assert rewrite_rule.ordinal == 0
+    assert equation_rule1.ordinal == 1
+    assert equation_rule2.ordinal == 2
+    assert equation_rule3.ordinal == 3
+
+    # Check decomposition of patterns
+    assert rewrite_rule.pattern == rewrite_pattern
+    assert equation_rule1.requires == requires1
+    assert equation_rule1.left == left1
+    assert equation_rule1.right == right1
+    assert equation_rule1.ensures == ensures1
+    assert equation_rule2.requires == requires2
+    assert equation_rule2.left == left2
+    assert equation_rule2.right == right2
+    assert equation_rule2.ensures == ensures2
+    assert equation_rule3.requires == requires2
+    assert equation_rule3.left == right2
+    assert equation_rule3.right == left2
+    assert equation_rule3.ensures == ensures2
+
+    # Check that the rule is imported
+    assert rewrite_rule.pattern == rewrite_pattern
+    assert simple_semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert mod.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+
+    # Equational rule
+    assert rewrite_rule.pattern == rewrite_pattern
+    assert simple_semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert mod.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+
+    # Another equational rule
+    assert rewrite_rule.pattern == rewrite_pattern
+    assert simple_semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert mod.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+
+
 def test_module_import(simple_semantics: LanguageSemantics) -> None:
     ever_created_sorts = set(simple_semantics.main_module.sorts)
     ever_created_symbols = set(simple_semantics.main_module.symbols)
@@ -280,9 +366,18 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
         ever_created_sorts.add(newest_sort)
         ever_created_symbols.add(newest_symbol)
 
-        pattern = kore_rewrites(newest_sort.aml_symbol, newest_symbol.aml_symbol, newest_symbol.aml_symbol)
-        assert isinstance(pattern, Pattern)
-        rule = nm.rewrite_rule(pattern)
+        pattern_rewrite = kore_rewrites(newest_sort.aml_symbol, newest_symbol.aml_symbol, newest_symbol.aml_symbol)
+        pattern_equals = kore_implies(
+            newest_sort.aml_symbol,
+            kore_top(newest_sort.aml_symbol),
+            kore_equals(
+                newest_sort.aml_symbol, newest_sort.aml_symbol, newest_symbol.aml_symbol, newest_symbol.aml_symbol
+            ),
+        )
+
+        assert isinstance(pattern_rewrite, Pattern)
+        rule_rw = nm.rewrite_rule(pattern_rewrite)
+        rule_eq = nm.equational_rule(pattern_equals)
     with simple_semantics.main_module as mm:
         mm.import_module(newest_module)
 
@@ -298,11 +393,14 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
     assert simple_semantics.main_module.get_sort('newest_module_srt') is newest_sort
 
     # Test accessing added rule
-    assert newest_module.get_axiom(rule.ordinal) == rule
-    assert simple_semantics.main_module.get_axiom(rule.ordinal) == rule
-    assert simple_semantics.get_axiom(rule.ordinal) == rule
+    assert newest_module.get_axiom(rule_rw.ordinal) == rule_rw
+    assert newest_module.get_axiom(rule_eq.ordinal) == rule_eq
+    assert simple_semantics.main_module.get_axiom(rule_rw.ordinal) == rule_rw
+    assert simple_semantics.main_module.get_axiom(rule_eq.ordinal) == rule_eq
+    assert simple_semantics.get_axiom(rule_eq.ordinal) == rule_eq
+    assert simple_semantics.get_axiom(rule_rw.ordinal) == rule_rw
     with raises(ValueError):
-        simple_semantics.get_axiom(rule.ordinal + 1)
+        simple_semantics.get_axiom(rule_rw.ordinal + 10)
 
     # Test final sets of sorts, symbols and notations
     assert set(simple_semantics.sorts) == ever_created_sorts
