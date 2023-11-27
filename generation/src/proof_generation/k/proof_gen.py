@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
-from pyk.kore.kompiled import KompiledKore
+from pyk.kore.parser import KoreParser
+from pyk.utils import check_file_path
 
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
@@ -20,7 +21,10 @@ if TYPE_CHECKING:
 
 def get_kompiled_definition(output_dir: Path) -> Definition:
     print(f'Parsing the definition in the Kore format in {output_dir}')
-    return KompiledKore(output_dir).definition
+    kore_file = output_dir / 'definition.kore'
+    check_file_path(kore_file)
+    kore_text = kore_file.read_text()
+    return KoreParser(kore_text).definition()
 
 
 def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
