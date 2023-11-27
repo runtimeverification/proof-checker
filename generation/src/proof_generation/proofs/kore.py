@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol, _and, _or, neg
 from proof_generation.proof import ProofExp
+from proof_generation.proofs.definedness import Definedness
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -99,6 +100,8 @@ KORE_NOTATIONS = (
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
         super().__init__(notations=list(KORE_NOTATIONS))
+        self.definedness = Definedness()
+        self.add_notations(self.definedness.get_notations())
 
 
 if __name__ == '__main__':

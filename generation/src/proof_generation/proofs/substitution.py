@@ -25,10 +25,10 @@ func_subst_axiom = Implies(
 class Substitution(ProofExp):
     def __init__(self) -> None:
         super().__init__(
-            axioms = [func_subst_axiom],
-            notations = [forall(0)],
-            claims = [forall(0)(top())],
-            )
+            axioms=[func_subst_axiom],
+            notations=[forall(0)],
+            claims=[forall(0)(top())],
+        )
         self.prop = Propositional()
         self.add_proof_expression(self.top_univgen())
         self._notations.extend(self.prop.get_notations())

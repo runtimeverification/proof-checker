@@ -125,7 +125,6 @@ class BasicInterpreter:
                 assert isinstance(subpattern, MetaVar | ESubst | SSubst)
                 return self.esubst(var.name, subpattern, self.pattern(plug))
 
-
         raise NotImplementedError(f'{type(p)}')
 
     def prop1(self) -> Proved:
