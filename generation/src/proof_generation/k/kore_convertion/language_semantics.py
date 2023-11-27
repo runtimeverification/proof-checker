@@ -67,6 +67,12 @@ class KSymbol:
     def aml_symbol(self) -> Symbol:
         return Symbol('kore_' + self.name)
 
+    @staticmethod
+    def unwrap_kore_name(sym: Symbol) -> str | None:
+        if not sym.name.startswith('kore_'):
+            return None
+        return sym.name.removeprefix('kore_')
+
     @property
     def aml_notation(self) -> Notation:
         if self.name == 'kseq':
@@ -535,6 +541,15 @@ class LanguageSemantics(BuilderScope):
             except ValueError:
                 continue
         raise ValueError(f'Sort {name} not found')
+
+    def resolve_to_ksymbol(self, symbol: Symbol) -> KSymbol | None:
+        kore_name = KSymbol.unwrap_kore_name(symbol)
+        if kore_name is None:
+            return None
+        try:
+            return self.get_symbol(kore_name)
+        except ValueError:
+            return None
 
     def convert_pattern(self, pattern: kore.Pattern) -> Pattern:
         """Convert the given pattern to the pattern in the new format."""

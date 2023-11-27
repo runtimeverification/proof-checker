@@ -36,9 +36,9 @@ class ExecutionProofExp(proof.ProofExp):
             # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
             sym, _ = kl.deconstruct_nary_application(pattern)
             assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
-            # TODO: Implement resolving KSymbols and KSorts
-            assert sym.name.startswith('kore_')
-            assert language_semantics.get_symbol(sym.name.removeprefix('kore_')).is_functional
+            k_sym = language_semantics.resolve_to_ksymbol(sym)
+            assert k_sym is not None
+            assert k_sym.is_functional
             converted_pattern = kl.functional(pattern)
             subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
         return subst_axioms
@@ -46,7 +46,7 @@ class ExecutionProofExp(proof.ProofExp):
     def add_assumptions_for_rewrite_step(self, rule: KRewritingRule, substitutions: dict[int, Pattern]) -> None:
         """Add axioms to the definition."""
         # TODO: We don't use them until the substitutions are implemented
-        func_axioms = self.collect_functional_axioms(self.language_semantics, substitutions)
+        func_axioms = ExecutionProofExp.collect_functional_axioms(self.language_semantics, substitutions)
         self.add_assumptions([axiom.pattern for axiom in func_axioms])
         self.add_axiom(rule.pattern)
 
@@ -88,7 +88,7 @@ class ExecutionProofExp(proof.ProofExp):
     @staticmethod
     def from_proof_hints(
         hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
-    ) -> proof.ProofExp | ExecutionProofExp:
+    ) -> proof.ProofExp:
         """Constructs a proof expression from a list of rewrite hints."""
         proof_expr: ExecutionProofExp | None = None
         for hint in hints:
