@@ -15,10 +15,10 @@ from proof_generation.pattern import (
     Symbol,
     _and,
     _or,
+    bot,
     equiv,
     neg,
     top,
-    bot
 )
 from proof_generation.proof import ProofExp
 
@@ -54,10 +54,10 @@ kore_top = Notation('kore-top', 1, App(inhabitant_symbol, phi0), 'k⊤:{0}')
 kore_not = Notation('kore-not', 2, _and(neg(phi1), kore_top(phi0)), '(k¬{1}):{0}')
 
 """ kore_and(sort, pattern, pattern) """
-kore_and = Notation('kore-and', 3, _and(phi1, phi2), '({1} k⋀ {2})')
+kore_and = Notation('kore-and', 3, _and(phi1, phi2), '({1} k⋀ {2}):{0}')
 
 """ kore_or(sort, pattern, pattern) """
-kore_or = Notation('kore-or', 3, _or(phi1, phi2), '({1} k⋁ {2})')
+kore_or = Notation('kore-or', 3, _or(phi1, phi2), '({1} k⋁ {2}):{0}')
 
 """ kore_next(sort, pattern) """
 kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '♦{1}')
@@ -78,23 +78,28 @@ kore_ceil = Notation('kore-ceil', 3, _and(ceil(phi2), kore_top(phi1)), 'k⌈ {2}
 kore_floor = Notation('kore-floor', 3, kore_not(phi1, kore_ceil(phi0, phi1, kore_not(phi0, phi2))), 'k⌊ {2}:{0} ⌋:{1}')
 
 """ kore_iff(sort, left, right) """
-kore_iff = Notation('kore-iff', 3, kore_and(phi0, kore_implies(phi0, phi1, phi2), kore_implies(phi0, phi2, phi1)), '({1} k<-> {2}):{0}')
+kore_iff = Notation(
+    'kore-iff', 3, kore_and(phi0, kore_implies(phi0, phi1, phi2), kore_implies(phi0, phi2, phi1)), '({1} k<-> {2}):{0}'
+)
 
-""" kore_equals(sort, left, right) """
+""" kore_equals(inner_sort, outer_sort, left, right) """
 kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, phi2, phi3)), '({1}:{0} k= {2}:{0}):{1}')
 
 # TODO: Add support for multiple apps of kseq without brackets
 """ kore_kseq(left, right) """
 kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({0} ~> {1})')
 
-""" kore_in(sort, outer_sort, left, right) """
+""" kore_in(inner_sort, outer_sort, left, right) """
 kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k∈ {3}:{0}):{1}')
 
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥:{0}')
 
-""" kore_exists(evar_sort, outer_sort, evar, pattern) """
-kore_exists = Notation('kore-exists', 4, _and(sorted_exists(phi2, phi0, phi3), App(inhabitant_symbol, phi1)), '( k∃ {3}:{0}. {3}):{1}')
+""" kore_exists(inner_sort, outer_sort, evar, pattern) """
+kore_exists = Notation(
+    'kore-exists', 4, _and(sorted_exists(phi2, phi0, phi3), App(inhabitant_symbol, phi1)), '( k∃ {3}:{0}. {3}):{1}'
+)
+
 
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
 # Note that @cache is required here as we have to return the same objects for the same arguments for notation comparisons
@@ -152,7 +157,7 @@ KORE_NOTATIONS = (
     functional,
     included,
     in_sort,
-    sorted_exists
+    sorted_exists,
 )
 
 
