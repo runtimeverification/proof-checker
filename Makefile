@@ -131,13 +131,13 @@ cov: cov-all
 cov-%: TEST_ARGS += --cov=proof_generation --no-cov-on-fail --cov-branch --cov-report=term
 
 cov-all: TEST_ARGS += --cov-report=html:cov-all-html $(COV_ARGS)
-cov-all: test-all
+cov-all: test-python
 
 cov-unit: TEST_ARGS += --cov-report=html:cov-unit-html $(COV_ARGS)
-cov-unit: test-unit
+cov-unit: test-unit-python
 
 cov-integration: TEST_ARGS += --cov-report=html:cov-integration-html $(COV_ARGS)
-cov-integration: test-integration
+cov-integration: test-integration-python
 
 
 # Checks and formatting
