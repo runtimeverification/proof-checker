@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from proof_generation.basic_interpreter import BasicInterpreter
     from proof_generation.metamath.parser import Database
 
-BENCHMARK_LOCATION = 'mm-benchmarks'
+BENCHMARK_LOCATION = 'generation/mm-benchmarks'
 
 
 @pytest.fixture
