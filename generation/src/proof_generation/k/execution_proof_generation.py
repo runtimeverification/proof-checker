@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-import proof_generation.proofs.substitution as subst
 from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
-from proof_generation.pattern import Symbol
+from proof_generation.pattern import EVar, Symbol
+from proof_generation.proofs.definedness import functional
+from proof_generation.proofs.substitution import Substitution
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -16,15 +17,16 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 
-class ExecutionProofExp(subst.Substitution):
+class ExecutionProofExp(proof.ProofExp):
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+        self.subst_proofexp = Substitution()
+        self.kore_lemmas = kl.KoreLemmas()
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
-
-        super().__init__(
-            notations=list(language_semantics.notations) + list(kl.KORE_NOTATIONS),
-        )
+        super().__init__(notations=list(language_semantics.notations))
+        self.add_notations(self.subst_proofexp.get_notations())
+        self.add_notations(self.kore_lemmas.get_notations())
 
     @property
     def initial_configuration(self) -> Pattern:
@@ -35,24 +37,6 @@ class ExecutionProofExp(subst.Substitution):
     def current_configuration(self) -> Pattern:
         """Returns the current configuration."""
         return self._curr_config
-
-    def univ_gene(self, name: int, p: proof.ProofThunk) -> proof.ProofThunk:
-        """
-               phi
-        ------------------
-          forall x . phi
-        """
-        raise NotImplementedError
-
-    # The axiom version of this should also be provable for concrete patterns
-    # but we don't worry about this for now
-    def functional_subst(self, univ_pf: proof.ProofThunk, func_pf: proof.ProofThunk) -> proof.ProofThunk:
-        """
-          forall x . phi       functional(rho)
-        ----------------------------------------
-                    phi[rho / x]
-        """
-        raise NotImplementedError
 
     @staticmethod
     def assert_functional_pattern(semantics: LanguageSemantics, pattern: Pattern) -> None:
@@ -77,11 +61,11 @@ class ExecutionProofExp(subst.Substitution):
         step_pf = self.load_axiom(rule.pattern)
         for name, plug in substitution.items():
             self.assert_functional_pattern(self.language_semantics, plug)
-            functional_pat = kl.functional(plug)
+            functional_pat = functional(plug)
             self.add_assumption(functional_pat)
             functional_assumption = self.load_axiom(functional_pat)
-            universalized = self.univ_gene(name, step_pf)
-            step_pf = self.functional_subst(universalized, functional_assumption)
+            universalized = self.subst_proofexp.universal_gen(step_pf, EVar(name))
+            step_pf = self.subst_proofexp.functional_subst(functional_assumption, universalized)
 
         # Add claim
         claim = rule.pattern

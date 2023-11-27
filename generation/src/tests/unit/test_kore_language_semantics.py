@@ -5,26 +5,10 @@ from itertools import count
 import pytest
 
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
-from proof_generation.k.kore_convertion.language_semantics import (
-    AxiomType,
-    KModule,
-    KSort,
-    KSortVar,
-    KSymbol,
-    LanguageSemantics,
-)
+from proof_generation.k.kore_convertion.language_semantics import KModule, KSort, KSortVar, KSymbol, LanguageSemantics
 from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
-from proof_generation.proofs.kore import (
-    KORE_NOTATIONS,
-    KoreLemmas,
-    ceil,
-    equals,
-    floor,
-    functional,
-    kore_rewrites,
-    nary_app,
-    subset,
-)
+from proof_generation.proofs.definedness import ceil, equals, floor, functional, subset
+from proof_generation.proofs.kore import KORE_NOTATIONS, KoreLemmas, kore_rewrites, nary_app
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
 

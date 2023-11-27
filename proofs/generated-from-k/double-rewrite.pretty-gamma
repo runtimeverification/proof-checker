@@ -371,30 +371,14 @@ Instantiate 0
 	2: phi0
 	3: (0 <-> 1)
 	4: ¬phi0
-SVar 0
+Symbol definedness
 	Stack:
 	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
 	1: x0
 	2: phi0
 	3: (0 <-> 1)
 	4: ¬phi0
-	5: X0
-Mu 0
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ⊥
+	5: definedness
 MetaVar 0
 	Stack:
 	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
@@ -402,71 +386,7 @@ MetaVar 0
 	2: phi0
 	3: (0 <-> 1)
 	4: ¬phi0
-	5: ⊥
-	6: phi0
-SVar 0
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ⊥
-	6: phi0
-	7: X0
-Mu 0
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ⊥
-	6: phi0
-	7: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ⊥
-	6: phi0
-	7: ⊥
-Implies
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ⊥
-	6: (phi0 -> ⊥)
-Instantiate 0
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ¬⊥
-Instantiate 
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ⊤
-MetaVar 0
-	Stack:
-	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
-	1: x0
-	2: phi0
-	3: (0 <-> 1)
-	4: ¬phi0
-	5: ⊤
+	5: definedness
 	6: phi0
 App
 	Stack:
@@ -475,7 +395,7 @@ App
 	2: phi0
 	3: (0 <-> 1)
 	4: ¬phi0
-	5: (⊤ · phi0)
+	5: (definedness · phi0)
 Instantiate 0
 	Stack:
 	0: <kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>
@@ -913,7 +833,7 @@ Instantiate 0
 	3: phi0
 	4: (0 <-> 1)
 	5: ¬phi0
-SVar 0
+Symbol definedness
 	Stack:
 	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
 	1: kore_dotk()
@@ -921,25 +841,7 @@ SVar 0
 	3: phi0
 	4: (0 <-> 1)
 	5: ¬phi0
-	6: X0
-Mu 0
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ⊥
+	6: definedness
 MetaVar 0
 	Stack:
 	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
@@ -948,78 +850,7 @@ MetaVar 0
 	3: phi0
 	4: (0 <-> 1)
 	5: ¬phi0
-	6: ⊥
-	7: phi0
-SVar 0
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ⊥
-	7: phi0
-	8: X0
-Mu 0
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ⊥
-	7: phi0
-	8: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ⊥
-	7: phi0
-	8: ⊥
-Implies
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ⊥
-	7: (phi0 -> ⊥)
-Instantiate 0
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ¬⊥
-Instantiate 
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ⊤
-MetaVar 0
-	Stack:
-	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
-	1: kore_dotk()
-	2: x0
-	3: phi0
-	4: (0 <-> 1)
-	5: ¬phi0
-	6: ⊤
+	6: definedness
 	7: phi0
 App
 	Stack:
@@ -1029,7 +860,7 @@ App
 	3: phi0
 	4: (0 <-> 1)
 	5: ¬phi0
-	6: (⊤ · phi0)
+	6: (definedness · phi0)
 Instantiate 0
 	Stack:
 	0: functional(<kore_Lbl'-LT-'generatedCounter'-GT-'> 0:ksort_SortInt </kore_Lbl'-LT-'generatedCounter'-GT-'>)
