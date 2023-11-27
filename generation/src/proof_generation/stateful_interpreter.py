@@ -103,7 +103,7 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def esubst(self, evar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
-        *self.stack, expected_plug, expected_pattern = self.stack
+        *self.stack, expected_pattern, expected_plug = self.stack
         assert expected_pattern == pattern
         assert expected_plug == plug
         ret = super().esubst(evar_id, pattern, plug)
@@ -111,7 +111,7 @@ class StatefulInterpreter(BasicInterpreter):
         return ret
 
     def ssubst(self, svar_id: int, pattern: MetaVar | ESubst | SSubst, plug: Pattern) -> Pattern:
-        *self.stack, expected_plug, expected_pattern = self.stack
+        *self.stack, expected_pattern, expected_plug = self.stack
         assert expected_pattern == pattern
         assert expected_plug == plug
         ret = super().ssubst(svar_id, pattern, plug)

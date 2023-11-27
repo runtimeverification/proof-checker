@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 class SmallTheory(ProofExp):
     def __init__(self) -> None:
+        super().__init__()
         self.prop = Propositional()
         symbol0_implies_symbol1 = Implies(Symbol('s0'), Symbol('s1'))
         symbol1_implies_symbol2 = Implies(Symbol('s1'), Symbol('s2'))
