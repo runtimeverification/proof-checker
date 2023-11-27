@@ -9,7 +9,7 @@ from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions, SVar, Symbol
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions, SVar, Symbol, phi0
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proof import ProofExp, ProofThunk, Proved
 from proof_generation.proofs.propositional import Propositional
@@ -167,6 +167,7 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
         [MetaVar(0), MetaVar(1)],
         [Symbol('a')],
         [MetaVar(1, e_fresh=(EVar(0), EVar(1)), s_fresh=(SVar(1),))],
+        [ESubst(phi0, EVar(0), EVar(1))],
     ],
 )
 def test_interpreter_proof_state(pats: list[Pattern]) -> None:

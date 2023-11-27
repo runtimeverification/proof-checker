@@ -119,6 +119,12 @@ class BasicInterpreter:
                 for inst in subst.values():
                     self.pattern(inst)
                 return self.instantiate_pattern(self.pattern(subpattern), subst)
+            case ESubst(subpattern, var, plug):
+                assert isinstance(var, EVar)
+                subpattern = self.pattern(subpattern)
+                assert isinstance(subpattern, MetaVar | ESubst | SSubst)
+                plug = self.pattern(plug)
+                return self.esubst(var.name, subpattern, plug)
 
         raise NotImplementedError(f'{type(p)}')
 
