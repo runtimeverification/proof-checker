@@ -3,7 +3,7 @@
 
 ;; Atomic cases
 !(assert (eq (apply_ssubst (evar 0) 0 (symbol 1)) (evar 0)))
-!(assert (eq (apply_ssubst (evar 0) 0 (evar 2)) (evar 0)))
+!(assert (eq (apply_ssubst (evar 0) 1 (evar 2)) (evar 0)))
 !(assert (eq (apply_ssubst (svar 0) 0 (symbol 0)) (symbol 0)))
 !(assert (eq (apply_ssubst (svar 1) 0 (evar 0)) (svar 1)))
 !(assert (eq (apply_ssubst (symbol 0) 0 (symbol 1)) (symbol 0)))
