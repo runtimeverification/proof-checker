@@ -301,6 +301,7 @@ class Exists(Pattern):
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         if evar_id == self.var:
             return self
+        assert plug.evar_is_fresh(self.var)
         return Exists(self.var, self.subpattern.apply_esubst(evar_id, plug))
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
@@ -343,6 +344,7 @@ class Mu(Pattern):
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         if svar_id == self.var:
             return self
+        # TODO: Make sure that the substitution is avoiding capture of self.var
         return Mu(self.var, self.subpattern.apply_ssubst(svar_id, plug))
 
     def pretty(self, opts: PrettyOptions) -> str:
