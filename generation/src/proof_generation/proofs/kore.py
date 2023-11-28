@@ -57,10 +57,10 @@ kore_top = Notation('kore-top', 1, App(inhabitant_symbol, phi0), 'k⊤:{0}')
 kore_not = Notation('kore-not', 2, _and(neg(phi1), kore_top(phi0)), '(k¬{1}):{0}')
 
 """ kore_and(sort, pattern, pattern) """
-kore_and = Notation('kore-and', 3, _and(phi1, phi2), '({1} k⋀ {2}):{0}')
+kore_and = Notation('kore-and', 3, _and(phi1, phi2), '({1} k⋀ {2})')
 
 """ kore_or(sort, pattern, pattern) """
-kore_or = Notation('kore-or', 3, _or(phi1, phi2), '({1} k⋁ {2}):{0}')
+kore_or = Notation('kore-or', 3, _or(phi1, phi2), '({1} k⋁ {2})')
 
 """ kore_next(sort, pattern) """
 kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '♦{1}')
@@ -96,14 +96,14 @@ kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({
 kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k⊆ {3}:{0}):{1}')
 
 """ kore_bottom(sort) """
-kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥:{0}')
+kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
 
 @cache
 def kore_exists(var: int) -> Notation:
     """kore_exists(inner_sort, outer_sort, pattern)"""
     return Notation(
-        'kore-exists', 3, _and(sorted_exists(var)(phi1, phi2), App(inhabitant_symbol, phi0)), '( k∃ {var}:{1}. {2}):{0}'
+        'kore-exists', 3, _and(sorted_exists(var)(phi0, phi2), App(inhabitant_symbol, phi1)), '( k∃ {var}:{0} . {2}):{1}'
     )
 
 
