@@ -38,15 +38,12 @@ def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
         raise AssertionError(f'Kompiled directory {path} does not exist.')
 
 
-def generate_proof_file(proof_gen: ProofExp, output_dir: Path, file_name: str, pretty: bool = False) -> None:
+def generate_proof_file(proof_gen: ProofExp, output_dir: Path, slice_name: str, pretty: bool = False) -> None:
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
     mode = 'pretty' if pretty else 'binary'
-    proof_gen.main(['', mode, str(output_dir), file_name])
-
-
-HINTS_DIR_PATH = 'proof-hints'
+    proof_gen.main(['', mode, str(output_dir), slice_name])
 
 
 def read_proof_hint(filepath: str) -> LLVMRewriteTrace:
@@ -81,7 +78,8 @@ def main(
 
     print('Begin generating proofs ... ')
     kore_def = ExecutionProofExp.from_proof_hints(hints_iterator, language_semantics)
-    generate_proof_file(kore_def, Path(proof_dir), Path(k_file).stem, pretty)
+    slice_name = Path(hints_file).stem + '.' + Path(k_file).stem
+    generate_proof_file(kore_def, Path(proof_dir), slice_name, pretty)
     print('Done!')
 
 
