@@ -24,7 +24,7 @@ clean-python:
 update-snapshots:
 	rsync -u $(wildcard .build/proofs/*.*) proofs
 	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
-	rsync -u $(wildcard .build/proofs/generated-from-k/*.*) proofs/generated-from-k
+	rsync -u $(wildcard .build/proofs/generated-from-k/*/*.*) proofs/generated-from-k
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs clean-python
 
@@ -200,7 +200,7 @@ EXECUTION_HINTS=$(addsuffix .hints, $(patsubst generation/k-benchmarks%,.build/p
 generate-hints: $(EXECUTION_HINTS)
 
 clean-hints:
-	rm -Rf .build/proof-hints/*
+	rm -rf .build/proof-hints/*
 
 .PHONY: generate-hints clean-hints
 
@@ -216,7 +216,7 @@ test-integration: generate-hints test-integration-python
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
 TRANSLATED_PROOFS=$(wildcard proofs/translated/*.ml-proof)
-TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*.ml-proof)
+TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*/*.ml-proof)
 
 
 # Proof conversion checking
@@ -246,11 +246,21 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 # ------------------------
 
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
-# We assume that there is only one hint file per benchmark
-proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/%-kompiled/timestamp proofs/generated-from-k/%.ml-proof
-	@HINTS_FILE=$$(ls -1 .build/proof-hints/$*/*.hints | head -n 1); \
-	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
-	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
+
+.SECONDEXPANSION:
+module=$(patsubst %/,%, $(dir $*))
+proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints proofs/generated-from-k/%.ml-proof
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
+	              generation/k-benchmarks/$(dir $*)$(module).k \
+				  .build/proof-hints/$*.hints \
+				  .build/kompiled-definitions/$(module)-kompiled \
+				  --proof-dir proofs/generated-from-k/$(dir $*)
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
+	              generation/k-benchmarks/$(dir $*)$(module).k \
+				  .build/proof-hints/$*.hints \
+				  .build/kompiled-definitions/$(module)-kompiled \
+				  --proof-dir proofs/generated-from-k/$(dir $*) \
+				  --pretty
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
@@ -259,14 +269,22 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 
 # Checking proof generation for K
 # -------------------------------
-# We assume that there is only one hint file per benchmark
-.build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
-	HINTS_FILE=$$(ls -1 .build/proof-hints/$*/*.hints | head -n 1); \
-	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
+.SECONDEXPANSION:
+module=$(patsubst %/,%, $(dir $*))
+.build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
+	              generation/k-benchmarks/$(dir $*)$(module).k \
+				  .build/proof-hints/$*.hints \
+				  .build/kompiled-definitions/$(module)-kompiled \
+				  --proof-dir .build/proofs/generated-from-k/$(dir $*)
 
-.build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
-	HINTS_FILE=$$(ls -1 .build/proof-hints/$*/*.hints | head -n 1); \
-	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
+.build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
+	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
+	              generation/k-benchmarks/$(dir $*)$(module).k \
+				  .build/proof-hints/$*.hints \
+				  .build/kompiled-definitions/$(module)-kompiled \
+				  --proof-dir .build/proofs/generated-from-k/$(dir $*) \
+				  --pretty
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
 proofs/generated-from-k/%.ml-proof.kgen: .build/proofs/generated-from-k/%.ml-proof .build/proofs/generated-from-k/%.pretty-proof

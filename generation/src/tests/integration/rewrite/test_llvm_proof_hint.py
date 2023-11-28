@@ -6,7 +6,7 @@ import pyk.kore.syntax as kore
 
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace, LLVMRuleEvent
 
-HINTS_DIR_PATH = 'generation/proof-hints'
+HINTS_DIR_PATH = '.build/proof-hints'
 
 
 def read_proof_hint(filepath: str) -> LLVMRewriteTrace:
