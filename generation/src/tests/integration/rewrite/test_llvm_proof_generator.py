@@ -18,9 +18,9 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 
-HINTS_DIR = 'proof-hints'
-K_BENCHMARKS_DIR = 'k-benchmarks'
-KOMPILED_DIR = '../.build/kompiled-definitions'
+HINTS_DIR = '.build/proof-hints'
+K_BENCHMARKS_DIR = 'generation/k-benchmarks'
+KOMPILED_DIR = '.build/kompiled-definitions'
 
 
 def get_k_cell_top_symbol(term: Pattern) -> Pattern:
