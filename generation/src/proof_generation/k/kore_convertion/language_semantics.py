@@ -92,15 +92,39 @@ class KEquationalRule:
     ordinal: int
     pattern: Pattern
 
-    def __post_init__(self) -> None:
-        # Add more computed attributes
-        requires, eq_left, eq_right, ensures = self.deconstruct()
-        object.__setattr__(self, 'requires', requires)
-        object.__setattr__(self, 'left', eq_left)
-        object.__setattr__(self, 'right', eq_right)
-        object.__setattr__(self, 'ensures', ensures)
+    # We need thse constants for adding computed attributes
+    REQUIRES_HIDDEN_ATTR = '_requires'
+    ENSURES_HIDDEN_ATTR = '_ensures'
+    LEFT_HIDDEN_ATTR = '_left'
+    RIGHT_HIDDEN_ATTR = '_right'
 
-    def deconstruct(self) -> tuple[Pattern, Pattern, Pattern, Pattern | None]:
+    def __post_init__(self) -> None:
+        # Compute new attributes from the inout data and save them to the frozen object
+        requires, eq_left, eq_right, ensures = self._deconstruct()
+        object.__setattr__(self, KEquationalRule.REQUIRES_HIDDEN_ATTR, requires)
+        object.__setattr__(self, KEquationalRule.LEFT_HIDDEN_ATTR, eq_left)
+        object.__setattr__(self, KEquationalRule.RIGHT_HIDDEN_ATTR, eq_right)
+        object.__setattr__(self, KEquationalRule.ENSURES_HIDDEN_ATTR, ensures)
+
+    # The typechecker requires these properties to be defined,
+    # adding properties by setattr only does not work
+    @property
+    def requires(self) -> Pattern:
+        return getattr(self, KEquationalRule.REQUIRES_HIDDEN_ATTR)
+
+    @property
+    def left(self) -> Pattern:
+        return getattr(self, KEquationalRule.LEFT_HIDDEN_ATTR)
+
+    @property
+    def right(self) -> Pattern:
+        return getattr(self, KEquationalRule.RIGHT_HIDDEN_ATTR)
+
+    @property
+    def ensures(self) -> Pattern | None:
+        return getattr(self, KEquationalRule.ENSURES_HIDDEN_ATTR)
+
+    def _deconstruct(self) -> tuple[Pattern, Pattern, Pattern, Pattern | None]:
         _, requires, right = kl.kore_implies.assert_matches(self.pattern)
         if eq_match := kl.kore_equals.matches(right):
             _, _, eq_left, eq_right = eq_match
