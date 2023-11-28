@@ -330,8 +330,10 @@ def test_collect_functional_axioms() -> None:
             b = b_symbol.aml_symbol
             c = c_symbol.aml_notation
             d = d_symbol.aml_notation
-            single_evar_krule = kore_rewrites(sort.aml_symbol, EVar(0), EVar(0))
-            double_evar_krule = kore_rewrites(sort.aml_symbol, d(EVar(0), EVar(1)), d(EVar(0), EVar(1)))
+            single_evar_krule = mod.rewrite_rule(kore_rewrites(sort.aml_symbol, EVar(0), EVar(0)))
+            double_evar_krule = mod.rewrite_rule(
+                kore_rewrites(sort.aml_symbol, d(EVar(0), EVar(1)), d(EVar(0), EVar(1)))
+            )
 
             b_pe = ExecutionProofExp(sem, b)
             b_pe.rewrite_event(

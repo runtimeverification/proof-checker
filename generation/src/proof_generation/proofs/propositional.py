@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implies, MetaVar, _and, _or, bot, equiv, neg, phi0, phi1, phi2, top
+from proof_generation.pattern import Implies, MetaVar, _and, _or, bot, equiv, match_single, neg, phi0, phi1, phi2, top
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -485,6 +485,20 @@ class Propositional(ProofExp):
         """
         p, q = _and.assert_matches(pq_pf.conc)
         return self.modus_ponens(self.and_r_imp(p, q), pq_pf)
+
+    def imp_match_l(self, h: ProofThunk, p: Pattern) -> ProofThunk:
+        a, b = Implies.extract(h.conc)
+        subst = match_single(a, p, {})
+        assert subst is not None
+        actual_subst: dict[int, Pattern] = subst
+        return self.dynamic_inst(h, actual_subst)
+
+    def imp_match_r(self, h: ProofThunk, p: Pattern) -> ProofThunk:
+        a, b = Implies.extract(h.conc)
+        subst = match_single(b, p, {})
+        assert subst is not None
+        actual_subst: dict[int, Pattern] = subst
+        return self.dynamic_inst(h, actual_subst)
 
 
 if __name__ == '__main__':
