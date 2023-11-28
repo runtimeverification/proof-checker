@@ -281,7 +281,7 @@ class LLVMRewriteTraceParser:
         def dump(text: str, depth: int, end: str = '\n') -> None:
             print(f'{"  " * depth}{text}', end=end)
 
-        def dump_event(event: Argument, depth: int) -> None:
+        def dump_event(event: Argument, depth: int, top: bool = False) -> None:
             if isinstance(event, LLVMRuleEvent):
                 dump(f'Rule: {event.rule_ordinal} {len(event.substitution)}', depth)
                 for v, t in event.substitution:
@@ -301,14 +301,14 @@ class LLVMRewriteTraceParser:
                 dump(f'Result: {event.result if show_terms else "[kore]"}', depth + 1)
             else:
                 assert isinstance(event, kore.Pattern)
-                dump(f'Config: {event if show_terms else "[kore]"}', depth)
+                dump(f'{"Config" if top else "Term"}: {event if show_terms else "[kore]"}', depth)
 
         depth = 0
         for step_event in self.pre_trace:
-            dump_event(step_event, depth)
+            dump_event(step_event, depth, top=True)
         dump(f'Init config: {self.initial_config if show_terms else "[kore]"}', depth)
         for event in self.trace:
-            dump_event(event, depth)
+            dump_event(event, depth, top=True)
 
 
 # A driver for local testing
