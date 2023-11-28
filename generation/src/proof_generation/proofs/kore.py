@@ -42,8 +42,7 @@ floor = Notation('floor', 1, neg(ceil(neg(phi0))), '⌊ {0} ⌋')
 subset = Notation('subset', 2, floor(Implies(phi0, phi1)), '({0} ⊆ {1})')
 equals = Notation('equals', 2, floor(equiv(phi0, phi1)), '({0} = {1})')
 functional = Notation('functional', 1, Exists(0, equals(EVar(0), MetaVar(0, (EVar(0),)))), 'functional({0})')
-included = Notation('included', 2, floor(Implies(phi0, phi1)), '({0} ⊆ {1})')
-in_sort = Notation('in-sort', 2, included(phi0, App(inhabitant_symbol, phi1)), '({0} s∈ {1})')
+in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '({0} s∈ {1})')
 sorted_exists = Notation('sorted-exists', 3, Exists(phi0.name, _and(in_sort(phi0, phi1), phi2)), '( s∃ {0}:{1}. {2} )')
 
 
@@ -155,7 +154,6 @@ KORE_NOTATIONS = (
     subset,
     equals,
     functional,
-    included,
     in_sort,
     sorted_exists,
 )
