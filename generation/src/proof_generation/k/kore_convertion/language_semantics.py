@@ -9,13 +9,13 @@ import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
 import proof_generation.proofs.propositional as prop
-from proof_generation.pattern import EVar, MetaVar, Symbol
+from proof_generation.pattern import EVar, MetaVar, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.pattern import Notation, Pattern, SVar
+    from proof_generation.pattern import Notation, Pattern
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -363,6 +363,7 @@ class LanguageSemantics(BuilderScope):
     def __init__(self) -> None:
         self._imported_modules: tuple[KModule, ...] = ()
         self._cached_axiom_scopes: dict[int, ConvertionScope] = {}
+        self._inferred_notations: set[Notation] = set()
 
     @property
     def modules(self) -> tuple[KModule, ...]:
@@ -403,7 +404,7 @@ class LanguageSemantics(BuilderScope):
         symbols = self.symbols
         notations = [sym.aml_notation for sym in symbols]
 
-        return (*prop.PROPOSITIONAL_NOTATIONS, *kl.KORE_NOTATIONS, *dict.fromkeys(notations))
+        return (*prop.PROPOSITIONAL_NOTATIONS, *kl.KORE_NOTATIONS, *dict.fromkeys(notations), *self._inferred_notations)
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""
@@ -596,13 +597,13 @@ class LanguageSemantics(BuilderScope):
                 right_or_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
                 return kl.kore_or(or_sort_pattern, left_or_pattern, right_or_pattern)
-            case kore.In(op_sort, sort, left, right):
-                op_sort_pattern = self.convert_sort(scope, op_sort)
-                in_sort_pattern = self.convert_sort(scope, sort)
+            case kore.In(input_sort, output_sort, left, right):
+                in_input_sort_pattern = self.convert_sort(scope, input_sort)
+                in_output_sort_pattern = self.convert_sort(scope, output_sort)
                 left_in_pattern = self._convert_pattern(scope, left)
                 right_in_pattern = self._convert_pattern(scope, right)
 
-                return kl.kore_in(op_sort_pattern, in_sort_pattern, left_in_pattern, right_in_pattern)
+                return kl.kore_in(in_input_sort_pattern, in_output_sort_pattern, left_in_pattern, right_in_pattern)
             case kore.Not(sort, op):
                 not_sort_pattern: Pattern = self.convert_sort(scope, sort)
                 not_op_pattern: Pattern = self._convert_pattern(scope, op)
@@ -620,30 +621,30 @@ class LanguageSemantics(BuilderScope):
 
                 return kl.kore_implies(implies_sort_pattern, implies_left, implies_right)
             case kore.Ceil(input_sort, output_sort, pattern):
-                ceil_sort_op_pattern: Pattern = self.convert_sort(scope, op_sort)
-                ceil_sort_pattern: Pattern = self.convert_sort(scope, sort)
+                ceil_input_sort_pattern: Pattern = self.convert_sort(scope, input_sort)
+                ceil_output_sort_pattern: Pattern = self.convert_sort(scope, output_sort)
                 ceil_pattern: Pattern = self._convert_pattern(scope, pattern)
 
-                return kl.kore_ceil(ceil_sort_op_pattern, ceil_sort_pattern, ceil_pattern)
-            case kore.Floor(op_sort, sort, pattern):
-                floor_sort_op_pattern: Pattern = self.convert_sort(scope, op_sort)
-                floor_sort_pattern: Pattern = self.convert_sort(scope, sort)
+                return kl.kore_ceil(ceil_input_sort_pattern, ceil_output_sort_pattern, ceil_pattern)
+            case kore.Floor(input_sort, output_sort, pattern):
+                floor_input_sort_pattern: Pattern = self.convert_sort(scope, input_sort)
+                floor_output_sort_pattern: Pattern = self.convert_sort(scope, output_sort)
                 floor_pattern: Pattern = self._convert_pattern(scope, pattern)
 
-                return kl.kore_floor(floor_sort_op_pattern, floor_sort_pattern, floor_pattern)
+                return kl.kore_floor(floor_input_sort_pattern, floor_output_sort_pattern, floor_pattern)
             case kore.Iff(sort, left, right):
                 iff_sort_pattern: Pattern = self.convert_sort(scope, sort)
                 left_iff_pattern: Pattern = self._convert_pattern(scope, left)
                 right_iff_pattern: Pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_iff(iff_sort_pattern, left_iff_pattern, right_iff_pattern)
-            case kore.Equals(op_sort, sort, left, right):
-                op_sort_pattern = self.convert_sort(scope, op_sort)
-                equals_sort_pattern: Pattern = self.convert_sort(scope, sort)
+            case kore.Equals(input_sort, output_sort, left, right):
+                equals_input_sort_pattern = self.convert_sort(scope, input_sort)
+                equals_sort_pattern: Pattern = self.convert_sort(scope, output_sort)
                 equals_left: Pattern = self._convert_pattern(scope, left)
                 equals_right: Pattern = self._convert_pattern(scope, right)
 
-                return kl.kore_equals(op_sort_pattern, equals_sort_pattern, equals_left, equals_right)
+                return kl.kore_equals(equals_input_sort_pattern, equals_sort_pattern, equals_left, equals_right)
             case kore.App(symbol, ksorts, args):
                 ksymbol: KSymbol = self.get_symbol(symbol)
                 sort_params: list[Pattern] = [self.convert_sort(scope, sort) for sort in ksorts]
@@ -667,13 +668,16 @@ class LanguageSemantics(BuilderScope):
                 value_symbol: Pattern = Symbol(str(value.value))
                 return kl.kore_dv(dv_sort_pattern, value_symbol)
             case kore.Exists(sort, var, pattern):
-                exists_in_sort_pattern: Pattern = self.convert_sort(scope, var.sort)
-                exists_sort_pattern: Pattern = self.convert_sort(scope, sort)
+                exists_inner_sort_pattern: Pattern = self.convert_sort(scope, var.sort)
+                exists_outer_sort_pattern: Pattern = self.convert_sort(scope, sort)
                 exists_var_pattern: Pattern = self._convert_pattern(scope, var)
                 exists_pattern: Pattern = self._convert_pattern(scope, pattern)
+                assert isinstance(exists_var_pattern, EVar | SVar)
 
-                return kl.kore_exists(exists_in_sort_pattern, exists_sort_pattern, exists_var_pattern, exists_pattern)
-            case kore.Forall(sort, var, pattern):
+                custom_exists_notation = kl.kore_exists(exists_var_pattern.name)
+                self._inferred_notations.add(custom_exists_notation)
+                return custom_exists_notation(exists_inner_sort_pattern, exists_outer_sort_pattern, exists_pattern)
+            case kore.Forall(output_sort, var, pattern):
                 raise NotImplementedError()
             case kore.Mu(var, pattern):
                 raise NotImplementedError()

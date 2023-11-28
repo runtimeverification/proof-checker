@@ -43,8 +43,11 @@ subset = Notation('subset', 2, floor(Implies(phi0, phi1)), '({0} ⊆ {1})')
 equals = Notation('equals', 2, floor(equiv(phi0, phi1)), '({0} = {1})')
 functional = Notation('functional', 1, Exists(0, equals(EVar(0), MetaVar(0, (EVar(0),)))), 'functional({0})')
 in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0}:{1}')
+
+
+@cache
 def sorted_exists(var: int) -> Notation:
-    return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), '( ∃ x{var}:{0}. {1} )')
+    return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), '( ∃ x{var}:{0} . {1} )')
 
 
 """ kore_top(sort) """
@@ -95,12 +98,13 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥:{0}')
 
-kore_exists = Notation(
+
 @cache
 def kore_exists(var: int) -> Notation:
-    """ kore_exists(inner_sort, outer_sort, pattern) """
-    return Notation('kore-exists', 3, _and(sorted_exists(var)(phi1, phi2), App(inhabitant_symbol, phi0)), '( k∃ {var}:{1}. {2}):{0}')
-)
+    """kore_exists(inner_sort, outer_sort, pattern)"""
+    return Notation(
+        'kore-exists', 3, _and(sorted_exists(var)(phi1, phi2), App(inhabitant_symbol, phi0)), '( k∃ {var}:{1}. {2}):{0}'
+    )
 
 
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
@@ -151,14 +155,12 @@ KORE_NOTATIONS = (
     kore_kseq,
     kore_in,
     kore_bottom,
-    kore_exists,
     ceil,
     floor,
     subset,
     equals,
     functional,
     in_sort,
-    sorted_exists,
 )
 
 
