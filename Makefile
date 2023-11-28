@@ -179,37 +179,28 @@ pyupgrade: poetry-install
 # Proof Hints
 # ===========
 
-# Target only this specific subset of programs that are currently supported:
-PROOF_HINTS=generation/proof-hints/peano/mul_3_5.peano.hints \
-			generation/proof-hints/single-rewrite/foo-a.single-rewrite.hints \
-			generation/proof-hints/double-rewrite/foo-a.double-rewrite.hints \
-			generation/proof-hints/trivial/0_rewrites.trivial.hints \
-			generation/proof-hints/trivial/1_rewrite.trivial.hints \
-			generation/proof-hints/trivial/2_rewrites.trivial.hints \
-			generation/proof-hints/imp5/empty.imp5.hints \
-			generation/proof-hints/imp5-rw-succ/transfer.imp5-rw-succ.hints \
-			generation/proof-hints/imp5-rw-literal/transfer.imp5-rw-literal.hints \
-			generation/proof-hints/simple/input.simple.hints
+ALL_K_FILES=$(wildcard generation/k-benchmarks/*/*)
+K_DEFS=$(wildcard generation/k-benchmarks/*/*.k)
+K_BENCHMARKS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
 
-# Eventually, we want to support all input programs using something like the following:
-# ALL_K_FILES=$(wildcard k-benchmarks/*/*)
-# K_DEFS=$(wildcard k-benchmarks/*/*.k)
-# INPUT_PROGRAMS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
-# PROOF_HINTS=$(addsuffix .hints, $(patsubst k-benchmarks%,proof-hints%,${INPUT_PROGRAMS}))
+# Filter out currently unsupported examples
+UNSUPPORTED_K_BENCHMARKS=$(wildcard generation/k-benchmarks/imp/*) \
+                         generation/k-benchmarks/imp5/transfer.imp5
+SUPPORTED_K_BENCHMARKS=$(filter-out ${UNSUPPORTED_K_BENCHMARKS}, ${K_BENCHMARKS})
 
-
+EXECUTION_HINTS=$(addsuffix .hints, $(patsubst generation/k-benchmarks%,.build/proof-hints%,${SUPPORTED_K_BENCHMARKS}))
 # Proof Hint Generation from LLVM
-generation/proof-hints/%.hints: generation/k-benchmarks/%
-	mkdir -p generation/proof-hints/$(dir $*)
+.build/proof-hints/%.hints: generation/k-benchmarks/%
+	mkdir -p .build/proof-hints/$(dir $*)
 	./generation/scripts/gen-execution-proof-hints.sh \
 		generation/k-benchmarks/$(dir $*)$(patsubst %/,%, $(dir $*)).k \
 		generation/k-benchmarks/$* \
-		generation/proof-hints/$*.hints
+		.build/proof-hints/$*.hints
 
-generate-hints: $(PROOF_HINTS)
+generate-hints: $(EXECUTION_HINTS)
 
 clean-hints:
-	rm -f $(PROOF_HINTS)
+	rm -Rf .build/proof-hints/*
 
 .PHONY: generate-hints clean-hints
 
@@ -257,7 +248,7 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 # We assume that there is only one hint file per benchmark
 proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/%-kompiled/timestamp proofs/generated-from-k/%.ml-proof
-	@HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	@HINTS_FILE=$$(ls -1 .build/proof-hints/$*/*.hints | head -n 1); \
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/; \
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir proofs/generated-from-k/ --pretty
 
@@ -270,11 +261,11 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 # -------------------------------
 # We assume that there is only one hint file per benchmark
 .build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
-	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	HINTS_FILE=$$(ls -1 .build/proof-hints/$*/*.hints | head -n 1); \
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/
 
 .build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/%-kompiled/timestamp
-	HINTS_FILE=$$(ls -1 generation/proof-hints/$*/*.hints | head -n 1); \
+	HINTS_FILE=$$(ls -1 .build/proof-hints/$*/*.hints | head -n 1); \
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" generation/k-benchmarks/$*/$*.k "$$HINTS_FILE" .build/kompiled-definitions/$*-kompiled --proof-dir .build/proofs/generated-from-k/ --pretty
 
 KPROOF_TRANSLATION_TARGETS=$(addsuffix .kgen,${TRANSLATED_FROM_K})
