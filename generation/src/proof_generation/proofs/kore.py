@@ -42,8 +42,9 @@ floor = Notation('floor', 1, neg(ceil(neg(phi0))), '⌊ {0} ⌋')
 subset = Notation('subset', 2, floor(Implies(phi0, phi1)), '({0} ⊆ {1})')
 equals = Notation('equals', 2, floor(equiv(phi0, phi1)), '({0} = {1})')
 functional = Notation('functional', 1, Exists(0, equals(EVar(0), MetaVar(0, (EVar(0),)))), 'functional({0})')
-in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '({0} s∈ {1})')
-sorted_exists = Notation('sorted-exists', 3, Exists(phi0.name, _and(in_sort(phi0, phi1), phi2)), '( s∃ {0}:{1}. {2} )')
+in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0}:{1}')
+def sorted_exists(var: int) -> Notation:
+    return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), '( ∃ x{var}:{0}. {1} )')
 
 
 """ kore_top(sort) """
@@ -68,12 +69,12 @@ kore_implies = Notation('kore-implies', 3, kore_or(phi0, kore_not(phi0, phi1), p
 kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({1} k=> {2}):{0}')
 
 """ kore_dv(sort, value) """
-kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}')
+kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), 'dv({1}):{0}')
 
-""" kore_ceil(sort, pattern) """
+""" kore_ceil(inner_sort, outer_sort, pattern) """
 kore_ceil = Notation('kore-ceil', 3, _and(ceil(phi2), kore_top(phi1)), 'k⌈ {2}:{0} ⌉:{1}')
 
-""" kore_floor(sort, pattern) """
+""" kore_floor(inner_sort, outer_sort, pattern) """
 kore_floor = Notation('kore-floor', 3, kore_not(phi1, kore_ceil(phi0, phi1, kore_not(phi0, phi2))), 'k⌊ {2}:{0} ⌋:{1}')
 
 """ kore_iff(sort, left, right) """
@@ -82,21 +83,23 @@ kore_iff = Notation(
 )
 
 """ kore_equals(inner_sort, outer_sort, left, right) """
-kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, phi2, phi3)), '({1}:{0} k= {2}:{0}):{1}')
+kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, phi2, phi3)), '({2}:{0} k= {3}:{0}):{1}')
 
 # TODO: Add support for multiple apps of kseq without brackets
 """ kore_kseq(left, right) """
 kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({0} ~> {1})')
 
 """ kore_in(inner_sort, outer_sort, left, right) """
-kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k∈ {3}:{0}):{1}')
+kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k⊆ {3}:{0}):{1}')
 
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥:{0}')
 
-""" kore_exists(inner_sort, outer_sort, evar, pattern) """
 kore_exists = Notation(
-    'kore-exists', 4, _and(sorted_exists(phi2, phi0, phi3), App(inhabitant_symbol, phi1)), '( k∃ {3}:{0}. {3}):{1}'
+@cache
+def kore_exists(var: int) -> Notation:
+    """ kore_exists(inner_sort, outer_sort, pattern) """
+    return Notation('kore-exists', 3, _and(sorted_exists(var)(phi1, phi2), App(inhabitant_symbol, phi0)), '( k∃ {var}:{1}. {2}):{0}')
 )
 
 

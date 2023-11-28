@@ -619,18 +619,18 @@ class LanguageSemantics(BuilderScope):
                 implies_right: Pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_implies(implies_sort_pattern, implies_left, implies_right)
-            case kore.Ceil(op_sort, sort, pattern):
+            case kore.Ceil(input_sort, output_sort, pattern):
                 ceil_sort_op_pattern: Pattern = self.convert_sort(scope, op_sort)
                 ceil_sort_pattern: Pattern = self.convert_sort(scope, sort)
                 ceil_pattern: Pattern = self._convert_pattern(scope, pattern)
 
-                return kl.ceil(ceil_sort_op_pattern, ceil_sort_pattern, ceil_pattern)
+                return kl.kore_ceil(ceil_sort_op_pattern, ceil_sort_pattern, ceil_pattern)
             case kore.Floor(op_sort, sort, pattern):
                 floor_sort_op_pattern: Pattern = self.convert_sort(scope, op_sort)
                 floor_sort_pattern: Pattern = self.convert_sort(scope, sort)
                 floor_pattern: Pattern = self._convert_pattern(scope, pattern)
 
-                return kl.floor(floor_sort_op_pattern, floor_sort_pattern, floor_pattern)
+                return kl.kore_floor(floor_sort_op_pattern, floor_sort_pattern, floor_pattern)
             case kore.Iff(sort, left, right):
                 iff_sort_pattern: Pattern = self.convert_sort(scope, sort)
                 left_iff_pattern: Pattern = self._convert_pattern(scope, left)
