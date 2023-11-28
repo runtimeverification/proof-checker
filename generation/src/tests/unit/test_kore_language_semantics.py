@@ -246,7 +246,7 @@ def test_rules(simple_semantics: LanguageSemantics) -> None:
     sort2 = simple_semantics.get_sort('srt2')
     sym1 = simple_semantics.get_symbol('sym1')  # Sort1
     sym2 = simple_semantics.get_symbol('sym2')  # Sort1 -> Sort2
-    sym3 = simple_semantics.get_symbol('sym3')  # Srot1
+    sym3 = simple_semantics.get_symbol('sym3')  # Sort1
     sym4 = simple_semantics.get_symbol('sym4')  # Sort2
     mod = simple_semantics.main_module
 
@@ -306,9 +306,9 @@ def test_rules(simple_semantics: LanguageSemantics) -> None:
     assert mod.get_axiom(rewrite_rule.ordinal) == rewrite_rule
 
     # Equational rule
-    assert rewrite_rule.pattern == rewrite_pattern
-    assert simple_semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
-    assert mod.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert equation_rule1.pattern == rewrite_pattern
+    assert simple_semantics.get_axiom(equation_rule1.ordinal) == equation_rule1
+    assert mod.get_axiom(equation_rule1.ordinal) == equation_rule1
 
     # Another equational rule
     assert rewrite_rule.pattern == rewrite_pattern
@@ -405,7 +405,7 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
     assert simple_semantics.get_axiom(rule_eq.ordinal) == rule_eq
     assert simple_semantics.get_axiom(rule_rw.ordinal) == rule_rw
     with raises(ValueError):
-        simple_semantics.get_axiom(rule_rw.ordinal + 10)
+        simple_semantics.get_axiom(rewrite_rule.ordinal + 10)
 
     # Test final sets of sorts, symbols and notations
     assert set(simple_semantics.sorts) == ever_created_sorts
