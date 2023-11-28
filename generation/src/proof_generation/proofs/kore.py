@@ -103,7 +103,7 @@ kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
 @cache
 def kore_exists(var: int) -> Notation:
-    """kore_exists(inner_sort, outer_sort, pattern)"""
+    """kore_exists(variable_sort, outer_sort, pattern)"""
     # TODO: Don't forget to save the result of the function call to a proof expression object
     return Notation(
         'kore-exists',
