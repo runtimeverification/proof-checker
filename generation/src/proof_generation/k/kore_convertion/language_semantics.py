@@ -9,13 +9,13 @@ import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
 import proof_generation.proofs.propositional as prop
-from proof_generation.pattern import EVar, MetaVar, SVar, Symbol
+from proof_generation.pattern import EVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.pattern import Notation, Pattern
+    from proof_generation.pattern import Notation, Pattern, SVar
 
 T = TypeVar('T')
 P = ParamSpec('P')
