@@ -93,31 +93,14 @@ class KEquationalRule:
     pattern: Pattern
 
     def __post_init__(self) -> None:
-        # Trigger matching assertions right after creation of the object
-        self.deconstructed
+        # Add more computed attributes
+        requires, eq_left, eq_right, ensures = self.deconstruct()
+        object.__setattr__(self, 'requires', requires)
+        object.__setattr__(self, 'left', eq_left)
+        object.__setattr__(self, 'right', eq_right)
+        object.__setattr__(self, 'ensures', ensures)
 
-    @property
-    def requires(self) -> Pattern:
-        _, requires, _ = kl.kore_implies.assert_matches(self.pattern)
-        return requires
-
-    @property
-    def left(self) -> Pattern:
-        _, left, _, _ = self.deconstructed
-        return left
-
-    @property
-    def right(self) -> Pattern:
-        _, _, right, _ = self.deconstructed
-        return right
-
-    @property
-    def ensures(self) -> Pattern | None:
-        _, _, _, ensures = self.deconstructed
-        return ensures
-
-    @property
-    def deconstructed(self) -> tuple[Pattern, Pattern, Pattern, Pattern | None]:
+    def deconstruct(self) -> tuple[Pattern, Pattern, Pattern, Pattern | None]:
         _, requires, right = kl.kore_implies.assert_matches(self.pattern)
         if eq_match := kl.kore_equals.matches(right):
             _, _, eq_left, eq_right = eq_match
