@@ -306,14 +306,14 @@ def test_rules(simple_semantics: LanguageSemantics) -> None:
     assert mod.get_axiom(rewrite_rule.ordinal) == rewrite_rule
 
     # Equational rule
-    assert equation_rule1.pattern == rewrite_pattern
+    assert equation_rule1.pattern == equation_pattern1
     assert simple_semantics.get_axiom(equation_rule1.ordinal) == equation_rule1
     assert mod.get_axiom(equation_rule1.ordinal) == equation_rule1
 
     # Another equational rule
-    assert rewrite_rule.pattern == rewrite_pattern
-    assert simple_semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
-    assert mod.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert equation_rule2.pattern == equation_pattern2
+    assert simple_semantics.get_axiom(equation_rule2.ordinal) == equation_rule2
+    assert mod.get_axiom(equation_rule2.ordinal) == equation_rule2
 
 
 def test_module_import(simple_semantics: LanguageSemantics) -> None:
@@ -381,8 +381,8 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
         )
 
         assert isinstance(pattern_rewrite, Pattern)
-        rule_rw = nm.rewrite_rule(pattern_rewrite)
-        rule_eq = nm.equational_rule(pattern_equals)
+        rewrite_rule = nm.rewrite_rule(pattern_rewrite)
+        equation_rule = nm.equational_rule(pattern_equals)
     with simple_semantics.main_module as mm:
         mm.import_module(newest_module)
 
@@ -398,12 +398,12 @@ def test_module_import(simple_semantics: LanguageSemantics) -> None:
     assert simple_semantics.main_module.get_sort('newest_module_srt') is newest_sort
 
     # Test accessing added rule
-    assert newest_module.get_axiom(rule_rw.ordinal) == rule_rw
-    assert newest_module.get_axiom(rule_eq.ordinal) == rule_eq
-    assert simple_semantics.main_module.get_axiom(rule_rw.ordinal) == rule_rw
-    assert simple_semantics.main_module.get_axiom(rule_eq.ordinal) == rule_eq
-    assert simple_semantics.get_axiom(rule_eq.ordinal) == rule_eq
-    assert simple_semantics.get_axiom(rule_rw.ordinal) == rule_rw
+    assert newest_module.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert newest_module.get_axiom(equation_rule.ordinal) == equation_rule
+    assert simple_semantics.main_module.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert simple_semantics.main_module.get_axiom(equation_rule.ordinal) == equation_rule
+    assert simple_semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert simple_semantics.get_axiom(equation_rule.ordinal) == equation_rule
     with raises(ValueError):
         simple_semantics.get_axiom(rewrite_rule.ordinal + 10)
 
