@@ -3,11 +3,10 @@
 ## Risc 0
 |     Examples     |  Cycles | CPU Time | GPU Time |
 |:----------------:|:-------:|:--------:|:--------:|
-| perceptron       |         |          |          |
-| svm5             |         |          |          |
-| transfer5000     |         |          |          |
-| transfer         |         |          |          |
-
+| perceptron       |  23583  |     4    |          |
+| svm5             |  22489  |     4    |          |
+| transfer5000     | 1401989 |   104    |          |
+| transfer         |  22489  |     4    |          |
 
 ## zkLLVM
 |     Examples     | CPU Time | GPU Time |
