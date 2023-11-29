@@ -58,5 +58,7 @@
 | svm5-goal                       | 6404208|     ∞    |          |
 | transfer-batch-1k-goal          |30122047|     ∞    |          |
 | transfer-simple-compressed-goal | 3202986|     ∞    |          |
-| transfer-task-specific          | 148870 |  973.901 |          |
-| impreflex-compressed-goal       | 55651  |  378.14  |          |
+| transfer-task-specific*         | 148870 |  861.443 |          |
+| impreflex-compressed-goal*      | 55651  |  341.466 |          |
+
+* Using `lurk --rc 400 ...`
