@@ -179,7 +179,7 @@ KORE_NOTATIONS = (
 
 kore_inj_id = equals(kore_inj(phi0, phi1, phi2), phi2)
 
-KORE_AXIOMS = kore_inj_id
+KORE_AXIOMS = (kore_inj_id,)
 
 
 # TODO: Add kore-transitivity
