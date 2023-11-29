@@ -31,7 +31,7 @@ class Substitution(ProofExp):
         )
         self.prop = Propositional()
         self.add_proof_expression(self.top_univgen())
-        self._notations.extend(self.prop.get_notations())
+        self.add_notations(self.prop.get_notations())
 
     def universal_gen(self, phi: ProofThunk, var: EVar) -> ProofThunk:
         """
