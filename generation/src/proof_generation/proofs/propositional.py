@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implies, MetaVar, Notation, bot, phi0, phi1, phi2
+from proof_generation.pattern import Implies, MetaVar, _and, _or, bot, equiv, neg, phi0, phi1, phi2, top
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
@@ -11,11 +11,6 @@ if TYPE_CHECKING:
     from proof_generation.proof import ProofThunk
 
 
-neg = Notation('not', 1, Implies(MetaVar(0), bot()), '¬{0}')
-top = Notation('top', 0, neg(bot()), '⊤')
-_and = Notation('and', 2, neg(Implies(phi0, neg(phi1))), '({0} ⋀ {1})')
-_or = Notation('or', 2, Implies(neg(phi0), phi1), '({0} ⋁ {1})')
-equiv = Notation('equiv', 2, _and(Implies(phi0, phi1), Implies(phi1, phi0)), f'({0} <-> {1})')
 PROPOSITIONAL_NOTATIONS = (bot, neg, top, _and, _or, equiv)
 
 

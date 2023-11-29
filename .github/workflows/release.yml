@@ -38,6 +38,9 @@ jobs:
       - name: Copy cairo
         run: cp -r proof-checker/cairo proof-checker-public/
 
+      - name: Copy lurk
+        run: cp -r proof-checker/lurk proof-checker-public/
+
       - name: Copy example proofs
         run: cp -r proof-checker/proofs/ proof-checker-public/
       - name: 'Update Remote Public Repository'

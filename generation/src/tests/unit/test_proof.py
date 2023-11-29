@@ -9,9 +9,9 @@ from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions
+from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions, SVar, Symbol, phi0
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
-from proof_generation.proof import ProofThunk
+from proof_generation.proof import ProofExp, ProofThunk, Proved
 from proof_generation.proofs.propositional import Propositional
 from proof_generation.serializing_interpreter import SerializingInterpreter
 from proof_generation.stateful_interpreter import StatefulInterpreter
@@ -158,3 +158,42 @@ def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
     _ = interpreter_pretty.pattern(target)
 
     assert out_pretty.getvalue() == out_ser_deser.getvalue()
+
+
+@pytest.mark.parametrize(
+    'pats',
+    [
+        [],
+        [MetaVar(0), MetaVar(1)],
+        [Symbol('a')],
+        [MetaVar(1, e_fresh=(EVar(0), EVar(1)), s_fresh=(SVar(1),))],
+        [ESubst(phi0, EVar(0), EVar(1))],
+    ],
+)
+def test_interpreter_proof_state(pats: list[Pattern]) -> None:
+    interpreter_ser = SerializingInterpreter(
+        phase=ExecutionPhase.Gamma,
+        claims=[Claim(pattern) for pattern in pats],
+        out=BytesIO(),
+        claim_out=BytesIO(),
+        proof_out=BytesIO(),
+    )
+    proof_exp = ProofExp(axioms=pats, claims=pats)
+    proof_exp._proof_expressions = [proof_exp.load_axiom(pat) for pat in pats]
+    assert interpreter_ser.memory == []
+    assert [claim.pattern for claim in interpreter_ser.claims] == pats
+    assert interpreter_ser.stack == []
+    proof_exp.execute_gamma_phase(interpreter_ser, False)
+    assert [proved.conclusion for proved in interpreter_ser.memory if isinstance(proved, Proved)] == pats
+    assert [claim.pattern for claim in interpreter_ser.claims] == pats
+    assert interpreter_ser.stack == pats
+    interpreter_ser.into_claim_phase()
+    proof_exp.execute_claims_phase(interpreter_ser, False)
+    assert [proved.conclusion for proved in interpreter_ser.memory if isinstance(proved, Proved)] == pats
+    assert [claim.pattern for claim in interpreter_ser.claims] == pats
+    assert list(reversed(interpreter_ser.stack)) == pats
+    interpreter_ser.into_proof_phase()
+    proof_exp.execute_proofs_phase(interpreter_ser)
+    assert [proved.conclusion for proved in interpreter_ser.memory if isinstance(proved, Proved)] == pats
+    assert interpreter_ser.claims == []
+    assert [proved.conclusion for proved in interpreter_ser.stack if isinstance(proved, Proved)] == pats

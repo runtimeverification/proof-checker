@@ -54,6 +54,56 @@ class ProofExp:
         self._claims = [] if claims is None else claims
         self._proof_expressions = [] if proof_expressions is None else proof_expressions
 
+    def add_axiom(self, axiom: Pattern) -> None:
+        if axiom not in self._axioms:
+            self._axioms.append(axiom)
+
+    def add_assumption(self, axiom: Pattern) -> None:
+        self.add_axiom(axiom)
+
+    def add_axioms(self, axioms: list[Pattern]) -> None:
+        for axiom in axioms:
+            self.add_axiom(axiom)
+
+    def add_assumptions(self, axioms: list[Pattern]) -> None:
+        self.add_axioms(axioms)
+
+    def get_axioms(self) -> list[Pattern]:
+        return list(self._axioms)  # Avoid reference leaking
+
+    def add_notation(self, notation: Notation) -> None:
+        if notation not in self._notations:
+            self._notations.append(notation)
+
+    def add_notations(self, notations: list[Notation]) -> None:
+        for notation in notations:
+            self.add_notation(notation)
+
+    def get_notations(self) -> list[Notation]:
+        return list(self._notations)  # Avoid reference leaking
+
+    def add_claim(self, claim: Pattern) -> None:
+        assert claim not in self._claims
+        self._claims.append(claim)
+
+    def add_claims(self, claims: list[Pattern]) -> None:
+        for claim in claims:
+            self.add_claim(claim)
+
+    def get_claims(self) -> list[Pattern]:
+        return list(self._claims)  # Avoid reference leaking
+
+    def add_proof_expression(self, proof_expression: ProofThunk) -> None:
+        assert proof_expression not in self._proof_expressions
+        self._proof_expressions.append(proof_expression)
+
+    def add_proof_expressions(self, proof_expressions: list[ProofThunk]) -> None:
+        for proof_expression in proof_expressions:
+            self.add_proof_expression(proof_expression)
+
+    def get_proof_expressions(self) -> list[ProofThunk]:
+        return list(self._proof_expressions)  # Avoid reference leaking
+
     # Proof Rules
     # -----------
 
@@ -116,6 +166,7 @@ class ProofExp:
 
         return ProofThunk(proved_exp, axiom_term)
 
+    # TODO: Remove this method once it's no longer used. It is dangerous
     def load_axiom_by_index(self, i: int) -> ProofThunk:
         return self.load_axiom(self._axioms[i])
 
@@ -126,19 +177,21 @@ class ProofExp:
 
         return ProofThunk(proved_exp, proved.conc)
 
-    def execute_gamma_phase(self, interpreter: BasicInterpreter) -> None:
+    def execute_gamma_phase(self, interpreter: BasicInterpreter, move_into_claim: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma
         for axiom in self._axioms:
             interpreter.publish_axiom(interpreter.pattern(axiom))
         self.check_interpreting(interpreter)
-        interpreter.into_claim_phase()
+        if move_into_claim:
+            interpreter.into_claim_phase()
 
-    def execute_claims_phase(self, interpreter: BasicInterpreter) -> None:
+    def execute_claims_phase(self, interpreter: BasicInterpreter, move_into_proof: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self._claims):
             interpreter.publish_claim(interpreter.pattern(claim))
         self.check_interpreting(interpreter)
-        interpreter.into_proof_phase()
+        if move_into_proof:
+            interpreter.into_proof_phase()
 
     def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
         assert interpreter.phase == ExecutionPhase.Proof

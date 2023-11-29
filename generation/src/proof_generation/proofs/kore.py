@@ -4,9 +4,23 @@ import sys
 from functools import cache
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, Instantiate, MetaVar, Notation, Symbol
+from proof_generation.pattern import (
+    App,
+    EVar,
+    Exists,
+    Implies,
+    Instantiate,
+    MetaVar,
+    Notation,
+    Symbol,
+    _and,
+    _or,
+    bot,
+    equiv,
+    neg,
+    top,
+)
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.propositional import _and, _or, neg
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -14,13 +28,28 @@ if TYPE_CHECKING:
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
-
+phi3 = MetaVar(3)
 
 # TODO: Make sure this is handled uniformly
 inhabitant_symbol = Symbol('inhabitant')
 kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
 kore_kseq_symbol = Symbol('kore_kseq')
+
+# TODO: Add these notations to a Definedness module that also contains the definedness axiom
+ceil = Notation('ceil', 1, App(top(), phi0), '⌈ {0} ⌉')
+floor = Notation('floor', 1, neg(ceil(neg(phi0))), '⌊ {0} ⌋')
+subset = Notation('subset', 2, floor(Implies(phi0, phi1)), '({0} ⊆ {1})')
+equals = Notation('equals', 2, floor(equiv(phi0, phi1)), '({0} = {1})')
+functional = Notation('functional', 1, Exists(0, equals(EVar(0), MetaVar(0, (EVar(0),)))), 'functional({0})')
+in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0}:{1}')
+
+
+@cache
+def sorted_exists(var: int) -> Notation:
+    """sorted_exists(inner_sort, pattern)"""
+    # TODO: Don't forget to save the result of the function call to a proof expression object
+    return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), f'( ∃ x{var}:{0} . {1} )')
 
 
 """ kore_top(sort) """
@@ -45,11 +74,43 @@ kore_implies = Notation('kore-implies', 3, kore_or(phi0, kore_not(phi0, phi1), p
 kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({1} k=> {2}):{0}')
 
 """ kore_dv(sort, value) """
-kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), '{1}:{0}')
+kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), 'dv({1}):{0}')
+
+""" kore_ceil(inner_sort, outer_sort, pattern) """
+kore_ceil = Notation('kore-ceil', 3, _and(ceil(phi2), kore_top(phi1)), 'k⌈ {2}:{0} ⌉:{1}')
+
+""" kore_floor(inner_sort, outer_sort, pattern) """
+kore_floor = Notation('kore-floor', 3, kore_not(phi1, kore_ceil(phi0, phi1, kore_not(phi0, phi2))), 'k⌊ {2}:{0} ⌋:{1}')
+
+""" kore_iff(sort, left, right) """
+kore_iff = Notation(
+    'kore-iff', 3, kore_and(phi0, kore_implies(phi0, phi1, phi2), kore_implies(phi0, phi2, phi1)), '({1} k<-> {2}):{0}'
+)
+
+""" kore_equals(inner_sort, outer_sort, left, right) """
+kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, phi2, phi3)), '({2}:{0} k= {3}:{0}):{1}')
 
 # TODO: Add support for multiple apps of kseq without brackets
 """ kore_kseq(left, right) """
 kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({0} ~> {1})')
+
+""" kore_in(inner_sort, outer_sort, left, right) """
+kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k⊆ {3}:{0}):{1}')
+
+""" kore_bottom(sort) """
+kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
+
+
+@cache
+def kore_exists(var: int) -> Notation:
+    """kore_exists(variable_sort, outer_sort, pattern)"""
+    # TODO: Don't forget to save the result of the function call to a proof expression object
+    return Notation(
+        'kore-exists',
+        3,
+        _and(sorted_exists(var)(phi0, phi2), App(inhabitant_symbol, phi1)),
+        '( k∃ {var}:{0} . {2}):{1}',
+    )
 
 
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
@@ -93,6 +154,19 @@ KORE_NOTATIONS = (
     kore_implies,
     kore_rewrites,
     kore_dv,
+    kore_ceil,
+    kore_floor,
+    kore_iff,
+    kore_equals,
+    kore_kseq,
+    kore_in,
+    kore_bottom,
+    ceil,
+    floor,
+    subset,
+    equals,
+    functional,
+    in_sort,
 )
 
 

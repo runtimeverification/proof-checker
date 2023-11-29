@@ -1,0 +1,30 @@
+!(def addressTo 12345)
+!(def amount 10)
+!(def balanceSender 100)
+!(def balanceTo 200)
+
+!(defrec while
+    (lambda (i balanceSender balanceTo ret)
+        (if (>= i 5000)
+            ret
+            (if (> amount balanceSender)
+                (let ((ret 0)) ;; transfer is not successful
+                     (while (+ i 1) balanceSender balanceTo ret)
+                )
+                (let ((balanceSender (- balanceSender amount))
+                      (balanceTo (+ balanceTo amount))
+                      (ret 1) ;; transfer is successful
+                     )
+                     (while (+ i 1) balanceSender balanceTo ret)
+                )
+            )
+        )
+    )
+)
+
+!(def i 0)
+(while i balanceSender balanceTo 0)
+
+!(prove)
+
+!(verify "Nova_Pallas_500_0a6bae4f9966ee74f75f52cee64ea9d9ee6f7137031eec17e553dc937772fd59")
