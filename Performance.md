@@ -21,10 +21,10 @@
 ## Lurk
 |     Examples     |  Cycles | CPU Time | GPU Time |
 |:----------------:|:-------:|:--------:|:--------:|
-| perceptron       |    11   |   1.41   |          |
-| svm5             |    9    |   0.714  |          |
-| transfer5000     |  330387 |          |          |
-| transfer         |    34   |          |          |
+| perceptron       |    11   |   3.979  |          |
+| svm5             |    9    |   2.263  |          |
+| transfer5000     |  330387 | 2238.565 |          |
+| transfer         |    34   |   2.522  |          |
 
 
 
