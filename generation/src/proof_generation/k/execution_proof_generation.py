@@ -19,14 +19,12 @@ if TYPE_CHECKING:
 
 class ExecutionProofExp(proof.ProofExp):
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
-        self.subst_proofexp = Substitution()
-        self.kore_lemmas = kl.KoreLemmas()
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
         super().__init__(notations=list(language_semantics.notations))
-        self.add_notations(self.subst_proofexp.get_notations())
-        self.add_notations(self.kore_lemmas.get_notations())
+        self.subst_proofexp = self.add_submodule(Substitution())
+        self.kore_lemmas = self.add_submodule(kl.KoreLemmas())
 
     @property
     def initial_configuration(self) -> Pattern:

@@ -4,7 +4,7 @@ from proof_generation.pattern import App, EVar, Exists, Implies, MetaVar, Notati
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import equiv, neg, phi0, phi1
 
-definedness_symbol = Symbol('definedness')
+definedness_symbol = Symbol('⌈_⌉')
 
 ceil = Notation('ceil', 1, App(definedness_symbol, phi0), '⌈ {0} ⌉')
 floor = Notation('floor', 1, neg(ceil(neg(phi0))), '⌊ {0} ⌋')

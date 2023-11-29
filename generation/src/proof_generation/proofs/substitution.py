@@ -18,7 +18,7 @@ def forall(var: int) -> Notation:
 
 func_subst_axiom = Implies(
     Exists(0, equals(MetaVar(0, e_fresh=(EVar(0),)), EVar(0))),
-    Implies(forall(0)(phi1), phi1.apply_esubst(0, MetaVar(0, e_fresh=(EVar(0),)))),
+    Implies(forall(1)(phi1), phi1.apply_esubst(1, MetaVar(0, e_fresh=(EVar(0),)))),
 )
 
 
@@ -29,9 +29,8 @@ class Substitution(ProofExp):
             notations=[forall(0)],
             claims=[forall(0)(top())],
         )
-        self.prop = Propositional()
         self.add_proof_expression(self.top_univgen())
-        self.add_notations(self.prop.get_notations())
+        self.prop = self.add_submodule(Propositional())
 
     def universal_gen(self, phi: ProofThunk, var: EVar) -> ProofThunk:
         """
@@ -56,9 +55,9 @@ class Substitution(ProofExp):
 
     def functional_subst(self, func_p_pf: ProofThunk, q_pf: ProofThunk) -> ProofThunk:
         """
-          exists x0 . p = x0       forall x0. q
+          exists x0 . p = x0       forall x1. q
         -----------------------------------------------
-                         q[p/x0]
+                         q[p/x1]
         """
         return self.modus_ponens(self.modus_ponens(self.load_axiom(func_subst_axiom), func_p_pf), q_pf)
 

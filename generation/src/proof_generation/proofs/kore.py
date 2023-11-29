@@ -100,8 +100,7 @@ KORE_NOTATIONS = (
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
         super().__init__(notations=list(KORE_NOTATIONS))
-        self.definedness = Definedness()
-        self.add_notations(self.definedness.get_notations())
+        self.definedness = self.add_submodule(Definedness())
 
 
 if __name__ == '__main__':
