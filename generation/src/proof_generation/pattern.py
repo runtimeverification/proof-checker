@@ -78,7 +78,22 @@ def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None
 
 
 class Pattern:
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
+        raise NotImplementedError
+
+    def svar_is_fresh(self, name: int) -> bool:
+        raise NotImplementedError
+
+    def svar_is_positive(self, name: int) -> bool:
+        raise NotImplementedError
+
+    def svar_is_negative(self, name: int) -> bool:
+        raise NotImplementedError
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        raise NotImplementedError
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
         raise NotImplementedError
 
     def metavars(self) -> set[int]:
@@ -118,8 +133,23 @@ class Pattern:
 class EVar(Pattern):
     name: int
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return name != self.name
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return True
+
+    def svar_is_positive(self, name: int) -> bool:
+        return True
+
+    def svar_is_negative(self, name: int) -> bool:
+        return True
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return name == self.name
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
 
     def metavars(self) -> set[int]:
         return set()
@@ -154,8 +184,23 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return True
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return name != self.name
+
+    def svar_is_positive(self, name: int) -> bool:
+        return True
+
+    def svar_is_negative(self, name: int) -> bool:
+        return name != self.name
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return name == self.name
 
     def metavars(self) -> set[int]:
         return set()
@@ -190,8 +235,23 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: str
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return True
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return True
+
+    def svar_is_positive(self, name: int) -> bool:
+        return True
+
+    def svar_is_negative(self, name: int) -> bool:
+        return True
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
 
     def metavars(self) -> set[int]:
         return set()
@@ -225,8 +285,23 @@ class Implies(Pattern):
     left: Pattern
     right: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.left.evar_is_free(name) and self.right.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.left.evar_is_fresh(name) and self.right.evar_is_fresh(name)
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return self.left.svar_is_fresh(name) and self.right.svar_is_fresh(name)
+
+    def svar_is_positive(self, name: int) -> bool:
+        return self.left.svar_is_negative(name) and self.right.svar_is_positive(name)
+
+    def svar_is_negative(self, name: int) -> bool:
+        return self.left.svar_is_positive(name) and self.right.svar_is_negative(name)
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
 
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
@@ -258,8 +333,27 @@ class App(Pattern):
     left: Pattern
     right: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.left.evar_is_free(name) and self.right.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.left.evar_is_fresh(name) and self.right.evar_is_fresh(name)
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return self.left.svar_is_fresh(name) and self.right.svar_is_fresh(name)
+
+    def svar_is_positive(self, name: int) -> bool:
+        return self.left.svar_is_positive(name) and self.right.svar_is_positive(name)
+
+    def svar_is_negative(self, name: int) -> bool:
+        return self.left.svar_is_negative(name) and self.right.svar_is_negative(name)
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return (self.left.evar_is_app_ctx_hole(name) and self.right.evar_is_fresh(name)) or (
+            self.left.evar_is_fresh(name) and self.right.evar_is_app_ctx_hole(name)
+        )
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return (self.left.svar_is_app_ctx_hole(name) and self.right.svar_is_fresh(name)) or (
+            self.left.svar_is_fresh(name) and self.right.svar_is_app_ctx_hole(name)
+        )
 
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
@@ -287,8 +381,23 @@ class Exists(Pattern):
     var: int
     subpattern: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return name == self.var or self.subpattern.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return name == self.var or self.subpattern.evar_is_fresh(name)
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return self.subpattern.svar_is_fresh(name)
+
+    def svar_is_positive(self, name: int) -> bool:
+        return self.subpattern.svar_is_positive(name)
+
+    def svar_is_negative(self, name: int) -> bool:
+        return self.subpattern.svar_is_negative(name)
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
@@ -326,8 +435,23 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.subpattern.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.subpattern.evar_is_fresh(name)
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return name == self.var or self.subpattern.svar_is_fresh(name)
+
+    def svar_is_positive(self, name: int) -> bool:
+        return name == self.var or self.subpattern.svar_is_positive(name)
+
+    def svar_is_negative(self, name: int) -> bool:
+        return name == self.var or self.subpattern.svar_is_negative(name)
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
@@ -372,12 +496,35 @@ class MetaVar(Pattern):
     def metavars(self) -> set[int]:
         return {self.name}
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return EVar(name) in self.e_fresh
 
+    def svar_is_fresh(self, name: int) -> bool:
+        return SVar(name) in self.s_fresh
+
+    def svar_is_positive(self, name: int) -> bool:
+        return SVar(name) in self.positive
+
+    def svar_is_negative(self, name: int) -> bool:
+        return SVar(name) in self.negative
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return EVar(name) in self.app_ctx_holes
+
+    # We cannot decide this so we just return False
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return False
+
     def can_be_replaced_by(self, pat: Pattern) -> bool:
-        # TODO implement this function by checking constraints
-        return True
+        return all(
+            [
+                all(pat.evar_is_fresh(e_var.name) for e_var in self.e_fresh),
+                all(pat.svar_is_fresh(s_var.name) for s_var in self.s_fresh),
+                all(pat.svar_is_positive(s_var.name) for s_var in self.positive),
+                all(pat.svar_is_negative(s_var.name) for s_var in self.negative),
+                all(pat.evar_is_app_ctx_hole(e_var.name) for e_var in self.app_ctx_holes),
+            ]
+        )
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if self.name in delta:
@@ -415,12 +562,43 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         if self.var.name == name:
-            return self.plug.evar_is_free(name)
+            return self.plug.evar_is_fresh(name)
 
         # We assume that at least one instance will be replaced
-        return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
+        return self.pattern.evar_is_fresh(name) and self.plug.evar_is_fresh(name)
+
+    def svar_is_fresh(self, name: int) -> bool:
+        # We assume that at least one instance will be replaced
+        return self.pattern.svar_is_fresh(name) and self.plug.svar_is_fresh(name)
+
+    def svar_is_positive(self, name: int) -> bool:
+        # We assume that at least one instance will be replaced
+        return self.pattern.svar_is_positive(name) and self.plug.svar_is_positive(name)
+
+    def svar_is_negative(self, name: int) -> bool:
+        # We assume that at least one instance will be replaced
+        return self.pattern.svar_is_negative(name) and self.plug.svar_is_negative(name)
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        if self.var.name == name:
+            return self.pattern.evar_is_app_ctx_hole(name) and self.plug.evar_is_app_ctx_hole(name)
+
+        # We assume that at least one instance will be replaced
+        return (self.pattern.evar_is_app_ctx_hole(name) and self.plug.evar_is_fresh(name)) or (
+            self.pattern.evar_is_app_ctx_hole(self.var.name)
+            and self.plug.evar_is_app_ctx_hole(name)
+            and self.pattern.evar_is_fresh(name)
+        )
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        # We assume that at least one instance will be replaced
+        return (self.pattern.svar_is_app_ctx_hole(name) and self.plug.svar_is_fresh(name)) or (
+            self.pattern.evar_is_app_ctx_hole(self.var.name)
+            and self.plug.svar_is_app_ctx_hole(name)
+            and self.pattern.svar_is_fresh(name)
+        )
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
@@ -449,9 +627,49 @@ class SSubst(Pattern):
     var: SVar
     plug: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         # We assume that at least one instance will be replaced
-        return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
+        return self.pattern.evar_is_fresh(name) and self.plug.evar_is_fresh(name)
+
+    def svar_is_fresh(self, name: int) -> bool:
+        if self.var.name == name:
+            return self.plug.svar_is_fresh(name)
+
+        # We assume that at least one instance will be replaced
+        return self.pattern.svar_is_fresh(name) and self.plug.svar_is_fresh(name)
+
+    def svar_is_positive(self, name: int) -> bool:
+        if self.var.name == name:
+            return self.plug.svar_is_positive(name)
+
+        # We assume that at least one instance will be replaced
+        return self.pattern.svar_is_positive(name) and self.plug.svar_is_positive(name)
+
+    def svar_is_negative(self, name: int) -> bool:
+        if self.var.name == name:
+            return self.plug.svar_is_negative(name)
+
+        # We assume that at least one instance will be replaced
+        return self.pattern.svar_is_negative(name) and self.plug.svar_is_negative(name)
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        # We assume that at least one instance will be replaced
+        return (self.pattern.evar_is_app_ctx_hole(name) and self.plug.evar_is_fresh(name)) or (
+            self.pattern.svar_is_app_ctx_hole(self.var.name)
+            and self.plug.evar_is_app_ctx_hole(name)
+            and self.pattern.evar_is_fresh(name)
+        )
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        if self.var.name == name:
+            return self.pattern.svar_is_app_ctx_hole(name) and self.plug.svar_is_app_ctx_hole(name)
+
+        # We assume that at least one instance will be replaced
+        return (self.pattern.svar_is_app_ctx_hole(name) and self.plug.svar_is_fresh(name)) or (
+            self.pattern.svar_is_app_ctx_hole(self.var.name)
+            and self.plug.svar_is_app_ctx_hole(name)
+            and self.pattern.svar_is_fresh(name)
+        )
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
@@ -496,8 +714,23 @@ class Instantiate(Pattern):
         # TODO: This should recursively remove all notation.
         return self.simplify() == o
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.pattern.evar_is_free(name) or any(value.evar_is_free(name) for value in self.inst.values())
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.simplify().evar_is_fresh(name)
+
+    def svar_is_fresh(self, name: int) -> bool:
+        return self.simplify().svar_is_fresh(name)
+
+    def svar_is_positive(self, name: int) -> bool:
+        return self.simplify().svar_is_positive(name)
+
+    def svar_is_negative(self, name: int) -> bool:
+        return self.simplify().svar_is_negative(name)
+
+    def evar_is_app_ctx_hole(self, name: int) -> bool:
+        return self.simplify().evar_is_app_ctx_hole(name)
+
+    def svar_is_app_ctx_hole(self, name: int) -> bool:
+        return self.simplify().svar_is_app_ctx_hole(name)
 
     def metavars(self) -> set[int]:
         ret: set[int] = set()
