@@ -35,6 +35,7 @@ inhabitant_symbol = Symbol('inhabitant')
 kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
 kore_kseq_symbol = Symbol('kore_kseq')
+kore_inj_symbol = Symbol('kore_inj')
 
 # TODO: Add these notations to a Definedness module that also contains the definedness axiom
 ceil = Notation('ceil', 1, App(top(), phi0), '⌈ {0} ⌉')
@@ -99,6 +100,9 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
+
+""" kore_inj(input_sort, output_sort, pattern) """
+kore_inj = Notation('kore-inj', 3, App(App(App(kore_inj_symbol, phi0), phi1), phi2), 'inj({2}:{0}):{1}')
 
 
 @cache
@@ -169,11 +173,19 @@ KORE_NOTATIONS = (
     in_sort,
 )
 
+kore_inj_id = equals(kore_inj(phi0, phi1, phi2), phi2)
+
+KORE_AXIOMS = (
+    kore_inj_id
+)
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(notations=list(KORE_NOTATIONS))
+        super().__init__(
+            axioms=list(KORE_AXIOMS),
+            notations=list(KORE_NOTATIONS)
+        )
 
 
 if __name__ == '__main__':
