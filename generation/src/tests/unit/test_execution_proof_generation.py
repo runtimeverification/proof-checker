@@ -5,32 +5,15 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule, KSortVar, LanguageSemantics
+from proof_generation.k.kore_convertion.language_semantics import KRewritingRule, LanguageSemantics
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, MetaVar
-from proof_generation.proofs.kore import kore_kseq, kore_rewrites
+from proof_generation.pattern import Instantiate
+from proof_generation.proofs.kore import kore_rewrites
+
+from tests.unit.test_kore_language_semantics import double_rewrite, rewrite_with_cell, cell_config_pattern
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    from proof_generation.pattern import Pattern
-
-
-def double_rewrite() -> LanguageSemantics:
-    # Constructs a language semantics for the double rewrite module.
-    semantics = LanguageSemantics()
-    with semantics as sem:
-        double_rwrite = sem.module('double-rewrite')
-        with double_rwrite as mod:
-            sort = mod.sort('some_sort')
-            a_symbol = mod.symbol('a', sort, is_functional=True, is_ctor=True)
-            b_symbol = mod.symbol('b', sort, is_functional=True, is_ctor=True)
-            c_symbol = mod.symbol('c', sort, is_functional=True, is_ctor=True)
-
-            # TODO: Add side conditions!
-            mod.rewrite_rule(kore_rewrites(sort.aml_symbol, a_symbol.aml_notation(), b_symbol.aml_notation()))
-            mod.rewrite_rule(kore_rewrites(sort.aml_symbol, b_symbol.aml_notation(), c_symbol.aml_notation()))
-    return semantics
 
 
 def rewrite_hints() -> list[RewriteStepExpression]:
@@ -55,55 +38,6 @@ def rewrite_hints() -> list[RewriteStepExpression]:
         {},
     )
     return [step_one, step_two]
-
-
-# TODO: Add side conditions!
-def cell_config_pattern(semantics: LanguageSemantics, kitem1: Pattern, kitem2: Pattern) -> Pattern:
-    top_cell_symbol = semantics.get_symbol('generated_top')
-    k_cell_sort = semantics.get_sort('SortKCell')
-    foo_sort = semantics.get_sort('SortFoo')
-    k_cell_symbol = semantics.get_symbol('k')
-    inj_symbol = semantics.get_symbol('inj')
-    return top_cell_symbol.aml_notation(
-        k_cell_symbol.aml_notation(
-            kore_kseq(inj_symbol.aml_notation(foo_sort.aml_symbol, k_cell_sort.aml_symbol, kitem1), kitem2)
-        )
-    )
-
-
-def rewrite_with_cell() -> LanguageSemantics:
-    semantics = LanguageSemantics()
-    with semantics as sem:
-        double_rwrite = sem.module('double-rewrite')
-        with double_rwrite as mod:
-            top_cell_sort = mod.sort('SortGeneratedTopCell')
-            k_cell_sort = mod.sort('SortKCell')
-            k_sort = mod.sort('SortK')
-            foo_sort = mod.sort('SortFoo')
-
-            mod.symbol(
-                'generated_top',
-                top_cell_sort,
-                input_sorts=(k_cell_sort,),
-                is_functional=True,
-                is_ctor=True,
-                is_cell=True,
-            )
-            mod.symbol('k', k_cell_sort, input_sorts=(k_sort,), is_functional=True, is_ctor=True, is_cell=True)
-            from_sort, to_sort = KSortVar('From'), KSortVar('To')
-            mod.symbol('inj', to_sort, sort_params=(from_sort, to_sort), input_sorts=(from_sort,))
-            a_symbol = mod.symbol('a', foo_sort, is_functional=True, is_ctor=True)
-            b_symbol = mod.symbol('b', foo_sort, is_functional=True, is_ctor=True)
-            c_symbol = mod.symbol('c', foo_sort, is_functional=True, is_ctor=True)
-            mod.symbol('dotk', k_sort, is_functional=True, is_ctor=True)
-
-            c1 = cell_config_pattern(semantics, a_symbol.aml_notation(), MetaVar(0))
-            c2 = cell_config_pattern(semantics, b_symbol.aml_notation(), MetaVar(0))
-            c3 = cell_config_pattern(semantics, c_symbol.aml_notation(), MetaVar(0))
-            mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c1, c2))
-            mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c2, c3))
-
-    return semantics
 
 
 def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
