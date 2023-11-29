@@ -23,8 +23,8 @@ class ExecutionProofExp(proof.ProofExp):
         self._curr_config = init_config
         self.language_semantics = language_semantics
         super().__init__(notations=list(language_semantics.notations))
-        self.subst_proofexp = self.add_submodule(Substitution())
-        self.kore_lemmas = self.add_submodule(kl.KoreLemmas())
+        self.subst_proofexp = self.import_module(Substitution())
+        self.kore_lemmas = self.import_module(kl.KoreLemmas())
 
     @property
     def initial_configuration(self) -> Pattern:

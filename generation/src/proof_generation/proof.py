@@ -109,7 +109,7 @@ class ProofExp:
 
     ProofExpTypeVar = TypeVar('ProofExpTypeVar', bound='ProofExp')
 
-    def add_submodule(self, module: ProofExpTypeVar) -> ProofExpTypeVar:
+    def import_module(self, module: ProofExpTypeVar) -> ProofExpTypeVar:
         self._submodules.append(module)
         self.add_notations(module.get_notations())
         return module
