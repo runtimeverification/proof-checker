@@ -190,7 +190,7 @@ class ProofExp:
     def execute_gamma_phase(self, interpreter: BasicInterpreter, move_into_claim: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma
         for submodule in self._submodules:
-            submodule.execute_gamma_phase(interpreter, move_into_claim)
+            submodule.execute_gamma_phase(interpreter, False)
         for axiom in self._axioms:
             interpreter.publish_axiom(interpreter.pattern(axiom))
         self.check_interpreting(interpreter)

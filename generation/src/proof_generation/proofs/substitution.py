@@ -29,8 +29,8 @@ class Substitution(ProofExp):
             notations=[forall(0)],
             claims=[forall(0)(top())],
         )
-        self.add_proof_expression(self.top_univgen())
         self.prop = self.add_submodule(Propositional())
+        self.add_proof_expression(self.top_univgen())
 
     def universal_gen(self, phi: ProofThunk, var: EVar) -> ProofThunk:
         """
