@@ -23,11 +23,11 @@
 |:----------------:|:-------:|:--------:|:--------:|
 | perceptron       |    11   |   3.979  |          |
 | svm5             |    9    |   2.263  |          |
-| transfer5000*    |  330387 | 2238.565 |          |
+| transfer5000*    |  330387 | 1766.207 |          |
 | transfer         |    34   |   2.522  |          |
 
 
-* Using `lurk --rc 500 transfer5000.lurk`, other tests doesn't use `--rc`
+* Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
 # Proof Checker
 
@@ -54,9 +54,9 @@
 ## Lurk
 |             Examples            | Cycles | CPU Time | GPU Time |
 |:-------------------------------:|:------:|:--------:|:--------:|
-| perceptron-goal                 |        |          |          |
-| svm5-goal                       |        |          |          |
-| transfer-batch-1k-goal          |        |          |          |
-| transfer-simple-compressed-goal |        |          |          |
-| transfer-task-specific          |        |          |          |
-| impreflex-compressed-goal       |        |          |          |
+| perceptron-goal                 | 6404208|     ∞    |          |
+| svm5-goal                       | 6404208|     ∞    |          |
+| transfer-batch-1k-goal          |30122047|     ∞    |          |
+| transfer-simple-compressed-goal | 3202986|     ∞    |          |
+| transfer-task-specific          | 148870 |  973.901 |          |
+| impreflex-compressed-goal       | 55651  |  378.14  |          |
