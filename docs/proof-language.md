@@ -573,10 +573,28 @@ Axiom schemas are `Proof`s that do not need any input arguments.
 They may use `MetaVar`s to represent their schematic nature.
 
 ```python
-class Lukasiewicz(Proof):
+class Prop1(Proof):
     def conclusion():
+        phi0 = MetaVar('phi0')
         phi1 = MetaVar('phi1')
-        return Implies(Implies(Implies(MetaVar(phi1) , ...)...)...)
+        return Implies(phi0, Implies(phi1, phi0))
+
+class Prop2(Proof):
+    def conclusion():
+        phi0 = MetaVar('phi0')
+        phi1 = MetaVar('phi1')
+        return Implies(
+                  Implies(phi0, Implies(phi1, phi2)),
+                  Implies(Implies(phi0, phi1),
+                          Implies(phi0, phi2)))
+
+class Prop3(Proof):
+    def conclusion():
+        def neg(p):
+            return Implies(p, Mu(0, SVar(X))
+
+        phi0 = MetaVar('phi0')
+        return Implies(neg(neg(phi0)), phi0)
 
 class Quantifier(Proof):
     def conclusion():
@@ -788,7 +806,7 @@ Otherwise, execution aborts, and verification fails.
 
 ### Axiom Schemas
 
-`Lukasiewicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
+`Prop1`/`Prop2`/`Prop3`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
 :   Push proof term corresponding to axiom schema onto the stack.
 
 ### Meta inference
