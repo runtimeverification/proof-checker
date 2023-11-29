@@ -23,11 +23,11 @@
 |:----------------:|:-------:|:--------:|:--------:|
 | perceptron       |    11   |   3.979  |          |
 | svm5             |    9    |   2.263  |          |
-| transfer5000     |  330387 | 2238.565 |          |
+| transfer5000*    |  330387 | 2238.565 |          |
 | transfer         |    34   |   2.522  |          |
 
 
-
+* Using `lurk --rc 500 transfer5000.lurk`, other tests doesn't use `--rc`
 
 # Proof Checker
 
