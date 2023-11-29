@@ -35,6 +35,7 @@ inhabitant_symbol = Symbol('inhabitant')
 kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
 kore_kseq_symbol = Symbol('kore_kseq')
+kore_dotk_symbol = Symbol('kore_dotk')
 kore_inj_symbol = Symbol('kore_inj')
 
 # TODO: Add these notations to a Definedness module that also contains the definedness axiom
@@ -94,6 +95,9 @@ kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, p
 # TODO: Add support for multiple apps of kseq without brackets
 """ kore_kseq(left, right) """
 kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({0} ~> {1})')
+
+""" kore_dotk """
+kore_dotk = Notation('kore-dot', 0, kore_dotk_symbol, 'k.')
 
 """ kore_in(inner_sort, outer_sort, left, right) """
 kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k⊆ {3}:{0}):{1}')
@@ -175,17 +179,13 @@ KORE_NOTATIONS = (
 
 kore_inj_id = equals(kore_inj(phi0, phi1, phi2), phi2)
 
-KORE_AXIOMS = (
-    kore_inj_id
-)
+KORE_AXIOMS = kore_inj_id
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(
-            axioms=list(KORE_AXIOMS),
-            notations=list(KORE_NOTATIONS)
-        )
+        super().__init__(axioms=list(KORE_AXIOMS), notations=list(KORE_NOTATIONS))
 
 
 if __name__ == '__main__':
