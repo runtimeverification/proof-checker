@@ -838,7 +838,8 @@ Otherwise, execution aborts, and verification fails.
     If the assumption scope contains some previous assumptions, those are removed.
 
 `ByAssumption <n>`
-:   Load the nth assumption from the assumption scope
+:   Load the nth assumption from the assumption scope as a `Proof` instance.
+    This instance will have all assumptions in the assumption scope associated with it.
 
 `ApplyDerived`
 :   Suppose there is a `Proof` at the top of the stack with $n$ assumptions, then:
