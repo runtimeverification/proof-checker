@@ -9,7 +9,7 @@ import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
 import proof_generation.proofs.propositional as prop
-from proof_generation.pattern import EVar, MetaVar, Symbol
+from proof_generation.pattern import EVar, SVar, MetaVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
