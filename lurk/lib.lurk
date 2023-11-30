@@ -282,21 +282,17 @@
                                                                           (if (= instr_u32 27) ; Pop only the first item
                                                                               (cons (cdr stack) (cons memory (cons claims (cons instructions nil))))
                                                                               (if (= instr_u32 28) ; Save
-                                                                                  (let ((term (car stack)))
-                                                                                       (cons stack (cons (append term memory) (cons claims (cons instructions nil)))))
-                                                                                  (if (= instr_u32 29) ; Load
-                                                                                      (let ((index (car instructions))
-                                                                                            (instructions (cdr instructions)))
-                                                                                           (if (eq index nil)
-                                                                                               nil ;; Error
-                                                                                               (let ((term (nth index memory)))
-                                                                                                    (if (eq term nil)
-                                                                                                        nil ;; Error
-                                                                                                        (cons (cons term stack) (cons memory (cons claims (cons instructions nil))))
-                                                                                                    )
-                                                                                               )
-                                                                                           )
-                                                                                      )
+                                                                                 (cons stack (cons (append (car stack) memory) (cons claims (cons instructions nil)))) ;; append term memory
+                                                                                 (if (= instr_u32 29) ; Load
+                                                                                    (if (eq (car instructions) nil)
+                                                                                       nil ;; Error
+                                                                                       (let ((term (nth (car instructions) memory)))
+                                                                                             (if (eq term nil)
+                                                                                                nil ;; Error
+                                                                                                (cons (cons term stack) (cons memory (cons claims (cons (cdr instructions) nil))))
+                                                                                             )
+                                                                                       )
+                                                                                    )
                                                                                       (if (= instr_u32 30) ; Publish
                                                                                           (if (eq phase 0)
                                                                                               (let ((temp (pop_stack_pattern stack))
