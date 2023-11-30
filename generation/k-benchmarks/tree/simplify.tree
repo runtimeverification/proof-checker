@@ -1,1 +1,1 @@
-reverse(node(1, 2))
+reverse(node(a, b))
