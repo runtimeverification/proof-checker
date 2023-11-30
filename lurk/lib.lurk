@@ -88,7 +88,7 @@
                         (instructions (cdr instructions)))
                         (if (eq id nil)
                            nil ;; Error
-                           (cons (cons (cons 0 (cons (symbol id) nil)) stack) (cons memory (cons claims (cons instructions nil)))) ;; (Pattern_ (symbol id))
+                           (cons (cons (cons 0 (cons (cons :inst (cons 4 (cons :id (cons id nil)))) nil)) stack) (cons memory (cons claims (cons instructions nil)))) ;; (Pattern_ (symbol id))
                         )
                   )
                   (if (= instr_u32 5) ; Implication
@@ -111,7 +111,9 @@
                               (pop2 (pop_stack_pattern (cdr pop1)))
                               (left (car pop2))
 
-                              (application (app left right))
+                              (application (cons :inst (cons 6
+                                             (cons :left (cons left
+                                             (cons :right (cons right nil)))))))
                               )
                               (cons (cons (cons 0 (cons application nil)) (cdr pop2)) (cons memory (cons claims (cons instructions nil)))) ;; (Pattern_ application)
                         )
