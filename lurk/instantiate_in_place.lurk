@@ -127,10 +127,20 @@
                                  (if (and (eq inst_left nil) (eq inst_right nil))
                                     nil
                                     (if (eq inst_left nil)
-                                        (implies left inst_right)
+                                        ;;(implies left inst_right)
+                                        (cons :inst (cons 5
+                                        (cons :left (cons left
+                                        (cons :right (cons inst_right nil))))))
                                         (if (eq inst_right nil)
-                                            (implies inst_left right)
-                                            (implies inst_left inst_right)
+                                            ;; (implies inst_left right)
+                                            (cons :inst (cons 5
+                                            (cons :left (cons inst_left
+                                            (cons :right (cons right nil))))))
+                                            
+                                            ;; (implies inst_left inst_right)
+                                            (cons :inst (cons 5
+                                            (cons :left (cons inst_left
+                                            (cons :right (cons inst_right nil))))))
                                         )
                                     )
                                  )
