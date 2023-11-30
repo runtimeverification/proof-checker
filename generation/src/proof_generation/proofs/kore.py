@@ -105,9 +105,6 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
-""" kore_inj(input_sort, output_sort, pattern) """
-kore_inj = Notation('kore-inj', 3, App(App(App(kore_inj_symbol, phi0), phi1), phi2), 'inj({2}:{0}):{1}')
-
 
 @cache
 def kore_exists(var: int) -> Notation:
@@ -124,7 +121,7 @@ def kore_exists(var: int) -> Notation:
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
 # Note that @cache is required here as we have to return the same objects for the same arguments for notation comparisons
 @cache
-def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
+def nary_app(symbol: Symbol, n: int, cell: bool = False, kseq: bool = False) -> Notation:
     """Constructs an nary application."""
     p: Pattern = symbol
     fmt_args: list[str] = []
@@ -135,6 +132,8 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     fmt: str
     if cell:
         fmt = f'<{symbol.name}> ' + ' '.join(fmt_args) + f' </{symbol.name}>'
+    elif kseq:
+        fmt = ' ~> '.join(fmt_args)
     else:
         fmt = f'{symbol.name}(' + ', '.join(fmt_args) + ')'
 
@@ -151,6 +150,10 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
             return symbol, (*args, r)
         case _:
             return p, ()
+
+
+""" kore_inj(input_sort, output_sort, pattern) """
+kore_inj = nary_app(kore_inj_symbol, 3)
 
 
 KORE_NOTATIONS = (
