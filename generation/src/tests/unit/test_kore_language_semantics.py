@@ -14,20 +14,16 @@ from proof_generation.k.kore_convertion.language_semantics import (
     LanguageSemantics,
 )
 from proof_generation.pattern import EVar, Pattern, Symbol, phi0, phi1
+from proof_generation.proofs.definedness import ceil, equals, floor, functional, subset
 from proof_generation.proofs.kore import (
     KORE_NOTATIONS,
     KoreLemmas,
-    ceil,
-    equals,
-    floor,
-    functional,
     kore_and,
     kore_equals,
     kore_implies,
     kore_rewrites,
     kore_top,
     nary_app,
-    subset,
 )
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
