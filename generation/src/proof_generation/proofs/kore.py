@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, EVar, Exists, Instantiate, MetaVar, Notation, Symbol, _and, _or, bot, neg
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.definedness import Definedness, ceil, subset
+from proof_generation.proofs.definedness import Definedness, ceil, subset, equals
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
