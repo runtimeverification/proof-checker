@@ -67,7 +67,7 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
 
 
 def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
-    return f'<kore_generated_top> <kore_k> (kore_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </kore_k> </kore_generated_top>'
+    return f'<ksymb_generated_top> <ksymb_k> (ksymb_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </ksymb_k> </ksymb_generated_top>'
 
 
 rewrite_test_parameters = [(double_rewrite, rewrite_hints), (rewrite_with_cell, rewrite_hints_with_cell)]
@@ -123,32 +123,32 @@ pretty_print_testing = [
     (
         double_rewrite,
         rewrite_hints,
-        ('(kore_a() k=> kore_b()):ksort_some_sort', '(kore_b() k=> kore_c()):ksort_some_sort'),
-        ('kore_a()', 'kore_b()', 'kore_c()'),
-        ('(kore_a() k=> kore_b()):ksort_some_sort', '(kore_b() k=> kore_c()):ksort_some_sort'),
+        ('(ksymb_a() k=> ksymb_b()):ksort_some_sort', '(ksymb_b() k=> ksymb_c()):ksort_some_sort'),
+        ('ksymb_a()', 'ksymb_b()', 'ksymb_c()'),
+        ('(ksymb_a() k=> ksymb_b()):ksort_some_sort', '(ksymb_b() k=> ksymb_c()):ksort_some_sort'),
     ),
     (
         rewrite_with_cell,
         rewrite_hints_with_cell,
         (
-            '(' + cell_pretty_conf('kore_a') + ' k=> ' + cell_pretty_conf('kore_b') + '):ksort_SortGeneratedTopCell',
-            '(' + cell_pretty_conf('kore_b') + ' k=> ' + cell_pretty_conf('kore_c') + '):ksort_SortGeneratedTopCell',
+            '(' + cell_pretty_conf('ksymb_a') + ' k=> ' + cell_pretty_conf('ksymb_b') + '):ksort_SortGeneratedTopCell',
+            '(' + cell_pretty_conf('ksymb_b') + ' k=> ' + cell_pretty_conf('ksymb_c') + '):ksort_SortGeneratedTopCell',
         ),
         (
-            cell_pretty_conf('kore_a', 'kore_dotk()'),
-            cell_pretty_conf('kore_b', 'kore_dotk()'),
-            cell_pretty_conf('kore_c', 'kore_dotk()'),
+            cell_pretty_conf('ksymb_a', 'ksymb_dotk()'),
+            cell_pretty_conf('ksymb_b', 'ksymb_dotk()'),
+            cell_pretty_conf('ksymb_c', 'ksymb_dotk()'),
         ),
         (
             '('
-            + cell_pretty_conf('kore_a', 'kore_dotk()')
+            + cell_pretty_conf('ksymb_a', 'ksymb_dotk()')
             + ' k=> '
-            + cell_pretty_conf('kore_b', 'kore_dotk()')
+            + cell_pretty_conf('ksymb_b', 'ksymb_dotk()')
             + '):ksort_SortGeneratedTopCell',
             '('
-            + cell_pretty_conf('kore_b', 'kore_dotk()')
+            + cell_pretty_conf('ksymb_b', 'ksymb_dotk()')
             + ' k=> '
-            + cell_pretty_conf('kore_c', 'kore_dotk()')
+            + cell_pretty_conf('ksymb_c', 'ksymb_dotk()')
             + '):ksort_SortGeneratedTopCell',
         ),
     ),

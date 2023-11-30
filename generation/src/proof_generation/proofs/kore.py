@@ -48,7 +48,7 @@ in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0
 @cache
 def sorted_exists(var: int) -> Notation:
     """sorted_exists(inner_sort, pattern)"""
-    # TODO: Don't forget to save the result of the function call to a proof expression object
+    # TODO: It is not included in any KORE.notations
     return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), '( ∃ x{var}:{0} . {1} )')
 
 
@@ -104,7 +104,6 @@ kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 @cache
 def kore_exists(var: int) -> Notation:
     """kore_exists(inner_sort, outer_sort, pattern)"""
-    # TODO: Don't forget to save the result of the function call to a proof expression object
     return Notation(
         'kore-exists',
         3,

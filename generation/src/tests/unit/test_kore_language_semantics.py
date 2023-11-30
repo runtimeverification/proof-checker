@@ -22,9 +22,9 @@ from proof_generation.proofs.kore import (
     floor,
     functional,
     kore_and,
-    kore_dv,
     kore_equals,
     kore_implies,
+    kore_in,
     kore_kseq,
     kore_rewrites,
     kore_top,
@@ -94,7 +94,6 @@ def node_tree() -> LanguageSemantics:
             top_cell_sort = mod.sort('SortGeneratedTopCell')
             k_cell_sort = mod.sort('SortKCell')
             k_sort = mod.sort('SortK')
-            int_sort = mod.sort('SortInt')
             tree_sort = mod.sort('SortTree')
 
             mod.symbol(
@@ -107,7 +106,7 @@ def node_tree() -> LanguageSemantics:
             )
             mod.symbol('k', k_cell_sort, input_sorts=(k_sort,), is_functional=True, is_ctor=True, is_cell=True)
             from_sort, to_sort = KSortVar('From'), KSortVar('To')
-            inj_symbol = mod.symbol('inj', to_sort, sort_params=(from_sort, to_sort), input_sorts=(from_sort,))
+            mod.symbol('inj', to_sort, sort_params=(from_sort, to_sort), input_sorts=(from_sort,))
 
             init_symbol = mod.symbol('init', tree_sort, is_functional=True, is_ctor=True)
             next_symbol = mod.symbol('next', tree_sort, is_functional=True, is_ctor=True)
@@ -115,22 +114,82 @@ def node_tree() -> LanguageSemantics:
                 'node', tree_sort, input_sorts=(tree_sort, tree_sort), is_functional=True, is_ctor=True
             )
             reverse_symbol = mod.symbol('reverse', tree_sort, input_sorts=(tree_sort,), is_functional=True)
+            a_symbol = mod.symbol('a', tree_sort, is_functional=True, is_ctor=True)
+            b_symbol = mod.symbol('b', tree_sort, is_functional=True, is_ctor=True)
 
             # init{}() => next{}()
             init_conf = simplified_cell_config_pattern(semantics, 'SortTree', init_symbol.aml_notation())
             next_conf = simplified_cell_config_pattern(semantics, 'SortTree', next_symbol.aml_notation())
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, init_conf, next_conf))
 
-            # next => reverse(node(1, 2))
-            one_expr = inj_symbol.aml_notation(
-                int_sort.aml_symbol, tree_sort.aml_symbol, kore_dv(int_sort.aml_symbol, Symbol('1'))
+            # next => reverse(node(a, b))
+            reverse_expression = reverse_symbol.aml_notation(
+                node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())
             )
-            two_expr = inj_symbol.aml_notation(
-                int_sort.aml_symbol, tree_sort.aml_symbol, kore_dv(int_sort.aml_symbol, Symbol('2'))
-            )
-            reverse_expression = reverse_symbol.aml_notation(node_symbol.aml_notation(one_expr, two_expr))
             reverse_conf = simplified_cell_config_pattern(semantics, 'SortTree', reverse_expression)
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, next_conf, reverse_conf))
+
+            # reverse(a) <-> a
+            tr_sort_ptn = tree_sort.aml_symbol
+            tr_top = kore_top(tr_sort_ptn)
+            requires = kore_and(
+                tr_sort_ptn,
+                tr_top,
+                kore_and(
+                    tr_sort_ptn,
+                    kore_in(tr_sort_ptn, tr_sort_ptn, EVar(0), kore_and(tr_sort_ptn, EVar(1), a_symbol.aml_notation())),
+                    tr_top,
+                ),
+            )
+            left = reverse_symbol.aml_notation(EVar(0))
+            right = EVar(1)
+            ensures = tr_top
+            equational_pattern = kore_implies(
+                tr_sort_ptn,
+                requires,
+                kore_equals(tr_sort_ptn, tr_sort_ptn, left, kore_and(tr_sort_ptn, right, ensures)),
+            )
+            mod.equational_rule(equational_pattern)
+
+            # reverse(b) <-> b
+            requires = kore_and(
+                tr_sort_ptn,
+                tr_top,
+                kore_and(
+                    tr_sort_ptn,
+                    kore_in(tr_sort_ptn, tr_sort_ptn, EVar(0), kore_and(tr_sort_ptn, EVar(1), b_symbol.aml_notation())),
+                    tr_top,
+                ),
+            )
+            equational_pattern = kore_implies(
+                tr_sort_ptn,
+                requires,
+                kore_equals(tr_sort_ptn, tr_sort_ptn, left, kore_and(tr_sort_ptn, right, ensures)),
+            )
+            mod.equational_rule(equational_pattern)
+
+            # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+            requires = kore_and(
+                tr_sort_ptn,
+                tr_top,
+                kore_and(
+                    tr_sort_ptn,
+                    kore_in(tr_sort_ptn, tr_sort_ptn, EVar(0), node_symbol.aml_notation(EVar(1), EVar(2))),
+                    tr_top,
+                ),
+            )
+            eq3_left = reverse_symbol.aml_notation(EVar(0))
+            eq3_right = node_symbol.aml_notation(
+                reverse_symbol.aml_notation(EVar(2)), reverse_symbol.aml_notation(EVar(1))
+            )
+            ensures = tr_top
+            mod.equational_rule(
+                kore_implies(
+                    tr_sort_ptn,
+                    requires,
+                    kore_equals(tr_sort_ptn, tr_sort_ptn, eq3_left, kore_and(tr_sort_ptn, eq3_right, ensures)),
+                )
+            )
 
     return semantics
 
@@ -242,7 +301,7 @@ def test_symbols() -> None:
     sym = KSymbol('sym', (), srt1)
     assert sym.name == 'sym'
     assert sym.output_sort == srt1
-    assert sym.aml_symbol == Symbol('kore_sym')
+    assert sym.aml_symbol == Symbol('ksymb_sym')
     assert not sym.is_functional
     assert not sym.is_ctor
     assert not sym.is_cell
@@ -258,7 +317,7 @@ def test_symbols() -> None:
     assert fsym.name == 'fsym'
     assert fsym.output_sort == srt1
     assert fsym.input_sorts == (srt1, srt2)
-    assert fsym.aml_symbol == Symbol('kore_fsym')
+    assert fsym.aml_symbol == Symbol('ksymb_fsym')
     assert fsym.is_functional
     assert not fsym.is_ctor
     assert not fsym.is_cell
@@ -275,7 +334,7 @@ def test_symbols() -> None:
     assert cell_sym.name == 'cell'
     assert cell_sym.output_sort == srt1
     assert cell_sym.input_sorts == (srt1, srt2)
-    assert cell_sym.aml_symbol == Symbol('kore_cell')
+    assert cell_sym.aml_symbol == Symbol('ksymb_cell')
     assert cell_sym.is_functional
     assert not cell_sym.is_ctor
     assert cell_sym.is_cell
@@ -290,26 +349,26 @@ def test_symbol_params() -> None:
     symbol1 = KSymbol('symbol1', (), sort1)
     assert symbol1.input_sorts == ()
     assert symbol1.sort_params == ()
-    assert symbol1.aml_symbol == Symbol('kore_symbol1')
-    assert symbol1.aml_notation == nary_app(Symbol('kore_symbol1'), 0, False)
+    assert symbol1.aml_symbol == Symbol('ksymb_symbol1')
+    assert symbol1.aml_notation == nary_app(Symbol('ksymb_symbol1'), 0, False)
 
     symbol2 = KSymbol('symbol2', (sort2,), sort1, (sort1, sort2))
     assert symbol2.input_sorts == (sort1, sort2)
     assert symbol2.sort_params == (sort2,)
-    assert symbol2.aml_symbol == Symbol('kore_symbol2')
-    assert symbol2.aml_notation == nary_app(Symbol('kore_symbol2'), 3, False)
+    assert symbol2.aml_symbol == Symbol('ksymb_symbol2')
+    assert symbol2.aml_notation == nary_app(Symbol('ksymb_symbol2'), 3, False)
 
     symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2), is_functional=True)
     assert symbol3.input_sorts == (sort1, sort2)
     assert symbol3.sort_params == (sort2, sort3)
-    assert symbol3.aml_symbol == Symbol('kore_symbol3')
-    assert symbol3.aml_notation == nary_app(Symbol('kore_symbol3'), 4, False)
+    assert symbol3.aml_symbol == Symbol('ksymb_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('ksymb_symbol3'), 4, False)
 
     symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2, sort2), is_functional=True, is_cell=True)
     assert symbol3.input_sorts == (sort1, sort2, sort2)
     assert symbol3.sort_params == (sort2, sort3)
-    assert symbol3.aml_symbol == Symbol('kore_symbol3')
-    assert symbol3.aml_notation == nary_app(Symbol('kore_symbol3'), 5, True)
+    assert symbol3.aml_symbol == Symbol('ksymb_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('ksymb_symbol3'), 5, True)
 
 
 def test_module_symbols() -> None:
@@ -448,14 +507,14 @@ def test_rules() -> None:
     assert mod.get_axiom(equation_rule2.ordinal) == equation_rule2
 
     # Check pretty printed versions
-    assert rewrite_rule.pattern.pretty(pretty_opt) == '(kore_sym1 k=> kore_sym2(kore_sym1)):ksort_srt1'
+    assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksymb_sym1 k=> ksymb_sym2(ksymb_sym1)):ksort_srt1'
     assert (
         equation_rule1.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (kore_sym1():ksort_srt1 k= (kore_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
+        == '(k⊤:ksort_srt1 k-> (ksymb_sym1():ksort_srt1 k= (ksymb_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
     )
     assert (
         equation_rule2.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (kore_sym4():ksort_srt2 k= (kore_sym2(kore_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
+        == '(k⊤:ksort_srt1 k-> (ksymb_sym4():ksort_srt2 k= (ksymb_sym2(ksymb_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
     )
 
 
@@ -623,3 +682,40 @@ def test_collect_functional_axioms() -> None:
 def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
     pretty_opt = KoreLemmas().pretty_options()
     assert pat.pretty(pretty_opt) == pretty_pat
+
+
+def test_locate_simplifications() -> None:
+    semantics = node_tree()
+    proof_expr = KoreLemmas()
+    proof_expr.add_notations(list(semantics.notations))
+
+    init_rewrite = semantics.get_axiom(0)
+    next_rewrite = semantics.get_axiom(1)
+    base_equation_a = semantics.get_axiom(2)
+    base_equation_b = semantics.get_axiom(3)
+    reversed_equation = semantics.get_axiom(4)
+
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    intermidiate_config1 = simplified_cell_config_pattern(
+        semantics,
+        'SortTree',
+        node_symbol.aml_notation(
+            reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation())
+        ),
+    )
+    intermidiate_config2 = simplified_cell_config_pattern(
+        semantics,
+        'SortTree',
+        reverse_symbol.aml_notation(node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())),
+    )
+
+    assert semantics.count_simplifications(init_rewrite.pattern) == 6
+    assert semantics.count_simplifications(next_rewrite.pattern) == 9
+    assert semantics.count_simplifications(base_equation_a.pattern) == 2
+    assert semantics.count_simplifications(base_equation_b.pattern) == 2
+    assert semantics.count_simplifications(reversed_equation.pattern) == 5
+    assert semantics.count_simplifications(intermidiate_config1) == 7
+    assert semantics.count_simplifications(intermidiate_config2) == 6

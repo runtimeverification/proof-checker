@@ -96,8 +96,8 @@ def test_proof_trace_single_rewrite() -> None:
     assert isinstance(pre_symbol, Symbol)
     assert isinstance(post_symbol, Symbol)
 
-    assert pre_symbol.name == "kore_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
-    assert post_symbol.name == "kore_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
+    assert pre_symbol.name == "ksymb_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
+    assert post_symbol.name == "ksymb_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
 
     # No more rewrites rewrite
     assert next(iterator, None) == None
@@ -124,8 +124,8 @@ def test_proof_trace_double_rewrite() -> None:
     assert isinstance(pre_symbol, Symbol)
     assert isinstance(post_symbol, Symbol)
 
-    assert pre_symbol.name == "kore_LblFooA'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
-    assert post_symbol.name == "kore_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
+    assert pre_symbol.name == "ksymb_LblFooA'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
+    assert post_symbol.name == "ksymb_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
 
     # Second rewrite
     hint = next(iterator, None)
@@ -140,8 +140,8 @@ def test_proof_trace_double_rewrite() -> None:
     assert isinstance(pre_symbol, Symbol)
     assert isinstance(post_symbol, Symbol)
 
-    assert pre_symbol.name == "kore_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
-    assert post_symbol.name == "kore_LblFooC'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
+    assert pre_symbol.name == "ksymb_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
+    assert post_symbol.name == "ksymb_LblFooC'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
 
     # No more rewrites rewrite
     assert next(iterator, None) == None
