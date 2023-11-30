@@ -675,9 +675,7 @@ class LanguageSemantics(BuilderScope):
                 exists_outer_sort_pattern: Pattern = self.convert_sort(scope, sort)
                 exists_var_pattern: Pattern = self._convert_pattern(scope, var)
                 exists_pattern: Pattern = self._convert_pattern(scope, pattern)
-                # TODO: This should be fixed after functional substitution is implemented
-                # assert isinstance(exists_var_pattern, EVar | SVar)
-                assert isinstance(exists_var_pattern, MetaVar)
+                assert isinstance(exists_var_pattern, EVar | SVar)
 
                 custom_exists_notation = kl.kore_exists(exists_var_pattern.name)
                 self._inferred_notations.add(custom_exists_notation)
