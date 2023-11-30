@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
-import proof_generation.proofs.propositional as prop
 from proof_generation.pattern import App, EVar, Instantiate, MetaVar, Pattern, Symbol
 
 if TYPE_CHECKING:
@@ -389,7 +388,7 @@ class LanguageSemantics(BuilderScope):
         symbols = self.symbols
         notations = [sym.aml_notation for sym in symbols]
 
-        return (*prop.PROPOSITIONAL_NOTATIONS, *kl.KORE_NOTATIONS, *dict.fromkeys(notations), *self._inferred_notations)
+        return (*dict.fromkeys(notations), *self._inferred_notations)
 
     def __enter__(self) -> LanguageSemantics:
         """It is not allows to change the semantics except while parsing."""

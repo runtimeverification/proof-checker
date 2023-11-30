@@ -4,20 +4,7 @@ import sys
 from functools import cache
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import (
-    App,
-    EVar,
-    Exists,
-    Instantiate,
-    MetaVar,
-    Notation,
-    Symbol,
-    _and,
-    _or,
-    bot,
-    equiv,
-    neg,
-)
+from proof_generation.pattern import App, EVar, Exists, Instantiate, MetaVar, Notation, Symbol, _and, _or, bot, neg
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import Definedness, ceil, subset
 
@@ -35,10 +22,7 @@ kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
 kore_kseq_symbol = Symbol('kore_kseq')
 
-# TODO: Add these notations to a Definedness module that also contains the definedness axiom
-floor = Notation('floor', 1, neg(ceil(neg(phi0))), '⌊ {0} ⌋')
-equals = Notation('equals', 2, floor(equiv(phi0, phi1)), '({0} = {1})')
-functional = Notation('functional', 1, Exists(0, equals(EVar(0), MetaVar(0, (EVar(0),)))), 'functional({0})')
+""" in_sort(element, sort) """
 in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0}:{1}')
 
 
@@ -46,7 +30,7 @@ in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0
 def sorted_exists(var: int) -> Notation:
     """sorted_exists(inner_sort, pattern)"""
     # TODO: It is not included in any KORE.notations
-    return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), '( ∃ x{var}:{0} . {1} )')
+    return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), f'( ∃ x{var}:{0} . {1} )')
 
 
 """ kore_top(sort) """
@@ -105,7 +89,7 @@ def kore_exists(var: int) -> Notation:
         'kore-exists',
         3,
         _and(sorted_exists(var)(phi0, phi2), App(inhabitant_symbol, phi1)),
-        '( k∃ {var}:{0} . {2}):{1}',
+        f'( k∃ {var}:{0} . {2}):{1}',
     )
 
 
@@ -168,11 +152,6 @@ KORE_NOTATIONS = (
     kore_kseq,
     kore_in,
     kore_bottom,
-    ceil,
-    floor,
-    subset,
-    equals,
-    functional,
     in_sort,
 )
 

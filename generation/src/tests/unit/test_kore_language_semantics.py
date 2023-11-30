@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from itertools import count
+from typing import TYPE_CHECKING
 
 from pytest import mark, raises
 
@@ -14,14 +15,10 @@ from proof_generation.k.kore_convertion.language_semantics import (
     LanguageSemantics,
 )
 from proof_generation.pattern import EVar, MetaVar, Pattern, Symbol, phi0, phi1
-from proof_generation.proofs.definedness import subset
+from proof_generation.proofs.definedness import equals, floor, functional, subset
 from proof_generation.proofs.kore import (
-    KORE_NOTATIONS,
     KoreLemmas,
     ceil,
-    equals,
-    floor,
-    functional,
     kore_and,
     kore_equals,
     kore_implies,
@@ -31,7 +28,9 @@ from proof_generation.proofs.kore import (
     kore_top,
     nary_app,
 )
-from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
+
+if TYPE_CHECKING:
+    from proof_generation.pattern import PrettyOptions
 
 
 def double_rewrite() -> LanguageSemantics:
@@ -234,6 +233,11 @@ def simple_semantics() -> LanguageSemantics:
     return semantics
 
 
+def pretty_options(semantics: LanguageSemantics) -> PrettyOptions:
+    proof_expr = ExecutionProofExp(semantics, EVar(0))
+    return proof_expr.pretty_options()
+
+
 def test_module_creation() -> None:
     semantics = LanguageSemantics()
     with semantics as sem:
@@ -252,8 +256,6 @@ def test_module_creation() -> None:
 def test_language_semantics_notations() -> None:
     semantics: LanguageSemantics = simple_semantics()
     expected_notations = {
-        *set(KORE_NOTATIONS),
-        *set(PROPOSITIONAL_NOTATIONS),
         *{s.aml_notation for s in semantics.main_module.symbols},
     }
 
@@ -472,10 +474,6 @@ def test_rules() -> None:
     assert equation_rule1.ordinal == 1
     assert equation_rule2.ordinal == 2
 
-    proof_expr = KoreLemmas()
-    proof_expr.add_notations(list(semantics.notations))
-    pretty_opt = proof_expr.pretty_options()
-
     # Check decomposition of pattern 1
     assert rewrite_rule.pattern == rewrite_pattern
     assert equation_rule1.requires == requires1
@@ -507,6 +505,7 @@ def test_rules() -> None:
     assert mod.get_axiom(equation_rule2.ordinal) == equation_rule2
 
     # Check pretty printed versions
+    pretty_opt = pretty_options(semantics)
     assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksymb_sym1 k=> ksymb_sym2(ksymb_sym1)):ksort_srt1'
     assert (
         equation_rule1.pattern.pretty(pretty_opt)
@@ -622,8 +621,6 @@ def test_module_import() -> None:
 
     # Test that semantics notations are updated
     assert set(semantics.notations) == {
-        *set(KORE_NOTATIONS),
-        *set(PROPOSITIONAL_NOTATIONS),
         *{s.aml_notation for s in ever_created_symbols},
     }
 
