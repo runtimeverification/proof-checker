@@ -99,7 +99,9 @@
                            (pop2 (pop_stack_pattern (cdr pop1)))
                            (left (car pop2))
 
-                           (implication (implies left right))
+                           (implication (cons :inst (cons 5
+                                          (cons :left (cons left
+                                          (cons :right (cons right nil))))))) ; (implies left right))
                            )
                            (cons (cons (Pattern_ implication) (cdr pop2)) (cons memory (cons claims (cons instructions nil))))
                      )
@@ -333,7 +335,14 @@
                                                                                                     (instructions (cdr instructions)))
                                                                                                    (if (eq id nil)
                                                                                                        nil ;; Error
-                                                                                                       (cons (cons (Pattern_ (metavar_unconstrained id)) stack) (cons memory (cons claims (cons instructions nil))))
+                                                                                                       (cons (cons (Pattern_ (cons :inst (cons 9
+                                                                                                                              (cons :id (cons id
+                                                                                                                              (cons :e_fresh (cons nil
+                                                                                                                              (cons :s_fresh (cons nil
+                                                                                                                              (cons :positive (cons nil
+                                                                                                                              (cons :negative (cons nil
+                                                                                                                              (cons :app_ctx_holes (cons nil nil)))))))))))))) ;; (metavar_unconstrained id)
+                                                                                                         ) stack) (cons memory (cons claims (cons instructions nil))))
 
                                                                                                    )
                                                                                               )
