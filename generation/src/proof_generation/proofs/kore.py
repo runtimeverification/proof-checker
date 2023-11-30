@@ -133,6 +133,7 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     return Notation(symbol.name, n, p, fmt)
 
 
+@cache
 def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ...]]:
     match p:
         case Instantiate(_, _):
@@ -143,6 +144,16 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
             return symbol, (*args, r)
         case _:
             return p, ()
+
+
+@cache
+def deconstruct_equality_rule(pattern: Pattern) -> tuple[Pattern, Pattern, Pattern, Pattern, Pattern]:
+    _, requires, imp_right = kore_implies.assert_matches(pattern)
+    _, _, eq_left, eq_right_and_ensures = kore_equals.assert_matches(imp_right)
+
+    # TODO: Potentially there can be more than one arg, but we have an assertion at converting kore patterns to catch such cases
+    _, eq_right, ensures = kore_and.assert_matches(eq_right_and_ensures)
+    return requires, eq_left, eq_right_and_ensures, eq_right, ensures
 
 
 KORE_NOTATIONS = (

@@ -92,52 +92,30 @@ class KEquationalRule:
     ordinal: int
     pattern: Pattern
 
-    # We need thse constants for adding computed attributes
-    REQUIRES_HIDDEN_ATTR = '_requires'
-    ENSURES_HIDDEN_ATTR = '_ensures'
-    LEFT_HIDDEN_ATTR = '_left'
-    RIGHT_HIDDEN_ATTR = '_right'
-
-    def __post_init__(self) -> None:
-        # Compute new attributes from the inout data and save them to the frozen object
-        requires, eq_left, eq_right, ensures = self._deconstruct()
-        object.__setattr__(self, KEquationalRule.REQUIRES_HIDDEN_ATTR, requires)
-        object.__setattr__(self, KEquationalRule.LEFT_HIDDEN_ATTR, eq_left)
-        object.__setattr__(self, KEquationalRule.RIGHT_HIDDEN_ATTR, eq_right)
-        object.__setattr__(self, KEquationalRule.ENSURES_HIDDEN_ATTR, ensures)
-
-    # The typechecker requires these properties to be defined,
-    # adding properties by setattr only does not work
     @property
     def requires(self) -> Pattern:
-        return getattr(self, KEquationalRule.REQUIRES_HIDDEN_ATTR)
+        requires, *_ = kl.deconstruct_equality_rule(self.pattern)
+        return requires
 
     @property
     def left(self) -> Pattern:
-        return getattr(self, KEquationalRule.LEFT_HIDDEN_ATTR)
+        _, eq_left, *_ = kl.deconstruct_equality_rule(self.pattern)
+        return eq_left
+
+    @property
+    def rhs_with_ensures(self) -> Pattern:
+        _, _, implies_rhs, *_ = kl.deconstruct_equality_rule(self.pattern)
+        return implies_rhs
 
     @property
     def right(self) -> Pattern:
-        return getattr(self, KEquationalRule.RIGHT_HIDDEN_ATTR)
+        _, _, _, eq_right, _ = kl.deconstruct_equality_rule(self.pattern)
+        return eq_right
 
     @property
-    def ensures(self) -> Pattern | None:
-        return getattr(self, KEquationalRule.ENSURES_HIDDEN_ATTR)
-
-    def _deconstruct(self) -> tuple[Pattern, Pattern, Pattern, Pattern | None]:
-        _, requires, right = kl.kore_implies.assert_matches(self.pattern)
-        if eq_match := kl.kore_equals.matches(right):
-            _, _, eq_left, eq_right = eq_match
-            ensures = None
-        else:
-            _, and_lhs, and_rhs = kl.kore_and.assert_matches(right)
-            if eq_match := kl.kore_equals.matches(and_lhs):
-                _, _, eq_left, eq_right = eq_match
-                ensures = and_rhs
-            else:
-                _, _, eq_left, eq_right = kl.kore_equals.assert_matches(and_rhs)
-                ensures = and_lhs
-        return requires, eq_left, eq_right, ensures
+    def ensures(self) -> Pattern:
+        _, _, _, _, ensures = kl.deconstruct_equality_rule(self.pattern)
+        return ensures
 
 
 class BuilderScope:

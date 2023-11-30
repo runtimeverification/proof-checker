@@ -5,15 +5,16 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule, LanguageSemantics
+from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate
 from proof_generation.proofs.kore import kore_rewrites
-
-from tests.unit.test_kore_language_semantics import double_rewrite, rewrite_with_cell, cell_config_pattern
+from tests.unit.test_kore_language_semantics import cell_config_pattern, double_rewrite, rewrite_with_cell
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
 
 
 def rewrite_hints() -> list[RewriteStepExpression]:

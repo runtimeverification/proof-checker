@@ -13,7 +13,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSymbol,
     LanguageSemantics,
 )
-from proof_generation.pattern import EVar, Pattern, Symbol, MetaVar, phi0, phi1
+from proof_generation.pattern import EVar, MetaVar, Pattern, Symbol, phi0, phi1
 from proof_generation.proofs.kore import (
     KORE_NOTATIONS,
     KoreLemmas,
@@ -22,16 +22,16 @@ from proof_generation.proofs.kore import (
     floor,
     functional,
     kore_and,
+    kore_dv,
     kore_equals,
     kore_implies,
+    kore_kseq,
     kore_rewrites,
     kore_top,
     nary_app,
     subset,
-    kore_dv
 )
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
-from proof_generation.proofs.kore import kore_kseq
 
 
 def double_rewrite() -> LanguageSemantics:
@@ -60,7 +60,7 @@ def rewrite_with_cell() -> LanguageSemantics:
             k_cell_sort = mod.sort('SortKCell')
             k_sort = mod.sort('SortK')
             foo_sort = mod.sort('SortFoo')
-            
+
             mod.symbol(
                 'generated_top',
                 top_cell_sort,
@@ -108,10 +108,12 @@ def node_tree() -> LanguageSemantics:
             mod.symbol('k', k_cell_sort, input_sorts=(k_sort,), is_functional=True, is_ctor=True, is_cell=True)
             from_sort, to_sort = KSortVar('From'), KSortVar('To')
             inj_symbol = mod.symbol('inj', to_sort, sort_params=(from_sort, to_sort), input_sorts=(from_sort,))
-            
+
             init_symbol = mod.symbol('init', tree_sort, is_functional=True, is_ctor=True)
             next_symbol = mod.symbol('next', tree_sort, is_functional=True, is_ctor=True)
-            node_symbol = mod.symbol('node', tree_sort, input_sorts=(tree_sort, tree_sort), is_functional=True, is_ctor=True)
+            node_symbol = mod.symbol(
+                'node', tree_sort, input_sorts=(tree_sort, tree_sort), is_functional=True, is_ctor=True
+            )
             reverse_symbol = mod.symbol('reverse', tree_sort, input_sorts=(tree_sort,), is_functional=True)
 
             # init{}() => next{}()
@@ -120,10 +122,15 @@ def node_tree() -> LanguageSemantics:
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, init_conf, next_conf))
 
             # next => reverse(node(1, 2))
-            one_expr = inj_symbol.aml_notation(int_sort.aml_symbol, tree_sort.aml_symbol, kore_dv(int_sort.aml_symbol, Symbol('1')))
-            two_expr = inj_symbol.aml_notation(int_sort.aml_symbol, tree_sort.aml_symbol, kore_dv(int_sort.aml_symbol, Symbol('2')))
-            reverse_expression = reverse_symbol.aml_notation(node_symbol.aml_notation(one_expr , two_expr))
+            one_expr = inj_symbol.aml_notation(
+                int_sort.aml_symbol, tree_sort.aml_symbol, kore_dv(int_sort.aml_symbol, Symbol('1'))
+            )
+            two_expr = inj_symbol.aml_notation(
+                int_sort.aml_symbol, tree_sort.aml_symbol, kore_dv(int_sort.aml_symbol, Symbol('2'))
+            )
+            reverse_expression = reverse_symbol.aml_notation(node_symbol.aml_notation(one_expr, two_expr))
             reverse_conf = simplified_cell_config_pattern(semantics, 'SortTree', reverse_expression)
+            mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, next_conf, reverse_conf))
 
     return semantics
 
@@ -141,6 +148,7 @@ def cell_config_pattern(semantics: LanguageSemantics, kitem1: Pattern, kitem2: P
         )
     )
 
+
 def simplified_cell_config_pattern(semantics: LanguageSemantics, input_sort_name: str, kitem: Pattern) -> Pattern:
     top_cell_symbol = semantics.get_symbol('generated_top')
     k_cell_sort = semantics.get_sort('SortKCell')
@@ -148,9 +156,7 @@ def simplified_cell_config_pattern(semantics: LanguageSemantics, input_sort_name
     k_cell_symbol = semantics.get_symbol('k')
     inj_symbol = semantics.get_symbol('inj')
     return top_cell_symbol.aml_notation(
-        k_cell_symbol.aml_notation(
-            inj_symbol.aml_notation(internal_sort.aml_symbol, k_cell_sort.aml_symbol, kitem)
-        )
+        k_cell_symbol.aml_notation(inj_symbol.aml_notation(internal_sort.aml_symbol, k_cell_sort.aml_symbol, kitem))
     )
 
 
@@ -373,55 +379,58 @@ def test_rules() -> None:
     sym4 = semantics.get_symbol('sym4')  # Sort2
     mod = semantics.main_module
 
+    # Rewrite pattern
     rewrite_pattern = kore_rewrites(sort1.aml_symbol, sym1.aml_symbol, sym2.aml_notation(sym1.aml_symbol))
+
+    # Equation patterns
     requires1 = kore_top(sort1.aml_symbol)
     left1 = sym1.aml_notation()
     right1 = sym3.aml_notation()
-    ensures1 = None
+    ensures1 = kore_top(sort1.aml_symbol)
+    rhs_with_ensures1 = kore_and(sort1.aml_symbol, right1, ensures1)
+    equation_pattern1 = kore_implies(
+        sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, rhs_with_ensures1)
+    )
+
     requires2 = kore_top(sort1.aml_symbol)
     left2 = sym4.aml_notation()
     right2 = sym2.aml_notation(sym1.aml_symbol)
     ensures2 = kore_top(sort2.aml_symbol)
-    equation_pattern1 = kore_implies(
-        sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, right1)
-    )
+    rhs_with_ensures2 = kore_and(sort2.aml_symbol, right2, ensures2)
     equation_pattern2 = kore_implies(
         sort2.aml_symbol,
         requires2,
-        kore_and(sort2.aml_symbol, kore_equals(sort2.aml_symbol, sort2.aml_symbol, left2, right2), ensures2),
-    )
-    equation_pattern3 = kore_implies(
-        sort2.aml_symbol,
-        requires2,
-        kore_and(sort2.aml_symbol, ensures2, kore_equals(sort2.aml_symbol, sort2.aml_symbol, right2, left2)),
+        kore_equals(sort2.aml_symbol, sort2.aml_symbol, left2, rhs_with_ensures2),
     )
 
     with mod as m:
         rewrite_rule = m.rewrite_rule(rewrite_pattern)
         equation_rule1 = m.equational_rule(equation_pattern1)
         equation_rule2 = m.equational_rule(equation_pattern2)
-        equation_rule3 = m.equational_rule(equation_pattern3)
 
     # Check ordinals
     assert rewrite_rule.ordinal == 0
     assert equation_rule1.ordinal == 1
     assert equation_rule2.ordinal == 2
-    assert equation_rule3.ordinal == 3
 
-    # Check decomposition of patterns
+    proof_expr = KoreLemmas()
+    proof_expr.add_notations(list(semantics.notations))
+    pretty_opt = proof_expr.pretty_options()
+
+    # Check decomposition of pattern 1
     assert rewrite_rule.pattern == rewrite_pattern
     assert equation_rule1.requires == requires1
     assert equation_rule1.left == left1
     assert equation_rule1.right == right1
     assert equation_rule1.ensures == ensures1
+    assert equation_rule1.rhs_with_ensures == rhs_with_ensures1
+
+    # Check the decomposition of pattern 2
     assert equation_rule2.requires == requires2
     assert equation_rule2.left == left2
     assert equation_rule2.right == right2
     assert equation_rule2.ensures == ensures2
-    assert equation_rule3.requires == requires2
-    assert equation_rule3.left == right2
-    assert equation_rule3.right == left2
-    assert equation_rule3.ensures == ensures2
+    assert equation_rule2.rhs_with_ensures == rhs_with_ensures2
 
     # Check that the rule is imported
     assert rewrite_rule.pattern == rewrite_pattern
@@ -437,6 +446,17 @@ def test_rules() -> None:
     assert equation_rule2.pattern == equation_pattern2
     assert semantics.get_axiom(equation_rule2.ordinal) == equation_rule2
     assert mod.get_axiom(equation_rule2.ordinal) == equation_rule2
+
+    # Check pretty printed versions
+    assert rewrite_rule.pattern.pretty(pretty_opt) == '(kore_sym1 k=> kore_sym2(kore_sym1)):ksort_srt1'
+    assert (
+        equation_rule1.pattern.pretty(pretty_opt)
+        == '(k⊤:ksort_srt1 k-> (kore_sym1():ksort_srt1 k= (kore_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
+    )
+    assert (
+        equation_rule2.pattern.pretty(pretty_opt)
+        == '(k⊤:ksort_srt1 k-> (kore_sym4():ksort_srt2 k= (kore_sym2(kore_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
+    )
 
 
 def test_module_import() -> None:
@@ -507,7 +527,7 @@ def test_module_import() -> None:
         assert isinstance(pattern_rewrite, Pattern)
         rewrite_rule = nm.rewrite_rule(pattern_rewrite)
         equation_rule = nm.equational_rule(pattern_equals)
-    with simple_semantics.main_module as mm:
+    with semantics.main_module as mm:
         mm.import_module(newest_module)
 
     # Test that the new module is available in the semantics
@@ -524,12 +544,12 @@ def test_module_import() -> None:
     # Test accessing added rule
     assert newest_module.get_axiom(rewrite_rule.ordinal) == rewrite_rule
     assert newest_module.get_axiom(equation_rule.ordinal) == equation_rule
-    assert simple_semantics.main_module.get_axiom(rewrite_rule.ordinal) == rewrite_rule
-    assert simple_semantics.main_module.get_axiom(equation_rule.ordinal) == equation_rule
-    assert simple_semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
-    assert simple_semantics.get_axiom(equation_rule.ordinal) == equation_rule
+    assert semantics.main_module.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert semantics.main_module.get_axiom(equation_rule.ordinal) == equation_rule
+    assert semantics.get_axiom(rewrite_rule.ordinal) == rewrite_rule
+    assert semantics.get_axiom(equation_rule.ordinal) == equation_rule
     with raises(ValueError):
-        simple_semantics.get_axiom(rewrite_rule.ordinal + 10)
+        semantics.get_axiom(rewrite_rule.ordinal + 10)
 
     # Test final sets of sorts, symbols and notations
     assert set(semantics.sorts) == ever_created_sorts
