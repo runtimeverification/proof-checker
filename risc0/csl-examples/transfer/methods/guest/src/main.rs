@@ -31,6 +31,6 @@ pub fn main() {
     env::commit(&_ret);
     
     env::log(&"Ran transfer.\n");
-    env::log(&(env::get_cycle_count().to_string() + "\n")); // This took 2 seconds to run
+    env::log(&(env::get_cycle_count().to_string() + " cycles \n")); // This took 2 seconds to run
 }
 
