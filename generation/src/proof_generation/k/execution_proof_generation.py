@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
+from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
 from proof_generation.pattern import EVar, Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution, func_subst_axiom
@@ -19,19 +19,40 @@ if TYPE_CHECKING:
 
 class ExecutionProofExp(proof.ProofExp):
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
-        self.subst_proofexp = Substitution()
-        self.kore_lemmas = kl.KoreLemmas()
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
         super().__init__(notations=list(language_semantics.notations))
-        self.add_notations(self.subst_proofexp.get_notations())
-        self.add_notations(self.kore_lemmas.get_notations())
+        self.subst_proofexp = self.import_module(Substitution())
+        self.kore_lemmas = self.import_module(kl.KoreLemmas())
 
     @property
     def initial_configuration(self) -> Pattern:
         """Returns the initial configuration."""
         return self._init_config
+
+    @staticmethod
+    def collect_functional_axioms(
+        language_semantics: LanguageSemantics, substitutions: dict[int, Pattern]
+    ) -> list[ConvertedAxiom]:
+        subst_axioms = []
+        for pattern in substitutions.values():
+            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+            sym, _ = kl.deconstruct_nary_application(pattern)
+            assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
+            k_sym = language_semantics.resolve_to_ksymbol(sym)
+            assert k_sym is not None
+            assert k_sym.is_functional
+            converted_pattern = functional(pattern)
+            subst_axioms.append(ConvertedAxiom(AxiomType.FunctionalSymbol, converted_pattern))
+        return subst_axioms
+
+    def add_assumptions_for_rewrite_step(self, rule: KRewritingRule, substitutions: dict[int, Pattern]) -> None:
+        """Add axioms to the definition."""
+        # TODO: We don't use them until the substitutions are implemented
+        func_axioms = ExecutionProofExp.collect_functional_axioms(self.language_semantics, substitutions)
+        self.add_assumptions([axiom.pattern for axiom in func_axioms])
+        self.add_axiom(rule.pattern)
 
     @property
     def current_configuration(self) -> Pattern:

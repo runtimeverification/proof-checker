@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
@@ -42,6 +42,8 @@ class ProofExp:
     _claims: list[Pattern]
     _proof_expressions: list[ProofThunk]
 
+    _submodules: list[ProofExp]
+
     def __init__(
         self,
         axioms: list[Pattern] | None = None,
@@ -53,6 +55,7 @@ class ProofExp:
         self._notations = [] if notations is None else notations
         self._claims = [] if claims is None else claims
         self._proof_expressions = [] if proof_expressions is None else proof_expressions
+        self._submodules = []
 
     def add_axiom(self, axiom: Pattern) -> None:
         if axiom not in self._axioms:
@@ -103,6 +106,13 @@ class ProofExp:
 
     def get_proof_expressions(self) -> list[ProofThunk]:
         return list(self._proof_expressions)  # Avoid reference leaking
+
+    ProofExpTypeVar = TypeVar('ProofExpTypeVar', bound='ProofExp')
+
+    def import_module(self, module: ProofExpTypeVar) -> ProofExpTypeVar:
+        self._submodules.append(module)
+        self.add_notations(module.get_notations())
+        return module
 
     # Proof Rules
     # -----------
@@ -180,6 +190,8 @@ class ProofExp:
 
     def execute_gamma_phase(self, interpreter: BasicInterpreter, move_into_claim: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma
+        for submodule in self._submodules:
+            submodule.execute_gamma_phase(interpreter, False)
         for axiom in self._axioms:
             interpreter.publish_axiom(interpreter.pattern(axiom))
         self.check_interpreting(interpreter)

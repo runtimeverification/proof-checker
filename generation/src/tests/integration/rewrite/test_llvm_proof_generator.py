@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 
-HINTS_DIR = 'generation/proof-hints'
+HINTS_DIR = '.build/proof-hints'
 K_BENCHMARKS_DIR = 'generation/k-benchmarks'
 KOMPILED_DIR = '.build/kompiled-definitions'
 
