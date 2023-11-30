@@ -14,6 +14,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     LanguageSemantics,
 )
 from proof_generation.pattern import EVar, MetaVar, Pattern, Symbol, phi0, phi1
+from proof_generation.proofs.definedness import subset
 from proof_generation.proofs.kore import (
     KORE_NOTATIONS,
     KoreLemmas,
@@ -29,7 +30,6 @@ from proof_generation.proofs.kore import (
     kore_rewrites,
     kore_top,
     nary_app,
-    subset,
 )
 from proof_generation.proofs.propositional import PROPOSITIONAL_NOTATIONS
 
