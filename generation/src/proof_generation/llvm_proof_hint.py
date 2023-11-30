@@ -66,7 +66,7 @@ class LLVMRewriteTrace:
 
 Argument = LLVMStepEvent | kore.Pattern
 
-EXPECTED_HINTS_VERSION: Final = 2
+EXPECTED_HINTS_VERSION: Final = 3
 
 
 class LLVMRewriteTraceParser:
