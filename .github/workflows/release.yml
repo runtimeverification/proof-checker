@@ -23,23 +23,11 @@ jobs:
           path: proof-checker-public
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
 
-      - name: Copy risc0
+      - name: Copy Cargo
         run: cp -r proof-checker/Cargo.toml proof-checker/Cargo.lock proof-checker/risc0 proof-checker-public/
 
-      - name: Copy rust
-        run: cp -r proof-checker/rust proof-checker-public/
-
-      - name: Copy zkllvm
-        run: cp -r proof-checker/zkllvm proof-checker-public/
-
-      - name: Copy cpp
-        run: cp -r proof-checker/cpp proof-checker-public/
-
-      - name: Copy cairo
-        run: cp -r proof-checker/cairo proof-checker-public/
-
-      - name: Copy lurk
-        run: cp -r proof-checker/lurk proof-checker-public/
+      - name: Copy Checkers
+        run: mkdir proof-checker-public/src/ && cp -r proof-checker/src/checkers/ proof-checker/src/
 
       - name: Copy Performance Results
         run: cp proof-checker/Performance.md proof-checker-public/
