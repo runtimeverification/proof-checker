@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from proof_generation.pattern import App, EVar, Exists, Instantiate, MetaVar, Notation, Symbol, _and, _or, bot, neg
 from proof_generation.proof import ProofExp
-from proof_generation.proofs.definedness import Definedness, ceil, subset
+from proof_generation.proofs.definedness import Definedness, ceil, subset, equals
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -21,6 +21,8 @@ inhabitant_symbol = Symbol('inhabitant')
 kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
 kore_kseq_symbol = Symbol('kore_kseq')
+kore_dotk_symbol = Symbol('kore_dotk')
+kore_inj_symbol = Symbol('kore_inj')
 
 in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0}:{1}')
 
@@ -74,6 +76,9 @@ kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, p
 """ kore_kseq(left, right) """
 kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({0} ~> {1})')
 
+""" kore_dotk """
+kore_dotk = Notation('kore-dot', 0, kore_dotk_symbol, 'k.')
+
 """ kore_in(inner_sort, outer_sort, left, right) """
 kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k⊆ {3}:{0}):{1}')
 
@@ -96,7 +101,7 @@ def kore_exists(var: int) -> Notation:
 # We can do that without worrying about the memory leaking because all notations are saved in the ProofExp object anyway.
 # Note that @cache is required here as we have to return the same objects for the same arguments for notation comparisons
 @cache
-def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
+def nary_app(symbol: Symbol, n: int, cell: bool = False, kseq: bool = False) -> Notation:
     """Constructs an nary application."""
     p: Pattern = symbol
     fmt_args: list[str] = []
@@ -107,6 +112,8 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     fmt: str
     if cell:
         fmt = f'<{symbol.name}> ' + ' '.join(fmt_args) + f' </{symbol.name}>'
+    elif kseq:
+        fmt = '(' + ' ~> '.join(fmt_args) + ')'
     else:
         fmt = f'{symbol.name}(' + ', '.join(fmt_args) + ')'
 
@@ -123,6 +130,10 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
             return symbol, (*args, r)
         case _:
             return p, ()
+
+
+""" kore_inj(input_sort, output_sort, pattern) """
+kore_inj = Notation('kore-inj', 3, App(App(App(kore_inj_symbol, phi0), phi1), phi2), 'inj({2}:{0}):{1}')
 
 
 KORE_NOTATIONS = (
@@ -144,11 +155,15 @@ KORE_NOTATIONS = (
     in_sort,
 )
 
+kore_inj_id = equals(kore_inj(phi0, phi1, phi2), phi2)
+
+KORE_AXIOMS = (kore_inj_id,)
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(notations=list(KORE_NOTATIONS))
+        super().__init__(axioms=list(KORE_AXIOMS), notations=list(KORE_NOTATIONS))
         self.definedness = self.import_module(Definedness())
 
 

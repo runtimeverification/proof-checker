@@ -76,9 +76,13 @@ class KSymbol:
     @property
     def aml_notation(self) -> Notation:
         if self.name == 'kseq':
-            return kl.kore_kseq
+            return kl.nary_app(kl.kore_kseq_symbol, len(self.input_sorts), kseq=True)
+        elif self.name == 'kore_inj':
+            return kl.kore_inj
+        elif self.name == 'kore_dotk':
+            return kl.kore_dotk
         else:
-            return kl.nary_app(self.aml_symbol, len(self.sort_params) + len(self.input_sorts), self.is_cell)
+            return kl.nary_app(self.aml_symbol, len(self.sort_params) + len(self.input_sorts), cell=self.is_cell)
 
 
 @dataclass(frozen=True)
@@ -652,6 +656,11 @@ class LanguageSemantics(BuilderScope):
                 equals_right: Pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_equals(equals_input_sort_pattern, equals_sort_pattern, equals_left, equals_right)
+            case kore.Symbol(symbol, ksorts):
+                ksymbol: KSymbol = self.get_symbol(symbol)
+                sort_params: list[Pattern] = [self.convert_sort(scope, sort) for sort in ksorts]
+
+                return ksymbol.aml_notation(*sort_params)
             case kore.App(symbol, ksorts, args):
                 ksymbol: KSymbol = self.get_symbol(symbol)
                 sort_params: list[Pattern] = [self.convert_sort(scope, sort) for sort in ksorts]
