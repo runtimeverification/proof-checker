@@ -1,4 +1,4 @@
-module TREE-SYNTAX
+module TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX
 
     syntax Tree ::= "a" | "b" | "c" | node(Tree, Tree)
     syntax Tree ::= reverse(Tree) [function, total]
@@ -7,9 +7,9 @@ module TREE-SYNTAX
 
 endmodule
 
-module TREE
+module TREE-REVERSE-WITHOUT-INTEGERS
 
-    imports TREE-SYNTAX
+    imports TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX
 
     rule [base-case-a]: reverse(a) => a
     rule [base-case-b]: reverse(b) => b
