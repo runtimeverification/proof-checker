@@ -76,13 +76,13 @@ class KSymbol:
     @property
     def aml_notation(self) -> Notation:
         if self.name == 'kseq':
-            return kl.kore_kseq
+            return kl.nary_app(kl.kore_kseq_symbol, len(self.input_sorts), kseq=True)
         elif self.name == 'kore_inj':
             return kl.kore_inj
         elif self.name == 'kore_dotk':
             return kl.kore_dotk
         else:
-            return kl.nary_app(self.aml_symbol, len(self.sort_params) + len(self.input_sorts), self.is_cell)
+            return kl.nary_app(self.aml_symbol, len(self.sort_params) + len(self.input_sorts), cell=self.is_cell)
 
 
 @dataclass(frozen=True)
