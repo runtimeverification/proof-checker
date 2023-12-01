@@ -113,7 +113,7 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False, kseq: bool = False) -> 
     if cell:
         fmt = f'<{symbol.name}> ' + ' '.join(fmt_args) + f' </{symbol.name}>'
     elif kseq:
-        fmt = ' ~> '.join(fmt_args)
+        fmt = '(' + ' ~> '.join(fmt_args) + ')'
     else:
         fmt = f'{symbol.name}(' + ', '.join(fmt_args) + ')'
 

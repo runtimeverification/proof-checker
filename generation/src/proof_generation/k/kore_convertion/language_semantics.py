@@ -656,6 +656,11 @@ class LanguageSemantics(BuilderScope):
                 equals_right: Pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_equals(equals_input_sort_pattern, equals_sort_pattern, equals_left, equals_right)
+            case kore.Symbol(symbol, ksorts):
+                ksymbol: KSymbol = self.get_symbol(symbol)
+                sort_params: list[Pattern] = [self.convert_sort(scope, sort) for sort in ksorts]
+
+                return ksymbol.aml_notation(*sort_params)
             case kore.App(symbol, ksorts, args):
                 ksymbol: KSymbol = self.get_symbol(symbol)
                 sort_params: list[Pattern] = [self.convert_sort(scope, sort) for sort in ksorts]

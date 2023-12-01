@@ -216,7 +216,7 @@ test-integration: generate-hints test-integration-python
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
 TRANSLATED_PROOFS=$(wildcard proofs/translated/*.ml-proof)
-TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*/*.ml-proof)
+TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*.ml-proof)
 
 
 # Proof conversion checking
