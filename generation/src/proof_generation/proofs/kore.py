@@ -133,7 +133,7 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
 
 
 """ kore_inj(input_sort, output_sort, pattern) """
-kore_inj = nary_app(kore_inj_symbol, 3)
+kore_inj = Notation('kore-inj', 3, App(App(App(kore_inj_symbol, phi0), phi1), phi2), 'inj({2}:{0}):{1}')
 
 
 KORE_NOTATIONS = (
@@ -164,6 +164,7 @@ KORE_AXIOMS = (kore_inj_id,)
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
         super().__init__(axioms=list(KORE_AXIOMS), notations=list(KORE_NOTATIONS))
+        self.definedness = self.import_module(Definedness())
 
 
 if __name__ == '__main__':
