@@ -14,7 +14,7 @@ from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
-    from pyk.kore.syntax import Axiom, Definition
+    from pyk.kore.syntax import Definition
 
     from proof_generation.proof import ProofExp
 
@@ -27,7 +27,7 @@ def get_kompiled_definition(output_dir: Path) -> Definition:
     return KoreParser(kore_text).definition()
 
 
-def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
+def get_kompiled_dir(output_dir: str) -> Path:
     """Check that the K definition exists and return path to the kompiled directory."""
 
     path = Path(output_dir)
@@ -51,14 +51,6 @@ def read_proof_hint(filepath: str) -> LLVMRewriteTrace:
     return LLVMRewriteTrace.parse(hint_bin)
 
 
-def get_all_axioms(kore_definition: Definition) -> list[Axiom]:
-    axioms = []
-    for module in kore_definition.modules:
-        for axiom in module.axioms:
-            axioms.append(axiom)
-    return axioms
-
-
 def main(
     k_file: str,
     hints_file: str,
@@ -67,7 +59,7 @@ def main(
     pretty: bool = False,
 ) -> None:
     # Kompile sources
-    kompiled_dir: Path = get_kompiled_dir(k_file, output_dir)
+    kompiled_dir: Path = get_kompiled_dir(output_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
