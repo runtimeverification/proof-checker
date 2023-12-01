@@ -249,17 +249,17 @@ KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 
 .SECONDEXPANSION:
 module=$(patsubst %/,%, $(dir $*))
-proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints proofs/generated-from-k/%.ml-proof
+proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints .build/proofs/generated-from-k/%.ml-proof
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
 	              generation/k-benchmarks/$(dir $*)$(module).k \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
-				  --proof-dir proofs/generated-from-k/$(dir $*)
+				  --proof-dir proofs/generated-from-k
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
 	              generation/k-benchmarks/$(dir $*)$(module).k \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
-				  --proof-dir proofs/generated-from-k/$(dir $*) \
+				  --proof-dir proofs/generated-from-k \
 				  --pretty
 
 update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
