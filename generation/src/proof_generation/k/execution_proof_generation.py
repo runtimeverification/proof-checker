@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 
 Location = tuple[int, ...]
 
+
 @dataclass
 class SimplificationInfo:
     location: Location
@@ -74,7 +75,7 @@ class SimplificationVisitor:
         # Create the new info object and put it on top of the stack
         new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_left)
         self._simplification_stack.append(new_info)
-        
+
         return new_info
 
     def __enter__(self) -> SimplificationVisitor:

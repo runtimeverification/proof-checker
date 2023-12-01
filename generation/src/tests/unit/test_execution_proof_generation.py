@@ -4,12 +4,18 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationVisitor, SimplificationInfo
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule, KEquationalRule
+from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationVisitor
+from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate
 from proof_generation.proofs.kore import kore_rewrites
-from tests.unit.test_kore_language_semantics import cell_config_pattern, double_rewrite, rewrite_with_cell, node_tree, simplified_cell_config_pattern
+from tests.unit.test_kore_language_semantics import (
+    cell_config_pattern,
+    double_rewrite,
+    node_tree,
+    rewrite_with_cell,
+    simplified_cell_config_pattern,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -188,14 +194,16 @@ def test_visitor_get_subpattern():
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    
+
     intermidiate_config = simplified_cell_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.aml_notation(node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())),
     )
 
-    subpattern1 = reverse_symbol.aml_notation(node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation()))
+    subpattern1 = reverse_symbol.aml_notation(
+        node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())
+    )
     subpattern2 = node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())
     subpattern3 = a_symbol.aml_notation()
     subpattern4 = b_symbol.aml_notation()
@@ -214,20 +222,18 @@ def test_visitor_update_subpattern():
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    
-    initial_expression = node_symbol.aml_notation(reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation()))
-    intermidiate_config = simplified_cell_config_pattern(
-        semantics,
-        'SortTree',
-        initial_expression
+
+    initial_expression = node_symbol.aml_notation(
+        reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation())
     )
+    intermidiate_config = simplified_cell_config_pattern(semantics, 'SortTree', initial_expression)
 
     location = (0, 0, 1)
     plug = b_symbol.aml_notation()
     result = simplified_cell_config_pattern(
         semantics,
-        'SortTree', 
-        node_symbol.aml_notation(reverse_symbol.aml_notation(a_symbol.aml_notation()), b_symbol.aml_notation())
+        'SortTree',
+        node_symbol.aml_notation(reverse_symbol.aml_notation(a_symbol.aml_notation()), b_symbol.aml_notation()),
     )
     assert result == SimplificationVisitor.update_subterm(location, intermidiate_config, plug)
 
@@ -244,11 +250,13 @@ def test_visitor_apply_substitution():
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    
+
     rule = semantics.get_axiom(4)
     assert isinstance(rule, KEquationalRule)
     substitution = {0: a_symbol.aml_notation(), 1: b_symbol.aml_notation()}
-    assert SimplificationVisitor.apply_substitutions(rule.right, substitution) == node_symbol.aml_notation(reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation()))
+    assert SimplificationVisitor.apply_substitutions(rule.right, substitution) == node_symbol.aml_notation(
+        reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation())
+    )
 
     rule = semantics.get_axiom(2)
     assert isinstance(rule, KEquationalRule)
@@ -262,7 +270,7 @@ def test_visitor_update_config():
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    
+
     intermidiate_config1 = simplified_cell_config_pattern(
         semantics,
         'SortTree',
@@ -293,12 +301,16 @@ def test_visitor_update_config():
             visitor.update_configuration(intermidiate_config1)
 
     # But it is possible to update the configuration after the simplification
-    simple_config = simplified_cell_config_pattern(semantics, 'SortTree', reverse_symbol.aml_notation(a_symbol.aml_notation()))
+    simple_config = simplified_cell_config_pattern(
+        semantics, 'SortTree', reverse_symbol.aml_notation(a_symbol.aml_notation())
+    )
     visitor = SimplificationVisitor(semantics, simple_config)
     with visitor:
         visitor(2, {}, (0, 0))  # reverse(a) -> a
         visitor.update_configuration(intermidiate_config1)
-    assert visitor.simplified_configuration == simplified_cell_config_pattern(semantics, 'SortTree', a_symbol.aml_notation())
+    assert visitor.simplified_configuration == simplified_cell_config_pattern(
+        semantics, 'SortTree', a_symbol.aml_notation()
+    )
     visitor.update_configuration(intermidiate_config1)
     assert visitor.simplified_configuration == intermidiate_config1
 
@@ -321,28 +333,33 @@ def test_subpattern_batch():
     base_case_a = semantics.get_axiom(2)
     assert isinstance(base_case_a, KEquationalRule)
 
-
-    initial_subterm = reverse_symbol.aml_notation(node_symbol.aml_notation(a_symbol.aml_notation()), b_symbol.aml_notation())
-    initial_config = simplified_cell_config_pattern(
-        semantics,
-        'SortTree', 
-        initial_subterm
+    initial_subterm = reverse_symbol.aml_notation(
+        node_symbol.aml_notation(a_symbol.aml_notation()), b_symbol.aml_notation()
     )
+    initial_config = simplified_cell_config_pattern(semantics, 'SortTree', initial_subterm)
     proof_obj = ExecutionProofExp(semantics, initial_config)
     proof_obj.simplification_event(rec_case.ordinal, {0: a_symbol.aml_notation(), 1: b_symbol.aml_notation()}, (0, 0))
     expected_stack = [
-        SimplificationInfo((0, 0), initial_subterm, node_symbol.aml_notation(reverse_symbol.aml_notation(b_symbol.aml_notation()), reverse_symbol.aml_notation(a_symbol.aml_notation())), 2)
+        SimplificationInfo(
+            (0, 0),
+            initial_subterm,
+            node_symbol.aml_notation(
+                reverse_symbol.aml_notation(b_symbol.aml_notation()),
+                reverse_symbol.aml_notation(a_symbol.aml_notation()),
+            ),
+            2,
+        )
     ]
     assert proof_obj._simplification_visitor._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_b.ordinal, {}, (0,))
-    expected_stack = [
-        SimplificationInfo((0, 0), initial_subterm, b_symbol.aml_notation(), 1)
-    ]
+    expected_stack = [SimplificationInfo((0, 0), initial_subterm, b_symbol.aml_notation(), 1)]
     assert proof_obj._simplification_visitor._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_a.ordinal, {}, (1,))
     assert proof_obj._simplification_visitor._simplification_stack == []
 
     # Check the final update of the configuration
-    assert proof_obj.current_configuration == simplified_cell_config_pattern(semantics, 'SortTree', node_symbol.aml_notation(b_symbol.aml_notation(), a_symbol.aml_notation()))
+    assert proof_obj.current_configuration == simplified_cell_config_pattern(
+        semantics, 'SortTree', node_symbol.aml_notation(b_symbol.aml_notation(), a_symbol.aml_notation())
+    )

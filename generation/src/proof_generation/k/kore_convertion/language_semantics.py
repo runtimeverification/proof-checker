@@ -115,7 +115,7 @@ class KEquationalRule:
     def ensures(self) -> Pattern:
         _, _, _, _, ensures = kl.deconstruct_equality_rule(self.pattern)
         return ensures
-    
+
     @property
     def substitutions_from_requires(self) -> dict[int, Pattern]:
         raise NotImplementedError()
