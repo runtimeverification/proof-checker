@@ -41,6 +41,9 @@ jobs:
       - name: Copy lurk
         run: cp -r proof-checker/lurk proof-checker-public/
 
+      - name: Copy Performance Results
+        run: cp proof-checker/Performance.md proof-checker-public/
+
       - name: Copy example proofs
         run: cp -r proof-checker/proofs/ proof-checker-public/
       - name: 'Update Remote Public Repository'
