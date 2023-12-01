@@ -53,17 +53,28 @@ class SimplificationVisitor:
     def __call__(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> SimplificationInfo:
         assert self._in_simplification, 'Simplification is not in progress'
 
+        # Check that whether it is the first simplification or not
         if not self._simplification_stack:
             sub_pattern = self.get_subpattern(location, self._curr_config)
         else:
             sub_pattern = self.get_subpattern(location, self._simplification_stack[-1].simplification_result)
 
+        # Get the rule and remove extra variables added by K in addition to the ones in the K file
         rule = self._language_semantics.get_axiom(ordinal)
         assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
-        simplifications_left = self._language_semantics.count_simplifications(rule.right)
-        substitution_result = self.apply_substitutions(rule.right, substitution)
-        new_info = SimplificationInfo(location, sub_pattern, substitution_result, simplifications_left)
+        base_substitutions = rule.substitutions_from_requires
+        simplified_rhs = self.apply_substitutions(rule.right, base_substitutions)
+
+        # Now apply the substitutions from the hint
+        simplified_rhs = self.apply_substitutions(simplified_rhs, substitution)
+
+        # Count the number of substitutions left
+        simplifications_left = self._language_semantics.count_simplifications(simplified_rhs)
+
+        # Create the new info object and put it on top of the stack
+        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_left)
         self._simplification_stack.append(new_info)
+        
         return new_info
 
     def __enter__(self) -> SimplificationVisitor:
@@ -80,12 +91,14 @@ class SimplificationVisitor:
         while self._simplification_stack and self._simplification_stack[-1].simplifications_left == 0:
             exhausted_info = self._simplification_stack.pop()
             if self._simplification_stack:
+                # If the stack is non-empty, then we need to update the simplification on top of the stack
                 last_info = self._simplification_stack[-1]
                 last_info.simplifications_left -= 1
                 last_info.simplification_result = self.update_subterm(
                     exhausted_info.location, last_info.simplification_result, exhausted_info.simplification_result
                 )
             else:
+                # If the stack is empty, then we need to update the current configuration as we processed the batch
                 self.curr_config = self.update_subterm(
                     exhausted_info.location, self._curr_config, exhausted_info.simplification_result
                 )
@@ -180,7 +193,7 @@ class ExecutionProofExp(proof.ProofExp):
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
         with self._simplification_visitor as visitor:
             visitor(ordinal, substitution, location)
-            # Do some proving here
+            # TODO: Do some proving here ...
 
         # Update the current configuration
         self._curr_config = self._simplification_visitor.simplified_configuration
