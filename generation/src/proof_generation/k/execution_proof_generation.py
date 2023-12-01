@@ -1,20 +1,106 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.k.kore_convertion.language_semantics import AxiomType, ConvertedAxiom, KRewritingRule
+from proof_generation.k.kore_convertion.language_semantics import (
+    AxiomType,
+    ConvertedAxiom,
+    KEquationalRule,
+    KRewritingRule,
+)
 from proof_generation.pattern import Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from types import TracebackType
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
     from proof_generation.pattern import Pattern
+
+
+@dataclass
+class SimplificationInfo:
+    location: tuple[int, ...]
+    initial_pattern: Pattern  # Relative to previous in stack
+    simplification_result: Pattern
+    simplifications_left: int
+
+
+class SimplificationVisitor:
+    def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+        self._language_semantics = language_semantics
+        self._curr_config = init_config
+        self._simplification_stack: list[SimplificationInfo] = []
+        self._in_simplification = False
+
+    @property
+    def simplified_configuration(self) -> Pattern:
+        return self._curr_config
+
+    def update_configuration(self, new_current_configuration: Pattern) -> None:
+        assert not self._simplification_stack, 'Simplification stack is not empty'
+        assert not self._in_simplification, 'Simplification is in progress'
+        self._curr_config = new_current_configuration
+
+    def __call__(self, ordinal: int, substitution: dict[int, Pattern], location: tuple[int]) -> SimplificationInfo:
+        assert self._in_simplification, 'Simplification is not in progress'
+
+        if not self._simplification_stack:
+            sub_pattern = self.get_subpattern(location, self._curr_config)
+        else:
+            sub_pattern = self.get_subpattern(location, self._simplification_stack[-1].simplification_result)
+
+        rule = self._language_semantics.get_axiom(ordinal)
+        assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
+        simplifications_left = self._language_semantics.count_simplifications(rule.right)
+        substitution_result = self.apply_substitutions(rule.right, substitution)
+        new_info = SimplificationInfo(location, sub_pattern, substitution_result, simplifications_left)
+        self._simplification_stack.append(new_info)
+        return new_info
+
+    def __enter__(self) -> SimplificationVisitor:
+        assert not self._in_simplification
+        self._in_simplification = True
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        while self._simplification_stack and self._simplification_stack[-1].simplifications_left == 0:
+            exhausted_info = self._simplification_stack.pop()
+            if self._simplification_stack:
+                last_info = self._simplification_stack[-1]
+                last_info.simplifications_left -= 1
+                last_info.simplification_result = self.update_subterm(
+                    exhausted_info.location, last_info.simplification_result, exhausted_info.simplification_result
+                )
+            else:
+                self.curr_config = self.update_subterm(
+                    exhausted_info.location, self._curr_config, exhausted_info.simplification_result
+                )
+
+    @staticmethod
+    def get_subpattern(location: tuple[int, ...], pattern: Pattern) -> Pattern:
+        raise NotImplementedError
+
+    @staticmethod
+    def update_subterm(location: tuple[int, ...], pattern: Pattern, plug: Pattern) -> Pattern:
+        raise NotImplementedError
+
+    @staticmethod
+    def apply_substitutions(pattern: Pattern, substitutions: dict[int, Pattern]) -> Pattern:
+        for evar_name, plug in substitutions.items():
+            pattern = pattern.apply_esubst(evar_name, plug)
+        return pattern
 
 
 class ExecutionProofExp(proof.ProofExp):
@@ -25,6 +111,7 @@ class ExecutionProofExp(proof.ProofExp):
         super().__init__(notations=list(language_semantics.notations))
         self.subst_proofexp = self.import_module(Substitution())
         self.kore_lemmas = self.import_module(kl.KoreLemmas())
+        self._simplification_visitor = SimplificationVisitor(self.language_semantics, self.current_configuration)
 
     @property
     def initial_configuration(self) -> Pattern:
@@ -82,7 +169,19 @@ class ExecutionProofExp(proof.ProofExp):
         proof = self.dynamic_inst(self.load_axiom(rule.pattern), substitution)
         self.add_proof_expression(proof)
         self._curr_config = rhs
+
+        # Update the current configuration
+        self._simplification_visitor.update_configuration(self._curr_config)
+
         return proof
+
+    def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: tuple[int]) -> None:
+        with self._simplification_visitor as visitor:
+            visitor(ordinal, substitution, location)
+            # Do some proving here
+
+        # Update the current configuration
+        self._curr_config = self._simplification_visitor.simplified_configuration
 
     def finalize(self) -> None:
         """Prepare proof expression for the final reachability claim"""
