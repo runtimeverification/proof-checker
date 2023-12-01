@@ -13,6 +13,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSortVar,
     KSymbol,
     LanguageSemantics,
+    KEquationalRule
 )
 from proof_generation.pattern import EVar, MetaVar, Pattern, Symbol, phi0, phi1
 from proof_generation.proofs.definedness import equals, floor, functional, subset
@@ -679,6 +680,34 @@ def test_collect_functional_axioms() -> None:
 def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
     pretty_opt = KoreLemmas().pretty_options()
     assert pat.pretty(pretty_opt) == pretty_pat
+
+
+def test_collect_substitution() -> None:
+    semantics = LanguageSemantics()
+
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    base_equation_a = semantics.get_axiom(2)
+    base_equation_b = semantics.get_axiom(3)
+    reversed_equation = semantics.get_axiom(4)
+
+    assert isinstance(base_equation_a, KEquationalRule)
+    assert base_equation_a.substitutions_from_requires == {
+        0: a_symbol.aml_notation(),
+        1: a_symbol.aml_notation()
+    }
+
+    assert isinstance(base_equation_b, KEquationalRule)
+    assert base_equation_b.substitutions_from_requires == {
+        0: b_symbol.aml_notation(),
+        1: b_symbol.aml_notation()
+    }
+
+    assert isinstance(reversed_equation, KEquationalRule)
+    assert reversed_equation.substitutions_from_requires == {
+        0: node_symbol.aml_notation(EVar(1), EVar(2))
+    }
 
 
 def test_locate_simplifications() -> None:
