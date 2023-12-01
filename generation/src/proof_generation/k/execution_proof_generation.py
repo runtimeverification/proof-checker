@@ -24,9 +24,11 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 
+Location = tuple[int, ...]
+
 @dataclass
 class SimplificationInfo:
-    location: tuple[int, ...]
+    location: Location
     initial_pattern: Pattern  # Relative to previous in stack
     simplification_result: Pattern
     simplifications_left: int
@@ -48,7 +50,7 @@ class SimplificationVisitor:
         assert not self._in_simplification, 'Simplification is in progress'
         self._curr_config = new_current_configuration
 
-    def __call__(self, ordinal: int, substitution: dict[int, Pattern], location: tuple[int]) -> SimplificationInfo:
+    def __call__(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> SimplificationInfo:
         assert self._in_simplification, 'Simplification is not in progress'
 
         if not self._simplification_stack:
@@ -89,11 +91,11 @@ class SimplificationVisitor:
                 )
 
     @staticmethod
-    def get_subpattern(location: tuple[int, ...], pattern: Pattern) -> Pattern:
+    def get_subpattern(location: Location, pattern: Pattern) -> Pattern:
         raise NotImplementedError
 
     @staticmethod
-    def update_subterm(location: tuple[int, ...], pattern: Pattern, plug: Pattern) -> Pattern:
+    def update_subterm(location: Location, pattern: Pattern, plug: Pattern) -> Pattern:
         raise NotImplementedError
 
     @staticmethod
@@ -175,7 +177,7 @@ class ExecutionProofExp(proof.ProofExp):
 
         return proof
 
-    def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: tuple[int]) -> None:
+    def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
         with self._simplification_visitor as visitor:
             visitor(ordinal, substitution, location)
             # Do some proving here
