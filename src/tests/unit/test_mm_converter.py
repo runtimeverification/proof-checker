@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from proof_generation.metamath.ast import Database
     from proof_generation.pattern import Pattern
 
-BENCHMARK_LOCATION = 'generation/mm-benchmarks'
+BENCHMARK_LOCATION = 'mm-benchmarks'
 
 
 @pytest.fixture
