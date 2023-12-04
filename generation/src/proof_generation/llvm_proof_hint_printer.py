@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import sys
 from argparse import ArgumentParser
 
 # import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TextIO
 
 import pyk.kllvm.load  # noqa: F401
 import pyk.kore.syntax as kore
@@ -60,17 +61,18 @@ def term_to_str(term: kore.Pattern, show_terms: int) -> str:
 
 
 class LLVMHintsPrinter:
-    def __init__(self, hints: LLVMRewriteTrace, definition: kore.Definition) -> None:
+    def __init__(self, hints: LLVMRewriteTrace, definition: kore.Definition, out: TextIO) -> None:
         self.hints = hints
         self.axioms = get_all_axioms(definition)
+        self.out = out
 
-    def print_trace(
+    def write_trace(
         self,
         show_terms: int = 0,
         show_rules: bool = False,
     ) -> None:
         def dump(text: str, depth: int, end: str = '\n') -> None:
-            print(f'{"  " * depth}{text}', end=end)
+            self.out.write(f'{"  " * depth}{text}' + end)
 
         def dump_rule(event: LLVMRewriteEvent, depth: int, show_terms: int) -> None:
             tag = 'Rule' if isinstance(event, LLVMRuleEvent) else 'Side Condition'
@@ -116,10 +118,15 @@ if __name__ == '__main__':
     argparser.add_argument('hints', type=str, help='Path to the binary hints file')
     argparser.add_argument('kompiled_dir', type=str, help='Path to the kompiled directory of the language')
     argparser.add_argument(
+        '--output',
+        type=str,
+        help='The path of the output file to which the pretty-printed hints are to be written',
+    )
+    argparser.add_argument(
         '--show_terms',
         type=int,
         default=0,
-        help='Print out kore terms in full',
+        help='The verbosity level for printing out terms. Possible values are 0 for disabling the printing of terms, 1 for printing only the top symbols of terms, or 2 for printing terms in full (default: 0)',
     )
     argparser.add_argument(
         '--show_rules',
@@ -133,5 +140,9 @@ if __name__ == '__main__':
     hints = read_proof_hint(args.hints)
     definition = get_kompiled_definition(get_kompiled_dir(args.kompiled_dir))
 
-    printer = LLVMHintsPrinter(hints, definition)
-    printer.print_trace(show_terms=args.show_terms, show_rules=args.show_rules)
+    output = open(args.output, 'w') if args.output else sys.stdout
+
+    printer = LLVMHintsPrinter(hints, definition, output)
+    printer.write_trace(show_terms=args.show_terms, show_rules=args.show_rules)
+
+    output.close()
