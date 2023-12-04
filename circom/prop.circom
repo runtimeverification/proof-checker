@@ -359,8 +359,6 @@ template CheckProof (N, M) {
     out === 1;
 }
 
-component main = CheckProof(5, 17);
-
 /*
 1. ->->p->->ppp->->p->pp->pp
 2. ->p->->ppp
