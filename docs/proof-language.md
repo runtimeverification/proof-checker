@@ -833,10 +833,11 @@ Assume <i:u8>
 `Load <i:u8>`
 :   Push the `Term` at index $i$ in memory to the top of the stack.
 
-[^instantiable_false]: The reason is that `Assume` called on `phi0` (unlike `Save`) declares
-that we assume we have a proof of some fixed formula *phi0*. Derived rules
-are meant to be applied with `Apply`, so the instantiations for assumptions are given immediately
-when applying the given proof rule.
+[^instantiable_false]: The reason is that `Assume n` (unlike `Save`) declares
+that we assume we have a proof of `n` fixed formulas of the form given by assumptions.
+Loading an assumption means we are inlining its (fixed) proof here.
+Instantiating does not make any good sense in a proof of a derived rule because we can assume whatever form we like.
+We instantiate derived rules when *applying* derived rules with `Apply`.
 
 ### Journal manipulation.
 
