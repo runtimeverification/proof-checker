@@ -66,7 +66,7 @@ class LLVMHintsPrinter:
         self.axioms = get_all_axioms(definition)
         self.out = out
 
-    def write_trace(
+    def dump_trace(
         self,
         show_terms: int = 0,
         show_rules: bool = False,
@@ -143,6 +143,6 @@ if __name__ == '__main__':
     output = open(args.output, 'w') if args.output else sys.stdout
 
     printer = LLVMHintsPrinter(hints, definition, output)
-    printer.write_trace(show_terms=args.show_terms, show_rules=args.show_rules)
+    printer.dump_trace(show_terms=args.show_terms, show_rules=args.show_rules)
 
     output.close()
