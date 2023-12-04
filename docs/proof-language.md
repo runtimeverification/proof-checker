@@ -899,10 +899,10 @@ Proof Phase for the derived rule:
     MetaVar 0           # 0: ...; 1: phi1 -> phi2; 2: phi0
     Prop1               # 0: ...; 1: ...; 2: ...: 3: Proof(phi0 -> (phi1 -> phi0), assumptions=[ phi0 -> phi1; phi1 -> phi2 ])
     Instantiate 2 0 1   # 0: ...; 1: Proof((phi1 -> phi2) -> (phi0 -> (phi1 -> phi2)), assumptions=[ phi0 -> phi1; phi1 -> phi2 ])
-    Assumption 1        # 0: ...; 1: ...; 2: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi1 -> phi2)
+    Load LOCAL_MEM+1    # 0: ...; 1: ...; 2: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi1 -> phi2)
     ModusPonens         # 0: ... ; 1: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> (phi1 -> phi2)))
     ModusPonens         # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], ((phi0 -> phi1) -> (phi0 -> phi2)))
-    Assumption 0        # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], ((phi0 -> phi1) -> (phi0 -> phi2)))
+    Load LOCAL_MEM+0    # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], ((phi0 -> phi1) -> (phi0 -> phi2)))
                         # 1: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi0 -> phi1)
     ModusPonens         # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
     Publish             # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
