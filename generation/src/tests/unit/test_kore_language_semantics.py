@@ -656,7 +656,7 @@ def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
 
 
 def test_collect_substitution() -> None:
-    semantics = LanguageSemantics()
+    semantics = node_tree()
 
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
