@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import struct
-import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -57,9 +56,9 @@ class LLVMRewriteTrace:
     trace: tuple[Argument, ...]
 
     @staticmethod
-    def parse(input: bytes, debug: bool = False) -> LLVMRewriteTrace:
+    def parse(input: bytes) -> LLVMRewriteTrace:
         parser = LLVMRewriteTraceParser(input)
-        ret = parser.read_execution_hint(debug)
+        ret = parser.read_execution_hint()
         assert parser.eof()
         return ret
 
@@ -110,7 +109,7 @@ class LLVMRewriteTraceParser:
         self.init_config_pos = 0
         self.trace: list[Argument] = []
 
-    def read_execution_hint(self, debug: bool) -> LLVMRewriteTrace:
+    def read_execution_hint(self) -> LLVMRewriteTrace:
         # read the header
         version = self.read_header()
         assert version == EXPECTED_HINTS_VERSION, f'Expected version {EXPECTED_HINTS_VERSION}, found version {version}'
@@ -126,9 +125,6 @@ class LLVMRewriteTraceParser:
         # read the rest of the trace (all events)
         while not self.eof():
             self.trace.append(self.read_event())
-
-        if debug:
-            self.dump_trace()
 
         return LLVMRewriteTrace(tuple(self.pre_trace), self.initial_config, tuple(self.trace))
 
@@ -273,50 +269,3 @@ class LLVMRewriteTraceParser:
 
     def end_of_arguments(self) -> bool:
         return self.peek(self.func_end_sentinel) or self.peek(self.hook_res_sentinel)
-
-    def dump_trace(
-        self,
-        show_terms: bool = False,
-    ) -> None:
-        def dump(text: str, depth: int, end: str = '\n') -> None:
-            print(f'{"  " * depth}{text}', end=end)
-
-        def dump_event(event: Argument, depth: int, top: bool = False) -> None:
-            if isinstance(event, LLVMRuleEvent):
-                dump(f'Rule: {event.rule_ordinal} {len(event.substitution)}', depth)
-                for v, t in event.substitution:
-                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
-            elif isinstance(event, LLVMSideCondEvent):
-                dump(f'Side Condition: {event.rule_ordinal} {len(event.substitution)}', depth)
-                for v, t in event.substitution:
-                    dump(f'{v} = {t if show_terms else "[kore]"}', depth + 1)
-            elif isinstance(event, LLVMFunctionEvent):
-                dump(f'Function: {event.name} @ {event.relative_position}', depth)
-                for arg in event.args:
-                    dump_event(arg, depth + 1)
-            elif isinstance(event, LLVMHookEvent):
-                dump(f'Hook: {event.name} @ {event.relative_position}', depth)
-                for arg in event.args:
-                    dump_event(arg, depth + 1)
-                dump(f'Result: {event.result if show_terms else "[kore]"}', depth + 1)
-            else:
-                assert isinstance(event, kore.Pattern)
-                dump(f'{"Config" if top else "Term"}: {event if show_terms else "[kore]"}', depth)
-
-        depth = 0
-        for step_event in self.pre_trace:
-            dump_event(step_event, depth, top=True)
-        dump(f'Init config: {self.initial_config if show_terms else "[kore]"}', depth)
-        for event in self.trace:
-            dump_event(event, depth, top=True)
-
-
-# A driver for local testing
-if __name__ == '__main__':
-
-    def load(fn: str) -> bytes:
-        with open(fn, 'rb') as f:
-            return f.read()
-
-    data = load(sys.argv[1])
-    LLVMRewriteTrace.parse(data, debug=True)

@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
+import pyk.kore.syntax as kore
 from pyk.kore.parser import KoreParser
 from pyk.utils import check_file_path
 
@@ -14,12 +15,10 @@ from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
-    from pyk.kore.syntax import Axiom, Definition
-
     from proof_generation.proof import ProofExp
 
 
-def get_kompiled_definition(output_dir: Path) -> Definition:
+def get_kompiled_definition(output_dir: Path) -> kore.Definition:
     print(f'Parsing the definition in the Kore format in {output_dir}')
     kore_file = output_dir / 'definition.kore'
     check_file_path(kore_file)
@@ -27,7 +26,7 @@ def get_kompiled_definition(output_dir: Path) -> Definition:
     return KoreParser(kore_text).definition()
 
 
-def get_kompiled_dir(k_file: str, output_dir: str) -> Path:
+def get_kompiled_dir(output_dir: str) -> Path:
     """Check that the K definition exists and return path to the kompiled directory."""
 
     path = Path(output_dir)
@@ -51,12 +50,19 @@ def read_proof_hint(filepath: str) -> LLVMRewriteTrace:
     return LLVMRewriteTrace.parse(hint_bin)
 
 
-def get_all_axioms(kore_definition: Definition) -> list[Axiom]:
+def get_all_axioms(definition: kore.Definition) -> list[kore.Axiom]:
     axioms = []
-    for module in kore_definition.modules:
+    for module in definition.modules:
         for axiom in module.axioms:
             axioms.append(axiom)
     return axioms
+
+
+def get_axiom_label(attrs: tuple[kore.App, ...]) -> str:
+    for attr in attrs:
+        if attr.symbol == 'label' and isinstance(attr.args[0], kore.String):
+            return attr.args[0].value
+    return 'N/A'
 
 
 def main(
@@ -67,7 +73,7 @@ def main(
     pretty: bool = False,
 ) -> None:
     # Kompile sources
-    kompiled_dir: Path = get_kompiled_dir(k_file, output_dir)
+    kompiled_dir: Path = get_kompiled_dir(output_dir)
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
