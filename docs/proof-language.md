@@ -827,7 +827,7 @@ Memory capped by `LOCAL_MEM` is called *global memory*.
     with `instantiable = false` (see [^instantiable_false]).
 
 `Save`
-:   Store the top element of the stack by appending it to global memory with assumptions from the memory.
+:   Store the top element of the stack by appending it to global memory with assumptions from local memory.
 
 `Load <i:u8>`
 :   Push the `Term` at index $i$ in memory to the top of the stack.
@@ -847,7 +847,7 @@ We instantiate derived rules when *applying* derived rules with `Apply`.
         given from local memory, and empties local memory.
     * During the `proof` phase consume a proof from the stack with the assumptions from local memory,
       and a claim from the queue of claims, assert that they are equal.
-      If they are, remove the top claim and empty local memory.
+      If they are, remove the top claim, empty local memory and empty the stack.
 
     Note that since the claims form a stack, they must be proved in the reverse order they
     were declared in [^claims-stack-vs-queue].
