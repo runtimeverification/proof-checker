@@ -814,7 +814,7 @@ Otherwise, execution aborts, and verification fails.
 ### Inference rules
 
 `ModusPonens`/`Generalization`/`Frame`/`Substitution`/`KnasterTarski`
-:   Consume one or two `Proof` terms off the stack and push the new proof term.
+:   Consume one or two `Proof` terms with empty assumptions off the stack and push the new proof term.
 
 ### Memory manipulation:
 
