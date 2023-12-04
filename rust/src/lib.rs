@@ -1049,6 +1049,23 @@ pub fn verify<'a>(
 /// Testing
 /// =======
 
+use rstest::rstest;
+
+#[rstest]
+#[case(&mut vec![Instruction::SVar as InstByte, 0, Instruction::CleanMetaVar as InstByte, 0, Instruction::ESubst as InstByte, 0], esubst(metavar_unconstrained(0), 0, svar(0)))]
+fn test_pattern_construction(#[case] instructions: &mut Vec<InstByte>, #[case] expected_pattern: Rc<Pattern>) {
+    let stack = &mut Vec::with_capacity(256);
+    execute_instructions(
+        instructions,
+        stack,
+        &mut vec![],
+        &mut vec![],
+        ExecutionPhase::Gamma,
+    );
+    assert_eq!(stack.len(), 1);
+    assert_eq!(stack[0], Term::Pattern(expected_pattern));
+}
+
 #[test]
 fn test_efresh() {
     let evar = evar(1);
