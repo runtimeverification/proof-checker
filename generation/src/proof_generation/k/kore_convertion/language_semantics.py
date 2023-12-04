@@ -551,7 +551,7 @@ class LanguageSemantics(BuilderScope):
         return substitutions
 
     def count_simplifications(self, pattern: Pattern) -> int:
-        """Count the number of functional symbols in the given pattern."""
+        """Count the number of function symbols in the given pattern (functional, not ctr, not cell)."""
         functional_symbols = 0
 
         if isinstance(pattern, App):
