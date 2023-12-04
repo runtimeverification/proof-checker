@@ -792,8 +792,8 @@ Otherwise, execution aborts, and verification fails.
 :   Push proof term corresponding to axiom schema onto the stack.
 
 `Apply`
-:   Consider a top of the stack is `Proof(assumptions, conclusion)` with $n$ assumptions, then:
-    1.  Consume $n$ `Proof`s from top of the stack and save them into `assumptions'`.
+:   Consume the top of the stack `Proof(assumptions, conclusion)` with $n$ assumptions, then:
+    1.  Consume $n$ `Proof`s from top of the stack and save them into a temporary variable `assumptions'`.
     2.  Assert that `assumptions = assumptions'`.
     3.  Place `Proof([], conclusion)` on top of the stack.
 
@@ -823,7 +823,7 @@ is called *local memory*. This fragment of memory will represent the additional 
 used in the given subproof, where we can load them as `Proved`'s.
 Memory capped by `LOCAL_MEM` is called *global memory*.
 
-Assume <i:u8>
+`Assume <i:u8>`
 :   Consumes `i` `Pattern` entries from the top of the stack and adds them to local memory as `Proved`'s
     with `instantiable = false` (see [^instantiable_false]).
 
