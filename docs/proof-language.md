@@ -823,7 +823,7 @@ used in the given subproof, where we can load them as `Proved`'s.
 Memory capped by `LOCAL_MEM` is called *global memory*.
 
 `Assume <i:u8>`
-:   Consumes `i` `Pattern` entries from the top of the stack and adds them to local memory as `Proved`'s
+:   If local memory is empty, consumes `i` `Pattern` entries from the top of the stack and adds them to local memory as `Proved`'s
     with `instantiable = false` and empty assumptions (see [^instantiable_false]).
 
 `Save`
