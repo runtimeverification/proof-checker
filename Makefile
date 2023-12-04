@@ -212,7 +212,7 @@ HINTS_PRETTY_PRINTED=$(addsuffix .pretty, ${EXECUTION_HINTS})
 
 .SECONDEXPANSION:
 module=$(patsubst %/,%, $(dir $*))
-.build/proof-hints/%.hints.pretty: .build/proof-hints/%.hints .build/kompiled-definitions/$$(module)-kompiled/timestamp
+.build/proof-hints/%.hints.pretty: .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
 	${POETRY_RUN} python -m "proof_generation.llvm_proof_hint_printer" \
 	    .build/proof-hints/$*.hints \
 		.build/kompiled-definitions/$(module)-kompiled \
