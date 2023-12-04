@@ -235,5 +235,5 @@ def test_simple_rules_pretty_printing() -> None:
     )
     assert (
         equation_rule2.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
+        == '(k⊤:ksort_srt2 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
     )
