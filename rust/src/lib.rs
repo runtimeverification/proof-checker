@@ -1414,8 +1414,12 @@ mod tests {
         assert!(
             instantiate_internal(&existsx0phi0, &[2, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == None
         );
-        assert!(instantiate_internal(&muX0phi0, &[1, 2], &[Rc::clone(&x0), Rc::clone(&X0)]) == None);
-        assert!(instantiate_internal(&muX0phi0, &[2, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == None);
+        assert!(
+            instantiate_internal(&muX0phi0, &[1, 2], &[Rc::clone(&x0), Rc::clone(&X0)]) == None
+        );
+        assert!(
+            instantiate_internal(&muX0phi0, &[2, 1], &[Rc::clone(&x0), Rc::clone(&X0)]) == None
+        );
 
         // Order matters if corresponding value is not moved
         assert!(
