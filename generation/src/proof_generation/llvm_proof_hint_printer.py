@@ -41,10 +41,10 @@ def axiom_gist_text(axiom: kore.Axiom) -> str:
     return text
 
 
-def term_to_str(term: kore.Pattern, show_terms: int) -> str:
-    if show_terms == 0:
+def term_to_str(term: kore.Pattern, verbose_terms: int) -> str:
+    if verbose_terms == 0:
         return '[kore]'
-    elif show_terms == 1:
+    elif verbose_terms == 1:
         assert isinstance(term, kore.App), f'Unexpected pattern: {term}'
         return f'[kore({term.symbol})'
     else:
@@ -59,13 +59,13 @@ class LLVMHintsPrinter:
 
     def dump_trace(
         self,
-        show_terms: int = 0,
+        verbose_terms: int = 0,
         show_rules: bool = False,
     ) -> None:
         def dump(text: str, depth: int, end: str = '\n') -> None:
             self.out.write(f'{"  " * depth}{text}' + end)
 
-        def dump_rule(event: LLVMRewriteEvent, depth: int, show_terms: int) -> None:
+        def dump_rule(event: LLVMRewriteEvent, depth: int, verbose_terms: int) -> None:
             tag = 'Rule' if isinstance(event, LLVMRuleEvent) else 'Side Condition'
             idx = event.rule_ordinal
             axiom = self.axioms[idx]
@@ -75,30 +75,30 @@ class LLVMHintsPrinter:
             )
             dump(f'{axiom_gist_text(axiom)}', depth + 1) if show_rules else None
             for v, t in event.substitution:
-                dump(f'{v} = {term_to_str(t, show_terms)}', depth + 1)
+                dump(f'{v} = {term_to_str(t, verbose_terms)}', depth + 1)
 
-        def dump_event(event: Argument, depth: int, show_terms: int, top: bool = False) -> None:
+        def dump_event(event: Argument, depth: int, verbose_terms: int, top: bool = False) -> None:
             if isinstance(event, LLVMRewriteEvent):
-                dump_rule(event, depth, show_terms)
+                dump_rule(event, depth, verbose_terms)
             elif isinstance(event, LLVMFunctionEvent):
                 dump(f'Function: {event.name} @ {event.relative_position}', depth)
                 for arg in event.args:
-                    dump_event(arg, depth + 1, show_terms)
+                    dump_event(arg, depth + 1, verbose_terms)
             elif isinstance(event, LLVMHookEvent):
                 dump(f'Hook: {event.name} @ {event.relative_position}', depth)
                 for arg in event.args:
-                    dump_event(arg, depth + 1, show_terms)
-                dump(f'Result: {term_to_str(event.result, show_terms)}', depth + 1)
+                    dump_event(arg, depth + 1, verbose_terms)
+                dump(f'Result: {term_to_str(event.result, verbose_terms)}', depth + 1)
             else:
                 assert isinstance(event, kore.Pattern)
-                dump(f'{"Config" if top else "Term"}: {term_to_str(event, show_terms)}', depth)
+                dump(f'{"Config" if top else "Term"}: {term_to_str(event, verbose_terms)}', depth)
 
         depth = 0
         for step_event in self.hints.pre_trace:
-            dump_event(step_event, depth, show_terms, top=True)
-        dump(f'Init config: {term_to_str(self.hints.initial_config, show_terms)}', depth)
+            dump_event(step_event, depth, verbose_terms, top=True)
+        dump(f'Init config: {term_to_str(self.hints.initial_config, verbose_terms)}', depth)
         for event in self.hints.trace:
-            dump_event(event, depth, show_terms, top=True)
+            dump_event(event, depth, verbose_terms, top=True)
 
 
 if __name__ == '__main__':
@@ -114,7 +114,7 @@ if __name__ == '__main__':
         help='The path of the output file to which the pretty-printed hints are to be written',
     )
     argparser.add_argument(
-        '--show_terms',
+        '--verbose_terms',
         type=int,
         default=0,
         help='The verbosity level for printing out terms. Possible values are 0 for disabling the printing of terms, 1 for printing only the top symbols of terms, or 2 for printing terms in full (default: 0)',
@@ -134,6 +134,6 @@ if __name__ == '__main__':
     output = open(args.output, 'w') if args.output else sys.stdout
 
     printer = LLVMHintsPrinter(hints, definition, output)
-    printer.dump_trace(show_terms=args.show_terms, show_rules=args.show_rules)
+    printer.dump_trace(verbose_terms=args.verbose_terms, show_rules=args.show_rules)
 
     output.close()
