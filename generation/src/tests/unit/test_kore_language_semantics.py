@@ -49,7 +49,7 @@ def double_rewrite() -> LanguageSemantics:
 def rewrite_with_cell() -> LanguageSemantics:
     semantics = LanguageSemantics()
     with semantics as sem:
-        double_rwrite = sem.module('double-rewrite')
+        double_rewrite = sem.module('double-rewrite')
         with double_rwrite as mod:
             top_cell_sort = mod.sort('SortGeneratedTopCell')
             k_cell_sort = mod.sort('SortKCell')
