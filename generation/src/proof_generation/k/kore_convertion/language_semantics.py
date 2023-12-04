@@ -64,13 +64,13 @@ class KSymbol:
 
     @property
     def aml_symbol(self) -> Symbol:
-        return Symbol('ksymb_' + self.name)
+        return Symbol('ksym_' + self.name)
 
     @staticmethod
     def unwrap_kore_name(sym: Symbol) -> str | None:
-        if not sym.name.startswith('ksymb_'):
+        if not sym.name.startswith('ksym_'):
             return None
-        return sym.name.removeprefix('ksymb_')
+        return sym.name.removeprefix('ksym_')
 
     @property
     def aml_notation(self) -> Notation:

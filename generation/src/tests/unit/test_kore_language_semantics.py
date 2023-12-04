@@ -303,7 +303,7 @@ def test_symbols() -> None:
     sym = KSymbol('sym', (), srt1)
     assert sym.name == 'sym'
     assert sym.output_sort == srt1
-    assert sym.aml_symbol == Symbol('ksymb_sym')
+    assert sym.aml_symbol == Symbol('ksym_sym')
     assert not sym.is_functional
     assert not sym.is_ctor
     assert not sym.is_cell
@@ -319,7 +319,7 @@ def test_symbols() -> None:
     assert fsym.name == 'fsym'
     assert fsym.output_sort == srt1
     assert fsym.input_sorts == (srt1, srt2)
-    assert fsym.aml_symbol == Symbol('ksymb_fsym')
+    assert fsym.aml_symbol == Symbol('ksym_fsym')
     assert fsym.is_functional
     assert not fsym.is_ctor
     assert not fsym.is_cell
@@ -336,7 +336,7 @@ def test_symbols() -> None:
     assert cell_sym.name == 'cell'
     assert cell_sym.output_sort == srt1
     assert cell_sym.input_sorts == (srt1, srt2)
-    assert cell_sym.aml_symbol == Symbol('ksymb_cell')
+    assert cell_sym.aml_symbol == Symbol('ksym_cell')
     assert cell_sym.is_functional
     assert not cell_sym.is_ctor
     assert cell_sym.is_cell
@@ -351,26 +351,26 @@ def test_symbol_params() -> None:
     symbol1 = KSymbol('symbol1', (), sort1)
     assert symbol1.input_sorts == ()
     assert symbol1.sort_params == ()
-    assert symbol1.aml_symbol == Symbol('ksymb_symbol1')
-    assert symbol1.aml_notation == nary_app(Symbol('ksymb_symbol1'), 0, False)
+    assert symbol1.aml_symbol == Symbol('ksym_symbol1')
+    assert symbol1.aml_notation == nary_app(Symbol('ksym_symbol1'), 0, False)
 
     symbol2 = KSymbol('symbol2', (sort2,), sort1, (sort1, sort2))
     assert symbol2.input_sorts == (sort1, sort2)
     assert symbol2.sort_params == (sort2,)
-    assert symbol2.aml_symbol == Symbol('ksymb_symbol2')
-    assert symbol2.aml_notation == nary_app(Symbol('ksymb_symbol2'), 3, False)
+    assert symbol2.aml_symbol == Symbol('ksym_symbol2')
+    assert symbol2.aml_notation == nary_app(Symbol('ksym_symbol2'), 3, False)
 
     symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2), is_functional=True)
     assert symbol3.input_sorts == (sort1, sort2)
     assert symbol3.sort_params == (sort2, sort3)
-    assert symbol3.aml_symbol == Symbol('ksymb_symbol3')
-    assert symbol3.aml_notation == nary_app(Symbol('ksymb_symbol3'), 4, False)
+    assert symbol3.aml_symbol == Symbol('ksym_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('ksym_symbol3'), 4, False)
 
     symbol3 = KSymbol('symbol3', (sort2, sort3), sort3, (sort1, sort2, sort2), is_functional=True, is_cell=True)
     assert symbol3.input_sorts == (sort1, sort2, sort2)
     assert symbol3.sort_params == (sort2, sort3)
-    assert symbol3.aml_symbol == Symbol('ksymb_symbol3')
-    assert symbol3.aml_notation == nary_app(Symbol('ksymb_symbol3'), 5, True)
+    assert symbol3.aml_symbol == Symbol('ksym_symbol3')
+    assert symbol3.aml_notation == nary_app(Symbol('ksym_symbol3'), 5, True)
 
 
 def test_module_symbols() -> None:
@@ -506,14 +506,14 @@ def test_rules() -> None:
 
     # Check pretty printed versions
     pretty_opt = pretty_options(semantics)
-    assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksymb_sym1 k=> ksymb_sym2(ksymb_sym1)):ksort_srt1'
+    assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksym_sym1 k=> ksym_sym2(ksym_sym1)):ksort_srt1'
     assert (
         equation_rule1.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (ksymb_sym1():ksort_srt1 k= (ksymb_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
+        == '(k⊤:ksort_srt1 k-> (ksym_sym1():ksort_srt1 k= (ksym_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
     )
     assert (
         equation_rule2.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (ksymb_sym4():ksort_srt2 k= (ksymb_sym2(ksymb_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
+        == '(k⊤:ksort_srt1 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
     )
 
 
