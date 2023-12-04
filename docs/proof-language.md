@@ -824,7 +824,7 @@ Memory capped by `LOCAL_MEM` is called *global memory*.
 
 `Assume <i:u8>`
 :   Consumes `i` `Pattern` entries from the top of the stack and adds them to local memory as `Proved`'s
-    with `instantiable = false` (see [^instantiable_false]).
+    with `instantiable = false` and empty assumptions (see [^instantiable_false]).
 
 `Save`
 :   Store the top element of the stack by appending it to global memory with assumptions from local memory.
