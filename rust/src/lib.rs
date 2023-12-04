@@ -282,6 +282,7 @@ impl Pattern {
 
     // Checks whether pattern is well-formed ASSUMING
     // that the sub-patterns are well-formed
+    // TODO: Audit this function to see if we need to add any more cases
     fn well_formed(&self) -> bool {
         match self {
             Pattern::MetaVar {
@@ -290,18 +291,24 @@ impl Pattern {
                 ..
             } => return !app_ctx_holes.into_iter().any(|hole| e_fresh.contains(hole)),
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
-            Pattern::ESubst {
-                pattern, evar_id, ..
-            } => !pattern.e_fresh(*evar_id),
-            Pattern::SSubst {
-                pattern, svar_id, ..
-            } => !pattern.s_fresh(*svar_id),
             _ => {
                 // TODO: If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
                     "Well-formedness checking is unimplemented yet for this kind of pattern."
                 );
             }
+        }
+    }
+
+    fn is_redundant_subst(&self) -> bool {
+        match self {
+            Pattern::ESubst {
+                pattern, evar_id, ..
+            } => pattern.e_fresh(*evar_id),
+            Pattern::SSubst {
+                pattern, svar_id, ..
+            } => pattern.s_fresh(*svar_id),
+            _ => false,
         }
     }
 }
@@ -435,7 +442,11 @@ fn apply_esubst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
         ),
         Pattern::Exists { var, .. } if *var == evar_id => Rc::clone(pattern),
         Pattern::Exists { var, subpattern } => {
-            assert!(plug.e_fresh(*var), "EVar substitution would capture free variable {}!", var);
+            assert!(
+                plug.e_fresh(*var),
+                "EVar substitution would capture free variable {}!",
+                var
+            );
             exists(*var, apply_esubst(subpattern, evar_id, plug))
         }
         Pattern::Mu { var, subpattern } => mu(*var, apply_esubst(subpattern, evar_id, plug)),
@@ -471,7 +482,11 @@ fn apply_ssubst(pattern: &Rc<Pattern>, svar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
         }
         Pattern::Mu { var, .. } if *var == svar_id => Rc::clone(pattern),
         Pattern::Mu { var, subpattern } => {
-            assert!(plug.s_fresh(*var), "SVar substitution would capture free variable {}!", var);
+            assert!(
+                plug.s_fresh(*var),
+                "SVar substitution would capture free variable {}!",
+                var
+            );
             mu(*var, apply_ssubst(subpattern, svar_id, plug))
         }
         Pattern::ESubst { .. } => wrap_subst(),
@@ -829,12 +844,11 @@ fn execute_instructions<'a>(
                 }
 
                 let esubst_pat = esubst(Rc::clone(&pattern), evar_id, plug);
-                if !esubst_pat.well_formed() {
-                    // The substitution is redundant, we don't apply it.
-                    stack.push(Term::Pattern(pattern))
+                stack.push(Term::Pattern(if esubst_pat.is_redundant_subst() {
+                    pattern
                 } else {
-                    stack.push(Term::Pattern(esubst_pat));
-                }
+                    esubst_pat
+                }));
             }
 
             Instruction::SSubst => {
@@ -851,12 +865,11 @@ fn execute_instructions<'a>(
                 }
 
                 let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, plug);
-                if !ssubst_pat.well_formed() {
-                    // The substitution is redundant, we don't apply it.
-                    stack.push(Term::Pattern(pattern))
+                stack.push(Term::Pattern(if ssubst_pat.is_redundant_subst() {
+                    pattern
                 } else {
-                    stack.push(Term::Pattern(ssubst_pat));
-                }
+                    ssubst_pat
+                }));
             }
 
             Instruction::Prop1 => {
@@ -909,6 +922,7 @@ fn execute_instructions<'a>(
             Instruction::Existence => {
                 stack.push(Term::Proved(Rc::clone(&existence)));
             }
+            // TODO: This is treated exactly the same as a SSubst, is this intended?
             Instruction::Substitution => {
                 let svar_id = *iterator
                     .next()
@@ -921,14 +935,12 @@ fn execute_instructions<'a>(
                     _ => panic!("Cannot apply SSubst on concrete term!"),
                 }
 
-                let ssubst = ssubst(Rc::clone(&pattern), svar_id, plug);
-
-                if !ssubst.well_formed() {
-                    // The substitution is redundant, we don't apply it.
-                    stack.push(Term::Proved(pattern))
+                let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, plug);
+                stack.push(Term::Pattern(if ssubst_pat.is_redundant_subst() {
+                    pattern
                 } else {
-                    stack.push(Term::Proved(ssubst));
-                }
+                    ssubst_pat
+                }));
             }
             Instruction::Instantiate => {
                 let n = *iterator
