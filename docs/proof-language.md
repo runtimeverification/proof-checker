@@ -217,7 +217,7 @@ abstract class Pattern(Term):
     ...
 
 abstract class Proof(Term):
-    assumptions: list[Pattern]
+    assumptions: list[Pattern] = []
     instantiable: bool = true
 
     abstract def conclusion:
@@ -893,20 +893,21 @@ Proof Phase for the derived rule:
                         # Assumptions = [ phi0 -> phi1; phi1 -> phi2 ]
     # -------------------------------------------------------------------------
     # Prove the derived rule
-    Prop2               # 0: Proof((phi0 -> (phi1 -> phi2)) ->  ((phi0 -> phi1) -> (phi0 -> phi2)), assumptions=[ phi0 -> phi1; phi1 -> phi2 ])
+    Prop2               # 0: Proof((phi0 -> (phi1 -> phi2)) ->  ((phi0 -> phi1) -> (phi0 -> phi2)))
     MetaVar 1
     MetaVar 2
     Implies             # 0: ...; 1: phi1 -> phi2
     MetaVar 0           # 0: ...; 1: phi1 -> phi2; 2: phi0
-    Prop1               # 0: ...; 1: ...; 2: ...: 3: Proof(phi0 -> (phi1 -> phi0), assumptions=[ phi0 -> phi1; phi1 -> phi2 ])
-    Instantiate 2 0 1   # 0: ...; 1: Proof((phi1 -> phi2) -> (phi0 -> (phi1 -> phi2)), assumptions=[ phi0 -> phi1; phi1 -> phi2 ])
-    Load LOCAL_MEM+1    # 0: ...; 1: ...; 2: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi1 -> phi2)
-    ModusPonens         # 0: ... ; 1: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> (phi1 -> phi2)))
-    ModusPonens         # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], ((phi0 -> phi1) -> (phi0 -> phi2)))
-    Load LOCAL_MEM+0    # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], ((phi0 -> phi1) -> (phi0 -> phi2)))
-                        # 1: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi0 -> phi1)
-    ModusPonens         # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
-    Publish             # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
+    Prop1               # 0: ...; 1: ...; 2: ...: 3: Proof(phi0 -> (phi1 -> phi0))
+    Instantiate 2 0 1   # 0: ...; 1: Proof((phi1 -> phi2) -> (phi0 -> (phi1 -> phi2)))
+    Load LOCAL_MEM+1    # 0: ...; 1: ...; 2: Proof(phi1 -> phi2, instantiable=False)
+    ModusPonens         # 0: ... ; 1: Proof(phi0 -> (phi1 -> phi2))
+    ModusPonens         # 0: Proof((phi0 -> phi1) -> (phi0 -> phi2))
+    Load LOCAL_MEM+0    # 0: Proof((phi0 -> phi1) -> (phi0 -> phi2))
+                        # 1: Proof(phi0 -> phi1, instantiable=False)
+    ModusPonens         # 0: Proof(phi0 -> phi2)
+    Publish             # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi0 -> phi2)
+                        # Assumptions = []
 ```
 # Example of Using Derived Rules
 ================================
@@ -919,7 +920,7 @@ Theory/Gamma Phase:
     Symbol 1
     Symbol 2
     Implies
-    Publish         # Proof(assumptions=[], sigma0 -> sigma1), Proof(assumptions=[], sigma1 -> sigma2)
+    Publish         # Proof(sigma0 -> sigma1), Proof(sigma1 -> sigma2)
     # Derived rule is in a different slice, and we add it as an axiom
     MetaVar 0       # phi0
     MetaVar 1       # phi0 -> phi1
@@ -931,30 +932,30 @@ Theory/Gamma Phase:
     MetaVar 0
     MetaVar 2
     Implies         # phi0 -> phi2
-    Publish         # Proof(assumptions=[], sigma0 -> sigma1),
-                    # Proof(assumptions=[], sigma1 -> sigma2),
-                    # Proof(assumptions=[phi0 -> phi1 ; phi1 -> phi2], phi0 -> phi2), // derived rule as an axiom, proved in a different slice
-                    # Assumptions = [], Stack = []
+    Publish         # Stack = [ Proof(sigma0 -> sigma1),
+                    # Proof(sigma1 -> sigma2),
+                    # Proof(assumptions=[phi0 -> phi1 ; phi1 -> phi2], phi0 -> phi2) ]
+                    # Assumptions = []
 ```
 Claim phase
 ```
   Symbol 0
   Symbol 2
-  Implies # Stack [sigma0 -> sigma2]
-  Publish # Claim(assumptions=[], sigma0 -> sigma2), Assumptions = [], Stack = []
+  Implies # Stack: [sigma0 -> sigma2]
+  Publish # Claim stack: [sigma0 -> sigma2], Assumptions = []
 
 ```
 Proof phase for using a derived rule:
 ```
     # Load Axiom
-    Load 0              # 0: Proof(assumptions=[], sigma0 -> sigma1)
-    Load 1              # 1: Proof(assumptions=[], sigma1 -> sigma2)
+    Load 0              # 0: Proof(sigma0 -> sigma1)
+    Load 1              # 1: Proof(sigma1 -> sigma2)
     Load 2              # 2: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
     Symbol 0
     Symbol 1
     Symbol 2
-    Instantiate 3 1 2 3 # 2: Proof(assumptions=[sigma0 -> sigma1; sigma1 -> sigma2], (sigma0 -> sigma2))
-    Apply               # 0: Proof(assumptions=[], (sigma0 -> sigma2))
+    Instantiate 3 1 2 3 # 2: Proof(assumptions=[sigma0 -> sigma1; sigma1 -> sigma2], sigma0 -> sigma2)
+    Apply               # 0: Proof(sigma0 -> sigma2)
 ```
 
 ### Technical
