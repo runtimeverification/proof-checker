@@ -809,7 +809,7 @@ Otherwise, execution aborts, and verification fails.
 
 `Instantiate n:u8 [metavar_id:u8]*n`
 :   Consume a `Proof` with `instantiate = true` and then n `Pattern`s off the stack, and
-    push the instantiated proof term to the stack, checking wellformedness as needed.
+    push the instantiated proof term to the stack (including instantiated assumptions), checking wellformedness as needed.
 
 ### Inference rules
 
