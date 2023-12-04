@@ -792,10 +792,10 @@ Otherwise, execution aborts, and verification fails.
 :   Push proof term corresponding to axiom schema onto the stack.
 
 `Apply`
-:   consumes a `phi0 := Proved(assumptions, conclusion)` from the top of the stack, and then further
-    consumes `len(phi0.assumptions)` more `Proved` entries from the stack to and saves them
-    into a temporary array `assumptions'`. If `phi0.assumptions = assumptions'`,
-    then adds `phi0.conclusion` to the top of the stack, otherwise fails.
+:   Consider a top of the stack is `Proof(assumptions, conclusion)` with $n$ assumptions, then:
+    1.  Consume $n$ `Proof`s from top of the stack and save them into `assumptions'`.
+    2.  Assert that `assumptions = assumptions'`.
+    3.  Place `Proof([], conclusion)` on top of the stack.
 
 
 ### Meta inference
