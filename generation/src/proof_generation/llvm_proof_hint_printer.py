@@ -9,7 +9,13 @@ from typing import TYPE_CHECKING, TextIO
 import pyk.kllvm.load  # noqa: F401
 import pyk.kore.syntax as kore
 
-from proof_generation.k.proof_gen import get_kompiled_definition, get_kompiled_dir, read_proof_hint
+from proof_generation.k.proof_gen import (
+    get_all_axioms,
+    get_axiom_label,
+    get_kompiled_definition,
+    get_kompiled_dir,
+    read_proof_hint,
+)
 from proof_generation.llvm_proof_hint import LLVMFunctionEvent, LLVMHookEvent, LLVMRewriteEvent, LLVMRuleEvent
 
 if TYPE_CHECKING:
@@ -17,21 +23,6 @@ if TYPE_CHECKING:
 
 KORE_STOP_LOC = "org'Stop'kframework'Stop'attributes'Stop'Location"
 KORE_AXIOM_ATTRS_PREFIX = "[UNIQUE'"
-
-
-def get_all_axioms(definition: kore.Definition) -> list[kore.Axiom]:
-    axioms = []
-    for module in definition.modules:
-        for axiom in module.axioms:
-            axioms.append(axiom)
-    return axioms
-
-
-def get_axiom_label(attrs: tuple[kore.App, ...]) -> str:
-    for attr in attrs:
-        if attr.symbol == 'label' and isinstance(attr.args[0], kore.String):
-            return attr.args[0].value
-    return ''
 
 
 def get_axiom_location(attrs: tuple[kore.App, ...]) -> str:

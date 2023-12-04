@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
+import pyk.kore.syntax as kore
 from pyk.kore.parser import KoreParser
 from pyk.utils import check_file_path
 
@@ -14,12 +15,10 @@ from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.llvm_proof_hint import LLVMRewriteTrace
 
 if TYPE_CHECKING:
-    from pyk.kore.syntax import Definition
-
     from proof_generation.proof import ProofExp
 
 
-def get_kompiled_definition(output_dir: Path) -> Definition:
+def get_kompiled_definition(output_dir: Path) -> kore.Definition:
     print(f'Parsing the definition in the Kore format in {output_dir}')
     kore_file = output_dir / 'definition.kore'
     check_file_path(kore_file)
@@ -49,6 +48,21 @@ def generate_proof_file(proof_gen: ProofExp, output_dir: Path, slice_name: str, 
 def read_proof_hint(filepath: str) -> LLVMRewriteTrace:
     hint_bin = Path(filepath).read_bytes()
     return LLVMRewriteTrace.parse(hint_bin)
+
+
+def get_all_axioms(definition: kore.Definition) -> list[kore.Axiom]:
+    axioms = []
+    for module in definition.modules:
+        for axiom in module.axioms:
+            axioms.append(axiom)
+    return axioms
+
+
+def get_axiom_label(attrs: tuple[kore.App, ...]) -> str:
+    for attr in attrs:
+        if attr.symbol == 'label' and isinstance(attr.args[0], kore.String):
+            return attr.args[0].value
+    return ''
 
 
 def main(
