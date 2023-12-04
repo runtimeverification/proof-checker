@@ -7,9 +7,9 @@ import pytest
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate
-from proof_generation.proofs.kore import kore_rewrites
-from tests.unit.test_kore_language_semantics import cell_config_pattern, double_rewrite, rewrite_with_cell
+from proof_generation.pattern import Instantiate, top
+from proof_generation.proofs.kore import kore_rewrites, kore_top, kore_and, kore_implies, kore_equals
+from tests.unit.test_kore_language_semantics import cell_config_pattern, double_rewrite, simple_semantics, rewrite_with_cell
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -180,3 +180,55 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
     assert hints[1].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[1]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[2]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
+
+
+def test_simple_rules_pretty_printing() -> None:
+    semantics = simple_semantics()
+    sort1 = semantics.get_sort('srt1')
+    sort2 = semantics.get_sort('srt2')
+    sym1 = semantics.get_symbol('sym1')  # Sort1
+    sym2 = semantics.get_symbol('sym2')  # Sort1 -> Sort2
+    sym3 = semantics.get_symbol('sym3')  # Sort1
+    sym4 = semantics.get_symbol('sym4')  # Sort2
+    mod = semantics.main_module
+
+    # Rewrite pattern
+    rewrite_pattern = kore_rewrites(sort1.aml_symbol, sym1.aml_symbol, sym2.aml_notation(sym1.aml_symbol))
+
+    # Equation patterns
+    requires1 = kore_top(sort1.aml_symbol)
+    left1 = sym1.aml_notation()
+    right1 = sym3.aml_notation()
+    ensures1 = kore_top(sort1.aml_symbol)
+    rhs_with_ensures1 = kore_and(sort1.aml_symbol, right1, ensures1)
+    equation_pattern1 = kore_implies(
+        sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, rhs_with_ensures1)
+    )
+
+    requires2 = kore_top(sort1.aml_symbol)
+    left2 = sym4.aml_notation()
+    right2 = sym2.aml_notation(sym1.aml_symbol)
+    ensures2 = kore_top(sort2.aml_symbol)
+    rhs_with_ensures2 = kore_and(sort2.aml_symbol, right2, ensures2)
+    equation_pattern2 = kore_implies(
+        sort2.aml_symbol,
+        requires2,
+        kore_equals(sort2.aml_symbol, sort2.aml_symbol, left2, rhs_with_ensures2),
+    )
+
+    with mod as m:
+        rewrite_rule = m.rewrite_rule(rewrite_pattern)
+        equation_rule1 = m.equational_rule(equation_pattern1)
+        equation_rule2 = m.equational_rule(equation_pattern2)
+
+    # Check pretty printed versions
+    pretty_opt = ExecutionProofExp(semantics, init_config=top()).pretty_options()
+    assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksym_sym1 k=> ksym_sym2(ksym_sym1)):ksort_srt1'
+    assert (
+        equation_rule1.pattern.pretty(pretty_opt)
+        == '(k⊤:ksort_srt1 k-> (ksym_sym1():ksort_srt1 k= (ksym_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
+    )
+    assert (
+        equation_rule2.pattern.pretty(pretty_opt)
+        == '(k⊤:ksort_srt1 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
+    )

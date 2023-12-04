@@ -128,7 +128,7 @@ def node_tree() -> LanguageSemantics:
             reverse_conf = simplified_cell_config_pattern(semantics, 'SortTree', reverse_expression)
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, next_conf, reverse_conf))
 
-            # reverse(a) <-> a
+            # reverse(a) = a
             tr_sort_ptn = tree_sort.aml_symbol
             tr_top = kore_top(tr_sort_ptn)
             requires = kore_and(
@@ -150,7 +150,7 @@ def node_tree() -> LanguageSemantics:
             )
             mod.equational_rule(equational_pattern)
 
-            # reverse(b) <-> b
+            # reverse(b) = b
             requires = kore_and(
                 tr_sort_ptn,
                 tr_top,
@@ -167,7 +167,7 @@ def node_tree() -> LanguageSemantics:
             )
             mod.equational_rule(equational_pattern)
 
-            # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+            # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
             requires = kore_and(
                 tr_sort_ptn,
                 tr_top,
@@ -231,11 +231,6 @@ def simple_semantics() -> LanguageSemantics:
             mod.symbol('sym3', srt1)
             mod.symbol('sym4', srt2)
     return semantics
-
-
-def pretty_options(semantics: LanguageSemantics) -> PrettyOptions:
-    proof_expr = ExecutionProofExp(semantics, EVar(0))
-    return proof_expr.pretty_options()
 
 
 def test_module_creation() -> None:
@@ -503,18 +498,6 @@ def test_rules() -> None:
     assert equation_rule2.pattern == equation_pattern2
     assert semantics.get_axiom(equation_rule2.ordinal) == equation_rule2
     assert mod.get_axiom(equation_rule2.ordinal) == equation_rule2
-
-    # Check pretty printed versions
-    pretty_opt = pretty_options(semantics)
-    assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksym_sym1 k=> ksym_sym2(ksym_sym1)):ksort_srt1'
-    assert (
-        equation_rule1.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (ksym_sym1():ksort_srt1 k= (ksym_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
-    )
-    assert (
-        equation_rule2.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
-    )
 
 
 def test_module_import() -> None:
