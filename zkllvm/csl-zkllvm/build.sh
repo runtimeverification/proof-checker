@@ -5,7 +5,6 @@ if [[ "$#" -lt 2 ]]; then
   exit 1
 fi
 
-ZKLLVM_ROOT=/home/rosmar/zkllvm
 # Check if ZKLLVM_ROOT is set
 if [[ -z "${ZKLLVM_ROOT}" ]]; then
   echo "ZKLLVM_ROOT is not set"
@@ -49,10 +48,8 @@ fi
 if [[ ! -d "${OUTPUTDIR}" ]]; then
   mkdir "${OUTPUTDIR}"
 else
-  rm -r "${OUTPUTDIR:?}/*"
+  rm -r "${OUTPUTDIR:?}/"
 fi
-
-START=$(date +%s%3N);
 
 # Compile the program to LLVM IR
 ${CLANG_EXE} -target assigner -D__ZKLLVM__ \
@@ -92,12 +89,22 @@ ${LLVM_LINK} -S "${OUTPUT_CLANG}" -o "${OUTPUT_LLVM_LINK_1}"
 ${LLVM_LINK} -S "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.ll" -o "${OUTPUT_LLVM_LINK_2}"
 
 # # Generate the circuit and the assignment table
-echo "Circuit Function output: "
-${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output --check
+echo "Generate circuit"
+TIME1=$(date +%s%3N);
+
+${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output
+
+TIME2=$(date +%s%3N);
+CIRCUIT_TIME=$(expr $TIME2 - $TIME1)
+echo $FILENAME "circuit generation .." $(expr $CIRCUIT_TIME / 1000).$(expr $CIRCUIT_TIME % 1000) "s"
 
 # Generate the test proof
+echo "Generate proof and verify"
+TIME3=$(date +%s%3N);
+
 ${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}"
 
-END=$(date +%s%3N);
-TOTAL=$(expr $END - $START)
-echo $FILENAME ".." $(expr $TOTAL / 1000).$(expr $TOTAL % 1000) "s"
+TIME4=$(date +%s%3N);
+PROOF_TIME=$(expr $TIME4 - $TIME3)
+
+echo $FILENAME "proof+verification .." $(expr $PROOF_TIME / 1000).$(expr $PROOF_TIME % 1000) "s"
