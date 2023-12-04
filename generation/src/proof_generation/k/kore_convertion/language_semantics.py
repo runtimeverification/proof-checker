@@ -549,37 +549,34 @@ class LanguageSemantics(BuilderScope):
             name = scope.lookup_metavar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
-
+    
     def count_simplifications(self, pattern: Pattern) -> int:
-        todo = [pattern]
-        _tmp_symbols = []
+        """ Count the number of functional symbols in the given pattern. """
         functional_symbols = 0
-        while todo:
-            cur = todo.pop()
-            if isinstance(cur, App):
-                symbol_pattern, args = kl.deconstruct_nary_application(cur)
-                if isinstance(symbol_pattern, Symbol):
-                    ksymbol = self.resolve_to_ksymbol(symbol_pattern)
-                    if ksymbol is not None and ksymbol.is_functional:
-                        _tmp_symbols.append(ksymbol.name)
-                        functional_symbols += 1
-                else:
-                    todo.append(symbol_pattern)
-                if args:
-                    todo.extend(list(args))
-            elif isinstance(cur, Instantiate):
-                todo.append(cur.pattern)
-                for inst in cur.inst.values():
-                    todo.append(inst)
-            elif isinstance(cur, Symbol):
-                ksymbol = self.resolve_to_ksymbol(cur)
+
+        if isinstance(pattern, App):
+            symbol_pattern, args = kl.deconstruct_nary_application(pattern)
+            if isinstance(symbol_pattern, Symbol):
+                ksymbol = self.resolve_to_ksymbol(symbol_pattern)
                 if ksymbol is not None and ksymbol.is_functional:
-                    _tmp_symbols.append(ksymbol.name)
                     functional_symbols += 1
             else:
-                children = Pattern.unwrap(cur)
-                if children:
-                    todo.extend(list(children))
+                functional_symbols += self.count_simplifications(symbol_pattern)
+            for arg in args:
+                functional_symbols += self.count_simplifications(arg)
+        elif isinstance(pattern, Instantiate):
+            functional_symbols += self.count_simplifications(pattern.pattern)
+            for inst in pattern.inst.values():
+                functional_symbols += self.count_simplifications(inst)
+        elif isinstance(pattern, Symbol):
+            ksymbol = self.resolve_to_ksymbol(pattern)
+            if ksymbol is not None and ksymbol.is_functional:
+                functional_symbols += 1
+        else:
+            children = Pattern.unwrap(pattern)
+            if children:
+                for child in children:
+                    functional_symbols += self.count_simplifications(child)
         return functional_symbols
 
     def _convert_sort(self, scope: ConvertionScope, sort: kore.Sort | kore.SortVar) -> Pattern:
