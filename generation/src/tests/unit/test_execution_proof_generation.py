@@ -8,8 +8,13 @@ from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate, top
-from proof_generation.proofs.kore import kore_rewrites, kore_top, kore_and, kore_implies, kore_equals
-from tests.unit.test_kore_language_semantics import cell_config_pattern, double_rewrite, simple_semantics, rewrite_with_cell
+from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
+from tests.unit.test_kore_language_semantics import (
+    cell_config_pattern,
+    double_rewrite,
+    rewrite_with_cell,
+    simple_semantics,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -27,14 +32,14 @@ def rewrite_hints() -> list[RewriteStepExpression]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        a_symbol.aml_notation(),
-        b_symbol.aml_notation(),
+        a_symbol.app(),
+        b_symbol.app(),
         rewrite_rule1,
         {},
     )
     step_two = RewriteStepExpression(
-        b_symbol.aml_notation(),
-        c_symbol.aml_notation(),
+        b_symbol.app(),
+        c_symbol.app(),
         rewrite_rule2,
         {},
     )
@@ -52,16 +57,16 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        cell_config_pattern(semantics, a_symbol.aml_notation(), dot_k_symbol.aml_notation()),
-        cell_config_pattern(semantics, b_symbol.aml_notation(), dot_k_symbol.aml_notation()),
+        cell_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
+        cell_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
         rewrite_rule1,
-        {0: dot_k_symbol.aml_notation()},
+        {0: dot_k_symbol.app()},
     )
     step_two = RewriteStepExpression(
-        cell_config_pattern(semantics, b_symbol.aml_notation(), dot_k_symbol.aml_notation()),
-        cell_config_pattern(semantics, c_symbol.aml_notation(), dot_k_symbol.aml_notation()),
+        cell_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+        cell_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
         rewrite_rule2,
-        {0: dot_k_symbol.aml_notation()},
+        {0: dot_k_symbol.app()},
     )
     return [step_one, step_two]
 
@@ -193,12 +198,12 @@ def test_simple_rules_pretty_printing() -> None:
     mod = semantics.main_module
 
     # Rewrite pattern
-    rewrite_pattern = kore_rewrites(sort1.aml_symbol, sym1.aml_symbol, sym2.aml_notation(sym1.aml_symbol))
+    rewrite_pattern = kore_rewrites(sort1.aml_symbol, sym1.aml_symbol, sym2.app(sym1.aml_symbol))
 
     # Equation patterns
     requires1 = kore_top(sort1.aml_symbol)
-    left1 = sym1.aml_notation()
-    right1 = sym3.aml_notation()
+    left1 = sym1.app()
+    right1 = sym3.app()
     ensures1 = kore_top(sort1.aml_symbol)
     rhs_with_ensures1 = kore_and(sort1.aml_symbol, right1, ensures1)
     equation_pattern1 = kore_implies(
@@ -206,8 +211,8 @@ def test_simple_rules_pretty_printing() -> None:
     )
 
     requires2 = kore_top(sort1.aml_symbol)
-    left2 = sym4.aml_notation()
-    right2 = sym2.aml_notation(sym1.aml_symbol)
+    left2 = sym4.app()
+    right2 = sym2.app(sym1.aml_symbol)
     ensures2 = kore_top(sort2.aml_symbol)
     rhs_with_ensures2 = kore_and(sort2.aml_symbol, right2, ensures2)
     equation_pattern2 = kore_implies(

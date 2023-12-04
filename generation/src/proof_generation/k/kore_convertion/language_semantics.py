@@ -73,7 +73,7 @@ class KSymbol:
         return sym.name.removeprefix('ksym_')
 
     @property
-    def aml_notation(self) -> Notation:
+    def app(self) -> Notation:
         if self.name == 'kseq':
             return kl.kore_kseq
         else:
@@ -386,7 +386,7 @@ class LanguageSemantics(BuilderScope):
     @property
     def notations(self) -> tuple[Notation, ...]:
         symbols = self.symbols
-        notations = [sym.aml_notation for sym in symbols]
+        notations = [sym.app for sym in symbols]
 
         return (*dict.fromkeys(notations), *self._inferred_notations)
 
@@ -549,9 +549,9 @@ class LanguageSemantics(BuilderScope):
             name = scope.lookup_metavar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
-    
+
     def count_simplifications(self, pattern: Pattern) -> int:
-        """ Count the number of functional symbols in the given pattern. """
+        """Count the number of functional symbols in the given pattern."""
         functional_symbols = 0
 
         if isinstance(pattern, App):
@@ -663,7 +663,7 @@ class LanguageSemantics(BuilderScope):
                 sort_params: list[Pattern] = [self._convert_sort(scope, sort) for sort in ksorts]
                 arg_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
 
-                return ksymbol.aml_notation(*(sort_params + arg_patterns))
+                return ksymbol.app(*(sort_params + arg_patterns))
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return scope.resolve_evar(pattern)
