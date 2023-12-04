@@ -14,6 +14,9 @@ from proof_generation.llvm_proof_hint import LLVMFunctionEvent, LLVMHookEvent, L
 if TYPE_CHECKING:
     from proof_generation.llvm_proof_hint import Argument, LLVMRewriteTrace
 
+KORE_STOP_LOC = "org'Stop'kframework'Stop'attributes'Stop'Location"
+KORE_AXIOM_ATTRS_PREFIX = "[UNIQUE'"
+
 
 def get_all_axioms(definition: kore.Definition) -> list[kore.Axiom]:
     axioms = []
@@ -32,7 +35,7 @@ def get_axiom_label(attrs: tuple[kore.App, ...]) -> str:
 
 def get_axiom_location(attrs: tuple[kore.App, ...]) -> str:
     for attr in attrs:
-        if attr.symbol == "org'Stop'kframework'Stop'attributes'Stop'Location" and isinstance(attr.args[0], kore.String):
+        if attr.symbol == KORE_STOP_LOC and isinstance(attr.args[0], kore.String):
             loc_slices = attr.args[0].value.split(',')
             start_row = loc_slices[0].split('(')[1]
             start_col = loc_slices[1]
@@ -41,7 +44,7 @@ def get_axiom_location(attrs: tuple[kore.App, ...]) -> str:
 
 
 def axiom_gist_text(axiom: kore.Axiom) -> str:
-    text = axiom.text.split("[UNIQUE'")[0]
+    text = axiom.text.split(KORE_AXIOM_ATTRS_PREFIX)[0]
     assert text, f'Error! Unexpected serialization of axiom: {axiom.text}'
     return text
 
