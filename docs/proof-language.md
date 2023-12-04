@@ -789,14 +789,7 @@ Otherwise, execution aborts, and verification fails.
 ### Axiom Schemas
 
 `Lukasiewicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
-:   Push proof term corresponding to axiom schema onto the stack.
-
-`Apply`
-:   Consume the top of the stack `Proof(assumptions, conclusion)` with $n$ assumptions, then:
-    1.  Consume $n$ `Proof`s from top of the stack with empty assumptions, and save them into a temporary variable `assumptions'`.
-    2.  Assert that `assumptions = [assumption'.conclusion for assumption' in assumptions']`.
-    3.  Place `Proof([], conclusion)` on top of the stack.
-
+:   Push proof term corresponding to axiom schema onto the stack (with empty assumptions).
 
 ### Meta inference
 
@@ -815,6 +808,12 @@ Otherwise, execution aborts, and verification fails.
 
 `ModusPonens`/`Generalization`/`Frame`/`Substitution`/`KnasterTarski`
 :   Consume one or two `Proof` terms with empty assumptions off the stack and push the new proof term.
+
+`Apply`
+:   Consume the top of the stack `Proof(assumptions, conclusion)` with $n$ assumptions, then:
+    1.  Consume $n$ `Proof`s from top of the stack with empty assumptions, and save their conclusions into a temporary variable `assumptions'`.
+    2.  Assert that `assumptions = assumptions'`.
+    3.  Place `Proof([], conclusion)` on top of the stack.
 
 ### Memory manipulation:
 
