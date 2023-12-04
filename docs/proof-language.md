@@ -827,7 +827,7 @@ Memory capped by `LOCAL_MEM` is called *global memory*.
     with `instantiable = false` (see [^instantiable_false]).
 
 `Save`
-:   Store the top element of the stack by appending it to global memory.
+:   Store the top element of the stack by appending it to global memory with assumptions from the memory.
 
 `Load <i:u8>`
 :   Push the `Term` at index $i$ in memory to the top of the stack.
