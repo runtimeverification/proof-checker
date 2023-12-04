@@ -62,7 +62,7 @@ def get_axiom_label(attrs: tuple[kore.App, ...]) -> str:
     for attr in attrs:
         if attr.symbol == 'label' and isinstance(attr.args[0], kore.String):
             return attr.args[0].value
-    return ''
+    return 'N/A'
 
 
 def main(

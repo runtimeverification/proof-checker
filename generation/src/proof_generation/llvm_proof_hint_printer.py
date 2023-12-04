@@ -32,7 +32,7 @@ def get_axiom_location(attrs: tuple[kore.App, ...]) -> str:
             start_row = loc_slices[0].split('(')[1]
             start_col = loc_slices[1]
             return start_row + ',' + start_col
-    return ''
+    return 'N/A'
 
 
 def axiom_gist_text(axiom: kore.Axiom) -> str:

@@ -13,15 +13,15 @@ Hook: MAP.concat @ 0
   Result: [kore]
 Function: LblinitGeneratedTopCell{} @ 0
   Term: [kore]
-Rule 723 [label: ] [loc: ] [substs: 1]
+Rule 723 [label: N/A] [loc: N/A] [substs: 1]
   VarInit = [kore]
 Function: LblinitTCell{} @ 0:0
   Term: [kore]
-Rule 726 [label: ] [loc: ] [substs: 1]
+Rule 726 [label: N/A] [loc: N/A] [substs: 1]
   VarInit = [kore]
 Function: LblinitKCell{} @ 0:0
   Term: [kore]
-Rule 724 [label: ] [loc: ] [substs: 1]
+Rule 724 [label: N/A] [loc: N/A] [substs: 1]
   VarInit = [kore]
 Function: Lblproject'Coln'Pgm{} @ 0:0:0:0
   Hook: MAP.lookup @ 0:0:0:0:0:0
@@ -30,14 +30,14 @@ Function: Lblproject'Coln'Pgm{} @ 0:0:0:0
       Term: [kore]
     Result: [kore]
   Term: [kore]
-Rule 804 [label: ] [loc: ] [substs: 1]
+Rule 804 [label: N/A] [loc: N/A] [substs: 1]
   VarK = [kore]
 Function: LblinitSCell{} @ 0:1
-Rule 725 [label: ] [loc: ] [substs: 0]
+Rule 725 [label: N/A] [loc: N/A] [substs: 0]
 Function: LblinitGeneratedCounterCell{} @ 0:1
-Rule 722 [label: ] [loc: ] [substs: 0]
+Rule 722 [label: N/A] [loc: N/A] [substs: 0]
 Init config: [kore]
-Rule 688 [label: ] [loc: 74,8] [substs: 3]
+Rule 688 [label: N/A] [loc: 74,8] [substs: 3]
   Var'Unds'DotVar0 = [kore]
   Var'Unds'DotVar1 = [kore]
   Var'Unds'DotVar2 = [kore]

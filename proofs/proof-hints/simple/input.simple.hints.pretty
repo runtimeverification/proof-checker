@@ -17,11 +17,11 @@ Hook: MAP.concat @ 0
   Result: [kore]
 Function: LblinitGeneratedTopCell{} @ 0
   Term: [kore]
-Rule 2734 [label: ] [loc: ] [substs: 1]
+Rule 2734 [label: N/A] [loc: N/A] [substs: 1]
   VarInit = [kore]
 Function: LblinitPCell{} @ 0:0
   Term: [kore]
-Rule 2735 [label: ] [loc: ] [substs: 1]
+Rule 2735 [label: N/A] [loc: N/A] [substs: 1]
   VarInit = [kore]
 Function: Lblproject'Coln'Expr{} @ 0:0
   Hook: MAP.lookup @ 0:0:0:0
@@ -30,10 +30,10 @@ Function: Lblproject'Coln'Expr{} @ 0:0
       Term: [kore]
     Result: [kore]
   Term: [kore]
-Rule 2789 [label: ] [loc: ] [substs: 1]
+Rule 2789 [label: N/A] [loc: N/A] [substs: 1]
   VarK = [kore]
 Function: LblinitGeneratedCounterCell{} @ 0:1
-Rule 2733 [label: ] [loc: ] [substs: 0]
+Rule 2733 [label: N/A] [loc: N/A] [substs: 0]
 Init config: [kore]
 Rule 2684 [label: SIMPLE.r1] [loc: 9,14] [substs: 2]
   Var'Unds'DotVar0 = [kore]
