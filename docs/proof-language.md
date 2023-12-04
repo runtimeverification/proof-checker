@@ -819,9 +819,9 @@ Otherwise, execution aborts, and verification fails.
 ### Memory manipulation:
 
 Let `LOCAL_MEM` be an usize constant. Memory starting at the `LOCAL_MEM` index
-is called 'local memory'. This fragment of memory will represent the additional assumptions
+is called *local memory*. This fragment of memory will represent the additional assumptions
 used in the given subproof, where we can load them as `Proved`'s.
-Memory capped by `LOCAL_MEM` is called global memory.
+Memory capped by `LOCAL_MEM` is called *global memory*.
 
 Assume <i:u8>
 :   Consumes `i` `Pattern` entries from the top of the stack and adds them to local memory as `Proved`'s
