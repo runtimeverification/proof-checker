@@ -120,7 +120,7 @@ test-python: poetry-install
 test-unit-python: poetry-install
 	$(POETRY_RUN) pytest generation/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration-python: poetry-install
+test-integration-python: poetry-install test-hints
 	$(POETRY_RUN) pytest generation/src/tests/integration --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 # Coverage
@@ -246,7 +246,7 @@ clean-hints:
 test-system: test-integration test-proof-gen test-proof-translate test-proof-kgen test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
-test-integration: test-hints test-integration-python
+test-integration: test-integration-python
 
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
