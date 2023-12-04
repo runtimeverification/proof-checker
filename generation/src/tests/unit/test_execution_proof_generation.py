@@ -210,7 +210,7 @@ def test_simple_rules_pretty_printing() -> None:
         sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, rhs_with_ensures1)
     )
 
-    requires2 = kore_top(sort1.aml_symbol)
+    requires2 = kore_top(sort2.aml_symbol)
     left2 = sym4.app()
     right2 = sym2.app(sym1.aml_symbol)
     ensures2 = kore_top(sort2.aml_symbol)
