@@ -860,8 +860,13 @@ We instantiate derived rules when *applying* derived rules with `Apply`.
 `Pop`
 :   Consume the top of the stack.
 
+Example of Derived Rules
+=========================
+Whenever we write `Assumptions = [...]`, we mean the contents of local memory.
+
 Example of Proving Derived Rules
-========================
+============================
+
 Theory/Gamma phase:
 ```
 ```
