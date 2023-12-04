@@ -64,16 +64,16 @@ class KSymbol:
 
     @property
     def aml_symbol(self) -> Symbol:
-        return Symbol('ksymb_' + self.name)
+        return Symbol('ksym_' + self.name)
 
     @staticmethod
     def unwrap_kore_name(sym: Symbol) -> str | None:
-        if not sym.name.startswith('ksymb_'):
+        if not sym.name.startswith('ksym_'):
             return None
-        return sym.name.removeprefix('ksymb_')
+        return sym.name.removeprefix('ksym_')
 
     @property
-    def aml_notation(self) -> Notation:
+    def app(self) -> Notation:
         if self.name == 'kseq':
             return kl.kore_kseq
         else:
@@ -390,7 +390,7 @@ class LanguageSemantics(BuilderScope):
     @property
     def notations(self) -> tuple[Notation, ...]:
         symbols = self.symbols
-        notations = [sym.aml_notation for sym in symbols]
+        notations = [sym.app for sym in symbols]
 
         return (*dict.fromkeys(notations), *self._inferred_notations)
 
@@ -555,35 +555,32 @@ class LanguageSemantics(BuilderScope):
         return substitutions
 
     def count_simplifications(self, pattern: Pattern) -> int:
-        todo = [pattern]
-        _tmp_symbols = []
+        """Count the number of functional symbols in the given pattern."""
         functional_symbols = 0
-        while todo:
-            cur = todo.pop()
-            if isinstance(cur, App):
-                symbol_pattern, args = kl.deconstruct_nary_application(cur)
-                if isinstance(symbol_pattern, Symbol):
-                    ksymbol = self.resolve_to_ksymbol(symbol_pattern)
-                    if ksymbol is not None and ksymbol.is_functional:
-                        _tmp_symbols.append(ksymbol.name)
-                        functional_symbols += 1
-                else:
-                    todo.append(symbol_pattern)
-                if args:
-                    todo.extend(list(args))
-            elif isinstance(cur, Instantiate):
-                todo.append(cur.pattern)
-                for inst in cur.inst.values():
-                    todo.append(inst)
-            elif isinstance(cur, Symbol):
-                ksymbol = self.resolve_to_ksymbol(cur)
+
+        if isinstance(pattern, App):
+            symbol_pattern, args = kl.deconstruct_nary_application(pattern)
+            if isinstance(symbol_pattern, Symbol):
+                ksymbol = self.resolve_to_ksymbol(symbol_pattern)
                 if ksymbol is not None and ksymbol.is_functional:
-                    _tmp_symbols.append(ksymbol.name)
                     functional_symbols += 1
             else:
-                children = Pattern.unwrap(cur)
-                if children:
-                    todo.extend(list(children))
+                functional_symbols += self.count_simplifications(symbol_pattern)
+            for arg in args:
+                functional_symbols += self.count_simplifications(arg)
+        elif isinstance(pattern, Instantiate):
+            functional_symbols += self.count_simplifications(pattern.pattern)
+            for inst in pattern.inst.values():
+                functional_symbols += self.count_simplifications(inst)
+        elif isinstance(pattern, Symbol):
+            ksymbol = self.resolve_to_ksymbol(pattern)
+            if ksymbol is not None and ksymbol.is_functional:
+                functional_symbols += 1
+        else:
+            children = Pattern.unwrap(pattern)
+            if children:
+                for child in children:
+                    functional_symbols += self.count_simplifications(child)
         return functional_symbols
 
     def _convert_sort(self, scope: ConvertionScope, sort: kore.Sort | kore.SortVar) -> Pattern:
@@ -670,7 +667,7 @@ class LanguageSemantics(BuilderScope):
                 sort_params: list[Pattern] = [self._convert_sort(scope, sort) for sort in ksorts]
                 arg_patterns: list[Pattern] = [self._convert_pattern(scope, arg) for arg in args]
 
-                return ksymbol.aml_notation(*(sort_params + arg_patterns))
+                return ksymbol.app(*(sort_params + arg_patterns))
             case kore.EVar(name, _):
                 # TODO: Revisit when we have sorting implemented!
                 # return scope.resolve_evar(pattern)

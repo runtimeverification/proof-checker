@@ -7,13 +7,14 @@ import pytest
 from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationVisitor
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate
-from proof_generation.proofs.kore import kore_rewrites
+from proof_generation.pattern import Instantiate, top
+from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     cell_config_pattern,
     double_rewrite,
     node_tree,
     rewrite_with_cell,
+    simple_semantics,
     simplified_cell_config_pattern,
 )
 
@@ -33,14 +34,14 @@ def rewrite_hints() -> list[RewriteStepExpression]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        a_symbol.aml_notation(),
-        b_symbol.aml_notation(),
+        a_symbol.app(),
+        b_symbol.app(),
         rewrite_rule1,
         {},
     )
     step_two = RewriteStepExpression(
-        b_symbol.aml_notation(),
-        c_symbol.aml_notation(),
+        b_symbol.app(),
+        c_symbol.app(),
         rewrite_rule2,
         {},
     )
@@ -58,22 +59,22 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        cell_config_pattern(semantics, a_symbol.aml_notation(), dot_k_symbol.aml_notation()),
-        cell_config_pattern(semantics, b_symbol.aml_notation(), dot_k_symbol.aml_notation()),
+        cell_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
+        cell_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
         rewrite_rule1,
-        {0: dot_k_symbol.aml_notation()},
+        {0: dot_k_symbol.app()},
     )
     step_two = RewriteStepExpression(
-        cell_config_pattern(semantics, b_symbol.aml_notation(), dot_k_symbol.aml_notation()),
-        cell_config_pattern(semantics, c_symbol.aml_notation(), dot_k_symbol.aml_notation()),
+        cell_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+        cell_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
         rewrite_rule2,
-        {0: dot_k_symbol.aml_notation()},
+        {0: dot_k_symbol.app()},
     )
     return [step_one, step_two]
 
 
 def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
-    return f'<ksymb_generated_top> <ksymb_k> (ksymb_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </ksymb_k> </ksymb_generated_top>'
+    return f'<ksym_generated_top> <ksym_k> (ksym_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </ksym_k> </ksym_generated_top>'
 
 
 rewrite_test_parameters = [(double_rewrite, rewrite_hints), (rewrite_with_cell, rewrite_hints_with_cell)]
@@ -129,32 +130,32 @@ pretty_print_testing = [
     (
         double_rewrite,
         rewrite_hints,
-        ('(ksymb_a() k=> ksymb_b()):ksort_some_sort', '(ksymb_b() k=> ksymb_c()):ksort_some_sort'),
-        ('ksymb_a()', 'ksymb_b()', 'ksymb_c()'),
-        ('(ksymb_a() k=> ksymb_b()):ksort_some_sort', '(ksymb_b() k=> ksymb_c()):ksort_some_sort'),
+        ('(ksym_a() k=> ksym_b()):ksort_some_sort', '(ksym_b() k=> ksym_c()):ksort_some_sort'),
+        ('ksym_a()', 'ksym_b()', 'ksym_c()'),
+        ('(ksym_a() k=> ksym_b()):ksort_some_sort', '(ksym_b() k=> ksym_c()):ksort_some_sort'),
     ),
     (
         rewrite_with_cell,
         rewrite_hints_with_cell,
         (
-            '(' + cell_pretty_conf('ksymb_a') + ' k=> ' + cell_pretty_conf('ksymb_b') + '):ksort_SortGeneratedTopCell',
-            '(' + cell_pretty_conf('ksymb_b') + ' k=> ' + cell_pretty_conf('ksymb_c') + '):ksort_SortGeneratedTopCell',
+            '(' + cell_pretty_conf('ksym_a') + ' k=> ' + cell_pretty_conf('ksym_b') + '):ksort_SortGeneratedTopCell',
+            '(' + cell_pretty_conf('ksym_b') + ' k=> ' + cell_pretty_conf('ksym_c') + '):ksort_SortGeneratedTopCell',
         ),
         (
-            cell_pretty_conf('ksymb_a', 'ksymb_dotk()'),
-            cell_pretty_conf('ksymb_b', 'ksymb_dotk()'),
-            cell_pretty_conf('ksymb_c', 'ksymb_dotk()'),
+            cell_pretty_conf('ksym_a', 'ksym_dotk()'),
+            cell_pretty_conf('ksym_b', 'ksym_dotk()'),
+            cell_pretty_conf('ksym_c', 'ksym_dotk()'),
         ),
         (
             '('
-            + cell_pretty_conf('ksymb_a', 'ksymb_dotk()')
+            + cell_pretty_conf('ksym_a', 'ksym_dotk()')
             + ' k=> '
-            + cell_pretty_conf('ksymb_b', 'ksymb_dotk()')
+            + cell_pretty_conf('ksym_b', 'ksym_dotk()')
             + '):ksort_SortGeneratedTopCell',
             '('
-            + cell_pretty_conf('ksymb_b', 'ksymb_dotk()')
+            + cell_pretty_conf('ksym_b', 'ksym_dotk()')
             + ' k=> '
-            + cell_pretty_conf('ksymb_c', 'ksymb_dotk()')
+            + cell_pretty_conf('ksym_c', 'ksym_dotk()')
             + '):ksort_SortGeneratedTopCell',
         ),
     ),
@@ -198,15 +199,13 @@ def test_visitor_get_subpattern():
     intermidiate_config = simplified_cell_config_pattern(
         semantics,
         'SortTree',
-        reverse_symbol.aml_notation(node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())),
+        reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
 
-    subpattern1 = reverse_symbol.aml_notation(
-        node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())
-    )
-    subpattern2 = node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())
-    subpattern3 = a_symbol.aml_notation()
-    subpattern4 = b_symbol.aml_notation()
+    subpattern1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    subpattern2 = node_symbol.app(a_symbol.app(), b_symbol.app())
+    subpattern3 = a_symbol.app()
+    subpattern4 = b_symbol.app()
 
     visitor = SimplificationVisitor(semantics, intermidiate_config)
 
@@ -223,24 +222,22 @@ def test_visitor_update_subpattern():
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
 
-    initial_expression = node_symbol.aml_notation(
-        reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation())
-    )
+    initial_expression = node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app()))
     intermidiate_config = simplified_cell_config_pattern(semantics, 'SortTree', initial_expression)
 
     location = (0, 0, 1)
-    plug = b_symbol.aml_notation()
+    plug = b_symbol.app()
     result = simplified_cell_config_pattern(
         semantics,
         'SortTree',
-        node_symbol.aml_notation(reverse_symbol.aml_notation(a_symbol.aml_notation()), b_symbol.aml_notation()),
+        node_symbol.app(reverse_symbol.app(a_symbol.app()), b_symbol.app()),
     )
     assert result == SimplificationVisitor.update_subterm(location, intermidiate_config, plug)
 
     location = (0,)
     pattern = initial_expression
-    plug = b_symbol.aml_notation()
-    result = node_symbol.aml_notation(a_symbol.aml_notation(), reverse_symbol.aml_notation(b_symbol.aml_notation()))
+    plug = b_symbol.app()
+    result = node_symbol.app(a_symbol.app(), reverse_symbol.app(b_symbol.app()))
     assert result == SimplificationVisitor.update_subterm(location, pattern, plug)
 
 
@@ -253,15 +250,15 @@ def test_visitor_apply_substitution():
 
     rule = semantics.get_axiom(4)
     assert isinstance(rule, KEquationalRule)
-    substitution = {0: a_symbol.aml_notation(), 1: b_symbol.aml_notation()}
-    assert SimplificationVisitor.apply_substitutions(rule.right, substitution) == node_symbol.aml_notation(
-        reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation())
+    substitution = {0: a_symbol.app(), 1: b_symbol.app()}
+    assert SimplificationVisitor.apply_substitutions(rule.right, substitution) == node_symbol.app(
+        reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())
     )
 
     rule = semantics.get_axiom(2)
     assert isinstance(rule, KEquationalRule)
     base_simplifications = rule.substitutions_from_requires
-    assert SimplificationVisitor.apply_substitutions(rule.right, base_simplifications) == a_symbol.aml_notation()
+    assert SimplificationVisitor.apply_substitutions(rule.right, base_simplifications) == a_symbol.app()
 
 
 def test_visitor_update_config():
@@ -274,14 +271,12 @@ def test_visitor_update_config():
     intermidiate_config1 = simplified_cell_config_pattern(
         semantics,
         'SortTree',
-        node_symbol.aml_notation(
-            reverse_symbol.aml_notation(a_symbol.aml_notation()), reverse_symbol.aml_notation(b_symbol.aml_notation())
-        ),
+        node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
     )
     intermidiate_config2 = simplified_cell_config_pattern(
         semantics,
         'SortTree',
-        reverse_symbol.aml_notation(node_symbol.aml_notation(a_symbol.aml_notation(), b_symbol.aml_notation())),
+        reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
 
     visitor = SimplificationVisitor(semantics, intermidiate_config1)
@@ -301,16 +296,12 @@ def test_visitor_update_config():
             visitor.update_configuration(intermidiate_config1)
 
     # But it is possible to update the configuration after the simplification
-    simple_config = simplified_cell_config_pattern(
-        semantics, 'SortTree', reverse_symbol.aml_notation(a_symbol.aml_notation())
-    )
+    simple_config = simplified_cell_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
     visitor = SimplificationVisitor(semantics, simple_config)
     with visitor:
         visitor(2, {}, (0, 0))  # reverse(a) -> a
         visitor.update_configuration(intermidiate_config1)
-    assert visitor.simplified_configuration == simplified_cell_config_pattern(
-        semantics, 'SortTree', a_symbol.aml_notation()
-    )
+    assert visitor.simplified_configuration == simplified_cell_config_pattern(semantics, 'SortTree', a_symbol.app())
     visitor.update_configuration(intermidiate_config1)
     assert visitor.simplified_configuration == intermidiate_config1
 
@@ -333,19 +324,17 @@ def test_subpattern_batch():
     base_case_a = semantics.get_axiom(2)
     assert isinstance(base_case_a, KEquationalRule)
 
-    initial_subterm = reverse_symbol.aml_notation(
-        node_symbol.aml_notation(a_symbol.aml_notation()), b_symbol.aml_notation()
-    )
+    initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app()), b_symbol.app())
     initial_config = simplified_cell_config_pattern(semantics, 'SortTree', initial_subterm)
     proof_obj = ExecutionProofExp(semantics, initial_config)
-    proof_obj.simplification_event(rec_case.ordinal, {0: a_symbol.aml_notation(), 1: b_symbol.aml_notation()}, (0, 0))
+    proof_obj.simplification_event(rec_case.ordinal, {0: a_symbol.app(), 1: b_symbol.app()}, (0, 0))
     expected_stack = [
         SimplificationInfo(
             (0, 0),
             initial_subterm,
-            node_symbol.aml_notation(
-                reverse_symbol.aml_notation(b_symbol.aml_notation()),
-                reverse_symbol.aml_notation(a_symbol.aml_notation()),
+            node_symbol.app(
+                reverse_symbol.app(b_symbol.app()),
+                reverse_symbol.app(a_symbol.app()),
             ),
             2,
         )
@@ -353,7 +342,7 @@ def test_subpattern_batch():
     assert proof_obj._simplification_visitor._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_b.ordinal, {}, (0,))
-    expected_stack = [SimplificationInfo((0, 0), initial_subterm, b_symbol.aml_notation(), 1)]
+    expected_stack = [SimplificationInfo((0, 0), initial_subterm, b_symbol.app(), 1)]
     assert proof_obj._simplification_visitor._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_a.ordinal, {}, (1,))
@@ -361,5 +350,57 @@ def test_subpattern_batch():
 
     # Check the final update of the configuration
     assert proof_obj.current_configuration == simplified_cell_config_pattern(
-        semantics, 'SortTree', node_symbol.aml_notation(b_symbol.aml_notation(), a_symbol.aml_notation())
+        semantics, 'SortTree', node_symbol.app(b_symbol.app(), a_symbol.app())
+    )
+
+
+def test_simple_rules_pretty_printing() -> None:
+    semantics = simple_semantics()
+    sort1 = semantics.get_sort('srt1')
+    sort2 = semantics.get_sort('srt2')
+    sym1 = semantics.get_symbol('sym1')  # Sort1
+    sym2 = semantics.get_symbol('sym2')  # Sort1 -> Sort2
+    sym3 = semantics.get_symbol('sym3')  # Sort1
+    sym4 = semantics.get_symbol('sym4')  # Sort2
+    mod = semantics.main_module
+
+    # Rewrite pattern
+    rewrite_pattern = kore_rewrites(sort1.aml_symbol, sym1.aml_symbol, sym2.app(sym1.aml_symbol))
+
+    # Equation patterns
+    requires1 = kore_top(sort1.aml_symbol)
+    left1 = sym1.app()
+    right1 = sym3.app()
+    ensures1 = kore_top(sort1.aml_symbol)
+    rhs_with_ensures1 = kore_and(sort1.aml_symbol, right1, ensures1)
+    equation_pattern1 = kore_implies(
+        sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, rhs_with_ensures1)
+    )
+
+    requires2 = kore_top(sort1.aml_symbol)
+    left2 = sym4.app()
+    right2 = sym2.app(sym1.aml_symbol)
+    ensures2 = kore_top(sort2.aml_symbol)
+    rhs_with_ensures2 = kore_and(sort2.aml_symbol, right2, ensures2)
+    equation_pattern2 = kore_implies(
+        sort2.aml_symbol,
+        requires2,
+        kore_equals(sort2.aml_symbol, sort2.aml_symbol, left2, rhs_with_ensures2),
+    )
+
+    with mod as m:
+        rewrite_rule = m.rewrite_rule(rewrite_pattern)
+        equation_rule1 = m.equational_rule(equation_pattern1)
+        equation_rule2 = m.equational_rule(equation_pattern2)
+
+    # Check pretty printed versions
+    pretty_opt = ExecutionProofExp(semantics, init_config=top()).pretty_options()
+    assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksym_sym1 k=> ksym_sym2(ksym_sym1)):ksort_srt1'
+    assert (
+        equation_rule1.pattern.pretty(pretty_opt)
+        == '(k⊤:ksort_srt1 k-> (ksym_sym1():ksort_srt1 k= (ksym_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
+    )
+    assert (
+        equation_rule2.pattern.pretty(pretty_opt)
+        == '(k⊤:ksort_srt1 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
     )
