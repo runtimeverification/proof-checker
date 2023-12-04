@@ -825,7 +825,7 @@ fn execute_instructions<'a>(
                 }
 
                 let esubst_pat = esubst(Rc::clone(&pattern), evar_id, plug);
-                if esubst_pat.well_formed() {
+                if !esubst_pat.well_formed() {
                     // The substitution is redundant, we don't apply it.
                     stack.push(Term::Pattern(pattern))
                 } else {
