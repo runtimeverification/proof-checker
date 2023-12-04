@@ -1,7 +1,6 @@
 pragma circom 2.1.0;
 
 /* TODO
-- Check pattern lengths
 - Check wellformed-ness
 */
 
@@ -9,9 +8,24 @@ template IsZero() {
     signal input in_;
     signal output out;
     signal inv;
+
     inv <-- in_!=0 ? 1/in_ : 0;
     out <== -in_*inv +1;
     in_*out === 0;
+}
+
+template EqConst(C) {
+    signal input x;
+    signal output out;
+
+    out <== IsZero()(x - C);
+}
+
+template NOT() {
+    signal input in;
+    signal output out;
+
+    out <== 1 + in - 2*in;
 }
 
 template AND() {
@@ -48,6 +62,19 @@ template MultiAND(n) {
         and2.b <== ands[1].out;
         out <== and2.out;
     }
+}
+
+template MultiOR(n) {
+    signal input in[n];
+    signal not_in[n];
+    signal output out;
+
+    for (var i = 0; i < n; i ++) {
+        not_in[i] <== NOT()(in[i]);
+    }
+
+    var and_res = MultiAND(n)(not_in);
+    out <== NOT()(and_res);
 }
 
 template SizeChecker (M, EXPECTED_LEN) {
@@ -92,11 +119,13 @@ template ArrEq (N) {
 
 template Prop1FixedLen (M, A_LEN, B_LEN) {
     signal input pattern[M];
+    signal check_size;
     signal output out;
     
     // Check necessary ->
-    assert(pattern[0] == 1);
-    assert(pattern[A_LEN + 1] == 1);
+    //signal implications = AND()()
+    //assert(pattern[0] == 1);
+    //assert(pattern[A_LEN + 1] == 1);
 
     component checker = ArrEq (A_LEN);
     for (var i = 0; i < A_LEN; i ++) {
@@ -104,7 +133,9 @@ template Prop1FixedLen (M, A_LEN, B_LEN) {
         checker.b[i] <== pattern[i + 2 + A_LEN + B_LEN];
     }
 
-    out <== checker.out;
+    check_size <== SizeChecker(M, 2 + 2 * A_LEN + B_LEN)(pattern);
+
+    out <== AND()(checker.out, check_size);
 }
 
 template Prop1 (M) {
@@ -115,9 +146,11 @@ template Prop1 (M) {
     var lenA = 0, lenB = 0, solutions = 0;
 
     for (lenA = 1; lenA < M; lenA++) {
-        for (lenB = 1; lenB + 2 * lenA + 2 < M; lenB++) {
-            var sol = Prop1FixedLen(M, lenA, lenB)(pattern);
-            solutions += sol;
+        for (lenB = 1; lenB < M; lenB++) {
+            if (2 + 2 * lenA + lenB <= M) {
+                var sol = Prop1FixedLen(M, lenA, lenB)(pattern);
+                solutions += sol;
+            }
         }
     }
 
@@ -128,15 +161,18 @@ template Prop1 (M) {
 
 template Prop2FixedLen (M, A_LEN, B_LEN, C_LEN) {
     signal input pattern[M];
+    signal size_check;
     signal output out;
 
     // Check necessary ->
+    /*
     assert(pattern[0] == 0);
     assert(pattern[1] == 0);
     assert(pattern[1 + 1 + A_LEN] == 0);
     assert(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN] == 0);
     assert(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN + 1] == 0);
     assert(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN + 1 + 1 + A_LEN + B_LEN] == 0);
+    */
 
     component a_checker[2];
 
@@ -148,8 +184,8 @@ template Prop2FixedLen (M, A_LEN, B_LEN, C_LEN) {
 
     a_checker[1] = ArrEq(A_LEN);
     for (var i = 0; i < A_LEN; i ++) {
-        a_checker[0].a[i] <== pattern[2 + i];
-        a_checker[0].b[i] <== pattern[6 + 2 * A_LEN + 2 * B_LEN + C_LEN + i];
+        a_checker[1].a[i] <== pattern[2 + i];
+        a_checker[1].b[i] <== pattern[6 + 2 * A_LEN + 2 * B_LEN + C_LEN + i];
     }
 
     component b_checker = ArrEq(B_LEN);
@@ -164,20 +200,24 @@ template Prop2FixedLen (M, A_LEN, B_LEN, C_LEN) {
         c_checker.b[i] <== pattern[6 + 3 * A_LEN + 2 * B_LEN + C_LEN + i];
     }
 
-    out <== MultiAND(4)([a_checker[0].out, a_checker[1].out, b_checker.out, c_checker.out]);
+    size_check <== SizeChecker(M, 6 + 3 * A_LEN + 2 * B_LEN + 2 * C_LEN)(pattern);
+    out <== MultiAND(5)([a_checker[0].out, a_checker[1].out, b_checker.out, c_checker.out, size_check]);
 }
 
+// Recognize ->->A->BC->->AB->AC
 
-template Prop2 (N) {
-    signal input pattern[N];
+template Prop2 (M) {
+    signal input pattern[M];
     signal output out;
 
     var solutions = 0;
-    for (var lenA = 1; lenA < N; lenA++)
-        for (var lenB = 1; lenB < N; lenB++) 
-            for (var lenC = 1; lenC < N; lenC++) {
-                var sol = Prop2FixedLen(N, lenA, lenB, lenC)(pattern);
-                solutions += sol;
+    for (var lenA = 1; lenA < M; lenA++)
+        for (var lenB = 1; lenB < M; lenB++) 
+            for (var lenC = 1; lenC < M; lenC++) {
+                if (6 + 3 * lenA + 2 * lenB + 2 * lenC <= M) {
+                    var sol = Prop2FixedLen(M, lenA, lenB, lenC)(pattern);
+                    solutions += sol;
+                }
         }
 
     solutions ==> out;
@@ -194,7 +234,7 @@ template ModusPonensFixedLen (M, A_LEN, B_LEN) {
     signal output out;
 
     // Check Premise 1 is an implication
-    assert (premise[1][0] == 1);
+    // assert (premise[1][0] == 1);
 
     component check_0 = ArrEq(A_LEN);
     for (var i = 0; i < A_LEN; i++) {
@@ -240,7 +280,91 @@ template ModusPonens (M) {
                 }
         }
 
-    solutions === 1;
+    out <== EqConst(1)(solutions);
 }
 
-component main = ModusPonens(5);
+
+
+// N - is the number of steps in the proof
+// M - the maximum length of a single step/pattern
+
+// patterns: "a" = [2], "->aa" = [1, 2, 2]
+
+// (conclusion pattern, i, j) => (conclusion, premise1, premise2)
+// access proof[i] when i is dynamic
+// to access a[x], where both a[] and x are inputs:
+// a[x] = [Sum over a[i] * EqConst(i, x)]
+// EqConst(i, x) = 0 if x != i
+// EqConst(i, x) = 1 if x == i
+
+// string str[], h(str) = Sum str[i] * X ^ i, h(str)(R)
+// 
+
+template CheckProof (N, M) {
+    signal input proof[N][M];
+    signal input annotations[N][2];
+    signal output out;
+
+    signal premise[N][2][M];
+    signal valid[N];
+
+    signal coefs[N][N][2];
+    signal inter[N][N][M][2];
+    //TODO^ why is inter necessary?
+
+    var i = 0, j = 0, k = 0, p = 0, correct = 0;
+
+    for (i = 0; i < N; i++) {
+        var premise_arr[2][M];
+
+        for (p = 0; p < 2; p++) 
+            for (k = 0; k < M; k++) 
+                premise_arr[p][k] = 0;
+        
+        for (p = 0; p < 2; p++)
+            for (j = 0; j < i; j++) {
+                coefs[i][j][p] <== EqConst(j)(annotations[i][p]);
+                for (k = 0; k < M; k++) {
+                    inter[i][j][k][p] <== proof[j][k] * coefs[i][j][p];
+                    premise_arr[p][k] += inter[i][j][k][p];
+                }
+            }
+
+        for (p = 0; p < 2; p++) {
+            for (k = 0; k < M; k++) {
+                premise[i][p][k] <== premise_arr[p][k];
+            }
+        }
+
+        log();
+        for (var lp = 0; lp < 2; lp++) {
+            for (var l = 0; l < M; l++) {
+                log(premise[i][lp][l]);
+            }
+            log();
+        }
+
+        var check_MP = ModusPonens(M)(premise[i], proof[i]);
+        var check_Prop1 = Prop1(M)(proof[i]);
+        var check_Prop2 = Prop2(M)(proof[i]);
+
+        valid[i] <== MultiOR(3)([check_MP, check_Prop1, check_Prop2]);
+    }
+
+    for (i = 0; i < N; i++) {
+        log("Validity of step", i, ":", valid[i]);
+    }
+
+    out <== MultiAND(N)(valid);
+    out === 1;
+}
+
+component main = CheckProof(5, 17);
+
+/*
+1. ->->p->->ppp->->p->pp->pp
+2. ->p->->ppp
+3. ->->p->pp->pp
+4. ->p->pp
+5. ->pp
+*/
