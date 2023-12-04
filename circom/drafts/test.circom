@@ -2,17 +2,15 @@ pragma circom 2.1.0;
 
 template Circuit() {
     signal input a[4];
-    signal input index;
-    signal output b[5];
+    signal output out;
 
     var temp[5], i = 0;
 
-    /*
-    for (i = 0; i < 5; i += 1) {
-        temp[i] = 0;
-    }*/
+    // a[0] * a[0]
+    //var x = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
+    var x = (a[0] + a[1]) * (a[2] + a[3]);
 
-    b <== temp;
+    out <== x;
 }
 
 component main = Circuit();
