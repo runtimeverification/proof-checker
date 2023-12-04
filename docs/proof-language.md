@@ -825,7 +825,7 @@ Memory capped by `LOCAL_MEM` is called global memory.
 
 Assume <i:u8>
 :   Consumes `i` `Pattern` entries from the top of the stack and adds them to local memory as `Proved`'s
-    with `instantiable = false` (see [^instantiate_false]).
+    with `instantiable = false` (see [^instantiable_false]).
 
 `Save`
 :   Store the top element of the stack by appending it to global memory.
@@ -833,7 +833,7 @@ Assume <i:u8>
 `Load <i:u8>`
 :   Push the `Term` at index $i$ in memory to the top of the stack.
 
-[^instantiate_false]: The reason is that `Assume` called on `phi0` (unlike `Save`) declares
+[^instantiable_false]: The reason is that `Assume` called on `phi0` (unlike `Save`) declares
 that we assume we have a proof of some fixed formula *phi0*. Derived rules
 are meant to be applied with `Apply`, so the instantiations for assumptions are given immediately
 when applying the given proof rule.
