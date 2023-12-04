@@ -793,8 +793,8 @@ Otherwise, execution aborts, and verification fails.
 
 `Apply`
 :   Consume the top of the stack `Proof(assumptions, conclusion)` with $n$ assumptions, then:
-    1.  Consume $n$ `Proof`s from top of the stack and save them into a temporary variable `assumptions'`.
-    2.  Assert that `assumptions = assumptions'`.
+    1.  Consume $n$ `Proof`s from top of the stack with empty assumptions, and save them into a temporary variable `assumptions'`.
+    2.  Assert that `assumptions = [assumption'.conclusion for assumption' in assumptions']`.
     3.  Place `Proof([], conclusion)` on top of the stack.
 
 
