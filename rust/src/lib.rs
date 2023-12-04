@@ -435,7 +435,11 @@ fn apply_esubst(pattern: &Rc<Pattern>, evar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
         ),
         Pattern::Exists { var, .. } if *var == evar_id => Rc::clone(pattern),
         Pattern::Exists { var, subpattern } => {
-            exists(*var, apply_esubst(subpattern, evar_id, plug))
+            if plug.e_fresh(*var) {
+                exists(*var, apply_esubst(subpattern, evar_id, plug))
+            } else {
+                panic!("EVar substitution would capture free variable {}!", var);
+            }
         }
         Pattern::Mu { var, subpattern } => mu(*var, apply_esubst(subpattern, evar_id, plug)),
         Pattern::ESubst { .. } => wrap_subst(),
@@ -469,7 +473,13 @@ fn apply_ssubst(pattern: &Rc<Pattern>, svar_id: Id, plug: &Rc<Pattern>) -> Rc<Pa
             exists(*var, apply_ssubst(subpattern, svar_id, plug))
         }
         Pattern::Mu { var, .. } if *var == svar_id => Rc::clone(pattern),
-        Pattern::Mu { var, subpattern } => mu(*var, apply_ssubst(subpattern, svar_id, plug)),
+        Pattern::Mu { var, subpattern } => {
+            if plug.s_fresh(*var) {
+                mu(*var, apply_ssubst(subpattern, svar_id, plug))
+            } else {
+                panic!("SVar substitution would capture free variable {}!", var);
+            }
+        }
         Pattern::ESubst { .. } => wrap_subst(),
         Pattern::SSubst { .. } => wrap_subst(),
         Pattern::MetaVar { .. } => wrap_subst(),
