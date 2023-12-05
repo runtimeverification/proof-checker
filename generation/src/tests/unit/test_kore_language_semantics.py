@@ -33,8 +33,8 @@ def double_rewrite() -> LanguageSemantics:
     # Constructs a language semantics for the double rewrite module.
     semantics = LanguageSemantics()
     with semantics as sem:
-        double_rwrite = sem.module('double-rewrite')
-        with double_rwrite as mod:
+        double_rewrite = sem.module('double-rewrite')
+        with double_rewrite as mod:
             sort = mod.sort('some_sort')
             a_symbol = mod.symbol('a', sort, is_functional=True, is_ctor=True)
             b_symbol = mod.symbol('b', sort, is_functional=True, is_ctor=True)
@@ -50,7 +50,7 @@ def rewrite_with_cell() -> LanguageSemantics:
     semantics = LanguageSemantics()
     with semantics as sem:
         double_rewrite = sem.module('double-rewrite')
-        with double_rwrite as mod:
+        with double_rewrite as mod:
             top_cell_sort = mod.sort('SortGeneratedTopCell')
             k_cell_sort = mod.sort('SortKCell')
             k_sort = mod.sort('SortK')
