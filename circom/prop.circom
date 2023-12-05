@@ -77,6 +77,9 @@ template MultiOR(n) {
     out <== NOT()(and_res);
 }
 
+// Checks that the pattern actually has EXPECTED_LEN (although it is encoded as an array of length M)
+// <-> First EXPECTED_LEN chars are non-zero, and all others are zero
+
 template SizeChecker (M, EXPECTED_LEN) {
     signal input pattern[M];
     signal temp[M];
@@ -124,7 +127,6 @@ template Prop1FixedLen (M, A_LEN, B_LEN) {
     
     // Check necessary ->
     //signal implications = AND()()
-    //assert(pattern[0] == 1);
     //assert(pattern[A_LEN + 1] == 1);
 
     component checker = ArrEq (A_LEN);
@@ -161,18 +163,18 @@ template Prop1 (M) {
 
 template Prop2FixedLen (M, A_LEN, B_LEN, C_LEN) {
     signal input pattern[M];
-    signal size_check;
+    signal size_check, imps, imp[6];
     signal output out;
 
     // Check necessary ->
-    /*
-    assert(pattern[0] == 0);
-    assert(pattern[1] == 0);
-    assert(pattern[1 + 1 + A_LEN] == 0);
-    assert(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN] == 0);
-    assert(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN + 1] == 0);
-    assert(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN + 1 + 1 + A_LEN + B_LEN] == 0);
-    */
+    imp[0] <== EqConst(1)(pattern[0]);
+    imp[1] <== EqConst(1)(pattern[1]);
+    imp[2] <== EqConst(1)(pattern[1 + 1 + A_LEN]);
+    imp[3] <== EqConst(1)(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN]);
+    imp[4] <== EqConst(1)(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN + 1]);
+    imp[5] <== EqConst(1)(pattern[1 + 1 + A_LEN + 1 + B_LEN + C_LEN + 1 + 1 + A_LEN + B_LEN]);
+
+    imps <== MultiAND(6)(imp);
 
     component a_checker[2];
 
@@ -201,7 +203,7 @@ template Prop2FixedLen (M, A_LEN, B_LEN, C_LEN) {
     }
 
     size_check <== SizeChecker(M, 6 + 3 * A_LEN + 2 * B_LEN + 2 * C_LEN)(pattern);
-    out <== MultiAND(5)([a_checker[0].out, a_checker[1].out, b_checker.out, c_checker.out, size_check]);
+    out <== MultiAND(6)([a_checker[0].out, a_checker[1].out, b_checker.out, c_checker.out, size_check, imps]);
 }
 
 // Recognize ->->A->BC->->AB->AC
@@ -231,10 +233,11 @@ template Prop2 (M) {
 template ModusPonensFixedLen (M, A_LEN, B_LEN) {
     signal input premise[2][M];
     signal input conclusion[M];
+    signal imp;
     signal output out;
 
     // Check Premise 1 is an implication
-    // assert (premise[1][0] == 1);
+    imp <== EqConst(1)(premise[1][0]); 
 
     component check_0 = ArrEq(A_LEN);
     for (var i = 0; i < A_LEN; i++) {
@@ -252,12 +255,13 @@ template ModusPonensFixedLen (M, A_LEN, B_LEN) {
     var size_ab = SizeChecker(M, 1 + A_LEN + B_LEN)(premise[1]);
     var size_b = SizeChecker(M, B_LEN)(conclusion);
 
-    out <== MultiAND(5)([
+    out <== MultiAND(6)([
         check_0.out, 
         check_1.out,
         size_a,
         size_ab,
-        size_b
+        size_b,
+        imp
     ]);
 }
 
@@ -288,18 +292,6 @@ template ModusPonens (M) {
 // N - is the number of steps in the proof
 // M - the maximum length of a single step/pattern
 
-// patterns: "a" = [2], "->aa" = [1, 2, 2]
-
-// (conclusion pattern, i, j) => (conclusion, premise1, premise2)
-// access proof[i] when i is dynamic
-// to access a[x], where both a[] and x are inputs:
-// a[x] = [Sum over a[i] * EqConst(i, x)]
-// EqConst(i, x) = 0 if x != i
-// EqConst(i, x) = 1 if x == i
-
-// string str[], h(str) = Sum str[i] * X ^ i, h(str)(R)
-// 
-
 template CheckProof (N, M) {
     signal input proof[N][M];
     signal input annotations[N][2];
@@ -310,9 +302,20 @@ template CheckProof (N, M) {
 
     signal coefs[N][N][2];
     signal inter[N][N][M][2];
-    //TODO^ why is inter necessary?
 
     var i = 0, j = 0, k = 0, p = 0, correct = 0;
+
+    // signal x
+
+    // var v = x * 2;
+    // signal out <== v; out <== (x * 2);
+
+    // After this for loop, we will have premise[i][p] == proof[annotations[i][p]] 
+
+    // signal x;
+    // signal v[10];
+    // We compute v[x] as v_x = [(x == 0) * v[0] + (x == 1) * v[1] + ... (x == n) * v[n]];
+    // v[x] = another array
 
     for (i = 0; i < N; i++) {
         var premise_arr[2][M];
@@ -358,11 +361,3 @@ template CheckProof (N, M) {
     out <== MultiAND(N)(valid);
     out === 1;
 }
-
-/*
-1. ->->p->->ppp->->p->pp->pp
-2. ->p->->ppp
-3. ->->p->pp->pp
-4. ->p->pp
-5. ->pp
-*/
