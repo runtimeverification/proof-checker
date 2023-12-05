@@ -255,7 +255,7 @@ impl Pattern {
             Pattern::MetaVar { negative, .. } => negative.contains(&svar),
             Pattern::Implies { left, right } => left.positive(svar) && right.negative(svar),
             Pattern::App { left, right } => left.negative(svar) && right.negative(svar),
-            Pattern::Exists { subpattern, .. } => subpattern.s_fresh(svar),
+            Pattern::Exists { subpattern, .. } => subpattern.negative(svar),
             Pattern::Mu { var, subpattern } => svar == *var || subpattern.negative(svar),
             Pattern::ESubst { pattern, plug, .. } =>
             // best-effort for now, see spec
