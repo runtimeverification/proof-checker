@@ -74,3 +74,13 @@ def test_parse_proof_hint_imp5() -> None:
 
     # 2 post-initial-configuration events
     assert len(hint.trace) == 2
+
+
+def test_parse_proof_hint_reverse() -> None:
+    hint = read_proof_hint('reverse/init.reverse.hints')
+
+    # 11 initialization events
+    assert len(hint.pre_trace) == 11
+
+    # 10 post-initial-configuration events
+    assert len(hint.trace) == 10
