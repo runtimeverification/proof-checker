@@ -13,3 +13,7 @@ risc0-build = { version = "0.16.1" }
 
 [package.metadata.risc0]
 methods = ["guest"]
+
+[[bin]]
+name = "host-csl"
+path = "src/main.rs"
