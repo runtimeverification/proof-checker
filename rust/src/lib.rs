@@ -1882,6 +1882,14 @@ mod tests {
         }
     }
 
+    #[rstest]
+    #[should_panic]
+    // Test that eVar substitution is capture avoiding
+    #[case(exists(0, evar(1)), 1, evar(0))]
+    fn test_apply_esubst_negative(#[case] pattern: Rc<Pattern>, #[case] evar_id: Id, #[case] plug: Rc<Pattern>) {
+        _ = apply_esubst(&pattern, evar_id, &plug);
+    }
+
     #[test]
     fn test_apply_ssubst() {
         let test_cases: Vec<(Rc<Pattern>, u8, Rc<Pattern>, Rc<Pattern>)> = vec![
@@ -1949,6 +1957,14 @@ mod tests {
         for (pattern, svar_id, plug, expected) in test_cases {
             assert_eq!(apply_ssubst(&pattern, svar_id, &plug), expected);
         }
+    }
+
+    #[rstest]
+    #[should_panic]
+    // Test that sVar substitution is capture avoiding
+    #[case(mu(0, svar(1)), 1, svar(0))]
+    fn test_apply_ssubst_negative(#[case] pattern: Rc<Pattern>, #[case] svar_id: Id, #[case] plug: Rc<Pattern>) {
+        _ = apply_ssubst(&pattern, svar_id, &plug);
     }
 
     #[test]
