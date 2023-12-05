@@ -235,10 +235,10 @@ class ProofExp:
             for warning in interpreter.interpreting_warnings:
                 print(warning)
 
-    def pretty_options(self) -> PrettyOptions:
-        return PrettyOptions(notations={n.definition: n for n in self._notations})
+    def pretty_options(self, print_stack: bool = True) -> PrettyOptions:
+        return PrettyOptions(notations={n.definition: n for n in self._notations}, print_stack=print_stack)
 
-    def prettyprint(self, file_path: Path) -> None:
+    def prettyprint(self, file_path: Path, print_stack: bool = True) -> None:
         self.execute_full(
             PrettyPrintingInterpreter(
                 ExecutionPhase.Gamma,
@@ -246,7 +246,7 @@ class ProofExp:
                 out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
                 claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
                 proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
-                pretty_options=self.pretty_options(),
+                pretty_options=self.pretty_options(print_stack),
             )
         )
 
@@ -289,7 +289,7 @@ class ProofExp:
 
         match output_format:
             case 'pretty':
-                self.prettyprint(output_dir / slice_name)
+                self.prettyprint(output_dir / slice_name, False)
             case 'binary':
                 self.serialize(output_dir / slice_name)
             case 'memo':

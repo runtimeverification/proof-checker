@@ -178,6 +178,8 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write('Publish')
 
     def print_stack(self) -> None:
+        if not self.pretty_options.print_stack:
+            return
         self.out.write('\tStack:\n')
         for i, item in enumerate(self.stack):
             if isinstance(item, Proved):

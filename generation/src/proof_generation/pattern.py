@@ -576,6 +576,7 @@ class Notation:
 class PrettyOptions:
     simplify_instantiations: bool = False
     notations: Mapping[Pattern, Notation] = frozendict({})
+    print_stack: bool = True
 
 
 bot = Notation('bot', 0, Mu(0, SVar(0)), '⊥')
