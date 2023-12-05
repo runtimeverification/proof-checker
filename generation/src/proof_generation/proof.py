@@ -250,6 +250,7 @@ class ProofExp:
             )
         )
 
+    # TODO: Implement the pipeline specified in Issue #374
     def optimize(self, file_path: Path) -> None:
         claims = [Claim(claim) for claim in self._claims]
         analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
