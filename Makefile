@@ -25,6 +25,7 @@ update-snapshots:
 	rsync -u $(wildcard .build/proofs/*.*) proofs
 	rsync -u $(wildcard .build/proofs/translated/*/*.ml*) proofs/translated
 	rsync -u $(wildcard .build/proofs/generated-from-k/*/*.*) proofs/generated-from-k
+	rsync -u -R $(wildcard .build/./proof-hints/*/*.pretty) proofs/
 
 .PHONY: clean-proofs update-snapshots clean-translated-proofs clean-kgenerated-proofs clean-python
 
@@ -119,7 +120,7 @@ test-python: poetry-install
 test-unit-python: poetry-install
 	$(POETRY_RUN) pytest generation/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration-python: poetry-install
+test-integration-python: poetry-install test-hints
 	$(POETRY_RUN) pytest generation/src/tests/integration --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 # Coverage
@@ -188,21 +189,55 @@ UNSUPPORTED_K_BENCHMARKS=$(wildcard generation/k-benchmarks/imp/*) \
                          generation/k-benchmarks/imp5/transfer.imp5
 SUPPORTED_K_BENCHMARKS=$(filter-out ${UNSUPPORTED_K_BENCHMARKS}, ${K_BENCHMARKS})
 
-EXECUTION_HINTS=$(addsuffix .hints, $(patsubst generation/k-benchmarks%,.build/proof-hints%,${SUPPORTED_K_BENCHMARKS}))
 # Proof Hint Generation from LLVM
-.build/proof-hints/%.hints: generation/k-benchmarks/%
+# -------------------------------
+
+EXECUTION_HINTS=$(addsuffix .hints, $(patsubst generation/k-benchmarks%,.build/proof-hints%,${SUPPORTED_K_BENCHMARKS}))
+
+.SECONDEXPANSION:
+module=$(patsubst %/,%, $(dir $*))
+.build/proof-hints/%.hints: generation/k-benchmarks/% .build/kompiled-definitions/$$(module)-kompiled/timestamp
 	mkdir -p .build/proof-hints/$(dir $*)
 	./generation/scripts/gen-execution-proof-hints.sh \
-		generation/k-benchmarks/$(dir $*)$(patsubst %/,%, $(dir $*)).k \
+		generation/k-benchmarks/$(dir $*)$(module).k \
 		generation/k-benchmarks/$* \
 		.build/proof-hints/$*.hints
 
 generate-hints: $(EXECUTION_HINTS)
 
+# Proof Hint pretty printing
+# --------------------------
+
+HINTS_PRETTY_PRINTED=$(addsuffix .pretty, ${EXECUTION_HINTS})
+
+.SECONDEXPANSION:
+module=$(patsubst %/,%, $(dir $*))
+.build/proof-hints/%.hints.pretty: .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
+	${POETRY_RUN} python -m "proof_generation.llvm_proof_hint_printer" \
+	    .build/proof-hints/$*.hints \
+		.build/kompiled-definitions/$(module)-kompiled \
+		--output .build/proof-hints/$*.hints.pretty
+
+pretty-print-hints: $(HINTS_PRETTY_PRINTED)
+
+# Checking generated hints
+# ------------------------
+
+EXECUTION_HINTS_TARGETS=$(addsuffix .hints_gen,${EXECUTION_HINTS})
+
+.build/proof-hints/%.hints.hints_gen: .build/proof-hints/%.hints.pretty
+	${DIFF} --label expected "proofs/proof-hints/$*.hints.pretty" --label actual ".build/proof-hints/$*.hints.pretty"
+
+test-hints: ${EXECUTION_HINTS_TARGETS}
+
+# Removing generated hints (binary and pretty-printed)
+# ----------------------------------------------------
+
 clean-hints:
 	rm -rf .build/proof-hints/*
 
-.PHONY: generate-hints clean-hints
+
+.PHONY: generate-hints pretty-print-hints test-hints clean-hints
 
 
 # System testing
@@ -211,7 +246,7 @@ clean-hints:
 test-system: test-integration test-proof-gen test-proof-translate test-proof-kgen test-proof-verify
 .PHONY: test-system test-integration test-proof-gen test-proof-verify test-zk
 
-test-integration: generate-hints test-integration-python
+test-integration: test-integration-python
 
 PROOFS_FILES := $(wildcard proofs/*)
 PROOFS := $(filter %.ml-proof,$(PROOFS_FILES))
