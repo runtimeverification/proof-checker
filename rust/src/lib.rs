@@ -958,7 +958,7 @@ fn execute_instructions<'a>(
                 }
             }
             Instruction::Pop => {
-                stack.pop();
+                _ = pop_stack(stack);
             }
             Instruction::Save => match stack.last().expect("Save needs an entry on the stack") {
                 Term::Pattern(p) => memory.push(Entry::Pattern(p.clone())),
