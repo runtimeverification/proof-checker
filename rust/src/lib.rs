@@ -1242,7 +1242,6 @@ mod tests {
         let existsX1nX2 = exists(1, not(Rc::clone(&X2)));
         assert!(existsX1nX2.negative(2));
 
-
         // Mu
         let muX1x1 = mu(1, Rc::clone(&evar1));
         assert!(muX1x1.positive(1));
@@ -1902,7 +1901,11 @@ mod tests {
     #[should_panic]
     // Test that eVar substitution is capture avoiding
     #[case(exists(0, evar(1)), 1, evar(0))]
-    fn test_apply_esubst_negative(#[case] pattern: Rc<Pattern>, #[case] evar_id: Id, #[case] plug: Rc<Pattern>) {
+    fn test_apply_esubst_negative(
+        #[case] pattern: Rc<Pattern>,
+        #[case] evar_id: Id,
+        #[case] plug: Rc<Pattern>,
+    ) {
         _ = apply_esubst(&pattern, evar_id, &plug);
     }
 
@@ -1979,7 +1982,11 @@ mod tests {
     #[should_panic]
     // Test that sVar substitution is capture avoiding
     #[case(mu(0, svar(1)), 1, svar(0))]
-    fn test_apply_ssubst_negative(#[case] pattern: Rc<Pattern>, #[case] svar_id: Id, #[case] plug: Rc<Pattern>) {
+    fn test_apply_ssubst_negative(
+        #[case] pattern: Rc<Pattern>,
+        #[case] svar_id: Id,
+        #[case] plug: Rc<Pattern>,
+    ) {
         _ = apply_ssubst(&pattern, svar_id, &plug);
     }
 
