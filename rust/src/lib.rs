@@ -1071,6 +1071,18 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn test_pop_instruction() {
+        execute_instructions(
+            &mut vec![Instruction::Pop as InstByte],
+            &mut vec![],
+            &mut vec![],
+            &mut vec![],
+            ExecutionPhase::Gamma,
+        );
+    }
+
+    #[test]
     fn test_efresh() {
         let evar = evar(1);
         let left = Rc::new(Pattern::Exists {
@@ -1226,6 +1238,10 @@ mod tests {
         assert!(existsX1X2.negative(1));
         assert!(!existsX1X2.negative(2));
         assert!(existsX1X2.negative(3));
+
+        let existsX1nX2 = exists(1, not(Rc::clone(&X2)));
+        assert!(existsX1nX2.negative(2));
+
 
         // Mu
         let muX1x1 = mu(1, Rc::clone(&evar1));
