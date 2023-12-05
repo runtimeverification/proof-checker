@@ -14,7 +14,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSymbol,
     LanguageSemantics,
 )
-from proof_generation.pattern import EVar, MetaVar, Pattern, Symbol, phi0, phi1
+from proof_generation.pattern import App, EVar, MetaVar, Pattern, Symbol, phi0, phi1
 from proof_generation.proofs.definedness import equals, floor, functional, subset
 from proof_generation.proofs.kore import (
     KoreLemmas,
@@ -34,8 +34,8 @@ def double_rewrite() -> LanguageSemantics:
     # Constructs a language semantics for the double rewrite module.
     semantics = LanguageSemantics()
     with semantics as sem:
-        double_rwrite = sem.module('double-rewrite')
-        with double_rwrite as mod:
+        double_rewrite = sem.module('double-rewrite')
+        with double_rewrite as mod:
             sort = mod.sort('some_sort')
             a_symbol = mod.symbol('a', sort, is_functional=True, is_ctor=True)
             b_symbol = mod.symbol('b', sort, is_functional=True, is_ctor=True)
@@ -50,8 +50,8 @@ def double_rewrite() -> LanguageSemantics:
 def rewrite_with_cell() -> LanguageSemantics:
     semantics = LanguageSemantics()
     with semantics as sem:
-        double_rwrite = sem.module('double-rewrite')
-        with double_rwrite as mod:
+        double_rewrite = sem.module('double-rewrite')
+        with double_rewrite as mod:
             top_cell_sort = mod.sort('SortGeneratedTopCell')
             k_cell_sort = mod.sort('SortKCell')
             k_sort = mod.sort('SortK')
@@ -690,7 +690,7 @@ def test_locate_simplifications() -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    intermidiate_config1 = simplified_cell_config_pattern(
+    intermediate_config1 = simplified_cell_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
@@ -700,11 +700,22 @@ def test_locate_simplifications() -> None:
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
+    unknown_symbol_conf = simplified_cell_config_pattern(
+        semantics, 'SortTree', App(Symbol('unknown_symbol_1'), Symbol('unknown_symbol_2'))
+    )
 
-    assert semantics.count_simplifications(init_rewrite.pattern) == 6
-    assert semantics.count_simplifications(next_rewrite.pattern) == 9
-    assert semantics.count_simplifications(base_equation_a.pattern) == 2
-    assert semantics.count_simplifications(base_equation_b.pattern) == 2
-    assert semantics.count_simplifications(reversed_equation.pattern) == 5
-    assert semantics.count_simplifications(intermidiate_config1) == 7
-    assert semantics.count_simplifications(intermidiate_config2) == 6
+    # Covers the case with cells and functional constructors and cells
+    assert semantics.count_simplifications(init_rewrite.pattern) == 0
+    # Same plus krewrite and a single use of a functional symbol
+    assert semantics.count_simplifications(next_rewrite.pattern) == 1
+    # Equational rule with a single use of a functional symbol, no cells
+    # but the equation itself contains the function call twice which should be ignored
+    assert semantics.count_simplifications(base_equation_a.pattern) == 1
+    assert semantics.count_simplifications(base_equation_b.pattern) == 1
+    # Three uses of functional symbols
+    assert semantics.count_simplifications(reversed_equation.pattern) == 3
+    # Explicit configurations with cells
+    assert semantics.count_simplifications(intermidiate_config1) == 2
+    assert semantics.count_simplifications(intermidiate_config2) == 1
+    # Explicit configuration with an unknown symbol
+    assert semantics.count_simplifications(unknown_symbol_conf) == 0

@@ -377,7 +377,7 @@ def test_simple_rules_pretty_printing() -> None:
         sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, rhs_with_ensures1)
     )
 
-    requires2 = kore_top(sort1.aml_symbol)
+    requires2 = kore_top(sort2.aml_symbol)
     left2 = sym4.app()
     right2 = sym2.app(sym1.aml_symbol)
     ensures2 = kore_top(sort2.aml_symbol)
@@ -402,5 +402,5 @@ def test_simple_rules_pretty_printing() -> None:
     )
     assert (
         equation_rule2.pattern.pretty(pretty_opt)
-        == '(k⊤:ksort_srt1 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
+        == '(k⊤:ksort_srt2 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
     )
