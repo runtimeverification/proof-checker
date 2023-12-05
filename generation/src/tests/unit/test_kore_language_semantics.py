@@ -72,9 +72,9 @@ def rewrite_with_cell() -> LanguageSemantics:
             c_symbol = mod.symbol('c', foo_sort, is_functional=True, is_ctor=True)
             mod.symbol('dotk', k_sort, is_functional=True, is_ctor=True)
 
-            c1 = cell_config_pattern(semantics, a_symbol.app(), MetaVar(0))
-            c2 = cell_config_pattern(semantics, b_symbol.app(), MetaVar(0))
-            c3 = cell_config_pattern(semantics, c_symbol.app(), MetaVar(0))
+            c1 = rewrite_with_cells_config_pattern(semantics, a_symbol.app(), MetaVar(0))
+            c2 = rewrite_with_cells_config_pattern(semantics, b_symbol.app(), MetaVar(0))
+            c3 = rewrite_with_cells_config_pattern(semantics, c_symbol.app(), MetaVar(0))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c1, c2))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c2, c3))
 
@@ -86,99 +86,99 @@ def node_tree() -> LanguageSemantics:
     with semantics as sem:
         module = sem.module('node-tree')
         with module as mod:
-            top_cell_sort = mod.sort('SortGeneratedTopCell')
-            k_cell_sort = mod.sort('SortKCell')
-            k_sort = mod.sort('SortK')
-            tree_sort = mod.sort('SortTree')
+            top_cell_sort_obj = mod.sort('SortGeneratedTopCell')
+            kcell_sort_obj = mod.sort('SortKCell')
+            k_sort_obj = mod.sort('SortK')
+            tree_sort_obj = mod.sort('SortTree')
 
             mod.symbol(
                 'generated_top',
-                top_cell_sort,
-                input_sorts=(k_cell_sort,),
+                top_cell_sort_obj,
+                input_sorts=(kcell_sort_obj,),
                 is_functional=True,
                 is_ctor=True,
                 is_cell=True,
             )
-            mod.symbol('k', k_cell_sort, input_sorts=(k_sort,), is_functional=True, is_ctor=True, is_cell=True)
+            mod.symbol('k', kcell_sort_obj, input_sorts=(k_sort_obj,), is_functional=True, is_ctor=True, is_cell=True)
             from_sort, to_sort = KSortVar('From'), KSortVar('To')
             mod.symbol('inj', to_sort, sort_params=(from_sort, to_sort), input_sorts=(from_sort,))
 
-            init_symbol = mod.symbol('init', tree_sort, is_functional=True, is_ctor=True)
-            next_symbol = mod.symbol('next', tree_sort, is_functional=True, is_ctor=True)
+            init_symbol = mod.symbol('init', tree_sort_obj, is_functional=True, is_ctor=True)
+            next_symbol = mod.symbol('next', tree_sort_obj, is_functional=True, is_ctor=True)
             node_symbol = mod.symbol(
-                'node', tree_sort, input_sorts=(tree_sort, tree_sort), is_functional=True, is_ctor=True
+                'node', tree_sort_obj, input_sorts=(tree_sort_obj, tree_sort_obj), is_functional=True, is_ctor=True
             )
-            reverse_symbol = mod.symbol('reverse', tree_sort, input_sorts=(tree_sort,), is_functional=True)
-            a_symbol = mod.symbol('a', tree_sort, is_functional=True, is_ctor=True)
-            b_symbol = mod.symbol('b', tree_sort, is_functional=True, is_ctor=True)
+            reverse_symbol = mod.symbol('reverse', tree_sort_obj, input_sorts=(tree_sort_obj,), is_functional=True)
+            a_symbol = mod.symbol('a', tree_sort_obj, is_functional=True, is_ctor=True)
+            b_symbol = mod.symbol('b', tree_sort_obj, is_functional=True, is_ctor=True)
 
             # init{}() => next{}()
-            init_conf = simplified_cell_config_pattern(semantics, 'SortTree', init_symbol.app())
-            next_conf = simplified_cell_config_pattern(semantics, 'SortTree', next_symbol.app())
-            mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, init_conf, next_conf))
+            init_conf = tree_semantics_config_pattern(semantics, 'SortTree', init_symbol.app())
+            next_conf = tree_semantics_config_pattern(semantics, 'SortTree', next_symbol.app())
+            mod.rewrite_rule(kore_rewrites(top_cell_sort_obj.aml_symbol, init_conf, next_conf))
 
             # next => reverse(node(a, b))
             reverse_expression = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
-            reverse_conf = simplified_cell_config_pattern(semantics, 'SortTree', reverse_expression)
-            mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, next_conf, reverse_conf))
+            reverse_conf = tree_semantics_config_pattern(semantics, 'SortTree', reverse_expression)
+            mod.rewrite_rule(kore_rewrites(top_cell_sort_obj.aml_symbol, next_conf, reverse_conf))
 
             # reverse(a) = a
-            tr_sort_ptn = tree_sort.aml_symbol
-            tr_top = kore_top(tr_sort_ptn)
+            tree_sort = tree_sort_obj.aml_symbol
+            tree_top = kore_top(tree_sort)
             requires = kore_and(
-                tr_sort_ptn,
-                tr_top,
+                tree_sort,
+                tree_top,
                 kore_and(
-                    tr_sort_ptn,
-                    kore_in(tr_sort_ptn, tr_sort_ptn, EVar(0), kore_and(tr_sort_ptn, EVar(1), a_symbol.app())),
-                    tr_top,
+                    tree_sort,
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, EVar(1), a_symbol.app())),
+                    tree_top,
                 ),
             )
             left = reverse_symbol.app(EVar(0))
             right = EVar(1)
-            ensures = tr_top
+            ensures = tree_top
             equational_pattern = kore_implies(
-                tr_sort_ptn,
+                tree_sort,
                 requires,
-                kore_equals(tr_sort_ptn, tr_sort_ptn, left, kore_and(tr_sort_ptn, right, ensures)),
+                kore_equals(tree_sort, tree_sort, left, kore_and(tree_sort, right, ensures)),
             )
             mod.equational_rule(equational_pattern)
 
             # reverse(b) = b
             requires = kore_and(
-                tr_sort_ptn,
-                tr_top,
+                tree_sort,
+                tree_top,
                 kore_and(
-                    tr_sort_ptn,
-                    kore_in(tr_sort_ptn, tr_sort_ptn, EVar(0), kore_and(tr_sort_ptn, EVar(1), b_symbol.app())),
-                    tr_top,
+                    tree_sort,
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, EVar(1), b_symbol.app())),
+                    tree_top,
                 ),
             )
             equational_pattern = kore_implies(
-                tr_sort_ptn,
+                tree_sort,
                 requires,
-                kore_equals(tr_sort_ptn, tr_sort_ptn, left, kore_and(tr_sort_ptn, right, ensures)),
+                kore_equals(tree_sort, tree_sort, left, kore_and(tree_sort, right, ensures)),
             )
             mod.equational_rule(equational_pattern)
 
             # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
             requires = kore_and(
-                tr_sort_ptn,
-                tr_top,
+                tree_sort,
+                tree_top,
                 kore_and(
-                    tr_sort_ptn,
-                    kore_in(tr_sort_ptn, tr_sort_ptn, EVar(0), node_symbol.app(EVar(1), EVar(2))),
-                    tr_top,
+                    tree_sort,
+                    kore_in(tree_sort, tree_sort, EVar(0), node_symbol.app(EVar(1), EVar(2))),
+                    tree_top,
                 ),
             )
             eq3_left = reverse_symbol.app(EVar(0))
             eq3_right = node_symbol.app(reverse_symbol.app(EVar(2)), reverse_symbol.app(EVar(1)))
-            ensures = tr_top
+            ensures = tree_top
             mod.equational_rule(
                 kore_implies(
-                    tr_sort_ptn,
+                    tree_sort,
                     requires,
-                    kore_equals(tr_sort_ptn, tr_sort_ptn, eq3_left, kore_and(tr_sort_ptn, eq3_right, ensures)),
+                    kore_equals(tree_sort, tree_sort, eq3_left, kore_and(tree_sort, eq3_right, ensures)),
                 )
             )
 
@@ -186,7 +186,7 @@ def node_tree() -> LanguageSemantics:
 
 
 # TODO: Add side conditions!
-def cell_config_pattern(semantics: LanguageSemantics, kitem1: Pattern, kitem2: Pattern) -> Pattern:
+def rewrite_with_cells_config_pattern(semantics: LanguageSemantics, kitem1: Pattern, kitem2: Pattern) -> Pattern:
     top_cell_symbol = semantics.get_symbol('generated_top')
     k_cell_sort = semantics.get_sort('SortKCell')
     foo_sort = semantics.get_sort('SortFoo')
@@ -197,7 +197,7 @@ def cell_config_pattern(semantics: LanguageSemantics, kitem1: Pattern, kitem2: P
     )
 
 
-def simplified_cell_config_pattern(semantics: LanguageSemantics, input_sort_name: str, kitem: Pattern) -> Pattern:
+def tree_semantics_config_pattern(semantics: LanguageSemantics, input_sort_name: str, kitem: Pattern) -> Pattern:
     top_cell_symbol = semantics.get_symbol('generated_top')
     k_cell_sort = semantics.get_sort('SortKCell')
     internal_sort = semantics.get_sort(input_sort_name)
@@ -669,17 +669,17 @@ def test_locate_simplifications() -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    intermediate_config1 = simplified_cell_config_pattern(
+    intermediate_config1 = tree_semantics_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
     )
-    intermediate_config2 = simplified_cell_config_pattern(
+    intermediate_config2 = tree_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
-    unknown_symbol_conf = simplified_cell_config_pattern(
+    unknown_symbol_conf = tree_semantics_config_pattern(
         semantics, 'SortTree', App(Symbol('unknown_symbol_1'), Symbol('unknown_symbol_2'))
     )
 

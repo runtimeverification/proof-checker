@@ -10,9 +10,9 @@ from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpressi
 from proof_generation.pattern import Instantiate, top
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
-    cell_config_pattern,
     double_rewrite,
     rewrite_with_cell,
+    rewrite_with_cells_config_pattern,
     simple_semantics,
 )
 
@@ -57,14 +57,14 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        cell_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
-        cell_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+        rewrite_with_cells_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
+        rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
         rewrite_rule1,
         {0: dot_k_symbol.app()},
     )
     step_two = RewriteStepExpression(
-        cell_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
-        cell_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
+        rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+        rewrite_with_cells_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
         rewrite_rule2,
         {0: dot_k_symbol.app()},
     )
