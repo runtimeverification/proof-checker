@@ -30,18 +30,17 @@ fn main() {
     // Prove the session to produce a receipt.
     let receipt = session.prove().unwrap();
 
+    // Get the host's size of a usize pointer
+    let size_of_usize = std::mem::size_of::<usize>();
+
     // Small fetcher that returns the next chunk of given size from journal
-    let current_index: usize = receipt.journal.len() - std::mem::size_of::<usize>(); 
+    let mut current_index: usize = receipt.journal.len() - size_of_usize;
     let next_journal_chunk = |size: usize| -> &[u8] {
-       // current_index -= size;
         let ret = &receipt.journal[current_index..current_index + size];
         return ret;
     };
 
     receipt.verify(GUEST_ID).unwrap();
-
-    // Get the host's size of a usize pointer
-    let size_of_usize = std::mem::size_of::<usize>();
 
     // Get the result of the execution
     let _ret: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
