@@ -580,18 +580,18 @@ class LanguageSemantics(BuilderScope):
         """Count the number of function symbols in the given pattern (functional, not ctr, not cell)."""
         functional_symbols = 0
 
-        def is_functional_symbol(symbol: Symbol) -> None:
+        def count_function_symbol(symbol: Symbol) -> None:
             ksymbol = self.resolve_to_ksymbol(symbol)
             if ksymbol is not None and ksymbol.is_functional and not ksymbol.is_cell and not ksymbol.is_ctor:
                 nonlocal functional_symbols
                 functional_symbols += 1
 
         if isinstance(pattern, Symbol):
-            is_functional_symbol(pattern)
+            count_function_symbol(pattern)
         elif isinstance(pattern, App):
             symbol_pattern, args = kl.deconstruct_nary_application(pattern)
             if isinstance(symbol_pattern, Symbol):
-                is_functional_symbol(symbol_pattern)
+                count_function_symbol(symbol_pattern)
             else:
                 functional_symbols += self.count_simplifications(symbol_pattern)
             for arg in args:
