@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING, TypeVar
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
+from proof_generation.instantiation_optimizer import MemoizingInterpreter
 from proof_generation.pattern import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
-from proof_generation.serializing_interpreter import MemoizingInterpreter, SerializingInterpreter
+from proof_generation.serializing_interpreter import SerializingInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -212,7 +213,7 @@ class ProofExp:
         self.check_interpreting(interpreter)
 
     def execute_full(self, interpreter: BasicInterpreter) -> None:
-        assert interpreter.phase == ExecutionPhase.Gamma
+        assert interpreter.phase == ExecutionPhase.Gamma, f'Unexpected interpreter phase: {interpreter.phase}'
         self.execute_gamma_phase(interpreter)
         self.execute_claims_phase(interpreter)
         self.execute_proofs_phase(interpreter)
@@ -257,16 +258,8 @@ class ProofExp:
 
         self.execute_full(counting_interpreter)
 
-        self.execute_full(
-            MemoizingInterpreter(
-                ExecutionPhase.Gamma,
-                claims=[Claim(claim) for claim in self._claims],
-                patterns_for_memoization=counting_interpreter.finalize(),
-                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
-                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
-            )
-        )
+        counting_interpreter.phase = ExecutionPhase.Gamma
+        self.execute_full(MemoizingInterpreter(counting_interpreter, counting_interpreter.finalize()))
 
     def main(self, argv: list[str]) -> None:
         exe, *argv = argv

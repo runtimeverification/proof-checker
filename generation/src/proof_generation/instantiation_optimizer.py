@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .basic_interpreter import BasicInterpreter
+from .stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -176,3 +177,24 @@ class InstantiationOptimizer(InterpreterTransformer):
         if len(delta):
             self.output_interpreter.instantiate_pattern(pattern, delta)
         return untransformed
+
+
+class MemoizingInterpreter(InterpreterTransformer):
+    def __init__(self, output_interpreter: BasicInterpreter, patterns_for_memoization: set[Pattern] | None = None):
+        super().__init__(output_interpreter)
+        self._patterns_for_memoization: set[Pattern]
+        if patterns_for_memoization is None:
+            self._patterns_for_memoization = set()
+        else:
+            self._patterns_for_memoization = patterns_for_memoization
+
+    def pattern(self, p: Pattern) -> Pattern:
+        if isinstance(self.output_interpreter, StatefulInterpreter) and p in self.output_interpreter.memory:
+            self.load(str(p), p)
+            return p
+        elif p in self._patterns_for_memoization:
+            ret = super().pattern(p)
+            self.save(repr(p), p)
+            return ret
+        else:
+            return super().pattern(p)

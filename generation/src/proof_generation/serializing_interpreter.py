@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, BinaryIO
+from typing import TYPE_CHECKING, Any
 
 from proof_generation.instruction import Instruction
 from proof_generation.io_interpreter import IOInterpreter
@@ -162,32 +162,3 @@ class SerializingInterpreter(IOInterpreter):
     def publish_claim(self, pattern: Pattern) -> None:
         super().publish_claim(pattern)
         self.out.write(bytes([Instruction.Publish]))
-
-
-class MemoizingInterpreter(SerializingInterpreter):
-    def __init__(
-        self,
-        phase: ExecutionPhase,
-        out: BinaryIO,
-        claims: list[Claim] | None = None,
-        patterns_for_memoization: set[Pattern] | None = None,
-        claim_out: BinaryIO | None = None,
-        proof_out: BinaryIO | None = None,
-    ) -> None:
-        super().__init__(phase, out, claims, claim_out, proof_out)
-        self._patterns_for_memoization: set[Pattern]
-        if patterns_for_memoization is None:
-            self._patterns_for_memoization = set()
-        else:
-            self._patterns_for_memoization = patterns_for_memoization
-
-    def pattern(self, p: Pattern) -> Pattern:
-        if p in self.memory:
-            self.load(str(p), p)
-            return p
-        elif p in self._patterns_for_memoization:
-            ret = super().pattern(p)
-            self.save(repr(p), p)
-            return ret
-        else:
-            return super().pattern(p)
