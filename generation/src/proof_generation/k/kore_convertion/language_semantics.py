@@ -118,47 +118,28 @@ class KEquationalRule:
 
     @property
     def substitutions_from_requires(self) -> dict[int, Pattern]:
-        """ Collect substitutions from the requires part of the axiom introduced artificially by K. """
-
-        def recognize_symbol(input_pattern: Pattern) -> Pattern | None:
-            if isinstance(input_pattern, App):
-                symbol_pattern, _ = kl.deconstruct_nary_application(input_pattern)
-                if isinstance(symbol_pattern, Symbol):
-                    return symbol_pattern
-            elif isinstance(input_pattern, Instantiate):
-                return recognize_symbol(input_pattern.pattern)
-            elif isinstance(input_pattern, Symbol):
-                return input_pattern
-            return None
-
+        """Collect substitutions from the requires part of the axiom introduced artificially by K."""
         substitutions: dict[int, Pattern] = {}
 
-        # Look for something like ... /\ in(X, (Symbol /\ top))
-        in_statement_match = None
-        if and_match := kl.kore_and.matches(self.requires):
-            _, _, right = and_match
-            # Left is requirement
-            if kl.kore_in.matches(right):
-                in_statement_match = right
-            elif and_match := kl.kore_and.matches(right):
-                if match := kl.kore_in.matches(and_match[1]):
-                    in_statement_match = match
-        if in_statement_match is None:
-            return substitutions
-            
-        # Check that we have top and /\ or just top and symbol
-        assert isinstance(in_statement_match, tuple)
-        _, _, var, right = in_statement_match
+        def matching_cluase(pattern: Pattern) -> None:
+            if top_and_match := kl.kore_and.assert_matches(pattern):
+                _, left, right = top_and_match
 
-        # Check that we have an EVar and conjuction
-        if isinstance(var, EVar):
-            if recognize_symbol(right):
-                substitutions[var.name] = right
-            elif and_match := kl.kore_and.matches(right):
-                _, expression_lhs, expression_rhs = and_match
-                if recognize_symbol(expression_rhs) and isinstance(expression_lhs, EVar):
-                    substitutions[expression_lhs.name] = expression_rhs
-                    substitutions[var.name] = expression_rhs
+                for item in (left, right):
+                    if let_match := kl.equational_as_subpattern.matches(item):
+                        _, _, var1, var2, expression = let_match
+                        if isinstance(var1, EVar) and isinstance(var2, EVar) and var1.name != var2.name:
+                            substitutions[var1.name] = expression
+                            substitutions[var2.name] = expression
+                    elif in_match := kl.kore_in.matches(item):
+                        _, _, var, expression = in_match
+                        if isinstance(var, EVar):
+                            substitutions[var.name] = expression
+                    elif kl.kore_and.matches(item):
+                        matching_cluase(item)
+
+        matching_cluase(self.requires)
+
         return substitutions
 
 

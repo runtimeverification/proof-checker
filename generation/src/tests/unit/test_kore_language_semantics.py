@@ -677,8 +677,6 @@ def test_collect_substitution() -> None:
 
 def test_locate_simplifications() -> None:
     semantics = node_tree()
-    proof_expr = KoreLemmas()
-    proof_expr.add_notations(list(semantics.notations))
 
     init_rewrite = semantics.get_axiom(0)
     next_rewrite = semantics.get_axiom(1)
