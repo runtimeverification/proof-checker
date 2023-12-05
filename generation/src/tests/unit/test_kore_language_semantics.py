@@ -695,7 +695,7 @@ def test_locate_simplifications() -> None:
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
     )
-    intermidiate_config2 = simplified_cell_config_pattern(
+    intermediate_config2 = simplified_cell_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
@@ -715,7 +715,7 @@ def test_locate_simplifications() -> None:
     # Three uses of functional symbols
     assert semantics.count_simplifications(reversed_equation.pattern) == 3
     # Explicit configurations with cells
-    assert semantics.count_simplifications(intermidiate_config1) == 2
-    assert semantics.count_simplifications(intermidiate_config2) == 1
+    assert semantics.count_simplifications(intermediate_config1) == 2
+    assert semantics.count_simplifications(intermediate_config2) == 1
     # Explicit configuration with an unknown symbol
     assert semantics.count_simplifications(unknown_symbol_conf) == 0
