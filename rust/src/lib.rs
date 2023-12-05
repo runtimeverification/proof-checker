@@ -854,7 +854,7 @@ fn execute_instructions<'a>(
             Instruction::SSubst => {
                 let svar_id = *iterator
                     .next()
-                    .expect("Insufficient parameters for SSubst instruction")
+                    .expect("Insufficient parameters for SSubst instruction.")
                     as Id;
                 let pattern = pop_stack_pattern(stack);
                 let plug = pop_stack_pattern(stack);
@@ -922,25 +922,14 @@ fn execute_instructions<'a>(
             Instruction::Existence => {
                 stack.push(Term::Proved(Rc::clone(&existence)));
             }
-            // TODO: This is treated exactly the same as a SSubst, is this intended?
             Instruction::Substitution => {
                 let svar_id = *iterator
                     .next()
                     .expect("Insufficient parameters for Substitution instruction.");
-                let plug = pop_stack_pattern(stack);
                 let pattern = pop_stack_proved(stack);
+                let plug = pop_stack_pattern(stack);
 
-                match pattern.as_ref() {
-                    Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. } => (),
-                    _ => panic!("Cannot apply SSubst on concrete term!"),
-                }
-
-                let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, plug);
-                stack.push(Term::Pattern(if ssubst_pat.is_redundant_subst() {
-                    pattern
-                } else {
-                    ssubst_pat
-                }));
+                stack.push(Term::Proved(apply_ssubst(&pattern, svar_id, &plug)));
             }
             Instruction::Instantiate => {
                 let n = *iterator
