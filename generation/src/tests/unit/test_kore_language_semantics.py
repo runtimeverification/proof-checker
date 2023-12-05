@@ -669,7 +669,7 @@ def test_locate_simplifications() -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    intermidiate_config1 = simplified_cell_config_pattern(
+    intermediate_config1 = simplified_cell_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
