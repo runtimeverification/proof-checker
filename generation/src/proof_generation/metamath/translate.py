@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import ExecutionPhase
+from proof_generation.instantiation_optimizer import InterpreterTransformer
 from proof_generation.metamath.converter.converter import MetamathConverter
 from proof_generation.metamath.converter.representation import AxiomWithAntecedents
 from proof_generation.metamath.parser import load_database
@@ -19,9 +20,15 @@ if TYPE_CHECKING:
 
 
 def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp, interp: BasicInterpreter) -> None:
-    assert isinstance(interp, StatefulInterpreter)
+    if isinstance(interp, InterpreterTransformer):
+        sub_interp = interp.output_interpreter
+        assert isinstance(sub_interp, StatefulInterpreter)
+        stack = lambda: sub_interp.stack
+    else:
+        assert isinstance(interp, StatefulInterpreter)
+        stack = lambda: interp.stack
+
     interpreter = lambda: interp
-    stack = lambda: interp.stack
 
     def get_delta(metavars: tuple[str, ...]) -> dict[int, Pattern]:
         delta: dict[int, Pattern] = {}

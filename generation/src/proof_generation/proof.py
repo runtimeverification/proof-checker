@@ -250,20 +250,24 @@ class ProofExp:
             )
         )
 
-    def memoize(self, file_path: Path) -> None:
-        counting_interpreter = CountingInterpreter(
+    def optimize(self, file_path: Path) -> None:
+        claims = [Claim(claim) for claim in self._claims]
+        analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
+        self.execute_full(analyzer)
+
+        serializer = SerializingInterpreter(
             ExecutionPhase.Gamma,
-            claims=[Claim(claim) for claim in self._claims],
+            claims=claims,
+            out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+            claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+            proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
         )
 
-        self.execute_full(counting_interpreter)
-
-        counting_interpreter.phase = ExecutionPhase.Gamma
-        self.execute_full(MemoizingInterpreter(counting_interpreter, counting_interpreter.finalize()))
+        self.execute_full(MemoizingInterpreter(serializer, analyzer.finalize()))
 
     def main(self, argv: list[str]) -> None:
         exe, *argv = argv
-        usage = f'Usage:\n\n python3 {exe} (binary|pretty|memo) output-folder slice-name\n python3 {exe} --help\n\n'
+        usage = f'Usage:\n\n python3 {exe} (binary|pretty|optimize) output-folder slice-name\n python3 {exe} --help\n\n'
         examples = f'Examples:\n\npython3 {exe} binary pi2 propositional\n# outputs the given ProofExp in verifier-checkable binary format to pi2/propositional.ml-(gamma|claim|proof)\n\n'
 
         if len(argv) == 1:
@@ -284,5 +288,5 @@ class ProofExp:
                 self.prettyprint(output_dir / slice_name)
             case 'binary':
                 self.serialize(output_dir / slice_name)
-            case 'memo':
-                self.memoize(output_dir / slice_name)
+            case 'optimize':
+                self.optimize(output_dir / slice_name)
