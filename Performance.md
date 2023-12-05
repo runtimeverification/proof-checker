@@ -3,10 +3,10 @@
 ## Risc 0
 |     Examples     |  Cycles | CPU Time | GPU Time |
 |:----------------:|:-------:|:--------:|:--------:|
-| perceptron       |  23584  |   5.230  |   0.881  |
-| svm5             |  23584  |   5.237  |   0.873  |
-| transfer5000     | 1401989 | 120.850  |  12.193  |
-| transfer         |  23584  |   5.250  |   0.866  |
+| perceptron       |  21156  |   2.359  |   0.618  |
+| svm5             |  21156  |   2.641  |   0.698  |
+| transfer5000     | 724258  |  37.879  |   7.644  |
+| transfer         |  21156  |   2.333  |   0.622  |
 		
 
 ## zkLLVM
@@ -34,12 +34,12 @@
 ## Risc 0
 |             Examples            |  Cycles | CPU Time | GPU Time |
 |:-------------------------------:|:-------:|:--------:|:--------:|
-| perceptron-goal                 | 3183943 |      124 |    27    |
-| svm5-goal                       | 3183943 |      123 |    28    |
-| transfer-batch-1k-goal          | 6699287 |      275 |    59    |
-| transfer-simple-compressed-goal | 1111899 |       49 |    10    |
-| transfer-task-specific          |   86039 |        4 |     1    |
-| impreflex-compressed-goal       |   65273 |        4 |     1    |
+| perceptron-goal                 | 3196173 |  122.839 |    27    |
+| svm5-goal                       | 3196173 |  123.670 |    28    |
+| transfer-batch-1k-goal          | 6724225 |  273.092 |    59    |
+| transfer-simple-compressed-goal | 1123933 |   48.555 |    10    |
+| transfer-task-specific          |   89321 |    4.804 |     1    |
+| impreflex-compressed-goal       |   68555 |    4.740 |     1    |
 
 ## zkLLVM
 |             Examples            | CPU Time | GPU Time |
