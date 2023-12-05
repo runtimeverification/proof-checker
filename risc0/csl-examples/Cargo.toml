@@ -1,17 +1,19 @@
-[workspace]
-resolver = "2"
-members = ["host", "methods"]
+[package]
+name = "csl-examples"
+version = "0.1.0"
+edition = "2021"
 
-# Always optimize; building and running the guest takes much longer without optimization.
-[profile.dev]
-opt-level = 3
+[dependencies]
+risc0-zkvm = { version = "0.19.1" } # Use 'features = ["cuda"]' to run in GPU 
+env_logger = "0.10"
+serde = "1.0"
 
-[profile.dev.build-override]
-opt-level = 3
+[build-dependencies]
+risc0-build = { version = "0.19.1" }
 
-[profile.release]
-debug = 1
-lto = true
+[package.metadata.risc0]
+methods = ["guest"]
 
-[profile.release.build-override]
-opt-level = 3
+[[bin]]
+name = "host"
+path = "src/main.rs"

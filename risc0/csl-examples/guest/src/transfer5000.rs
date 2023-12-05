@@ -16,21 +16,23 @@ pub fn main() {
     let amount: u64 = 10;
     let mut _balance_sender: u64 = 100;
     let mut _balance_to: u64 = 200;
-    let mut _ret: u64 = 0;
-   
-    
-    if amount > _balance_sender {
-        _ret = 0;
-    } else {
-        _balance_sender = _balance_sender - amount;
-        _balance_to = _balance_to + amount;
-        _ret = 1;
+    let mut ret: u64 = 0;
+
+    let mut i = 0;
+    while i < 5000 {
+        if amount > _balance_sender {
+            ret = 0;
+        } else {
+            _balance_sender = _balance_sender - amount;
+            _balance_to = _balance_to + amount;
+            ret = 1;
+        }
+        i += 1;
     }
-    
+
     // commit the result to ZK journal
-    env::commit(&_ret);
-    
-    env::log(&"Ran transfer.\n");
-    env::log(&(env::get_cycle_count().to_string() + " cycles \n")); // This took 2 seconds to run
+    env::commit(&ret);
+
+    env::commit(&env::get_cycle_count());
 }
 

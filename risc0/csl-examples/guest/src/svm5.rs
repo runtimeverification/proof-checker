@@ -30,7 +30,7 @@ pub fn main() {
 
     // ret - b
     if 3 < ret {
-        ret = ret - 3;
+        ret = 1;
     } else {
         ret = 0;
     }
@@ -38,6 +38,5 @@ pub fn main() {
     // commit the result to ZK journal
     env::commit(&ret);
 
-    env::log(&"Ran perceptron.\n");
-    env::log(&(env::get_cycle_count().to_string() + " cycles \n")); // This took 2 seconds to run
+    env::commit(&env::get_cycle_count());
 }

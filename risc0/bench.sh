@@ -10,7 +10,8 @@ output_file="$1"
 
 # print_output
 print_output() {
-    echo "$1" | grep -E "R0VM\[" | awk -F "] " '{print $2}' >> "$output_file"
+    echo "$2" >> "$output_file"
+    echo "$1" | grep -E "Total cycles" >> "$output_file"
     echo "$1" | grep -E "Running execution \+ ZK certficate generation \+ verification" >> "$output_file"
     echo "---------------------------------------------------------------------" >> "$output_file"
 }
@@ -18,33 +19,33 @@ print_output() {
 # svm5
 svm5() {
     echo "Running svm5"
-    cp methods/guest/src/svm5.rs methods/guest/src/main.rs
-    output=$(RUST_LOG=info cargo run)
-    print_output "$output"
+    cp guest/src/svm5.rs guest/src/main.rs
+    output=$(cargo run)
+    print_output "$output" "svm5"
 }
 
 # perceptron
 perceptron() {
     echo "Running perceptron"
-    cp methods/guest/src/perceptron.rs methods/guest/src/main.rs
-    output=$(RUST_LOG=info cargo run)
-    print_output "$output"
+    cp guest/src/perceptron.rs guest/src/main.rs
+    output=$(cargo run --release)
+    print_output "$output" "perceptron"
 }
 
 # transfer
 transfer() {
     echo "Running transfer"
-    cp methods/guest/src/transfer.rs methods/guest/src/main.rs
-    output=$(RUST_LOG=info cargo run)
-    print_output "$output"
+    cp guest/src/transfer.rs guest/src/main.rs
+    output=$(cargo run --release)
+    print_output "$output" "transfer"
 }
 
 # transfer5000
 transfer5000() {
     echo "Running transfer5000"
-    cp methods/guest/src/transfer5000.rs methods/guest/src/main.rs
-    output=$(RUST_LOG=info cargo run)
-    print_output "$output"
+    cp guest/src/transfer5000.rs guest/src/main.rs
+    output=$(cargo run --release)
+    print_output "$output" "transfer5000"
 }
 
 all() {
@@ -63,6 +64,6 @@ else
     "$2"
 fi
 
-rm methods/guest/src/main.rs
+rm guest/src/main.rs
 mv "$1" ../"$1"
 cd ..
