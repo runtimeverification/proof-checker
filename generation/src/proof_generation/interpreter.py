@@ -34,9 +34,11 @@ class Interpreter(ABC):
         return list(self._interpreting_warnings)
 
     def into_claim_phase(self) -> None:
+        assert self.phase == ExecutionPhase.Gamma
         self.phase = ExecutionPhase.Claim
 
     def into_proof_phase(self) -> None:
+        assert self.phase == ExecutionPhase.Claim
         self.phase = ExecutionPhase.Proof
 
     def pattern(self, p: Pattern) -> Pattern:

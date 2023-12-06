@@ -36,14 +36,6 @@ class BasicInterpreter(Interpreter):
     def mark_generation_unsafe(self, warning: str) -> None:
         self._interpreting_warnings.add(warning)
 
-    def into_claim_phase(self) -> None:
-        assert self.phase == ExecutionPhase.Gamma
-        super().into_claim_phase()
-
-    def into_proof_phase(self) -> None:
-        assert self.phase == ExecutionPhase.Claim
-        super().into_proof_phase()
-
     def evar(self, id: int) -> Pattern:
         return EVar(id)
 
