@@ -11,7 +11,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KEquationalRule,
     KRewritingRule,
 )
-from proof_generation.pattern import Symbol
+from proof_generation.pattern import App, Instantiate, MetaVar, Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
@@ -104,13 +104,34 @@ class SimplificationVisitor:
                     exhausted_info.location, self._curr_config, exhausted_info.simplification_result
                 )
 
-    @staticmethod
-    def get_subpattern(location: Location, pattern: Pattern) -> Pattern:
-        raise NotImplementedError
+    def get_subpattern(self, location: Location, pattern: Pattern) -> Pattern:
+        def get_subpattern_rec(loc: list[int], pat: Pattern) -> tuple[Pattern, list[int]]:
+            if not loc:
+                return pat, loc
 
-    @staticmethod
-    def update_subterm(location: Location, pattern: Pattern, plug: Pattern) -> Pattern:
-        raise NotImplementedError
+            if isinstance(pat, App):
+                next_turn, *rest = loc
+                symbol, args = kl.deconstruct_nary_application(pat)
+                if isinstance(symbol, Symbol) and (ksymbol := self._language_semantics.resolve_to_ksymbol(symbol)):
+                    next_turn += len(ksymbol.sort_params)
+                assert len(args) > next_turn, f'Location {location} is invalid for pattern {str(pat)}'
+                return get_subpattern_rec(rest, args[next_turn])
+            elif isinstance(pat, Instantiate):
+                subpattern, rest = get_subpattern_rec(loc, pat.pattern)
+                if isinstance(subpattern, MetaVar):
+                    next_expression = pat.inst[subpattern.name]
+                    return get_subpattern_rec(rest, next_expression)
+                else:
+                    raise NotImplementedError(f'cannot find subpattern in {str(pat)} at location {str(location)}')
+            else:
+                return pat, loc
+
+        subpattern, left = get_subpattern_rec(list(location), pattern)
+        assert not left, f'Location {location} is invalid for pattern {str(pattern)}'
+        return subpattern
+
+    def update_subterm(self, location: Location, pattern: Pattern, plug: Pattern) -> Pattern:
+        raise NotImplementedError()
 
     @staticmethod
     def apply_substitutions(pattern: Pattern, substitutions: dict[int, Pattern]) -> Pattern:

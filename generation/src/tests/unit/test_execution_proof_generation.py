@@ -15,7 +15,7 @@ from tests.unit.test_kore_language_semantics import (
     rewrite_with_cell,
     rewrite_with_cells_config_pattern,
     simple_semantics,
-    simplified_cell_config_pattern,
+    tree_semantics_config_pattern,
 )
 
 if TYPE_CHECKING:
@@ -196,7 +196,7 @@ def test_visitor_get_subpattern():
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
 
-    intermidiate_config = simplified_cell_config_pattern(
+    intermidiate_config = tree_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
@@ -208,37 +208,47 @@ def test_visitor_get_subpattern():
     subpattern4 = b_symbol.app()
 
     visitor = SimplificationVisitor(semantics, intermidiate_config)
-
-    assert visitor.get_subpattern((0, 0), intermidiate_config) == subpattern1
+    # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
+    assert visitor.get_subpattern((0, 0, 0), intermidiate_config) == subpattern1
+    # ksym_reverse -> node(a, b)
     assert visitor.get_subpattern((0,), subpattern1) == subpattern2
+    # ksym_reverse -> node -> a
     assert visitor.get_subpattern((0, 0), subpattern1) == subpattern3
+    # ksym_reverse -> node -> b
     assert visitor.get_subpattern((0, 1), subpattern1) == subpattern4
 
 
 def test_visitor_update_subpattern():
+    # Semantics and symbols
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
 
+    # Build the initial state
     initial_expression = node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app()))
-    intermidiate_config = simplified_cell_config_pattern(semantics, 'SortTree', initial_expression)
+    intermidiate_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_expression)
 
+    # Create the visitor
+    visitor = SimplificationVisitor(semantics, intermidiate_config)
+
+    # Update tge subpattern for the whole configuration
     location = (0, 0, 1)
     plug = b_symbol.app()
-    result = simplified_cell_config_pattern(
+    result = tree_semantics_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), b_symbol.app()),
     )
-    assert result == SimplificationVisitor.update_subterm(location, intermidiate_config, plug)
+    assert visitor.update_subterm(location, intermidiate_config, plug) == result
 
+    # Update the subpattern for a subterm without cells
     location = (0,)
     pattern = initial_expression
     plug = b_symbol.app()
     result = node_symbol.app(a_symbol.app(), reverse_symbol.app(b_symbol.app()))
-    assert result == SimplificationVisitor.update_subterm(location, pattern, plug)
+    assert visitor.update_subterm(location, pattern, plug) == result
 
 
 def test_visitor_apply_substitution():
@@ -268,12 +278,12 @@ def test_visitor_update_config():
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
 
-    intermidiate_config1 = simplified_cell_config_pattern(
+    intermidiate_config1 = tree_semantics_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
     )
-    intermidiate_config2 = simplified_cell_config_pattern(
+    intermidiate_config2 = tree_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
@@ -296,12 +306,12 @@ def test_visitor_update_config():
             visitor.update_configuration(intermidiate_config1)
 
     # But it is possible to update the configuration after the simplification
-    simple_config = simplified_cell_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
+    simple_config = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
     visitor = SimplificationVisitor(semantics, simple_config)
     with visitor:
         visitor(2, {}, (0, 0))  # reverse(a) -> a
         visitor.update_configuration(intermidiate_config1)
-    assert visitor.simplified_configuration == simplified_cell_config_pattern(semantics, 'SortTree', a_symbol.app())
+    assert visitor.simplified_configuration == tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
     visitor.update_configuration(intermidiate_config1)
     assert visitor.simplified_configuration == intermidiate_config1
 
@@ -325,7 +335,7 @@ def test_subpattern_batch():
     assert isinstance(base_case_a, KEquationalRule)
 
     initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app()), b_symbol.app())
-    initial_config = simplified_cell_config_pattern(semantics, 'SortTree', initial_subterm)
+    initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
     proof_obj = ExecutionProofExp(semantics, initial_config)
     proof_obj.simplification_event(rec_case.ordinal, {0: a_symbol.app(), 1: b_symbol.app()}, (0, 0))
     expected_stack = [
@@ -349,7 +359,7 @@ def test_subpattern_batch():
     assert proof_obj._simplification_visitor._simplification_stack == []
 
     # Check the final update of the configuration
-    assert proof_obj.current_configuration == simplified_cell_config_pattern(
+    assert proof_obj.current_configuration == tree_semantics_config_pattern(
         semantics, 'SortTree', node_symbol.app(b_symbol.app(), a_symbol.app())
     )
 
