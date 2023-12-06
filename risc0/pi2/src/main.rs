@@ -67,7 +67,7 @@ fn main() {
 
     println!(
         "Running execution + ZK certficate generation + verification took {} s",
-        now.elapsed().as_secs()
+        now.elapsed().as_millis()
     );
 
     // Get the host's size of a usize pointer
