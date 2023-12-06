@@ -7,7 +7,7 @@ import pytest
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import KRewritingRule, KSortVar, LanguageSemantics
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, MetaVar
+from proof_generation.pattern import Instantiate, EVar, MetaVar
 from proof_generation.proofs.kore import kore_kseq, kore_rewrites
 
 if TYPE_CHECKING:
@@ -97,9 +97,9 @@ def rewrite_with_cell() -> LanguageSemantics:
             c_symbol = mod.symbol('c', foo_sort, is_functional=True, is_ctor=True)
             mod.symbol('dotk', k_sort, is_functional=True, is_ctor=True)
 
-            c1 = cell_config_pattern(semantics, a_symbol.aml_notation(), MetaVar(0))
-            c2 = cell_config_pattern(semantics, b_symbol.aml_notation(), MetaVar(0))
-            c3 = cell_config_pattern(semantics, c_symbol.aml_notation(), MetaVar(0))
+            c1 = cell_config_pattern(semantics, a_symbol.aml_notation(), EVar(0))
+            c2 = cell_config_pattern(semantics, b_symbol.aml_notation(), EVar(0))
+            c3 = cell_config_pattern(semantics, c_symbol.aml_notation(), EVar(0))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c1, c2))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c2, c3))
 
@@ -131,7 +131,7 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
     return [step_one, step_two]
 
 
-def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
+def cell_pretty_conf(symbol_name: str, plug: str = 'x0') -> str:
     return f'<kore_generated_top> <kore_k> (kore_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </kore_k> </kore_generated_top>'
 
 
