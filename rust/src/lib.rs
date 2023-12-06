@@ -291,6 +291,8 @@ impl Pattern {
                 ..
             } => return !app_ctx_holes.into_iter().any(|hole| e_fresh.contains(hole)),
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
+            Pattern::ESubst { .. } => !self.is_redundant_subst(),
+            Pattern::SSubst { .. } => !self.is_redundant_subst(),
             _ => {
                 // TODO: If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
