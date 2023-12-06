@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
-from proof_generation.interpreter import Interpreter
+from proof_generation.interpreter import ExecutionPhase, Interpreter, Proved
 from proof_generation.pattern import (
     App,
     ESubst,
@@ -19,7 +19,6 @@ from proof_generation.pattern import (
     Symbol,
     bot,
 )
-from proof_generation.proved import ExecutionPhase, Proved
 
 if TYPE_CHECKING:
     from collections.abc import Mapping

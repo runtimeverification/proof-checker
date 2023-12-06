@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import TYPE_CHECKING
-
-from proof_generation.proved import ExecutionPhase
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -12,6 +11,12 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
+
+
+class ExecutionPhase(Enum):
+    Gamma = 0
+    Claim = 1
+    Proof = 2
 
 
 class Interpreter(ABC):

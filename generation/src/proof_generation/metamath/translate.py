@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from proof_generation.basic_interpreter import ExecutionPhase
+from proof_generation.interpreter import ExecutionPhase
 from proof_generation.interpreter_transformer import InterpreterTransformer
 from proof_generation.metamath.converter.converter import MetamathConverter
 from proof_generation.metamath.converter.representation import AxiomWithAntecedents
