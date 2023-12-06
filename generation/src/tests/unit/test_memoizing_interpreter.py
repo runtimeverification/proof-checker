@@ -10,7 +10,6 @@ def test_memoizing_interpreter() -> None:
 
     memoizer.metavar(0)
     assert sub_interpreter.stack[-1] == MetaVar(0)
-    assert isinstance(sub_interpreter.stack[-1], MetaVar)
 
     cached_pattern = memoizer.pattern(MetaVar(1))
     assert isinstance(cached_pattern, MetaVar)
