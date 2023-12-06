@@ -10,12 +10,13 @@
 		
 
 ## zkLLVM
-|     Examples     | CPU Time | GPU Time |
-|:----------------:|:--------:|:--------:|
-| perceptron       |   0.198  |          |
-| svm5             |   0.197  |          |
-| transfer5000     |  43.994  |          |
-| transfer         |   0.198  |          |
+|     Examples     |          CPU Time(s)         || GPU Time |
+|                  | circuit gen | prove + verify ||          |
+|:----------------:|:-----------:|:--------------:||:--------:|
+| perceptron       |       0.95  |         0.135  ||          |
+| svm5             |       0.96  |         0.135  ||          |
+| transfer         |       0.97  |         0.133  ||          |
+| transfer-batch   |      0.797  |         40.34  ||          |
 
 
 ## Lurk
