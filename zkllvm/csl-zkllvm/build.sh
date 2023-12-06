@@ -43,7 +43,7 @@ OUTPUT_TABLE="${OUTPUTDIR}/assignment_table.tbl"
 
 # Creating output directory under `.build` if it doesn't exist or clean it if it does
 if [[ ! -d "${ROOT_DIR}/.build/output" ]]; then
-  mkdir "${ROOT_DIR}/.build/output"
+  mkdir -p "${ROOT_DIR}/.build/output"
 fi
 if [[ ! -d "${OUTPUTDIR}" ]]; then
   mkdir "${OUTPUTDIR}"
