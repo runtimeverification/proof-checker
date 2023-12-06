@@ -19,17 +19,17 @@ class InstantiationOptimizer(InterpreterTransformer):
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
         b_interp = BasicInterpreter(self.phase)
-        untransformed = b_interp.instantiate(proved, delta)
+        ret = b_interp.instantiate(proved, delta)
         if len(delta):
             self.sub_interpreter.instantiate(proved, delta)
-        return untransformed
+        return ret
 
     def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
         b_interp = BasicInterpreter(self.phase)
-        untransformed = b_interp.instantiate_pattern(pattern, delta)
+        ret = b_interp.instantiate_pattern(pattern, delta)
         if len(delta):
             self.sub_interpreter.instantiate_pattern(pattern, delta)
-        return untransformed
+        return ret
 
 
 class MemoizingInterpreter(InterpreterTransformer):
