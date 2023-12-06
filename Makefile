@@ -48,7 +48,7 @@ build-rust:
 	cargo build --manifest-path=rust/Cargo.toml
 
 build-risc0:
-	cargo build --manifest-path=risc0/Cargo.toml
+	cargo build --manifest-path=risc0/pi2/Cargo.toml
 
 install-kup:
 	@if ! command -v kup &> /dev/null; then \
