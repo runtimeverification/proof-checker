@@ -291,3 +291,5 @@ class ProofExp:
                 self.serialize(output_dir / slice_name)
             case 'optimize':
                 self.optimize(output_dir / slice_name)
+            case _:
+                raise ValueError(f'Unexpected output format {output_format}!\n' + usage)
