@@ -291,10 +291,20 @@ impl Pattern {
                 ..
             } => return !app_ctx_holes.into_iter().any(|hole| e_fresh.contains(hole)),
             Pattern::Mu { var, subpattern } => subpattern.positive(*var),
-            Pattern::ESubst { pattern, .. } => !self.is_redundant_subst()
-                && matches!(pattern.as_ref(), Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. }),
-            Pattern::SSubst { pattern, .. } => !self.is_redundant_subst()
-                && matches!(pattern.as_ref(), Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. }),
+            Pattern::ESubst { pattern, .. } => {
+                !self.is_redundant_subst()
+                    && matches!(
+                        pattern.as_ref(),
+                        Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. }
+                    )
+            }
+            Pattern::SSubst { pattern, .. } => {
+                !self.is_redundant_subst()
+                    && matches!(
+                        pattern.as_ref(),
+                        Pattern::MetaVar { .. } | Pattern::ESubst { .. } | Pattern::SSubst { .. }
+                    )
+            }
             _ => {
                 // TODO: If we make sure that we only use well-formed above constructs, then we should not need to check recursively
                 unimplemented!(
@@ -307,11 +317,15 @@ impl Pattern {
     fn is_redundant_subst(&self) -> bool {
         match self {
             Pattern::ESubst {
-                pattern, evar_id, plug
+                pattern,
+                evar_id,
+                plug,
             } => evar(*evar_id) == *plug || pattern.e_fresh(*evar_id),
             Pattern::SSubst {
-                pattern, svar_id, plug
-            } => svar(*svar_id) == *plug  || pattern.s_fresh(*svar_id),
+                pattern,
+                svar_id,
+                plug,
+            } => svar(*svar_id) == *plug || pattern.s_fresh(*svar_id),
             _ => false,
         }
     }
@@ -855,7 +869,11 @@ fn execute_instructions<'a>(
                 let plug = pop_stack_pattern(stack);
 
                 let esubst_pat = esubst(Rc::clone(&pattern), evar_id, plug);
-                assert!(esubst_pat.well_formed(), "Creating an ill-formed esubst {:?}", esubst_pat);
+                assert!(
+                    esubst_pat.well_formed(),
+                    "Creating an ill-formed esubst {:?}",
+                    esubst_pat
+                );
 
                 stack.push(Term::Pattern(esubst_pat));
             }
@@ -869,7 +887,11 @@ fn execute_instructions<'a>(
                 let plug = pop_stack_pattern(stack);
 
                 let ssubst_pat = ssubst(Rc::clone(&pattern), svar_id, plug);
-                assert!(ssubst_pat.well_formed(), "Creating an ill-formed ssubst {:?}", ssubst_pat);
+                assert!(
+                    ssubst_pat.well_formed(),
+                    "Creating an ill-formed ssubst {:?}",
+                    ssubst_pat
+                );
 
                 stack.push(Term::Pattern(ssubst_pat));
             }
