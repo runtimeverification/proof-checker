@@ -355,6 +355,18 @@ fn metavar_unconstrained(var_id: Id) -> Rc<Pattern> {
 }
 
 #[cfg(test)]
+fn metavar_e_fresh(var_id: Id, fresh: Id, positive: IdList, negative: IdList) -> Rc<Pattern> {
+    return Rc::new(Pattern::MetaVar {
+        id: var_id,
+        e_fresh: vec![fresh],
+        s_fresh: vec![],
+        positive,
+        negative,
+        app_ctx_holes: vec![],
+    });
+}
+
+#[cfg(test)]
 fn metavar_s_fresh(var_id: Id, fresh: Id, positive: IdList, negative: IdList) -> Rc<Pattern> {
     return Rc::new(Pattern::MetaVar {
         id: var_id,
@@ -1172,25 +1184,30 @@ mod tests {
 
     #[test]
     #[allow(non_snake_case)]
-    fn test_wellformedness_redundant() {
+    fn test_wellformedness_esubst_ssubst() {
+        let phi0_x1_s1 = esubst(metavar_unconstrained(0), 1, symbol(1));
+        assert!(phi0_x1_s1.well_formed());
+
         let s0_x1_s1 = esubst(symbol(0), 1, symbol(1));
         assert!(!s0_x1_s1.well_formed());
 
-        let s0_X1_s1 = ssubst(symbol(0), 1, symbol(1));
-        assert!(!s0_X1_s1.well_formed());
+        let phi0_x1_x1 = esubst(metavar_unconstrained(0), 1, evar(1));
+        assert!(!phi0_x1_x1.well_formed());
 
-        let phi0_x1_s1 = esubst(metavar_unconstrained(0), 1, symbol(1));
-        assert!(phi0_x1_s1.well_formed());
+        let phi0_fresh_x1_s1 = esubst(metavar_e_fresh(0, 1, vec![], vec![]), 1, symbol(1));
+        assert!(!phi0_fresh_x1_s1.well_formed());
 
         let phi0_X1_s1 = ssubst(metavar_unconstrained(0), 1, symbol(1));
         assert!(phi0_X1_s1.well_formed());
 
-        let phi0_X1_s1 = ssubst(metavar_s_fresh(0, 1, vec![], vec![]), 1, symbol(1));
-        assert!(!phi0_X1_s1.well_formed());
+        let phi0_X1_X1 = ssubst(metavar_unconstrained(0), 1, svar(1));
+        assert!(!phi0_X1_X1.well_formed());
 
-        // instantiate_in_place(&mut phi0_x1_s1, &vec![0], &vec![evar(2)]);
-        // panic!("{:?}", phi0_x1_s1);
-        // assert!(!phi0_x1_s1.well_formed());
+        let s0_X1_s1 = ssubst(symbol(0), 1, symbol(1));
+        assert!(!s0_X1_s1.well_formed());
+
+        let phi0_fresh_X1_s1 = ssubst(metavar_s_fresh(0, 1, vec![], vec![]), 1, symbol(1));
+        assert!(!phi0_fresh_X1_s1.well_formed());
     }
 
     #[test]
