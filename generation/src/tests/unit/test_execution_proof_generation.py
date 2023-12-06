@@ -260,15 +260,17 @@ def test_visitor_apply_substitution():
 
     rule = semantics.get_axiom(4)
     assert isinstance(rule, KEquationalRule)
-    substitution = {0: a_symbol.app(), 1: b_symbol.app()}
-    assert SimplificationVisitor.apply_substitutions(rule.right, substitution) == node_symbol.app(
-        reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())
-    )
+    substitution = {1: a_symbol.app(), 2: b_symbol.app()}
+    expected = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
+    substtuted = SimplificationVisitor.apply_substitutions(rule.right, substitution)
+    assert substtuted == expected
 
     rule = semantics.get_axiom(2)
     assert isinstance(rule, KEquationalRule)
     base_simplifications = rule.substitutions_from_requires
-    assert SimplificationVisitor.apply_substitutions(rule.right, base_simplifications) == a_symbol.app()
+    expected = a_symbol.app()
+    substituted = SimplificationVisitor.apply_substitutions(rule.right, base_simplifications)
+    assert substituted == expected
 
 
 def test_visitor_update_config():
