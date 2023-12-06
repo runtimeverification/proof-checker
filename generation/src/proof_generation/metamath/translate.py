@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import ExecutionPhase
-from proof_generation.instantiation_optimizer import InterpreterTransformer
+from proof_generation.interpreter_transformer import InterpreterTransformer
 from proof_generation.metamath.converter.converter import MetamathConverter
 from proof_generation.metamath.converter.representation import AxiomWithAntecedents
 from proof_generation.metamath.parser import load_database
@@ -16,10 +16,10 @@ from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.interpreter import Interpreter
 
 
-def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp, interp: BasicInterpreter) -> None:
+def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp, interp: Interpreter) -> None:
     if isinstance(interp, InterpreterTransformer):
         sub_interp = interp.sub_interpreter
         assert isinstance(sub_interp, StatefulInterpreter)
@@ -244,7 +244,7 @@ def main() -> None:
         def __init__(self) -> None:
             super().__init__(axioms=extracted_axioms, claims=extracted_claims)
 
-        def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+        def execute_proofs_phase(self, interpreter: Interpreter) -> None:
             assert interpreter.phase == ExecutionPhase.Proof
             exec_proof(converter, args.target, self, interpreter)
 

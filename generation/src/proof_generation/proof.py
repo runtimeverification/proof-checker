@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, TypeVar
 from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
-from proof_generation.instantiation_optimizer import MemoizingInterpreter
+from proof_generation.optimizing_interpreters import MemoizingInterpreter
 from proof_generation.pattern import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
@@ -15,7 +15,7 @@ from proof_generation.serializing_interpreter import SerializingInterpreter
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.interpreter import Interpreter
     from proof_generation.pattern import Notation, Pattern
 
 # Proof Expressions
@@ -23,14 +23,14 @@ if TYPE_CHECKING:
 
 
 class ProofThunk:
-    _expr: Callable[[BasicInterpreter], Proved]
+    _expr: Callable[[Interpreter], Proved]
     conc: Pattern
 
-    def __init__(self, expr: Callable[[BasicInterpreter], Proved], conc: Pattern):
+    def __init__(self, expr: Callable[[Interpreter], Proved], conc: Pattern):
         self._expr = expr
         self.conc = conc
 
-    def __call__(self, interpreter: BasicInterpreter) -> Proved:
+    def __call__(self, interpreter: Interpreter) -> Proved:
         proved = self._expr(interpreter)
         # TODO Check is this call to equality is causing performance issues
         assert proved.conclusion == self.conc
@@ -122,7 +122,7 @@ class ProofExp:
         if not delta:
             return pf
 
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             for idn, p in delta.items():
                 delta[idn] = interpreter.pattern(p)
             return interpreter.instantiate(pf(interpreter), delta)
@@ -171,7 +171,7 @@ class ProofExp:
         assert axiom_term in self._axioms
         axiom = Proved(axiom_term)
 
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             interpreter.load(f'Axiom {str(axiom)}', axiom)
             return axiom
 
@@ -182,13 +182,13 @@ class ProofExp:
         return self.load_axiom(self._axioms[i])
 
     def publish_proof(self, proved: ProofThunk) -> ProofThunk:
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             interpreter.publish_proof(proved(interpreter))
             return Proved(proved.conc)
 
         return ProofThunk(proved_exp, proved.conc)
 
-    def execute_gamma_phase(self, interpreter: BasicInterpreter, move_into_claim: bool = True) -> None:
+    def execute_gamma_phase(self, interpreter: Interpreter, move_into_claim: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma
         for submodule in self._submodules:
             submodule.execute_gamma_phase(interpreter, False)
@@ -198,7 +198,7 @@ class ProofExp:
         if move_into_claim:
             interpreter.into_claim_phase()
 
-    def execute_claims_phase(self, interpreter: BasicInterpreter, move_into_proof: bool = True) -> None:
+    def execute_claims_phase(self, interpreter: Interpreter, move_into_proof: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self._claims):
             interpreter.publish_claim(interpreter.pattern(claim))
@@ -206,13 +206,13 @@ class ProofExp:
         if move_into_proof:
             interpreter.into_proof_phase()
 
-    def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+    def execute_proofs_phase(self, interpreter: Interpreter) -> None:
         assert interpreter.phase == ExecutionPhase.Proof
         for proof_expr in self._proof_expressions:
             self.publish_proof(proof_expr)(interpreter)
         self.check_interpreting(interpreter)
 
-    def execute_full(self, interpreter: BasicInterpreter) -> None:
+    def execute_full(self, interpreter: Interpreter) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma, f'Unexpected interpreter phase: {interpreter.phase}'
         self.execute_gamma_phase(interpreter)
         self.execute_claims_phase(interpreter)
@@ -229,7 +229,7 @@ class ProofExp:
             )
         )
 
-    def check_interpreting(self, interpreter: BasicInterpreter) -> None:
+    def check_interpreting(self, interpreter: Interpreter) -> None:
         if not interpreter.safe_interpreting:
             print(f'Proof generation during {interpreter.phase.name} phase is potentially unsafe!')
             for warning in interpreter.interpreting_warnings:

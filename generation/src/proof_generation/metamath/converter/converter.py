@@ -34,9 +34,9 @@ from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from proof_generation.interpreter import Interpreter
     from proof_generation.metamath.ast import Database
     from proof_generation.metamath.converter.scope import NotationScope
-    from proof_generation.proof import BasicInterpreter
 
 
 class AxiomType(Enum):
@@ -129,11 +129,11 @@ class MetamathConverter:
         assert self.is_lemma(name)
         return self._lemmas[name][0]
 
-    def publish_axioms(self, interpreter: BasicInterpreter) -> None:
+    def publish_axioms(self, interpreter: Interpreter) -> None:
         for axiom in self.exported_axioms_as_objects:
             interpreter.publish_axiom(interpreter.pattern(axiom.pattern))
 
-    def publish_lemmas(self, interpreter: BasicInterpreter) -> None:
+    def publish_lemmas(self, interpreter: Interpreter) -> None:
         raise NotImplementedError
 
     def get_metavars_in_order(self, name: str) -> tuple[str, ...]:

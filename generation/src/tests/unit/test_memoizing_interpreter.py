@@ -1,5 +1,5 @@
 from proof_generation.basic_interpreter import ExecutionPhase
-from proof_generation.instantiation_optimizer import MemoizingInterpreter
+from proof_generation.optimizing_interpreters import MemoizingInterpreter
 from proof_generation.pattern import MetaVar
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
