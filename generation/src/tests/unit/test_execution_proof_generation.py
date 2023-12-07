@@ -189,7 +189,7 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
 
 
-def test_visitor_get_subpattern():
+def test_visitor_get_subterm():
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
@@ -209,16 +209,16 @@ def test_visitor_get_subpattern():
 
     visitor = SimplificationVisitor(semantics, intermidiate_config)
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
-    assert visitor.get_subpattern((0, 0, 0), intermidiate_config) == subpattern1
+    assert visitor.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
     # ksym_reverse -> node(a, b)
-    assert visitor.get_subpattern((0,), subpattern1) == subpattern2
+    assert visitor.get_subterm((0,), subpattern1) == subpattern2
     # ksym_reverse -> node -> a
-    assert visitor.get_subpattern((0, 0), subpattern1) == subpattern3
+    assert visitor.get_subterm((0, 0), subpattern1) == subpattern3
     # ksym_reverse -> node -> b
-    assert visitor.get_subpattern((0, 1), subpattern1) == subpattern4
+    assert visitor.get_subterm((0, 1), subpattern1) == subpattern4
 
 
-def test_visitor_update_subpattern():
+def test_visitor_update_subterm():
     # Semantics and symbols
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
@@ -227,27 +227,46 @@ def test_visitor_update_subpattern():
     b_symbol = semantics.get_symbol('b')
 
     # Build the initial state
-    initial_expression = node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app()))
-    intermidiate_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_expression)
+    initial_kcell_value = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    intermidiate_config = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        initial_kcell_value,
+    )
 
     # Create the visitor
     visitor = SimplificationVisitor(semantics, intermidiate_config)
 
+    # Test from the get_subpattern function
+    # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
+    location = (0, 0, 0)
+    pattern = intermidiate_config
+    plug = a_symbol.app()
+    expected_result = tree_semantics_config_pattern(semantics, 'SortTree', plug)
+    assert visitor.update_subterm(location, pattern, plug) == expected_result
+
     # Update tge subpattern for the whole configuration
-    location = (0, 0, 1)
-    plug = b_symbol.app()
+    # ksym_generated_top -> ksym_k -> ksym_inj -> ksym_node -> ksym_reverse -> ksym_b
+    location = (0, 0, 0, 1)
+    plug = a_symbol.app()
+    pattern = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
+    )
     result = tree_semantics_config_pattern(
         semantics,
         'SortTree',
-        node_symbol.app(reverse_symbol.app(a_symbol.app()), b_symbol.app()),
+        node_symbol.app(reverse_symbol.app(a_symbol.app()), a_symbol.app()),
     )
-    assert visitor.update_subterm(location, intermidiate_config, plug) == result
+    assert visitor.update_subterm(location, pattern, plug) == result
 
     # Update the subpattern for a subterm without cells
-    location = (0,)
-    pattern = initial_expression
+    # node -> ksym_reverse
+    location = (1,)
+    pattern = node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app()))
     plug = b_symbol.app()
-    result = node_symbol.app(a_symbol.app(), reverse_symbol.app(b_symbol.app()))
+    result = node_symbol.app(reverse_symbol.app(a_symbol.app()), b_symbol.app())
     assert visitor.update_subterm(location, pattern, plug) == result
 
 

@@ -11,7 +11,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KEquationalRule,
     KRewritingRule,
 )
-from proof_generation.pattern import App, Instantiate, MetaVar, Symbol
+from proof_generation.pattern import Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
@@ -56,9 +56,9 @@ class SimplificationVisitor:
 
         # Check that whether it is the first simplification or not
         if not self._simplification_stack:
-            sub_pattern = self.get_subpattern(location, self._curr_config)
+            sub_pattern = self.get_subterm(location, self._curr_config)
         else:
-            sub_pattern = self.get_subpattern(location, self._simplification_stack[-1].simplification_result)
+            sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
 
         # Get the rule and remove extra variables added by K in addition to the ones in the K file
         rule = self._language_semantics.get_axiom(ordinal)
@@ -104,34 +104,42 @@ class SimplificationVisitor:
                     exhausted_info.location, self._curr_config, exhausted_info.simplification_result
                 )
 
-    def get_subpattern(self, location: Location, pattern: Pattern) -> Pattern:
-        def get_subpattern_rec(loc: list[int], pat: Pattern) -> tuple[Pattern, list[int]]:
-            if not loc:
-                return pat, loc
-
-            if isinstance(pat, App):
-                next_turn, *rest = loc
-                symbol, args = kl.deconstruct_nary_application(pat)
-                if isinstance(symbol, Symbol) and (ksymbol := self._language_semantics.resolve_to_ksymbol(symbol)):
-                    next_turn += len(ksymbol.sort_params)
-                assert len(args) > next_turn, f'Location {location} is invalid for pattern {str(pat)}'
-                return get_subpattern_rec(rest, args[next_turn])
-            elif isinstance(pat, Instantiate):
-                subpattern, rest = get_subpattern_rec(loc, pat.pattern)
-                if isinstance(subpattern, MetaVar):
-                    next_expression = pat.inst[subpattern.name]
-                    return get_subpattern_rec(rest, next_expression)
-                else:
-                    raise NotImplementedError(f'cannot find subpattern in {str(pat)} at location {str(location)}')
-            else:
-                return pat, loc
-
-        subpattern, left = get_subpattern_rec(list(location), pattern)
-        assert not left, f'Location {location} is invalid for pattern {str(pattern)}'
-        return subpattern
+    def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:
+        # subpattern, left = self._get_subpattern_rec(list(location), pattern)
+        _, found, location_left = self._subpattern_search_rec(list(location), pattern, None)
+        assert not location_left, f'Location {location} is invalid for pattern {str(pattern)}'
+        return found
 
     def update_subterm(self, location: Location, pattern: Pattern, plug: Pattern) -> Pattern:
-        raise NotImplementedError()
+        updated, _, left = self._subpattern_search_rec(list(location), pattern, plug)
+        assert not left, f'Location {location} is invalid for pattern {str(pattern)}'
+        return updated
+
+    def _subpattern_search_rec(
+        self, loc: list[int], pattern: Pattern, plug: Pattern | None = None
+    ) -> tuple[Pattern, Pattern, list[int]]:
+        """Search for the subpattern at the given location and replace it with the plug."""
+        if not loc:
+            return pattern if not plug else plug, pattern, loc
+
+        next_turn, *rest = loc
+        symbol, args_tuple = kl.deconstruct_nary_application(pattern)
+        args_list = list(args_tuple)
+        assert isinstance(symbol, Symbol)
+        ksymbol = self._language_semantics.resolve_to_ksymbol(symbol)
+        if ksymbol:
+            next_turn += len(ksymbol.sort_params)
+        assert len(args_list) > next_turn, f'Location {str(loc)} is invalid for pattern {str(pattern)}'
+
+        # Replace the argument and return the application
+        replaced_arg, found_part, rest = self._subpattern_search_rec(rest, args_list[next_turn], plug)
+        args_list[next_turn] = replaced_arg
+
+        if ksymbol:
+            reconstructed_pattern = ksymbol.app(*args_list)
+        else:
+            reconstructed_pattern = kl.nary_app(symbol, len(args_list))(*args_list)
+        return reconstructed_pattern, found_part, rest
 
     @staticmethod
     def apply_substitutions(pattern: Pattern, substitutions: dict[int, Pattern]) -> Pattern:
