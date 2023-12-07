@@ -252,9 +252,9 @@ def main() -> None:
 
     proof_skeleton = TranslatedProofSkeleton()
 
-    proof_skeleton.main(['', 'optimize', str(output_dir), module])
-    proof_skeleton.main(['', 'optimize', str(output_dir), module])
-    proof_skeleton.main(['', 'optimize', str(output_dir), module])
+    proof_skeleton.main(['--optimize', 'binary', str(output_dir), module])
+    proof_skeleton.main(['--optimize', 'binary', str(output_dir), module])
+    proof_skeleton.main(['--optimize', 'binary', str(output_dir), module])
 
 
 if __name__ == '__main__':

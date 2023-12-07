@@ -340,7 +340,7 @@ test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 
 .build/proofs/%.ml-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
-	$(POETRY_RUN) python -m "proof_generation.proofs.$*" optimize $(dir $@) $*
+	$(POETRY_RUN) python -m "proof_generation.proofs.$*" --optimize binary $(dir $@) $*
 
 .build/proofs/%.pretty-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)

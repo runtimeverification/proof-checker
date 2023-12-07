@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from argparse import ArgumentParser
+from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, TypeVar
 
@@ -17,6 +19,13 @@ if TYPE_CHECKING:
 
     from proof_generation.interpreter import Interpreter
     from proof_generation.pattern import Notation, Pattern
+    from proof_generation.serializing_interpreter import IOInterpreter
+
+
+class OutputFormat(str, Enum):
+    Binary = 'binary'
+    Pretty = 'pretty'
+
 
 # Proof Expressions
 # =================
@@ -218,17 +227,6 @@ class ProofExp:
         self.execute_claims_phase(interpreter)
         self.execute_proofs_phase(interpreter)
 
-    def serialize(self, file_path: Path) -> None:
-        self.execute_full(
-            SerializingInterpreter(
-                ExecutionPhase.Gamma,
-                claims=[Claim(claim) for claim in self._claims],
-                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
-                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
-            )
-        )
-
     def check_interpreting(self, interpreter: Interpreter) -> None:
         if not interpreter.safe_interpreting:
             print(f'Proof generation during {interpreter.phase.name} phase is potentially unsafe!')
@@ -238,59 +236,66 @@ class ProofExp:
     def pretty_options(self) -> PrettyOptions:
         return PrettyOptions(notations={n.definition: n for n in self._notations})
 
-    def prettyprint(self, file_path: Path) -> None:
-        self.execute_full(
-            PrettyPrintingInterpreter(
-                ExecutionPhase.Gamma,
-                claims=[Claim(claim) for claim in self._claims],
-                out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
-                claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
-                proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
-                pretty_options=self.pretty_options(),
-            )
-        )
+    def get_serializing_interpreter(
+        self,
+        output_format: OutputFormat,
+        phase: ExecutionPhase,
+        claims: list[Claim],
+        file_path: Path,
+    ) -> IOInterpreter:
+        serializer: IOInterpreter
+        match output_format:
+            case OutputFormat.Binary:
+                serializer = SerializingInterpreter(
+                    phase=phase,
+                    claims=claims,
+                    out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+                    claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+                    proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
+                )
+            case OutputFormat.Pretty:
+                serializer = PrettyPrintingInterpreter(
+                    phase=phase,
+                    claims=claims,
+                    out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
+                    claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
+                    proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
+                    pretty_options=self.pretty_options(),
+                )
+        return serializer
 
-    # TODO: Implement the pipeline specified in Issue #374
+    # TODO: Implement the optimization pipeline specified in Issue #374
     # TODO: add InstantiationOptimizer
-    def optimize(self, file_path: Path) -> None:
+    def serialize(self, file_path: Path, output_format: OutputFormat, optimize: bool) -> None:
         claims = [Claim(claim) for claim in self._claims]
-        analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
-        self.execute_full(analyzer)
-
-        serializer = SerializingInterpreter(
-            ExecutionPhase.Gamma,
-            claims=claims,
-            out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-            claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
-            proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
-        )
-
-        self.execute_full(MemoizingInterpreter(serializer, analyzer.finalize()))
+        serializer = self.get_serializing_interpreter(output_format, ExecutionPhase.Gamma, claims, file_path)
+        if optimize:
+            analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
+            self.execute_full(analyzer)
+            self.execute_full(MemoizingInterpreter(serializer, analyzer.finalize()))
+        else:
+            self.execute_full(serializer)
 
     def main(self, argv: list[str]) -> None:
-        exe, *argv = argv
-        usage = f'Usage:\n\n python3 {exe} (binary|pretty|optimize) output-folder slice-name\n python3 {exe} --help\n\n'
-        examples = f'Examples:\n\npython3 {exe} binary pi2 propositional\n# outputs the given ProofExp in verifier-checkable binary format to pi2/propositional.ml-(gamma|claim|proof)\n\n'
+        argparser = ArgumentParser(
+            prog='Proof Expression Serializer',
+            description='This method outputs the ProofExp in a verifier-checkable binary format or a human-readable pretty-printed format.',
+        )
+        argparser.add_argument(
+            'output_format',
+            type=OutputFormat,
+            help='The proof output format, which can either be binary or pretty-printed',
+        )
+        argparser.add_argument('output_dir', type=str, help='The path to the output directory')
+        argparser.add_argument('slice_name', type=str, help='The input slice name')
+        argparser.add_argument(
+            '--optimize', action='store_true', default=False, help='Optimize the proof before serializing it to output'
+        )
+        args = argparser.parse_args(argv)
 
-        if len(argv) == 1:
-            assert argv[0] == '--help', usage
-            print(usage + examples)
-            return
-
-        assert len(argv) == 3, usage
-        output_format, output_path, slice_name = argv
-
-        output_dir = Path(output_path)
+        output_dir = Path(args.output_dir)
         if not output_dir.exists():
             print('Creating output directory...')
             output_dir.mkdir()
 
-        match output_format:
-            case 'pretty':
-                self.prettyprint(output_dir / slice_name)
-            case 'binary':
-                self.serialize(output_dir / slice_name)
-            case 'optimize':
-                self.optimize(output_dir / slice_name)
-            case _:
-                raise ValueError(f'Unexpected output format {output_format}!\n' + usage)
+        self.serialize(output_dir / args.slice_name, args.output_format, args.optimize)
