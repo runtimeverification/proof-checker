@@ -53,13 +53,13 @@
 
 ## Lurk
 |             Examples            | Cycles | CPU Time** | GPU Time |
-|:-------------------------------:|:------:|:--------:|:--------:|
-| perceptron-goal                 | 6404208|     ∞    |          |
-| svm5-goal                       | 6404208|     ∞    |          |
-| transfer-batch-1k-goal          |30122047|     ∞    |          |
-| transfer-simple-compressed-goal | 3202986|     ∞    |          |
-| transfer-task-specific*         | 148870 |  861.443 |  237.319 |
-| impreflex-compressed-goal*      | 55651  |  341.466 |  220.180 |
+|:-------------------------------:|:------:|:----------:|:--------:|
+| perceptron-goal                 | 6404208|      ∞     |          |
+| svm5-goal                       | 6404208|      ∞     |          |
+| transfer-batch-1k-goal          |30122047|      ∞     |          |
+| transfer-simple-compressed-goal | 3202986|      ∞     |          |
+| transfer-task-specific*         | 148870 |   861.443  |  237.319 |
+| impreflex-compressed-goal*      | 55651  |   341.466  |  220.180 |
 
 * Using `lurk --rc 400 ...`
 ** CPU time is outdated as we can't get only CPU execution due to a bug on Lurk's
