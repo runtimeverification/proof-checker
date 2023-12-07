@@ -5,7 +5,8 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from proof_generation.basic_interpreter import ExecutionPhase
+from proof_generation.interpreter import ExecutionPhase
+from proof_generation.interpreter_transformer import InterpreterTransformer
 from proof_generation.metamath.converter.converter import MetamathConverter
 from proof_generation.metamath.converter.representation import AxiomWithAntecedents
 from proof_generation.metamath.parser import load_database
@@ -15,13 +16,19 @@ from proof_generation.proved import Proved
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.interpreter import Interpreter
 
 
-def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp, interp: BasicInterpreter) -> None:
-    assert isinstance(interp, StatefulInterpreter)
+def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp, interp: Interpreter) -> None:
+    if isinstance(interp, InterpreterTransformer):
+        sub_interp = interp.sub_interpreter
+        assert isinstance(sub_interp, StatefulInterpreter)
+        stack = lambda: sub_interp.stack
+    else:
+        assert isinstance(interp, StatefulInterpreter)
+        stack = lambda: interp.stack
+
     interpreter = lambda: interp
-    stack = lambda: interp.stack
 
     def get_delta(metavars: tuple[str, ...]) -> dict[int, Pattern]:
         delta: dict[int, Pattern] = {}
@@ -237,7 +244,7 @@ def main() -> None:
         def __init__(self) -> None:
             super().__init__(axioms=extracted_axioms, claims=extracted_claims)
 
-        def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+        def execute_proofs_phase(self, interpreter: Interpreter) -> None:
             assert interpreter.phase == ExecutionPhase.Proof
             exec_proof(converter, args.target, self, interpreter)
 
@@ -245,9 +252,9 @@ def main() -> None:
 
     proof_skeleton = TranslatedProofSkeleton()
 
-    proof_skeleton.main(['', 'memo', str(output_dir), module])
-    proof_skeleton.main(['', 'memo', str(output_dir), module])
-    proof_skeleton.main(['', 'memo', str(output_dir), module])
+    proof_skeleton.main(['', 'optimize', str(output_dir), module])
+    proof_skeleton.main(['', 'optimize', str(output_dir), module])
+    proof_skeleton.main(['', 'optimize', str(output_dir), module])
 
 
 if __name__ == '__main__':
