@@ -1,6 +1,7 @@
 pragma circom 2.1.0;
 
 /* TODO
+- Implement Prop3
 - Check wellformed-ness
 */
 
@@ -122,12 +123,11 @@ template ArrEq (N) {
 
 template Prop1FixedLen (M, A_LEN, B_LEN) {
     signal input pattern[M];
-    signal check_size;
+    signal check_size, impl1, impl2;
     signal output out;
     
-    // Check necessary ->
-    //signal implications = AND()()
-    //assert(pattern[A_LEN + 1] == 1);
+    impl1 <== EqConst(1)(pattern[0]);
+    impl2 <== EqConst(1)(pattern[1 + A_LEN]);
 
     component checker = ArrEq (A_LEN);
     for (var i = 0; i < A_LEN; i ++) {
@@ -137,7 +137,7 @@ template Prop1FixedLen (M, A_LEN, B_LEN) {
 
     check_size <== SizeChecker(M, 2 + 2 * A_LEN + B_LEN)(pattern);
 
-    out <== AND()(checker.out, check_size);
+    out <== MultiAND(4)([checker.out, check_size, impl1, impl2]);
 }
 
 template Prop1 (M) {
@@ -156,7 +156,7 @@ template Prop1 (M) {
         }
     }
 
-    solutions ==> out;
+    out <== EqConst(1)(solutions);
 }
 
 // Recognize ->->A->BC->->AB->AC
@@ -222,7 +222,7 @@ template Prop2 (M) {
                 }
         }
 
-    solutions ==> out;
+    out <== EqConst(1)(solutions);
 }
 
 // Check ModusPonens instance:
@@ -287,10 +287,10 @@ template ModusPonens (M) {
     out <== EqConst(1)(solutions);
 }
 
-
-
 // N - is the number of steps in the proof
-// M - the maximum length of a single step/pattern
+// M - the maximum length of a single step/pattern (padded with 0s if shorter)
+// proof[i][j] = j-th symbol of pattern i
+// annotations[i][j] = index of pattern corresponding to j-th premise of pattern i
 
 template CheckProof (N, M) {
     signal input proof[N][M];
@@ -301,22 +301,16 @@ template CheckProof (N, M) {
     signal valid[N];
 
     signal coefs[N][N][2];
-    signal inter[N][N][M][2];
+    signal inter[N][N][M][2];   
 
     var i = 0, j = 0, k = 0, p = 0, correct = 0;
 
-    // signal x
-
-    // var v = x * 2;
-    // signal out <== v; out <== (x * 2);
+    // Dynamic memory access in general:
+    // signal x;
+    // signal v[n];
+    // We compute v[x] as v_x = [(x == 0) * v[0] + (x == 1) * v[1] + ... (x == n) * v[n]];
 
     // After this for loop, we will have premise[i][p] == proof[annotations[i][p]] 
-
-    // signal x;
-    // signal v[10];
-    // We compute v[x] as v_x = [(x == 0) * v[0] + (x == 1) * v[1] + ... (x == n) * v[n]];
-    // v[x] = another array
-
     for (i = 0; i < N; i++) {
         var premise_arr[2][M];
 
