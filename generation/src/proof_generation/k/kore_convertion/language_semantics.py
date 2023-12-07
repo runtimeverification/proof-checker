@@ -119,28 +119,7 @@ class KEquationalRule:
     @property
     def substitutions_from_requires(self) -> dict[int, Pattern]:
         """Collect substitutions from the requires part of the axiom introduced artificially by K."""
-        substitutions: dict[int, Pattern] = {}
-
-        def matching_clause(pattern: Pattern) -> None:
-            if top_and_match := kl.kore_and.matches(pattern):
-                _, left, right = top_and_match
-
-                for item in (left, right):
-                    if let_match := kl.equational_as.matches(item):
-                        _, _, from_evar, to_evar, expression = let_match
-                        if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
-                            substitutions[from_evar.name] = expression
-                            substitutions[to_evar.name] = expression
-                    elif in_match := kl.kore_in.matches(item):
-                        _, _, var, expression = in_match
-                        if isinstance(var, EVar):
-                            substitutions[var.name] = expression
-                    elif kl.kore_and.matches(item):
-                        matching_clause(item)
-
-        matching_clause(self.requires)
-
-        return substitutions
+        return kl.matching_requires_substitution(self.requires)
 
 
 class BuilderScope:

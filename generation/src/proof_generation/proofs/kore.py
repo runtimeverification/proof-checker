@@ -142,6 +142,29 @@ def deconstruct_equality_rule(pattern: Pattern) -> tuple[Pattern, Pattern, Patte
     return requires, eq_left, eq_right_and_ensures, eq_right, ensures
 
 
+@cache
+def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
+    collected_substitutions: dict[int, Pattern] = {}
+
+    if top_and_match := kore_and.matches(pattern):
+        _, left, right = top_and_match
+
+        for item in (left, right):
+            if let_match := equational_as.matches(item):
+                _, _, from_evar, to_evar, expression = let_match
+                if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
+                    collected_substitutions[from_evar.name] = expression
+                    collected_substitutions[to_evar.name] = expression
+            elif in_match := kore_in.matches(item):
+                _, _, var, expression = in_match
+                if isinstance(var, EVar):
+                    collected_substitutions[var.name] = expression
+            else:
+                collected_substitutions.update(matching_requires_substitution(item))
+
+    return collected_substitutions
+
+
 KORE_NOTATIONS = (
     kore_top,
     kore_not,
