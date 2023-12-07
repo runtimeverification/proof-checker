@@ -35,7 +35,7 @@ class SimplificationInfo:
     simplifications_remaining: int
 
 
-class SimplificationVisitor:
+class SimplificationContext:
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
         self._language_semantics = language_semantics
         self._curr_config = init_config
@@ -80,7 +80,7 @@ class SimplificationVisitor:
 
         return new_info
 
-    def __enter__(self) -> SimplificationVisitor:
+    def __enter__(self) -> SimplificationContext:
         assert self._simplification_stack or not self._in_simplification
         self._in_simplification = True
         return self
@@ -162,7 +162,7 @@ class ExecutionProofExp(proof.ProofExp):
         super().__init__(notations=list(language_semantics.notations))
         self.subst_proofexp = self.import_module(Substitution())
         self.kore_lemmas = self.import_module(kl.KoreLemmas())
-        self._simplification_visitor = SimplificationVisitor(self.language_semantics, self.current_configuration)
+        self._simplification_visitor = SimplificationContext(self.language_semantics, self.current_configuration)
 
     @property
     def initial_configuration(self) -> Pattern:

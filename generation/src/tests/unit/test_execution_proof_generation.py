@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationVisitor
+from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationContext
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate, top
@@ -207,7 +207,7 @@ def test_visitor_get_subterm():
     subpattern3 = a_symbol.app()
     subpattern4 = b_symbol.app()
 
-    visitor = SimplificationVisitor(semantics, intermidiate_config)
+    visitor = SimplificationContext(semantics, intermidiate_config)
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
     assert visitor.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
     # ksym_reverse -> node(a, b)
@@ -235,7 +235,7 @@ def test_visitor_update_subterm():
     )
 
     # Create the visitor
-    visitor = SimplificationVisitor(semantics, intermidiate_config)
+    visitor = SimplificationContext(semantics, intermidiate_config)
 
     # Test from the get_subpattern function
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
@@ -281,14 +281,14 @@ def test_visitor_apply_substitution():
     assert isinstance(rule, KEquationalRule)
     substitution = {1: a_symbol.app(), 2: b_symbol.app()}
     expected = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
-    substtuted = SimplificationVisitor.apply_esubsts(rule.right, substitution)
+    substtuted = SimplificationContext.apply_esubsts(rule.right, substitution)
     assert substtuted == expected
 
     rule = semantics.get_axiom(2)
     assert isinstance(rule, KEquationalRule)
     base_simplifications = rule.substitutions_from_requires
     expected = a_symbol.app()
-    substituted = SimplificationVisitor.apply_esubsts(rule.right, base_simplifications)
+    substituted = SimplificationContext.apply_esubsts(rule.right, base_simplifications)
     assert substituted == expected
 
 
@@ -310,7 +310,7 @@ def test_visitor_update_config():
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
 
-    visitor = SimplificationVisitor(semantics, intermidiate_config1)
+    visitor = SimplificationContext(semantics, intermidiate_config1)
     assert visitor.simplified_configuration == intermidiate_config1
 
     # Update the configuration
@@ -323,7 +323,7 @@ def test_visitor_update_config():
             visitor.update_configuration(intermidiate_config1)
 
     # Reset the state
-    visitor = SimplificationVisitor(semantics, intermidiate_config1)
+    visitor = SimplificationContext(semantics, intermidiate_config1)
     visitor.update_configuration(intermidiate_config2)
     with pytest.raises(AssertionError):
         with visitor:
@@ -333,7 +333,7 @@ def test_visitor_update_config():
     # But it is possible to update the configuration after the simplification
     simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
     simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
-    visitor = SimplificationVisitor(semantics, simple_config_before)
+    visitor = SimplificationContext(semantics, simple_config_before)
     with visitor:
         visitor.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
     assert visitor._simplification_stack == []
