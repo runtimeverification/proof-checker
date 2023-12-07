@@ -321,18 +321,23 @@ def test_visitor_update_config():
     with pytest.raises(AssertionError):
         with visitor:
             visitor.update_configuration(intermidiate_config1)
+
+    # Reset the state
+    visitor = SimplificationVisitor(semantics, intermidiate_config1)
+    visitor.update_configuration(intermidiate_config2)
     with pytest.raises(AssertionError):
         with visitor:
-            visitor(0, {}, (0, 0))
+            visitor.apply_simplification(2, {}, (0, 0))
             visitor.update_configuration(intermidiate_config1)
 
     # But it is possible to update the configuration after the simplification
-    simple_config = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
-    visitor = SimplificationVisitor(semantics, simple_config)
+    simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
+    simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
+    visitor = SimplificationVisitor(semantics, simple_config_before)
     with visitor:
-        visitor(2, {}, (0, 0))  # reverse(a) -> a
-        visitor.update_configuration(intermidiate_config1)
-    assert visitor.simplified_configuration == tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
+        visitor.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
+    assert visitor._simplification_stack == []
+    assert visitor.simplified_configuration == simple_config_after
     visitor.update_configuration(intermidiate_config1)
     assert visitor.simplified_configuration == intermidiate_config1
 
