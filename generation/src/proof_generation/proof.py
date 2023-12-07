@@ -3,18 +3,19 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, TypeVar
 
-from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
+from proof_generation.interpreter import ExecutionPhase
+from proof_generation.optimizing_interpreters import MemoizingInterpreter
 from proof_generation.pattern import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
-from proof_generation.serializing_interpreter import MemoizingInterpreter, SerializingInterpreter
+from proof_generation.serializing_interpreter import SerializingInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.interpreter import Interpreter
     from proof_generation.pattern import Notation, Pattern
 
 # Proof Expressions
@@ -22,14 +23,14 @@ if TYPE_CHECKING:
 
 
 class ProofThunk:
-    _expr: Callable[[BasicInterpreter], Proved]
+    _expr: Callable[[Interpreter], Proved]
     conc: Pattern
 
-    def __init__(self, expr: Callable[[BasicInterpreter], Proved], conc: Pattern):
+    def __init__(self, expr: Callable[[Interpreter], Proved], conc: Pattern):
         self._expr = expr
         self.conc = conc
 
-    def __call__(self, interpreter: BasicInterpreter) -> Proved:
+    def __call__(self, interpreter: Interpreter) -> Proved:
         proved = self._expr(interpreter)
         # TODO Check is this call to equality is causing performance issues
         assert proved.conclusion == self.conc
@@ -121,7 +122,7 @@ class ProofExp:
         if not delta:
             return pf
 
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             for idn, p in delta.items():
                 delta[idn] = interpreter.pattern(p)
             return interpreter.instantiate(pf(interpreter), delta)
@@ -170,7 +171,7 @@ class ProofExp:
         assert axiom_term in self._axioms
         axiom = Proved(axiom_term)
 
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             interpreter.load(f'Axiom {str(axiom)}', axiom)
             return axiom
 
@@ -181,13 +182,13 @@ class ProofExp:
         return self.load_axiom(self._axioms[i])
 
     def publish_proof(self, proved: ProofThunk) -> ProofThunk:
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             interpreter.publish_proof(proved(interpreter))
             return Proved(proved.conc)
 
         return ProofThunk(proved_exp, proved.conc)
 
-    def execute_gamma_phase(self, interpreter: BasicInterpreter, move_into_claim: bool = True) -> None:
+    def execute_gamma_phase(self, interpreter: Interpreter, move_into_claim: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma
         for submodule in self._submodules:
             submodule.execute_gamma_phase(interpreter, False)
@@ -197,7 +198,7 @@ class ProofExp:
         if move_into_claim:
             interpreter.into_claim_phase()
 
-    def execute_claims_phase(self, interpreter: BasicInterpreter, move_into_proof: bool = True) -> None:
+    def execute_claims_phase(self, interpreter: Interpreter, move_into_proof: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self._claims):
             interpreter.publish_claim(interpreter.pattern(claim))
@@ -205,14 +206,14 @@ class ProofExp:
         if move_into_proof:
             interpreter.into_proof_phase()
 
-    def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+    def execute_proofs_phase(self, interpreter: Interpreter) -> None:
         assert interpreter.phase == ExecutionPhase.Proof
         for proof_expr in self._proof_expressions:
             self.publish_proof(proof_expr)(interpreter)
         self.check_interpreting(interpreter)
 
-    def execute_full(self, interpreter: BasicInterpreter) -> None:
-        assert interpreter.phase == ExecutionPhase.Gamma
+    def execute_full(self, interpreter: Interpreter) -> None:
+        assert interpreter.phase == ExecutionPhase.Gamma, f'Unexpected interpreter phase: {interpreter.phase}'
         self.execute_gamma_phase(interpreter)
         self.execute_claims_phase(interpreter)
         self.execute_proofs_phase(interpreter)
@@ -228,7 +229,7 @@ class ProofExp:
             )
         )
 
-    def check_interpreting(self, interpreter: BasicInterpreter) -> None:
+    def check_interpreting(self, interpreter: Interpreter) -> None:
         if not interpreter.safe_interpreting:
             print(f'Proof generation during {interpreter.phase.name} phase is potentially unsafe!')
             for warning in interpreter.interpreting_warnings:
@@ -249,28 +250,26 @@ class ProofExp:
             )
         )
 
-    def memoize(self, file_path: Path) -> None:
-        counting_interpreter = CountingInterpreter(
+    # TODO: Implement the pipeline specified in Issue #374
+    # TODO: add InstantiationOptimizer
+    def optimize(self, file_path: Path) -> None:
+        claims = [Claim(claim) for claim in self._claims]
+        analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
+        self.execute_full(analyzer)
+
+        serializer = SerializingInterpreter(
             ExecutionPhase.Gamma,
-            claims=[Claim(claim) for claim in self._claims],
+            claims=claims,
+            out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+            claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+            proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
         )
 
-        self.execute_full(counting_interpreter)
-
-        self.execute_full(
-            MemoizingInterpreter(
-                ExecutionPhase.Gamma,
-                claims=[Claim(claim) for claim in self._claims],
-                patterns_for_memoization=counting_interpreter.finalize(),
-                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
-                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
-            )
-        )
+        self.execute_full(MemoizingInterpreter(serializer, analyzer.finalize()))
 
     def main(self, argv: list[str]) -> None:
         exe, *argv = argv
-        usage = f'Usage:\n\n python3 {exe} (binary|pretty|memo) output-folder slice-name\n python3 {exe} --help\n\n'
+        usage = f'Usage:\n\n python3 {exe} (binary|pretty|optimize) output-folder slice-name\n python3 {exe} --help\n\n'
         examples = f'Examples:\n\npython3 {exe} binary pi2 propositional\n# outputs the given ProofExp in verifier-checkable binary format to pi2/propositional.ml-(gamma|claim|proof)\n\n'
 
         if len(argv) == 1:
@@ -291,5 +290,7 @@ class ProofExp:
                 self.prettyprint(output_dir / slice_name)
             case 'binary':
                 self.serialize(output_dir / slice_name)
-            case 'memo':
-                self.memoize(output_dir / slice_name)
+            case 'optimize':
+                self.optimize(output_dir / slice_name)
+            case _:
+                raise ValueError(f'Unexpected output format {output_format}!\n' + usage)
