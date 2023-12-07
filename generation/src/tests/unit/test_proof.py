@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
+from proof_generation.interpreter import ExecutionPhase
 from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions, SVar, Symbol, phi0
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proof import ProofExp, ProofThunk, Proved
