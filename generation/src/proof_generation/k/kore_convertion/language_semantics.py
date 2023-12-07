@@ -127,10 +127,10 @@ class KEquationalRule:
 
                 for item in (left, right):
                     if let_match := kl.equational_as.matches(item):
-                        _, _, from_evar, expression, to_evar = let_match
-                        if isinstance(var1, EVar) and isinstance(var2, EVar) and var1.name != var2.name:
-                            substitutions[var1.name] = expression
-                            substitutions[var2.name] = expression
+                        _, _, from_evar, to_evar, expression = let_match
+                        if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
+                            substitutions[from_evar.name] = expression
+                            substitutions[to_evar.name] = expression
                     elif in_match := kl.kore_in.matches(item):
                         _, _, var, expression = in_match
                         if isinstance(var, EVar):

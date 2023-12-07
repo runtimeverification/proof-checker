@@ -66,10 +66,10 @@ class SimplificationVisitor:
         rule = self._language_semantics.get_axiom(ordinal)
         assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
         base_substitutions = rule.substitutions_from_requires
-        simplified_rhs = self.apply_substitutions(rule.right, base_substitutions)
+        simplified_rhs = self.apply_esubsts(rule.right, base_substitutions)
 
         # Now apply the substitutions from the hint
-        simplified_rhs = self.apply_substitutions(simplified_rhs, substitution)
+        simplified_rhs = self.apply_esubsts(simplified_rhs, substitution)
 
         # Count the number of substitutions left
         simplifications_left = self._language_semantics.count_simplifications(simplified_rhs)
@@ -91,12 +91,12 @@ class SimplificationVisitor:
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        while self._simplification_stack and self._simplification_stack[-1].simplifications_left == 0:
+        while self._simplification_stack and self._simplification_stack[-1].simplifications_remaining == 0:
             exhausted_info = self._simplification_stack.pop()
             if self._simplification_stack:
                 # If the stack is non-empty, then we need to update the simplification on top of the stack
                 last_info = self._simplification_stack[-1]
-                last_info.simplifications_left -= 1
+                last_info.simplifications_remaining -= 1
                 last_info.simplification_result = self.update_subterm(
                     exhausted_info.location, last_info.simplification_result, exhausted_info.simplification_result
                 )
@@ -116,7 +116,7 @@ class SimplificationVisitor:
 
     def update_subterm(self, location: Location, pattern: Pattern, plug: Pattern) -> Pattern:
         updated, _, location_left = self._subpattern_search_rec(list(location), pattern, plug)
-        assert not left, f'Location {location} is invalid for pattern {str(pattern)}'
+        assert not location_left, f'Location {location} is invalid for pattern {str(pattern)}'
         return updated
 
     def _subpattern_search_rec(
@@ -126,7 +126,7 @@ class SimplificationVisitor:
         if not loc:
             return pattern if not plug else plug, pattern, loc
 
-        next_turn, *loc_left = loc
+        next_turn, *loc_remaining = loc
         symbol, args_tuple = kl.deconstruct_nary_application(pattern)
         args_list = list(args_tuple)
         assert isinstance(symbol, Symbol)
@@ -136,14 +136,16 @@ class SimplificationVisitor:
         assert len(args_list) > next_turn, f'Location {str(loc)} is invalid for pattern {str(pattern)}'
 
         # Replace the argument and return the application
-        arg_with_plug_at_loc, orig_subpat_at_loc, loc_left = self._subpattern_search_rec(loc_left, args_list[next_turn], plug)
-        args_list[next_turn] = replaced_arg
+        arg_with_plug_at_loc, orig_subpat_at_loc, loc_remaining = self._subpattern_search_rec(
+            loc_remaining, args_list[next_turn], plug
+        )
+        args_list[next_turn] = arg_with_plug_at_loc
 
         if ksymbol:
-            pat_with_plug_at_loc = ksymbol.app(*args_list)
+            new_pattern_with_plug_at_loc = ksymbol.app(*args_list)
         else:
-            pat_with_plug_at_loc = kl.nary_app(symbol, len(args_list))(*args_list)
-        return new_pattern_with_plug_at_loc, original_subpattern_at_loc, loc_remaining
+            new_pattern_with_plug_at_loc = kl.nary_app(symbol, len(args_list))(*args_list)
+        return new_pattern_with_plug_at_loc, orig_subpat_at_loc, loc_remaining
 
     @staticmethod
     def apply_esubsts(pattern: Pattern, substitutions: dict[int, Pattern]) -> Pattern:
