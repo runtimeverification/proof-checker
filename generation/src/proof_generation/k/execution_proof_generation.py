@@ -32,7 +32,7 @@ class SimplificationInfo:
     location: Location
     initial_pattern: Pattern  # Relative to previous in stack
     simplification_result: Pattern
-    simplifications_left: int
+    simplifications_remaining: int
 
 
 class SimplificationVisitor:
@@ -115,7 +115,7 @@ class SimplificationVisitor:
         return found
 
     def update_subterm(self, location: Location, pattern: Pattern, plug: Pattern) -> Pattern:
-        updated, _, left = self._subpattern_search_rec(list(location), pattern, plug)
+        updated, _, location_left = self._subpattern_search_rec(list(location), pattern, plug)
         assert not left, f'Location {location} is invalid for pattern {str(pattern)}'
         return updated
 
@@ -126,7 +126,7 @@ class SimplificationVisitor:
         if not loc:
             return pattern if not plug else plug, pattern, loc
 
-        next_turn, *rest = loc
+        next_turn, *loc_left = loc
         symbol, args_tuple = kl.deconstruct_nary_application(pattern)
         args_list = list(args_tuple)
         assert isinstance(symbol, Symbol)
@@ -136,17 +136,17 @@ class SimplificationVisitor:
         assert len(args_list) > next_turn, f'Location {str(loc)} is invalid for pattern {str(pattern)}'
 
         # Replace the argument and return the application
-        replaced_arg, found_part, rest = self._subpattern_search_rec(rest, args_list[next_turn], plug)
+        arg_with_plug_at_loc, orig_subpat_at_loc, loc_left = self._subpattern_search_rec(loc_left, args_list[next_turn], plug)
         args_list[next_turn] = replaced_arg
 
         if ksymbol:
-            reconstructed_pattern = ksymbol.app(*args_list)
+            pat_with_plug_at_loc = ksymbol.app(*args_list)
         else:
-            reconstructed_pattern = kl.nary_app(symbol, len(args_list))(*args_list)
-        return reconstructed_pattern, found_part, rest
+            pat_with_plug_at_loc = kl.nary_app(symbol, len(args_list))(*args_list)
+        return new_pattern_with_plug_at_loc, original_subpattern_at_loc, loc_remaining
 
     @staticmethod
-    def apply_substitutions(pattern: Pattern, substitutions: dict[int, Pattern]) -> Pattern:
+    def apply_esubsts(pattern: Pattern, substitutions: dict[int, Pattern]) -> Pattern:
         for evar_name, plug in substitutions.items():
             pattern = pattern.apply_esubst(evar_name, plug)
         return pattern

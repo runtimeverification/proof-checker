@@ -121,13 +121,13 @@ class KEquationalRule:
         """Collect substitutions from the requires part of the axiom introduced artificially by K."""
         substitutions: dict[int, Pattern] = {}
 
-        def matching_cluase(pattern: Pattern) -> None:
-            if top_and_match := kl.kore_and.assert_matches(pattern):
+        def matching_clause(pattern: Pattern) -> None:
+            if top_and_match := kl.kore_and.matches(pattern):
                 _, left, right = top_and_match
 
                 for item in (left, right):
                     if let_match := kl.equational_as.matches(item):
-                        _, _, var1, var2, expression = let_match
+                        _, _, from_evar, expression, to_evar = let_match
                         if isinstance(var1, EVar) and isinstance(var2, EVar) and var1.name != var2.name:
                             substitutions[var1.name] = expression
                             substitutions[var2.name] = expression
@@ -136,9 +136,9 @@ class KEquationalRule:
                         if isinstance(var, EVar):
                             substitutions[var.name] = expression
                     elif kl.kore_and.matches(item):
-                        matching_cluase(item)
+                        matching_clause(item)
 
-        matching_cluase(self.requires)
+        matching_clause(self.requires)
 
         return substitutions
 
