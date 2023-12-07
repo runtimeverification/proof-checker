@@ -1,13 +1,13 @@
 # CSL Examples
 
 ## Risc 0
-|     Examples     |  Cycles | CPU Time | GPU Time |
-|:----------------:|:-------:|:--------:|:--------:|
-| perceptron       |  21156  |   2.359  |   0.622  |
-| svm5             |  21156  |   2.641  |   0.621  |
-| transfer5000     | 724258  |  37.879  |   7.586  |
-| transfer         |  21156  |   2.333  |   0.597  |
-		
+|     Examples     |  Cycles | CPU Execution Time | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Time |
+|:----------------:|:-------:|:------------------:|:--------------:|:---------------:|:--------------:|:--------:|
+| perceptron       |  21156  |         28         |      2.397     |        29       |      2.426     |   0.621  |
+| svm5             |  21156  |         17         |      2.417     |        18       |      2.435     |   0.622  |
+| transfer5000     | 724258  |         58         |     38.344     |        59       |     38.403     |   7.586  |
+| transfer         |  21156  |         28         |      2.429     |        30       |      2.459     |   0.597  |
+                                        
 
 ## zkLLVM
 |     Examples     | CPU Time | GPU Time |
@@ -32,14 +32,14 @@
 # Proof Checker
 
 ## Risc 0
-|             Examples            |  Cycles | CPU Time | GPU Time |
-|:-------------------------------:|:-------:|:--------:|:--------:|
-| perceptron-goal                 | 3196173 |  122.839 |  28.088  |
-| svm5-goal                       | 3196173 |  123.670 |  27.998  |
-| transfer-batch-1k-goal          | 6724225 |  273.092 |  60.219  |
-| transfer-simple-compressed-goal | 1123933 |   48.555 |  10.742  |
-| transfer-task-specific          |   89321 |    4.804 |   1.177  |
-| impreflex-compressed-goal       |   68555 |    4.740 |   1.156  |
+|             Examples            |  Cycles | CPU Execution Time | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Time |
+|:-------------------------------:|:-------:|:------------------:|:--------------:|:---------------:|:--------------:|:--------:|
+| perceptron-goal                 | 3196173 |         50         |     124.330    |        56       |     122.839    |  28.088  |
+| svm5-goal                       | 3196173 |         68         |     124.485    |        74       |     123.670    |  27.998  |
+| transfer-batch-1k-goal          | 6724225 |        130         |     275.887    |       142       |     273.092    |  60.219  |
+| transfer-simple-compressed-goal | 1123933 |         52         |      48.981    |        55       |      48.555    |  10.742  |
+| transfer-task-specific          |   89321 |         27         |       4.909    |        28       |       4.804    |   1.177  |
+| impreflex-compressed-goal       |   68555 |         17         |       4.915    |        18       |       4.740    |   1.156  |
 
 ## zkLLVM
 |             Examples            | CPU Time | GPU Time |
