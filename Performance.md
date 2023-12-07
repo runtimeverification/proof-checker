@@ -1,12 +1,12 @@
 # CSL Examples
 
 ## Risc 0
-|     Examples     |  Cycles | CPU Execution Time | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Time |
-|:----------------:|:-------:|:------------------:|:--------------:|:---------------:|:--------------:|:--------:|
-| perceptron       |  21156  |         28         |      2.397     |        29       |      2.426     |   0.621  |
-| svm5             |  21156  |         17         |      2.417     |        18       |      2.435     |   0.622  |
-| transfer5000     | 724258  |         58         |     38.344     |        59       |     38.403     |   7.586  |
-| transfer         |  21156  |         28         |      2.429     |        30       |      2.459     |   0.597  |
+|   Examples   |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
+|:------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
+| perceptron   |  21156  |     0.028     |     0.027     |      2.397     |      0.605     |      0.029      |      0.028      |      2.426     |      0.633     |
+| svm5         |  21156  |     0.017     |     0.017     |      2.417     |      0.688     |      0.018      |      0.018      |      2.435     |      0.706     |
+| transfer5000 | 724258  |     0.058     |     0.056     |     38.344     |      7.787     |      0.059      |      0.057      |     38.403     |      7.844     |
+| transfer     |  21156  |     0.028     |     0.028     |      2.429     |      0.593     |      0.030      |      0.030      |      2.459     |      0.623     |
                                         
 
 ## zkLLVM
@@ -32,14 +32,14 @@
 # Proof Checker
 
 ## Risc 0
-|             Examples            |  Cycles | CPU Execution Time | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Time |
-|:-------------------------------:|:-------:|:------------------:|:--------------:|:---------------:|:--------------:|:--------:|
-| perceptron-goal                 | 3196173 |         50         |     124.330    |        56       |     122.839    |  28.088  |
-| svm5-goal                       | 3196173 |         68         |     124.485    |        74       |     123.670    |  27.998  |
-| transfer-batch-1k-goal          | 6724225 |        130         |     275.887    |       142       |     273.092    |  60.219  |
-| transfer-simple-compressed-goal | 1123933 |         52         |      48.981    |        55       |      48.555    |  10.742  |
-| transfer-task-specific          |   89321 |         27         |       4.909    |        28       |       4.804    |   1.177  |
-| impreflex-compressed-goal       |   68555 |         17         |       4.915    |        18       |       4.740    |   1.156  |
+|             Examples            |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
+|:-------------------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
+| perceptron-goal                 | 3207528 |       50      |     0.079     |     124.330    |     29.055     |        56       |      0.086      |     122.839    |     29.141     |
+| svm5-goal                       | 3207528 |       68      |     0.084     |     124.485    |     29.113     |        74       |      0.090      |     123.670    |     29.203     |
+| transfer-batch-1k-goal          | 6722986 |      130      |     0.140     |     275.887    |     60.424     |       142       |      0.151      |     273.092    |     60.575     |
+| transfer-simple-compressed-goal | 1139247 |       52      |     0.034     |      48.981    |     10.891     |        55       |      0.037      |      48.555    |     10.928     |
+| transfer-task-specific          |   88225 |       27      |     0.032     |       4.909    |      1.172     |        28       |      0.033      |       4.804    |      1.205     |
+| impreflex-compressed-goal       |   66366 |       17      |     0.019     |       4.915    |      1.112     |        18       |      0.020      |       4.740    |      1.132     |
 
 ## zkLLVM
 |             Examples            | CPU Time | GPU Time |
