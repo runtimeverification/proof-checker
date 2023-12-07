@@ -126,7 +126,7 @@ class KEquationalRule:
                 _, left, right = top_and_match
 
                 for item in (left, right):
-                    if let_match := kl.equational_as_subpattern.matches(item):
+                    if let_match := kl.equational_as.matches(item):
                         _, _, var1, var2, expression = let_match
                         if isinstance(var1, EVar) and isinstance(var2, EVar) and var1.name != var2.name:
                             substitutions[var1.name] = expression
