@@ -51,7 +51,9 @@ class SimplificationVisitor:
         assert not self._in_simplification, 'Simplification is in progress'
         self._curr_config = new_current_configuration
 
-    def __call__(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> SimplificationInfo:
+    def apply_simplification(
+        self, ordinal: int, substitution: dict[int, Pattern], location: Location
+    ) -> SimplificationInfo:
         assert self._in_simplification, 'Simplification is not in progress'
 
         # Check that whether it is the first simplification or not
@@ -100,9 +102,11 @@ class SimplificationVisitor:
                 )
             else:
                 # If the stack is empty, then we need to update the current configuration as we processed the batch
-                self.curr_config = self.update_subterm(
+                self._curr_config = self.update_subterm(
                     exhausted_info.location, self._curr_config, exhausted_info.simplification_result
                 )
+        assert not self._simplification_stack, 'Simplification stack is not empty'
+        self._in_simplification = False
 
     def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:
         # subpattern, left = self._get_subpattern_rec(list(location), pattern)
@@ -222,7 +226,7 @@ class ExecutionProofExp(proof.ProofExp):
 
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
         with self._simplification_visitor as visitor:
-            visitor(ordinal, substitution, location)
+            visitor.apply_simplification(ordinal, substitution, location)
             # TODO: Do some proving here ...
 
         # Update the current configuration
