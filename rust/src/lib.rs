@@ -1666,11 +1666,20 @@ mod tests {
         #[case] s_fresh: IdList,
         #[case] positive: IdList,
         #[case] negative: IdList,
-        #[case] plug: Rc<Pattern>
+        #[case] plug: Rc<Pattern>,
     ) {
-        instantiate_internal(&Rc::new(Pattern::MetaVar {
-            id: 0, e_fresh, s_fresh, positive, negative, app_ctx_holes: vec![]
-        }), &[0], &[plug]);
+        instantiate_internal(
+            &Rc::new(Pattern::MetaVar {
+                id: 0,
+                e_fresh,
+                s_fresh,
+                positive,
+                negative,
+                app_ctx_holes: vec![],
+            }),
+            &[0],
+            &[plug],
+        );
     }
 
     #[test]
