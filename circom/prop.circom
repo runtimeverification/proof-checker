@@ -5,6 +5,11 @@ pragma circom 2.1.0;
 - Check wellformed-ness
 */
 
+// Cairo white-paper, think non-determinstically (Section 3.2)
+// Sorting
+// Plookup, Supernova, Hypernova, Sangria, Plonkish
+// Universal/Valiant circuits
+
 template IsZero() {
     signal input in_;
     signal output out;
@@ -269,6 +274,15 @@ template ModusPonensFixedLen (M, A_LEN, B_LEN) {
 // Premise 0: A
 // Premise 1: ->AB
 // Conclusion: B
+
+// H = Sum (X ^ i * s[i]) mod P
+// Get H(A + B) from H(A), H(B) and |A| |B|
+// Evaluate at a random point: H(X = r)
+// How to obtain random r in the circuit? (apply Fiat-Shamir and take r to be some kind of hash of the whole input).
+// Poseidon
+// Is there any substitution-friendly hash? 
+// (x -> y), ((z -> y) -> y)
+// Merklized AST
 
 template ModusPonens (M) {
     signal input premise[2][M];
