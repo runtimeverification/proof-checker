@@ -23,12 +23,22 @@ fn main() {
     // Run the executor to produce a session.
     let session = exec.run().unwrap();
 
-    println!("Ran in {} s", now.elapsed().as_secs());
+    let runtime = now.elapsed().as_millis();
+
+    println!("Ran in {} s", runtime);
 
     println!("Generating the certificate...");
 
     // Prove the session to produce a receipt.
     let receipt = session.prove().unwrap();
+
+    let provetime = now.elapsed().as_millis() - runtime;
+
+    println!("Proved in {} s", provetime);
+
+    receipt.verify(GUEST_CSL_ID).unwrap();
+
+    println!("Verified in {} s", now.elapsed().as_millis() - provetime);
 
     // Get the host's size of a usize pointer
     let size_of_usize = std::mem::size_of::<usize>();
@@ -39,8 +49,6 @@ fn main() {
         let ret = &receipt.journal[current_index..current_index + size];
         return ret;
     };
-
-    receipt.verify(GUEST_CSL_ID).unwrap();
 
     // Get the result of the execution
     let _ret: usize = from_slice(next_journal_chunk(size_of_usize)).unwrap();
