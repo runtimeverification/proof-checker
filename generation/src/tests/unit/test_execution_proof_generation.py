@@ -360,13 +360,14 @@ def test_subpattern_batch():
     base_case_a = semantics.get_axiom(2)
     assert isinstance(base_case_a, KEquationalRule)
 
-    initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app()), b_symbol.app())
+    initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
     initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
     proof_obj = ExecutionProofExp(semantics, initial_config)
-    proof_obj.simplification_event(rec_case.ordinal, {0: a_symbol.app(), 1: b_symbol.app()}, (0, 0))
+    location = (0, 0, 0)
+    proof_obj.simplification_event(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()}, location)
     expected_stack = [
         SimplificationInfo(
-            (0, 0),
+            location,
             initial_subterm,
             node_symbol.app(
                 reverse_symbol.app(b_symbol.app()),
@@ -378,7 +379,17 @@ def test_subpattern_batch():
     assert proof_obj._simplification_visitor._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_b.ordinal, {}, (0,))
-    expected_stack = [SimplificationInfo((0, 0), initial_subterm, b_symbol.app(), 1)]
+    expected_stack = [
+        SimplificationInfo(
+            location,
+            initial_subterm,
+            node_symbol.app(
+                b_symbol.app(),
+                reverse_symbol.app(a_symbol.app()),
+            ),
+            1,
+        )
+    ]
     assert proof_obj._simplification_visitor._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_a.ordinal, {}, (1,))
