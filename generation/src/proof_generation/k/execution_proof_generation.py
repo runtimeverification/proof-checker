@@ -81,7 +81,7 @@ class SimplificationVisitor:
         return new_info
 
     def __enter__(self) -> SimplificationVisitor:
-        assert not self._in_simplification
+        assert self._simplification_stack or not self._in_simplification
         self._in_simplification = True
         return self
 
@@ -105,8 +105,8 @@ class SimplificationVisitor:
                 self._curr_config = self.update_subterm(
                     exhausted_info.location, self._curr_config, exhausted_info.simplification_result
                 )
-        assert not self._simplification_stack, 'Simplification stack is not empty'
-        self._in_simplification = False
+        if not self._simplification_stack:
+            self._in_simplification = False
 
     def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:
         # subpattern, left = self._get_subpattern_rec(list(location), pattern)
