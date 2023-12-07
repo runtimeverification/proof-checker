@@ -282,6 +282,11 @@ class ProofExp:
             description='This method outputs the ProofExp in a verifier-checkable binary format or a human-readable pretty-printed format.',
         )
         argparser.add_argument(
+            'module',
+            type=str,
+            help='The module or script invoking this method',
+        )
+        argparser.add_argument(
             'output_format',
             type=OutputFormat,
             help='The proof output format, which can either be binary or pretty-printed',
