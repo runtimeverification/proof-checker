@@ -51,7 +51,7 @@ jobs:
 
   lurk-tests:
     name: 'Lurk Tests'
-    runs-on: [self-hosted, linux, normal]
+    runs-on: [self-hosted, linux, prover]
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v3
