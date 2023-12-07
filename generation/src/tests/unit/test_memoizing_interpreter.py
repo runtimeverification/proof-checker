@@ -1,10 +1,12 @@
+from io import BytesIO
+
+from proof_generation.instruction import Instruction
 from proof_generation.interpreter import ExecutionPhase
 from proof_generation.optimizing_interpreters import MemoizingInterpreter
 from proof_generation.pattern import MetaVar
-from proof_generation.instruction import Instruction
 from proof_generation.serializing_interpreter import SerializingInterpreter
 from tests.unit.test_proof import uncons_metavar_instrs
-from io import BytesIO
+
 
 def test_memoizing_interpreter() -> None:
     out_interp = BytesIO()
@@ -35,18 +37,16 @@ def test_memoizing_interpreter() -> None:
     assert unsaved_pattern not in sub_interpreter.memory
 
     # check that the stacking works
-    assert sub_interpreter.stack ==[
-        MetaVar(0),
-        MetaVar(1),
-        MetaVar(1),
-        MetaVar(2)
-    ]
+    assert sub_interpreter.stack == [MetaVar(0), MetaVar(1), MetaVar(1), MetaVar(2)]
 
     # check memoization in the stream
-    assert out_interp.getvalue() == bytes([
-        *uncons_metavar_instrs(0),
-        *uncons_metavar_instrs(1),
-        Instruction.Save,
-        Instruction.Load, 0,
-        *uncons_metavar_instrs(2)
-    ])
+    assert out_interp.getvalue() == bytes(
+        [
+            *uncons_metavar_instrs(0),
+            *uncons_metavar_instrs(1),
+            Instruction.Save,
+            Instruction.Load,
+            0,
+            *uncons_metavar_instrs(2),
+        ]
+    )
