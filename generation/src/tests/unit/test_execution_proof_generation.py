@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationContext
+from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationContext, SimplificationInfo
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate, top
@@ -316,11 +316,6 @@ def test_visitor_update_config():
     # Update the configuration
     visitor.update_configuration(intermidiate_config2)
     assert visitor.simplified_configuration == intermidiate_config2
-
-    # Check that it is not possible to update the configuration during the simplification
-    with pytest.raises(AssertionError):
-        with visitor:
-            visitor.update_configuration(intermidiate_config1)
 
     # Reset the state
     visitor = SimplificationContext(semantics, intermidiate_config1)

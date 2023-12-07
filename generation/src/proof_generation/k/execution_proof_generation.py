@@ -40,22 +40,22 @@ class SimplificationContext:
         self._language_semantics = language_semantics
         self._curr_config = init_config
         self._simplification_stack: list[SimplificationInfo] = []
-        self._in_simplification = False
 
     @property
     def simplified_configuration(self) -> Pattern:
         return self._curr_config
 
+    @property
+    def in_simplification(self) -> bool:
+        return len(self._simplification_stack) > 0
+
     def update_configuration(self, new_current_configuration: Pattern) -> None:
-        assert not self._simplification_stack, 'Simplification stack is not empty'
-        assert not self._in_simplification, 'Simplification is in progress'
+        assert not self.in_simplification, 'Simplification is in progress'
         self._curr_config = new_current_configuration
 
     def apply_simplification(
         self, ordinal: int, substitution: dict[int, Pattern], location: Location
     ) -> SimplificationInfo:
-        assert self._in_simplification, 'Simplification is not in progress'
-
         # Check that whether it is the first simplification or not
         if not self._simplification_stack:
             sub_pattern = self.get_subterm(location, self._curr_config)
@@ -81,8 +81,6 @@ class SimplificationContext:
         return new_info
 
     def __enter__(self) -> SimplificationContext:
-        assert self._simplification_stack or not self._in_simplification
-        self._in_simplification = True
         return self
 
     def __exit__(
@@ -105,8 +103,6 @@ class SimplificationContext:
                 self._curr_config = self.update_subterm(
                     exhausted_info.location, self._curr_config, exhausted_info.simplification_result
                 )
-        if not self._simplification_stack:
-            self._in_simplification = False
 
     def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:
         # subpattern, left = self._get_subpattern_rec(list(location), pattern)
