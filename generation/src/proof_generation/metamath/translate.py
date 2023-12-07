@@ -20,13 +20,12 @@ if TYPE_CHECKING:
 
 
 def exec_proof(converter: MetamathConverter, target: str, proofexp: ProofExp, interp: Interpreter) -> None:
-    if isinstance(interp, InterpreterTransformer):
-        sub_interp = interp.sub_interpreter
-        assert isinstance(sub_interp, StatefulInterpreter)
-        stack = lambda: sub_interp.stack
-    else:
-        assert isinstance(interp, StatefulInterpreter)
-        stack = lambda: interp.stack
+    inner_interp = interp
+    while isinstance(inner_interp, InterpreterTransformer):
+        inner_interp = inner_interp.sub_interpreter
+
+    assert isinstance(inner_interp, StatefulInterpreter)
+    stack = lambda: inner_interp.stack
 
     interpreter = lambda: interp
 
