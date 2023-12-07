@@ -10,13 +10,12 @@
 		
 
 ## zkLLVM
-|     Examples     |          CPU Time(s)         | GPU Time |
-|                  | circuit gen | prove + verify |          |
-|:----------------:|:-----------:|:--------------:|:--------:|
-| perceptron       |        0.95 |          0.135 |          |
-| svm5             |        0.96 |          0.135 |          |
-| transfer         |        0.97 |          0.133 |          |
-| transfer-batch   |       0.797 |          40.34 |          |
+|     Examples     | CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
+|:----------------:|:--------------------:|:---------------------:|:--------:|
+| perceptron       |                 0.95 |                 0.135 |          |
+| svm5             |                 0.96 |                 0.135 |          |
+| transfer         |                 0.97 |                 0.133 |          |
+| transfer-batch   |                0.797 |                 40.34 |          |
 
 
 ## Lurk
@@ -43,15 +42,14 @@
 | impreflex-compressed-goal       |   68555 |    4.740 |   1.156  |
 
 ## zkLLVM
-|             Examples            |          CPU Time(s)         | GPU Time |
-|                                 | circuit gen | prove + verify |          |
-|:-------------------------------:|:-----------:|:--------------:|:--------:|
-| impreflex-compressed-goal       |       5.798 |         372.76 |          |
-| perceptron-goal                 |     359.743 |              ∞ |          |
-| svm5-goal                       |     359.371 |              ∞ |          |
-| transfer-task-specific          |      11.678 |         784.11 |          |
-| transfer-simple-compressed-goal |      91.160 |       7188.792 |          |
-| transfer-batch-1k-goal          |        ∞    |              ∞ |          |
+|             Examples            |CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
+|:-------------------------------:|:-------------------:|:---------------------:|:--------:|
+| impreflex-compressed-goal       |               5.798 |                372.76 |          |
+| perceptron-goal                 |             359.743 |                     ∞ |          |
+| svm5-goal                       |             359.371 |                     ∞ |          |
+| transfer-task-specific          |              11.678 |                784.11 |          |
+| transfer-simple-compressed-goal |              91.160 |              7188.792 |          |
+| transfer-batch-1k-goal          |                ∞    |                     ∞ |          |
 
 ## Lurk
 |             Examples            | Cycles | CPU Time | GPU Time |
