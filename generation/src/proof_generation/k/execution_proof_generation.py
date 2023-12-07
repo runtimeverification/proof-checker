@@ -66,10 +66,10 @@ class SimplificationContext:
         rule = self._language_semantics.get_axiom(ordinal)
         assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
         base_substitutions = rule.substitutions_from_requires
-        simplified_rhs = self.apply_esubsts(rule.right, base_substitutions)
+        simplified_rhs = rule.right.apply_esubsts(base_substitutions)
 
         # Now apply the substitutions from the hint
-        simplified_rhs = self.apply_esubsts(simplified_rhs, substitution)
+        simplified_rhs = simplified_rhs.apply_esubsts(substitution)
 
         # Count the number of substitutions left
         simplifications_left = self._language_semantics.count_simplifications(simplified_rhs)
@@ -142,12 +142,6 @@ class SimplificationContext:
         else:
             new_pattern_with_plug_at_loc = kl.nary_app(symbol, len(args_list))(*args_list)
         return new_pattern_with_plug_at_loc, orig_subpat_at_loc, loc_remaining
-
-    @staticmethod
-    def apply_esubsts(pattern: Pattern, substitutions: dict[int, Pattern]) -> Pattern:
-        for evar_name, plug in substitutions.items():
-            pattern = pattern.apply_esubst(evar_name, plug)
-        return pattern
 
 
 class ExecutionProofExp(proof.ProofExp):

@@ -281,14 +281,14 @@ def test_visitor_apply_substitution():
     assert isinstance(rule, KEquationalRule)
     substitution = {1: a_symbol.app(), 2: b_symbol.app()}
     expected = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
-    substtuted = SimplificationContext.apply_esubsts(rule.right, substitution)
+    substtuted = rule.right.apply_esubsts(substitution)
     assert substtuted == expected
 
     rule = semantics.get_axiom(2)
     assert isinstance(rule, KEquationalRule)
     base_simplifications = rule.substitutions_from_requires
     expected = a_symbol.app()
-    substituted = SimplificationContext.apply_esubsts(rule.right, base_simplifications)
+    substituted = rule.right.apply_esubsts(base_simplifications)
     assert substituted == expected
 
 

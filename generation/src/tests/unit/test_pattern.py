@@ -19,53 +19,19 @@ sigma2 = Symbol('s2')
 
 
 @pytest.mark.parametrize(
-    'pattern, evar_id, plug, expected',
+    'pattern, plugs, expected',
     [
         # Atomic cases
-        [EVar(0), 0, sigma1, sigma1],
-        [EVar(0), 0, EVar(2), EVar(2)],
-        [EVar(0), 1, EVar(2), EVar(0)],
-        [SVar(0), 0, sigma0, SVar(0)],
-        [SVar(1), 0, EVar(0), SVar(1)],
-        [sigma0, 0, sigma1, sigma0],
-        # Distribute over subpatterns
-        [Implies(EVar(7), sigma1), 7, sigma0, Implies(sigma0, sigma1)],
-        [Implies(EVar(7), sigma1), 6, sigma0, Implies(EVar(7), sigma1)],
-        [App(EVar(7), sigma1), 7, sigma0, App(sigma0, sigma1)],
-        [App(EVar(7), sigma1), 6, sigma0, App(EVar(7), sigma1)],
-        # Distribute over subpatterns unless evar_id = binder
-        [Exists(1, EVar(1)), 1, sigma2, Exists(1, EVar(1))],
-        [Exists(0, EVar(1)), 1, sigma2, Exists(0, sigma2)],
-        [Mu(1, EVar(1)), 0, sigma2, Mu(1, EVar(1))],
-        [Mu(1, EVar(1)), 1, sigma2, Mu(1, sigma2)],
-        # Subst on metavar should wrap in constructor
-        [phi0, 0, sigma1, ESubst(phi0, EVar(0), sigma1)],
-        # Subst when evar_id is fresh should do nothing
-        [MetaVar(0, e_fresh=(EVar(0), EVar(1))), 0, sigma1, MetaVar(0, e_fresh=(EVar(0), EVar(1)))],
-        # Subst on substs should stack
-        [
-            ESubst(phi0, EVar(0), sigma1),
-            0,
-            sigma1,
-            ESubst(ESubst(phi0, EVar(0), sigma1), EVar(0), sigma1),
-        ],
-        [
-            SSubst(phi0, SVar(0), sigma1),
-            0,
-            sigma1,
-            ESubst(SSubst(phi0, SVar(0), sigma1), EVar(0), sigma1),
-        ],
-        # Instantiate/Notation
-        [
-            Instantiate(App(phi0, phi1), frozendict({0: phi2})),
-            0,
-            sigma1,
-            App(ESubst(phi2, EVar(0), sigma1), ESubst(phi1, EVar(0), sigma1)),
-        ],
+        [EVar(0), {0: sigma1}, sigma1],
+        [EVar(0), {0: EVar(2)}, EVar(2)],
+        [EVar(0), {1: EVar(2)}, EVar(0)],
+        # Several plugs
+        [Implies(EVar(0), EVar(1)), {0: sigma0}, Implies(sigma0, EVar(1))],
+        [Implies(EVar(0), EVar(1)), {0: sigma0, 1: sigma1}, Implies(sigma0, sigma1)],
     ],
 )
-def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: Pattern) -> None:
-    assert pattern.apply_esubst(evar_id, plug) == expected
+def test_apply_esubsts(pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern) -> None:
+    assert pattern.apply_esubsts(plugs) == expected
 
 
 @pytest.mark.parametrize(
