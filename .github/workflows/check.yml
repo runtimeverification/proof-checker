@@ -82,12 +82,12 @@ jobs:
           docker exec --user root proof-checker-ci /bin/bash -c 'cd lurk-rs && cargo install --path .'
       - name: 'Run Lurk tests'
         run: |
-          docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk --rc 400 csl-examples/transfer5000.lurk'
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/transfer.lurk'
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/perceptron.lurk'
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/svm5.lurk'
-          docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk --rc 400 test_transfer_task_specific.lurk'
-          docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk --rc 400 test_impreflex_compressed_goal.lurk'
+          docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/transfer5000.lurk'
+          docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk --rc 100 test_transfer_task_specific.lurk'
+          docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk --rc 100 test_impreflex_compressed_goal.lurk'
 
       - name: 'Tear down Docker container'
         if: always()
