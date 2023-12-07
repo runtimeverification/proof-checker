@@ -45,7 +45,7 @@ fn main() {
 
     let runtime = now.elapsed().as_millis();
 
-    println!("Ran in {} s", runtime);
+    println!("Ran in {} ms", runtime);
 
     println!("Generating the certificate...");
 
@@ -54,7 +54,7 @@ fn main() {
 
     let provetime = now.elapsed().as_millis() - runtime;
 
-    println!("Proved in {} s", provetime);
+    println!("Proved in {} ms", provetime);
 
     // TODO: Implement code for transmitting or serializing the receipt for
     // other parties to verify here
@@ -64,7 +64,7 @@ fn main() {
 
     receipt.verify(GUEST_ID).unwrap();
 
-    println!("Verified in {} s", now.elapsed().as_millis() - provetime);
+    println!("Verified in {} ms", now.elapsed().as_millis() - provetime);
 
     // Small fetcher that returns the next chunk of given size from journal
     let mut current_index: usize = 0;
@@ -75,7 +75,7 @@ fn main() {
     };
 
     println!(
-        "Running execution + ZK certficate generation + verification took {} s",
+        "Running execution + ZK certficate generation + verification took {} ms",
         now.elapsed().as_millis()
     );
 

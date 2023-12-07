@@ -25,7 +25,7 @@ fn main() {
 
     let runtime = now.elapsed().as_millis();
 
-    println!("Ran in {} s", runtime);
+    println!("Ran in {} ms", runtime);
 
     println!("Generating the certificate...");
 
@@ -34,11 +34,11 @@ fn main() {
 
     let provetime = now.elapsed().as_millis() - runtime;
 
-    println!("Proved in {} s", provetime);
+    println!("Proved in {} ms", provetime);
 
     receipt.verify(GUEST_CSL_ID).unwrap();
 
-    println!("Verified in {} s", now.elapsed().as_millis() - provetime);
+    println!("Verified in {} ms", now.elapsed().as_millis() - provetime);
 
     // Get the host's size of a usize pointer
     let size_of_usize = std::mem::size_of::<usize>();
@@ -57,7 +57,7 @@ fn main() {
     println!("Total cycles {}", total_cycles);
 
     println!(
-        "Running execution + ZK certficate generation + verification took {} s",
+        "Running execution + ZK certficate generation + verification took {} ms",
         now.elapsed().as_millis()
     );
 }
