@@ -20,7 +20,6 @@ sigma2 = Symbol('s2')
 
 @pytest.mark.parametrize(
     'pattern, evar_id, plug, expected',
-    # Atomic cases
     [
         # Atomic cases
         [EVar(0), 0, sigma1, sigma1],
