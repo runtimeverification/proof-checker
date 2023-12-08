@@ -7,7 +7,7 @@ from proof_generation.interpreter import Interpreter
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from .pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from .pattern import ESubst, EVar, MetaVar, Notation, Pattern, SSubst, SVar
     from .proved import Proved
 
 
@@ -106,7 +106,7 @@ class InterpreterTransformer(Interpreter):
         ret = self.sub_interpreter.instantiate(proved, delta)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> Pattern:
         ret = self.sub_interpreter.instantiate_pattern(pattern, delta)
         return ret
 

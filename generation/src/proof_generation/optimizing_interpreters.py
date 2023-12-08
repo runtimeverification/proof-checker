@@ -9,7 +9,7 @@ from .stateful_interpreter import StatefulInterpreter
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from .pattern import Pattern
+    from .pattern import Notation, Pattern
     from .proved import Proved
 
 
@@ -24,7 +24,7 @@ class InstantiationOptimizer(InterpreterTransformer):
             self.sub_interpreter.instantiate(proved, delta)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> Pattern:
         b_interp = BasicInterpreter(self.phase)
         ret = b_interp.instantiate_pattern(pattern, delta)
         if len(delta):

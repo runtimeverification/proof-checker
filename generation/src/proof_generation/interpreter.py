@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from .proved import Proved
+    from .pattern import Notation
     from proof_generation.pattern import Pattern
 
 from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
@@ -59,11 +60,11 @@ class Interpreter(ABC):
                 return self.mu(var, self.pattern(subpattern))
             case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
-            case Instantiate(_, subst):
+            case Instantiate(pat_or_not, subst):
                 for inst in subst.values():
                     self.pattern(inst)
                 self.pattern(p.pattern)
-                return p
+                return self.instantiate_pattern(pat_or_not, subst)
             case ESubst(subpattern, var, plug):
                 assert isinstance(var, EVar)
                 plug = self.pattern(plug)
@@ -157,7 +158,7 @@ class Interpreter(ABC):
         pass
 
     @abstractmethod
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> Pattern:
         pass
 
     @abstractmethod

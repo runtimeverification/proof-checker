@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from proof_generation.basic_interpreter import BasicInterpreter
+from proof_generation.pattern import Notation
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
@@ -164,14 +165,16 @@ class StatefulInterpreter(BasicInterpreter):
         self.stack.append(ret)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> Pattern:
         *self.stack, expected_pattern = self.stack
         expected_plugs = []
         if len(delta):
             expected_plugs = self.stack[-len(delta) :]
             self.stack = self.stack[: -len(delta)]
-
-        assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
+        if isinstance(pattern, Notation):
+            assert expected_pattern == pattern.definition, f'expected: {expected_pattern}\ngot: {pattern}'
+        else:
+            assert expected_pattern == pattern, f'expected: {expected_pattern}\ngot: {pattern}'
         assert expected_plugs == list(delta.values()), f'expected: {expected_plugs}\ngot: {list(delta.values())}'
         ret = super().instantiate_pattern(pattern, delta)
         self.stack.append(ret)

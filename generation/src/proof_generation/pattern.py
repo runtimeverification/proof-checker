@@ -516,7 +516,11 @@ class Instantiate(Pattern):
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})
-        return Instantiate(self.pattern_or_notation, frozendict(delta) | instantiated_subst)
+        if isinstance(self.pattern_or_notation, Notation):
+            filtered_delta = frozendict({k: v for k, v in delta.items() if k < self.pattern_or_notation.arity})
+        else:
+            filtered_delta = frozendict(delta)
+        return Instantiate(self.pattern_or_notation, filtered_delta | instantiated_subst)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         # TODO: For "complete" substitutions (where all free metavars are replaced),

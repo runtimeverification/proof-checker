@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from proof_generation.claim import Claim
     from proof_generation.interpreter import ExecutionPhase
     from proof_generation.io_interpreter import IO
-    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from proof_generation.pattern import ESubst, EVar, MetaVar, Notation, Pattern, SSubst, SVar
     from proof_generation.proved import Proved
 
 
@@ -132,7 +132,7 @@ class SerializingInterpreter(IOInterpreter):
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> Pattern:
         ret = super().instantiate_pattern(pattern, delta)
         self.out.write(bytes([Instruction.Instantiate, len(delta), *reversed(delta.keys())]))
         return ret

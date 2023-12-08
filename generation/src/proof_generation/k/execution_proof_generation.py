@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 class ExecutionProofExp(proof.ProofExp):
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+        super().__init__()
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics

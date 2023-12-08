@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from proof_generation.claim import Claim
     from proof_generation.interpreter import ExecutionPhase
-    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from proof_generation.pattern import ESubst, EVar, MetaVar, Notation, Pattern, SSubst, SVar
 
 
 class CountingInterpreter(StatefulInterpreter):
@@ -202,7 +202,7 @@ class CountingInterpreter(StatefulInterpreter):
         self._collect_patterns(ret.conclusion)
         return ret
 
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> Pattern:
         ret = super().instantiate_pattern(pattern, delta)
         self._collect_patterns(ret)
         return ret

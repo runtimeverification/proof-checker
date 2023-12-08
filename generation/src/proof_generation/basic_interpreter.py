@@ -24,7 +24,7 @@ from proof_generation.proved import Proved
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from proof_generation.pattern import Pattern
+    from proof_generation.pattern import Notation, Pattern
 
 
 class BasicInterpreter(Interpreter):
@@ -116,7 +116,7 @@ class BasicInterpreter(Interpreter):
             return proved
         return Proved(proved.conclusion.instantiate(delta))
 
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> Pattern:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> Pattern:
         return Instantiate(pattern, frozendict(delta))
 
     def pop(self, term: Pattern | Proved) -> None:

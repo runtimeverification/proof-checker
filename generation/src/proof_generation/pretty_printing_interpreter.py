@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
     from proof_generation.claim import Claim
     from proof_generation.interpreter import ExecutionPhase
-    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from proof_generation.pattern import ESubst, EVar, MetaVar, Notation, Pattern, SSubst, SVar
 
 
 class PrettyPrintingInterpreter(IOInterpreter):
@@ -146,7 +146,7 @@ class PrettyPrintingInterpreter(IOInterpreter):
         self.out.write(', '.join(map(str, delta.keys())))
 
     @pretty()
-    def instantiate_pattern(self, pattern: Pattern, delta: Mapping[int, Pattern]) -> None:
+    def instantiate_pattern(self, pattern: Pattern | Notation, delta: Mapping[int, Pattern]) -> None:
         self.out.write('Instantiate ')
         self.out.write(', '.join(map(str, delta.keys())))
 
