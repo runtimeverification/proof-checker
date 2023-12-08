@@ -12,13 +12,13 @@ if TYPE_CHECKING:
 
 
 class InterpreterTransformer(Interpreter):
-    """This base class allows creating an transformer interpreter that
+    """This base class allows creating a transformer interpreter that
     re-interprets a proof in a different way.
     For example, it may optimize certain calls using the memory,
     or remove redundant patterns.
     Note that transformers can, in general, be arbitrarily nested.
     sub_interpreter refers to the wrapped interpreter, while
-    core_interpreter refers to the base (non-transformer)
+    core_interpreter refers to the innermost (non-transformer)
     interpreter (which doesn't wrap an interpreter).
     """
 
