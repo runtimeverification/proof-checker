@@ -19,12 +19,12 @@
 
 
 ## Lurk
-|     Examples     |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time |
-|:----------------:|:-------:|:--------  :|:--------------:|:---------------:|
-| perceptron       |    11   |            |           0.84 |           0.597 |
-| svm5             |    9    |            |           0.82 |           0.607 |
-| transfer         |    34   |            |          2.205 |           0.595 |
-| transfer5000*    |  330387 |            |        487.322 |           4.899 |
+|     Examples     |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
+|:----------------:|:-------:|:--------  :|:--------------:|:---------------:|:---------------|
+| perceptron       |    11   |            |           0.84 |           0.597 |          1.437 |
+| svm5             |    9    |            |           0.82 |           0.607 |          1.427 |
+| transfer         |    34   |            |          2.205 |           0.595 |          2.800 |
+| transfer5000*    |  330387 |            |        487.322 |           4.899 |        492.221 |
 
 * Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
@@ -53,14 +53,14 @@
 
 
 ## Lurk
-|             Examples            | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time |
-|:-------------------------------:|:------:|:----------:|:--------------:|:---------------:|
-| transfer-task-specific*         | 148870 |    861.443 |        193.836 |           4.199 |
-| impreflex-compressed-goal*      | 55651  |    341.466 |        108.962 |           4.209 |
-| perceptron-goal                 | 6404208|            |              ∞ |               ∞ |
-| svm5-goal                       | 6404208|            |              ∞ |               ∞ |
-| transfer-batch-1k-goal          |30122047|            |              ∞ |               ∞ |
-| transfer-simple-compressed-goal | 3202986|            |              ∞ |               ∞ |
+|             Examples            | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
+|:-------------------------------:|:------:|:----------:|:--------------:|:---------------:|:--------------:|
+| transfer-task-specific*         | 148870 |    861.443 |        193.836 |           4.199 |        198.035 |
+| impreflex-compressed-goal*      | 55651  |    341.466 |        108.962 |           4.209 |        113.171 |
+| perceptron-goal                 | 6404208|            |              ∞ |               ∞ |                |
+| svm5-goal                       | 6404208|            |              ∞ |               ∞ |                |
+| transfer-batch-1k-goal          |30122047|            |              ∞ |               ∞ |                |
+| transfer-simple-compressed-goal | 3202986|            |              ∞ |               ∞ |                |
 
 * Using `lurk --rc 400 ...`
 ** CPU time is outdated as we can't get only CPU execution due to a bug on Lurk's
