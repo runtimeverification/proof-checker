@@ -272,7 +272,7 @@ class ProofExp:
         if optimize:
             analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
             self.execute_full(analyzer)
-            self.execute_full(InstantiationOptimizer(MemoizingInterpreter(serializer, analyzer.finalize())))
+            self.execute_full(MemoizingInterpreter(InstantiationOptimizer(serializer), analyzer.finalize()))
         else:
             self.execute_full(serializer)
 

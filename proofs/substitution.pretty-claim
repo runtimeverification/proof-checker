@@ -4,109 +4,94 @@ SVar 0
 Mu 0
 	Stack:
 	0: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: ⊥
+Save
 MetaVar 0
 	Stack:
-	0: ⊥
+	0: (μ X0 . X0)
 	1: phi0
 SVar 0
 	Stack:
-	0: ⊥
+	0: (μ X0 . X0)
 	1: phi0
 	2: X0
 Mu 0
 	Stack:
-	0: ⊥
+	0: (μ X0 . X0)
 	1: phi0
 	2: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: ⊥
-	1: phi0
-	2: ⊥
+Save
 Implies
 	Stack:
-	0: ⊥
+	0: (μ X0 . X0)
 	1: (phi0 -> ⊥)
+Save
 Instantiate 0
 	Stack:
 	0: ¬⊥
-Instantiate 
-	Stack:
-	0: ⊤
 MetaVar 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: phi0
 MetaVar 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: phi0
 	2: phi0
 SVar 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: phi0
 	2: phi0
 	3: X0
 Mu 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: phi0
 	2: phi0
 	3: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: ⊤
-	1: phi0
-	2: phi0
-	3: ⊥
+Save
 Implies
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: phi0
 	2: (phi0 -> ⊥)
+Save
 Instantiate 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: ¬phi0
+Save
 Exists 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: (∃ x0 . ¬phi0)
 MetaVar 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: (∃ x0 . ¬phi0)
 	2: phi0
 SVar 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: (∃ x0 . ¬phi0)
 	2: phi0
 	3: X0
 Mu 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: (∃ x0 . ¬phi0)
 	2: phi0
 	3: (μ X0 . X0)
-Instantiate 
-	Stack:
-	0: ⊤
-	1: (∃ x0 . ¬phi0)
-	2: phi0
-	3: ⊥
+Save
 Implies
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: (∃ x0 . ¬phi0)
 	2: (phi0 -> ⊥)
+Save
 Instantiate 0
 	Stack:
-	0: ⊤
+	0: ¬⊥
 	1: ¬(∃ x0 . ¬phi0)
 Instantiate 0
 	Stack:
