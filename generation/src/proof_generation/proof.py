@@ -1,35 +1,45 @@
 from __future__ import annotations
 
+from argparse import ArgumentParser
+from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
-from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
+from proof_generation.interpreter import ExecutionPhase
+from proof_generation.optimizing_interpreters import MemoizingInterpreter
 from proof_generation.pattern import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
-from proof_generation.serializing_interpreter import MemoizingInterpreter, SerializingInterpreter
+from proof_generation.serializing_interpreter import SerializingInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.interpreter import Interpreter
     from proof_generation.pattern import Notation, Pattern
+    from proof_generation.serializing_interpreter import IOInterpreter
+
+
+class OutputFormat(str, Enum):
+    Binary = 'binary'
+    Pretty = 'pretty'
+
 
 # Proof Expressions
 # =================
 
 
 class ProofThunk:
-    _expr: Callable[[BasicInterpreter], Proved]
+    _expr: Callable[[Interpreter], Proved]
     conc: Pattern
 
-    def __init__(self, expr: Callable[[BasicInterpreter], Proved], conc: Pattern):
+    def __init__(self, expr: Callable[[Interpreter], Proved], conc: Pattern):
         self._expr = expr
         self.conc = conc
 
-    def __call__(self, interpreter: BasicInterpreter) -> Proved:
+    def __call__(self, interpreter: Interpreter) -> Proved:
         proved = self._expr(interpreter)
         # TODO Check is this call to equality is causing performance issues
         assert proved.conclusion == self.conc
@@ -42,6 +52,8 @@ class ProofExp:
     _claims: list[Pattern]
     _proof_expressions: list[ProofThunk]
 
+    _submodules: list[ProofExp]
+
     def __init__(
         self,
         axioms: list[Pattern] | None = None,
@@ -53,6 +65,7 @@ class ProofExp:
         self._notations = [] if notations is None else notations
         self._claims = [] if claims is None else claims
         self._proof_expressions = [] if proof_expressions is None else proof_expressions
+        self._submodules = []
 
     def add_axiom(self, axiom: Pattern) -> None:
         if axiom not in self._axioms:
@@ -104,6 +117,13 @@ class ProofExp:
     def get_proof_expressions(self) -> list[ProofThunk]:
         return list(self._proof_expressions)  # Avoid reference leaking
 
+    ProofExpTypeVar = TypeVar('ProofExpTypeVar', bound='ProofExp')
+
+    def import_module(self, module: ProofExpTypeVar) -> ProofExpTypeVar:
+        self._submodules.append(module)
+        self.add_notations(module.get_notations())
+        return module
+
     # Proof Rules
     # -----------
 
@@ -111,7 +131,7 @@ class ProofExp:
         if not delta:
             return pf
 
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             for idn, p in delta.items():
                 delta[idn] = interpreter.pattern(p)
             return interpreter.instantiate(pf(interpreter), delta)
@@ -160,7 +180,7 @@ class ProofExp:
         assert axiom_term in self._axioms
         axiom = Proved(axiom_term)
 
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             interpreter.load(f'Axiom {str(axiom)}', axiom)
             return axiom
 
@@ -171,21 +191,23 @@ class ProofExp:
         return self.load_axiom(self._axioms[i])
 
     def publish_proof(self, proved: ProofThunk) -> ProofThunk:
-        def proved_exp(interpreter: BasicInterpreter) -> Proved:
+        def proved_exp(interpreter: Interpreter) -> Proved:
             interpreter.publish_proof(proved(interpreter))
             return Proved(proved.conc)
 
         return ProofThunk(proved_exp, proved.conc)
 
-    def execute_gamma_phase(self, interpreter: BasicInterpreter, move_into_claim: bool = True) -> None:
+    def execute_gamma_phase(self, interpreter: Interpreter, move_into_claim: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Gamma
+        for submodule in self._submodules:
+            submodule.execute_gamma_phase(interpreter, False)
         for axiom in self._axioms:
             interpreter.publish_axiom(interpreter.pattern(axiom))
         self.check_interpreting(interpreter)
         if move_into_claim:
             interpreter.into_claim_phase()
 
-    def execute_claims_phase(self, interpreter: BasicInterpreter, move_into_proof: bool = True) -> None:
+    def execute_claims_phase(self, interpreter: Interpreter, move_into_proof: bool = True) -> None:
         assert interpreter.phase == ExecutionPhase.Claim
         for claim in reversed(self._claims):
             interpreter.publish_claim(interpreter.pattern(claim))
@@ -193,30 +215,19 @@ class ProofExp:
         if move_into_proof:
             interpreter.into_proof_phase()
 
-    def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+    def execute_proofs_phase(self, interpreter: Interpreter) -> None:
         assert interpreter.phase == ExecutionPhase.Proof
         for proof_expr in self._proof_expressions:
             self.publish_proof(proof_expr)(interpreter)
         self.check_interpreting(interpreter)
 
-    def execute_full(self, interpreter: BasicInterpreter) -> None:
-        assert interpreter.phase == ExecutionPhase.Gamma
+    def execute_full(self, interpreter: Interpreter) -> None:
+        assert interpreter.phase == ExecutionPhase.Gamma, f'Unexpected interpreter phase: {interpreter.phase}'
         self.execute_gamma_phase(interpreter)
         self.execute_claims_phase(interpreter)
         self.execute_proofs_phase(interpreter)
 
-    def serialize(self, file_path: Path) -> None:
-        self.execute_full(
-            SerializingInterpreter(
-                ExecutionPhase.Gamma,
-                claims=[Claim(claim) for claim in self._claims],
-                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
-                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
-            )
-        )
-
-    def check_interpreting(self, interpreter: BasicInterpreter) -> None:
+    def check_interpreting(self, interpreter: Interpreter) -> None:
         if not interpreter.safe_interpreting:
             print(f'Proof generation during {interpreter.phase.name} phase is potentially unsafe!')
             for warning in interpreter.interpreting_warnings:
@@ -225,59 +236,71 @@ class ProofExp:
     def pretty_options(self) -> PrettyOptions:
         return PrettyOptions(notations={n.definition: n for n in self._notations})
 
-    def prettyprint(self, file_path: Path) -> None:
-        self.execute_full(
-            PrettyPrintingInterpreter(
-                ExecutionPhase.Gamma,
-                claims=[Claim(claim) for claim in self._claims],
-                out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
-                claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
-                proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
-                pretty_options=self.pretty_options(),
-            )
-        )
+    def get_serializing_interpreter(
+        self,
+        output_format: OutputFormat,
+        phase: ExecutionPhase,
+        claims: list[Claim],
+        file_path: Path,
+    ) -> IOInterpreter:
+        serializer: IOInterpreter
+        match output_format:
+            case OutputFormat.Binary:
+                serializer = SerializingInterpreter(
+                    phase=phase,
+                    claims=claims,
+                    out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
+                    claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
+                    proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
+                )
+            case OutputFormat.Pretty:
+                serializer = PrettyPrintingInterpreter(
+                    phase=phase,
+                    claims=claims,
+                    out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
+                    claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
+                    proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
+                    pretty_options=self.pretty_options(),
+                )
+        return serializer
 
-    def memoize(self, file_path: Path) -> None:
-        counting_interpreter = CountingInterpreter(
-            ExecutionPhase.Gamma,
-            claims=[Claim(claim) for claim in self._claims],
-        )
-
-        self.execute_full(counting_interpreter)
-
-        self.execute_full(
-            MemoizingInterpreter(
-                ExecutionPhase.Gamma,
-                claims=[Claim(claim) for claim in self._claims],
-                patterns_for_memoization=counting_interpreter.finalize(),
-                out=open(file_path.with_suffix('.ml-gamma'), 'wb'),
-                claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
-                proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
-            )
-        )
+    # TODO: Implement the optimization pipeline specified in Issue #374
+    # TODO: add InstantiationOptimizer
+    def serialize(self, file_path: Path, output_format: OutputFormat, optimize: bool) -> None:
+        claims = [Claim(claim) for claim in self._claims]
+        serializer = self.get_serializing_interpreter(output_format, ExecutionPhase.Gamma, claims, file_path)
+        if optimize:
+            analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
+            self.execute_full(analyzer)
+            self.execute_full(MemoizingInterpreter(serializer, analyzer.finalize()))
+        else:
+            self.execute_full(serializer)
 
     def main(self, argv: list[str]) -> None:
-        exe, *argv = argv
-        usage = f'Usage:\n\n python3 {exe} (binary|pretty|memo) output-folder slice-name\n python3 {exe} --help\n\n'
-        examples = f'Examples:\n\npython3 {exe} binary pi2 propositional\n# outputs the given ProofExp in verifier-checkable binary format to pi2/propositional.ml-(gamma|claim|proof)\n\n'
+        argparser = ArgumentParser(
+            prog='Proof Expression Serializer',
+            description='This method outputs the ProofExp in a verifier-checkable binary format or a human-readable pretty-printed format.',
+        )
+        argparser.add_argument(
+            'module',
+            type=str,
+            help='The module or script invoking this method',
+        )
+        argparser.add_argument(
+            'output_format',
+            type=OutputFormat,
+            help='The proof output format, which can either be binary or pretty-printed',
+        )
+        argparser.add_argument('output_dir', type=str, help='The path to the output directory')
+        argparser.add_argument('slice_name', type=str, help='The input slice name')
+        argparser.add_argument(
+            '--optimize', action='store_true', default=False, help='Optimize the proof before serializing it to output'
+        )
+        args = argparser.parse_args(argv)
 
-        if len(argv) == 1:
-            assert argv[0] == '--help', usage
-            print(usage + examples)
-            return
-
-        assert len(argv) == 3, usage
-        output_format, output_path, slice_name = argv
-
-        output_dir = Path(output_path)
+        output_dir = Path(args.output_dir)
         if not output_dir.exists():
             print('Creating output directory...')
             output_dir.mkdir()
 
-        match output_format:
-            case 'pretty':
-                self.prettyprint(output_dir / slice_name)
-            case 'binary':
-                self.serialize(output_dir / slice_name)
-            case 'memo':
-                self.memoize(output_dir / slice_name)
+        self.serialize(output_dir / args.slice_name, args.output_format, args.optimize)

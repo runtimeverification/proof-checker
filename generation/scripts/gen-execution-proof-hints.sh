@@ -52,6 +52,9 @@ DEF="$1"
 PGM="$2"
 OUT="$3"
 
+filename=$(basename -- "$DEF")
+MOD="${filename%.*}"
+
 # Check that the input files exist
 if [[ ! -f "$DEF" || ! -f "$PGM" ]]; then
   echo "Error: The specified arguments ${DEF} or ${PGM} do not exist."
@@ -68,22 +71,27 @@ fi
 # Keep track of temp files/dirs created
 all_temps=()
 
-# Create a temporary directory for the kompiled semantics
-temp_kompiled_dir=$(mktemp -d)
-all_temps+=(${temp_kompiled_dir})
-
-# Kompile the K definition
-echo "Compiling $DEF..."
-if kompile --backend llvm --output-definition "$temp_kompiled_dir" "$DEF"; then
-  echo "Compilation successful."
+# Check if a kompiled definition already exists at .build/kompiled-definitions
+if [[ ! -d ".build/kompiled-definitions/${MOD}-kompiled/" ]]; then
+  # Create a temporary directory for the kompiled semantics
+  kompiled_dir=$(mktemp -d)
+  all_temps+=(${kompiled_dir})
+  # Kompile the K definition
+  echo "Compiling $DEF..."
+  if kompile --backend llvm --output-definition "$kompiled_dir" "$DEF"; then
+    echo "Compilation successful."
+  else
+    echo "Error: Compilation of $DEF failed."
+    remove_files "${all_temps[@]}"
+    exit 1
+  fi
 else
-  echo "Error: Compilation of $DEF failed."
-  remove_files "${all_temps[@]}"
-  exit 1
+  kompiled_dir=".build/kompiled-definitions/${MOD}-kompiled"
+  echo "kompiled definition exists: $kompiled_dir"
 fi
 
 # Produce the instrumented interpreter binary
-if llvm-kompile --proof-hint-instrumentation "$temp_kompiled_dir"/definition.kore "$temp_kompiled_dir"/dt main -- -o "$temp_kompiled_dir"/interpreter; then
+if llvm-kompile --proof-hint-instrumentation "$kompiled_dir"/definition.kore "$kompiled_dir"/dt main -- -o "$kompiled_dir"/interpreter; then
   echo "Instrumented interpreter generated successfully."
 else
   echo "Error: Generating instrumented interpreter for $DEF failed."
@@ -96,7 +104,7 @@ temp_file=$(mktemp)
 all_temps+=(${temp_file})
 
 # Parse the program into kore
-if ! kparse "$PGM" --definition "$temp_kompiled_dir" > "$temp_file"; then
+if ! kparse "$PGM" --definition "$kompiled_dir" > "$temp_file"; then
   echo "Error: kparse command failed."
   remove_files "${all_temps[@]}"
   exit 1
@@ -105,7 +113,7 @@ else
 fi
 
 # Construct the initial configuration's kore term
-if ! llvm-krun -c PGM "$temp_file" KItem korefile --directory "$temp_kompiled_dir" --dry-run -nm -o "$temp_file"; then
+if ! llvm-krun -c PGM "$temp_file" KItem korefile --directory "$kompiled_dir" --dry-run -nm -o "$temp_file"; then
   echo "Error: llvm-krun command failed."
   remove_files "${all_temps[@]}"
   exit 1
@@ -115,7 +123,7 @@ fi
 
 # Execute the interpreter and generate proof hints
 rm -f "$OUT"
-if ! ${temp_kompiled_dir}/interpreter "$temp_file" -1 "$OUT" --proof-output; then
+if ! ${kompiled_dir}/interpreter "$temp_file" -1 "$OUT" --proof-output; then
   echo "Error: Interpreter command failed."
   remove_files "${all_temps[@]}"
   exit 1
