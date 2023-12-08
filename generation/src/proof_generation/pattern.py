@@ -483,8 +483,14 @@ class Instantiate(Pattern):
     This is typically used to contain Notation.
     """
 
-    pattern: Pattern
+    pattern_or_notation: Pattern | Notation
     inst: InstantiationDict
+
+    @property
+    def pattern(self) -> Pattern:
+        if isinstance(self.pattern_or_notation, Notation):
+            return self.pattern_or_notation.definition
+        return self.pattern_or_notation
 
     def simplify(self) -> Pattern:
         """Instantiate pattern with plug.
@@ -510,8 +516,7 @@ class Instantiate(Pattern):
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})
-        unshadowed_delta = {k: v for k, v in delta.items() if k not in self.inst}
-        return Instantiate(self.pattern.instantiate(unshadowed_delta), instantiated_subst)
+        return Instantiate(self.pattern_or_notation, frozendict(delta) | instantiated_subst)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         # TODO: For "complete" substitutions (where all free metavars are replaced),
@@ -526,10 +531,10 @@ class Instantiate(Pattern):
         return self.simplify().apply_ssubst(svar_id, plug)
 
     def pretty(self, opts: PrettyOptions) -> str:
+        if isinstance(self.pattern_or_notation, Notation) and opts.print_notations:
+            return self.pattern_or_notation.print_instantiation(self, opts)
         if opts.simplify_instantiations:
             return self.simplify().pretty(opts)
-        if self.pattern in opts.notations:
-            return opts.notations[self.pattern].print_instantiation(self, opts)
         pretty_inst = {}
         for key, val in self.inst.items():
             pretty_inst[key] = val.pretty(opts)
@@ -554,7 +559,7 @@ class Notation:
 
     def __call__(self, *args: Pattern) -> Pattern:
         assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
-        return Instantiate(self.definition, frozendict(enumerate(args)))
+        return Instantiate(self, frozendict(enumerate(args)))
 
     def matches(self, pattern: Pattern) -> None | tuple[Pattern, ...]:
         match = match_single(self.definition, pattern)
@@ -579,7 +584,7 @@ class Notation:
 @dataclass(frozen=True)
 class PrettyOptions:
     simplify_instantiations: bool = False
-    notations: Mapping[Pattern, Notation] = frozendict({})
+    print_notations: bool = True
 
 
 bot = Notation('bot', 0, Mu(0, SVar(0)), '⊥')

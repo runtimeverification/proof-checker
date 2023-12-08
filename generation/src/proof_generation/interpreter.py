@@ -59,10 +59,11 @@ class Interpreter(ABC):
                 return self.mu(var, self.pattern(subpattern))
             case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
                 return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
-            case Instantiate(subpattern, subst):
+            case Instantiate(_, subst):
                 for inst in subst.values():
                     self.pattern(inst)
-                return self.instantiate_pattern(self.pattern(subpattern), subst)
+                self.pattern(p.pattern)
+                return p
             case ESubst(subpattern, var, plug):
                 assert isinstance(var, EVar)
                 plug = self.pattern(plug)

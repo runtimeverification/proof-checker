@@ -22,10 +22,8 @@ def test_nary_application() -> None:
 
 
 def test_print_nary_application() -> None:
-    pretty_options = PrettyOptions(notations={foo_app.definition: foo_app, bar.definition: bar})
-    assert foo_app(bar(), bar(), bar()).pretty(pretty_options) == 'foo(bar, bar, bar)'
-    pretty_options = PrettyOptions(notations={foo_cell.definition: foo_cell, bar.definition: bar})
-    assert foo_cell(bar(), bar(), bar()).pretty(pretty_options) == '<foo> bar bar bar </foo>'
+    assert foo_app(bar(), bar(), bar()).pretty(PrettyOptions()) == 'foo(bar, bar, bar)'
+    assert foo_cell(bar(), bar(), bar()).pretty(PrettyOptions()) == '<foo> bar bar bar </foo>'
 
 
 def test_deconstruct_nary_application() -> None:

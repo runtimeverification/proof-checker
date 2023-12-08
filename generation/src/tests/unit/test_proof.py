@@ -119,7 +119,7 @@ proofs = [(method, ExecutionPhase.Proof) for method in range(len(Propositional()
 
 @pytest.mark.parametrize('test', proofs)
 def test_deserialize_proof(test: tuple[int, ExecutionPhase]) -> None:
-    pretty_options = PrettyOptions(simplify_instantiations=True)
+    pretty_options = PrettyOptions(simplify_instantiations=True, print_notations=False)
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()
@@ -142,7 +142,7 @@ claims = [(claim, ExecutionPhase.Claim) for claim in Propositional()._claims]
 
 @pytest.mark.parametrize('test', claims)
 def test_deserialize_claim(test: tuple[Pattern, ExecutionPhase]) -> None:
-    pretty_options = PrettyOptions(simplify_instantiations=True)
+    pretty_options = PrettyOptions(simplify_instantiations=True, print_notations=False)
     (target, phase) = test
     # Serialize the target and deserialize the resulting bytes with the PrettyPrintingInterpreter
     out_ser = BytesIO()

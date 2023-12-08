@@ -236,7 +236,7 @@ class ProofExp:
                 print(warning)
 
     def pretty_options(self) -> PrettyOptions:
-        return PrettyOptions(notations={n.definition: n for n in self._notations})
+        return PrettyOptions()
 
     def prettyprint(self, file_path: Path) -> None:
         self.execute_full(
