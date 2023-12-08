@@ -22,6 +22,7 @@ sigma2 = Symbol('s2')
     'pattern, evar_id, plug, expected',
     # Atomic cases
     [
+        # Atomic cases
         [EVar(0), 0, sigma1, sigma1],
         [EVar(0), 0, EVar(2), EVar(2)],
         [EVar(0), 1, EVar(2), EVar(0)],
