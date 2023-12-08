@@ -15,6 +15,7 @@ phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 phi3 = MetaVar(3)
+phi4 = MetaVar(4)
 
 # TODO: Make sure this is handled uniformly
 inhabitant_symbol = Symbol('inhabitant')
@@ -81,6 +82,11 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
+""" equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
+equational_as = Notation(
+    'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi0, phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
+)
+
 
 @cache
 def kore_exists(var: int) -> Notation:
@@ -134,6 +140,29 @@ def deconstruct_equality_rule(pattern: Pattern) -> tuple[Pattern, Pattern, Patte
     # TODO: Potentially there can be more than one arg, but we have an assertion at converting kore patterns to catch such cases
     _, eq_right, ensures = kore_and.assert_matches(eq_right_and_ensures)
     return requires, eq_left, eq_right_and_ensures, eq_right, ensures
+
+
+@cache
+def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
+    collected_substitutions: dict[int, Pattern] = {}
+
+    if top_and_match := kore_and.matches(pattern):
+        _, left, right = top_and_match
+
+        for item in (left, right):
+            if let_match := equational_as.matches(item):
+                _, _, from_evar, expression, to_evar = let_match
+                if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
+                    collected_substitutions[from_evar.name] = expression
+                    collected_substitutions[to_evar.name] = expression
+            elif in_match := kore_in.matches(item):
+                _, _, var, expression = in_match
+                if isinstance(var, EVar):
+                    collected_substitutions[var.name] = expression
+            else:
+                collected_substitutions.update(matching_requires_substitution(item))
+
+    return collected_substitutions
 
 
 KORE_NOTATIONS = (

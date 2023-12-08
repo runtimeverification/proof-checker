@@ -116,6 +116,11 @@ class KEquationalRule:
         _, _, _, _, ensures = kl.deconstruct_equality_rule(self.pattern)
         return ensures
 
+    @property
+    def substitutions_from_requires(self) -> dict[int, Pattern]:
+        """Collect substitutions from the requires part of the axiom introduced artificially by K."""
+        return kl.matching_requires_substitution(self.requires)
+
 
 class BuilderScope:
     def __init__(self) -> None:

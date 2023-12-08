@@ -4,16 +4,18 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.k.execution_proof_generation import ExecutionProofExp
-from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
+from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationPerformer
+from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate, top
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
+    node_tree,
     rewrite_with_cell,
     rewrite_with_cells_config_pattern,
     simple_semantics,
+    tree_semantics_config_pattern,
 )
 
 if TYPE_CHECKING:
@@ -185,6 +187,213 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
     assert hints[1].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[1]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[2]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
+
+
+def test_performer_get_subterm():
+    semantics = node_tree()
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    intermidiate_config = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
+    )
+
+    subpattern1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    subpattern2 = node_symbol.app(a_symbol.app(), b_symbol.app())
+    subpattern3 = a_symbol.app()
+    subpattern4 = b_symbol.app()
+
+    performer = SimplificationPerformer(semantics, intermidiate_config)
+    # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
+    assert performer.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
+    # ksym_reverse -> node(a, b)
+    assert performer.get_subterm((0,), subpattern1) == subpattern2
+    # ksym_reverse -> node -> a
+    assert performer.get_subterm((0, 0), subpattern1) == subpattern3
+    # ksym_reverse -> node -> b
+    assert performer.get_subterm((0, 1), subpattern1) == subpattern4
+
+
+def test_performer_update_subterm():
+    # Semantics and symbols
+    semantics = node_tree()
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    # Build the initial state
+    initial_kcell_value = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    intermidiate_config = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        initial_kcell_value,
+    )
+
+    # Create the performer
+    performer = SimplificationPerformer(semantics, intermidiate_config)
+
+    # Test from the get_subpattern function
+    # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
+    location = (0, 0, 0)
+    pattern = intermidiate_config
+    plug = a_symbol.app()
+    expected_result = tree_semantics_config_pattern(semantics, 'SortTree', plug)
+    assert performer.update_subterm(location, pattern, plug) == expected_result
+
+    # Update tge subpattern for the whole configuration
+    # ksym_generated_top -> ksym_k -> ksym_inj -> ksym_node -> ksym_reverse -> ksym_b
+    location = (0, 0, 0, 1)
+    plug = a_symbol.app()
+    pattern = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
+    )
+    result = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        node_symbol.app(reverse_symbol.app(a_symbol.app()), a_symbol.app()),
+    )
+    assert performer.update_subterm(location, pattern, plug) == result
+
+    # Update the subpattern for a subterm without cells
+    # node -> ksym_reverse
+    location = (1,)
+    pattern = node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app()))
+    plug = b_symbol.app()
+    result = node_symbol.app(reverse_symbol.app(a_symbol.app()), b_symbol.app())
+    assert performer.update_subterm(location, pattern, plug) == result
+
+
+def test_performer_apply_substitution():
+    semantics = node_tree()
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    rule = semantics.get_axiom(4)
+    assert isinstance(rule, KEquationalRule)
+    substitution = {1: a_symbol.app(), 2: b_symbol.app()}
+    expected = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
+    substtuted = rule.right.apply_esubsts(substitution)
+    assert substtuted == expected
+
+    rule = semantics.get_axiom(2)
+    assert isinstance(rule, KEquationalRule)
+    base_simplifications = rule.substitutions_from_requires
+    expected = a_symbol.app()
+    substituted = rule.right.apply_esubsts(base_simplifications)
+    assert substituted == expected
+
+
+def test_performer_update_config():
+    semantics = node_tree()
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    intermidiate_config1 = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
+    )
+    intermidiate_config2 = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
+    )
+
+    performer = SimplificationPerformer(semantics, intermidiate_config1)
+    assert performer.simplified_configuration == intermidiate_config1
+
+    # Update the configuration
+    performer.update_configuration(intermidiate_config2)
+    assert performer.simplified_configuration == intermidiate_config2
+
+    # Reset the state
+    performer = SimplificationPerformer(semantics, intermidiate_config1)
+    performer.update_configuration(intermidiate_config2)
+    with pytest.raises(AssertionError):
+        with performer:
+            performer.apply_simplification(2, {}, (0, 0))
+            performer.update_configuration(intermidiate_config1)
+
+    # But it is possible to update the configuration after the simplification
+    simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
+    simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
+    performer = SimplificationPerformer(semantics, simple_config_before)
+    with performer:
+        performer.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
+    assert performer._simplification_stack == []
+    assert performer.simplified_configuration == simple_config_after
+    performer.update_configuration(intermidiate_config1)
+    assert performer.simplified_configuration == intermidiate_config1
+
+
+def test_subpattern_batch():
+    semantics = node_tree()
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    # Rules
+    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    rec_case = semantics.get_axiom(4)
+    assert isinstance(rec_case, KEquationalRule)
+    # reverse(b) <-> b
+    base_case_b = semantics.get_axiom(3)
+    assert isinstance(base_case_b, KEquationalRule)
+    # reverse(a) <-> a
+    base_case_a = semantics.get_axiom(2)
+    assert isinstance(base_case_a, KEquationalRule)
+
+    initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
+    proof_obj = ExecutionProofExp(semantics, initial_config)
+    location = (0, 0, 0)
+    proof_obj.simplification_event(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()}, location)
+    expected_stack = [
+        SimplificationInfo(
+            location,
+            initial_subterm,
+            node_symbol.app(
+                reverse_symbol.app(b_symbol.app()),
+                reverse_symbol.app(a_symbol.app()),
+            ),
+            2,
+        )
+    ]
+    assert proof_obj._simplification_performer._simplification_stack == expected_stack
+
+    proof_obj.simplification_event(base_case_b.ordinal, {}, (0,))
+    expected_stack = [
+        SimplificationInfo(
+            location,
+            initial_subterm,
+            node_symbol.app(
+                b_symbol.app(),
+                reverse_symbol.app(a_symbol.app()),
+            ),
+            1,
+        )
+    ]
+    assert proof_obj._simplification_performer._simplification_stack == expected_stack
+
+    proof_obj.simplification_event(base_case_a.ordinal, {}, (1,))
+    assert proof_obj._simplification_performer._simplification_stack == []
+
+    # Check the final update of the configuration
+    assert proof_obj.current_configuration == tree_semantics_config_pattern(
+        semantics, 'SortTree', node_symbol.app(b_symbol.app(), a_symbol.app())
+    )
 
 
 def test_simple_rules_pretty_printing() -> None:

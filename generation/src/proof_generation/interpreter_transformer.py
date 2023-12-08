@@ -12,15 +12,24 @@ if TYPE_CHECKING:
 
 
 class InterpreterTransformer(Interpreter):
-    """This base class allows creating an interpreter that re-interprets
-    a proof in a different way.
+    """This base class allows creating a transformer interpreter that
+    re-interprets a proof in a different way.
     For example, it may optimize certain calls using the memory,
     or remove redundant patterns.
+    Note that transformers can, in general, be arbitrarily nested.
+    sub_interpreter refers to the wrapped interpreter, while
+    core_interpreter refers to the innermost (non-transformer)
+    interpreter (which doesn't wrap an interpreter).
     """
 
     def __init__(self, sub_interpreter: Interpreter):
         super().__init__(sub_interpreter.phase)
         self.sub_interpreter = sub_interpreter
+        self.core_interpreter: Interpreter
+        if isinstance(sub_interpreter, InterpreterTransformer):
+            self.core_interpreter = sub_interpreter.core_interpreter
+        else:
+            self.core_interpreter = sub_interpreter
 
     def into_claim_phase(self) -> None:
         super().into_claim_phase()
