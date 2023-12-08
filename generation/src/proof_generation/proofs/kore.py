@@ -82,7 +82,7 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
-""" equational-as(inner_sort, outer_sort, from_evar, to_evar, expression) """
+""" equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
 equational_as = Notation(
     'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi0, phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
 )
@@ -151,7 +151,7 @@ def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
 
         for item in (left, right):
             if let_match := equational_as.matches(item):
-                _, _, from_evar, to_evar, expression = let_match
+                _, _, from_evar, expression, to_evar = let_match
                 if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
                     collected_substitutions[from_evar.name] = expression
                     collected_substitutions[to_evar.name] = expression
