@@ -16,7 +16,6 @@ from proof_generation.k.kore_convertion.language_semantics import (
 from proof_generation.pattern import App, EVar, MetaVar, Pattern, Symbol, phi0, phi1
 from proof_generation.proofs.definedness import equals, floor, functional, subset
 from proof_generation.proofs.kore import (
-    KoreLemmas,
     ceil,
     kore_and,
     kore_equals,
@@ -655,7 +654,6 @@ def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
 
 def test_locate_simplifications() -> None:
     semantics = node_tree()
-    KoreLemmas()
 
     init_rewrite = semantics.get_axiom(0)
     next_rewrite = semantics.get_axiom(1)
