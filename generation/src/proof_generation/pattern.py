@@ -115,6 +115,7 @@ class Pattern:
 
     def apply_esubsts(self, substitutions: dict[int, Pattern]) -> Pattern:
         pattern = self
+        # TODO: We need apply all substitutions at once as we might want changing plugs also
         for evar_name, plug in substitutions.items():
             pattern = pattern.apply_esubst(evar_name, plug)
         return pattern
