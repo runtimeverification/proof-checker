@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.basic_interpreter import ExecutionPhase
 from proof_generation.claim import Claim
+from proof_generation.interpreter import ExecutionPhase
 from proof_generation.metamath.converter.converter import MetamathConverter
 from proof_generation.metamath.converter.representation import AxiomWithAntecedents
 from proof_generation.metamath.parser import load_database
@@ -19,7 +19,7 @@ from proof_generation.stateful_interpreter import StatefulInterpreter
 if TYPE_CHECKING:
     from pytest import FixtureRequest
 
-    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.interpreter import Interpreter
     from proof_generation.metamath.parser import Database
 
 BENCHMARK_LOCATION = 'generation/mm-benchmarks'
@@ -59,7 +59,7 @@ def test_exec_proof_impreflex(db: str, request: FixtureRequest) -> None:
         def __init__(self) -> None:
             super().__init__(axioms=extracted_axioms, claims=extracted_claims)
 
-        def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+        def execute_proofs_phase(self, interpreter: Interpreter) -> None:
             assert interpreter.phase == ExecutionPhase.Proof
             exec_proof(converter, 'imp-reflexivity', self, interpreter)
 
@@ -93,7 +93,7 @@ def test_exec_transfer_proof(db: str, request: FixtureRequest) -> None:
         def __init__(self) -> None:
             super().__init__(axioms=extracted_axioms, claims=extracted_claims)
 
-        def execute_proofs_phase(self, interpreter: BasicInterpreter) -> None:
+        def execute_proofs_phase(self, interpreter: Interpreter) -> None:
             assert interpreter.phase == ExecutionPhase.Proof
             exec_proof(converter, 'goal', self, interpreter)
 

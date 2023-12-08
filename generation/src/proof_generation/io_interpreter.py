@@ -5,8 +5,8 @@ from typing import IO, TYPE_CHECKING, Any
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
-    from proof_generation.basic_interpreter import ExecutionPhase
     from proof_generation.claim import Claim
+    from proof_generation.interpreter import ExecutionPhase
 
 
 class IOInterpreter(StatefulInterpreter):
