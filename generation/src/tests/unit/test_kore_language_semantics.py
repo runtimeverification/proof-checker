@@ -7,6 +7,7 @@ from pytest import mark, raises
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
+    KEquationalRule,
     KModule,
     KSort,
     KSortVar,
@@ -130,7 +131,7 @@ def node_tree() -> LanguageSemantics:
                 tree_top,
                 kore_and(
                     tree_sort,
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, EVar(1), a_symbol.app())),
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, a_symbol.app(), EVar(1))),
                     tree_top,
                 ),
             )
@@ -150,7 +151,7 @@ def node_tree() -> LanguageSemantics:
                 tree_top,
                 kore_and(
                     tree_sort,
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, EVar(1), b_symbol.app())),
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, b_symbol.app(), EVar(1))),
                     tree_top,
                 ),
             )
@@ -654,10 +655,28 @@ def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
     assert pat.pretty(pretty_opt) == pretty_pat
 
 
+def test_collect_substitution() -> None:
+    semantics = node_tree()
+
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    base_equation_a = semantics.get_axiom(2)
+    base_equation_b = semantics.get_axiom(3)
+    reversed_equation = semantics.get_axiom(4)
+
+    assert isinstance(base_equation_a, KEquationalRule)
+    assert base_equation_a.substitutions_from_requires == {0: a_symbol.app(), 1: a_symbol.app()}
+
+    assert isinstance(base_equation_b, KEquationalRule)
+    assert base_equation_b.substitutions_from_requires == {0: b_symbol.app(), 1: b_symbol.app()}
+
+    assert isinstance(reversed_equation, KEquationalRule)
+    assert reversed_equation.substitutions_from_requires == {0: node_symbol.app(EVar(1), EVar(2))}
+
+
 def test_locate_simplifications() -> None:
     semantics = node_tree()
-    proof_expr = KoreLemmas()
-    proof_expr.add_notations(list(semantics.notations))
 
     init_rewrite = semantics.get_axiom(0)
     next_rewrite = semantics.get_axiom(1)
