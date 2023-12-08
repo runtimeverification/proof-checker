@@ -35,7 +35,7 @@ class SimplificationInfo:
     simplifications_remaining: int
 
 
-class SimplificationContext:
+class SimplificationPerformer:
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
         self._language_semantics = language_semantics
         self._curr_config = init_config
@@ -72,15 +72,15 @@ class SimplificationContext:
         simplified_rhs = simplified_rhs.apply_esubsts(substitution)
 
         # Count the number of substitutions left
-        simplifications_left = self._language_semantics.count_simplifications(simplified_rhs)
+        simplifications_ramaining = self._language_semantics.count_simplifications(simplified_rhs)
 
         # Create the new info object and put it on top of the stack
-        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_left)
+        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_ramaining)
         self._simplification_stack.append(new_info)
 
         return new_info
 
-    def __enter__(self) -> SimplificationContext:
+    def __enter__(self) -> SimplificationPerformer:
         return self
 
     def __exit__(
@@ -106,13 +106,13 @@ class SimplificationContext:
 
     def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:
         # subpattern, left = self._get_subpattern_rec(list(location), pattern)
-        _, found, location_left = self._subpattern_search_rec(list(location), pattern, None)
-        assert not location_left, f'Location {location} is invalid for pattern {str(pattern)}'
+        _, found, location_remaining = self._subpattern_search_rec(list(location), pattern, None)
+        assert not location_remaining, f'Location {location} is invalid for pattern {str(pattern)}'
         return found
 
     def update_subterm(self, location: Location, pattern: Pattern, plug: Pattern) -> Pattern:
-        updated, _, location_left = self._subpattern_search_rec(list(location), pattern, plug)
-        assert not location_left, f'Location {location} is invalid for pattern {str(pattern)}'
+        updated, _, location_remaining = self._subpattern_search_rec(list(location), pattern, plug)
+        assert not location_remaining, f'Location {location} is invalid for pattern {str(pattern)}'
         return updated
 
     def _subpattern_search_rec(
@@ -152,7 +152,7 @@ class ExecutionProofExp(proof.ProofExp):
         super().__init__(notations=list(language_semantics.notations))
         self.subst_proofexp = self.import_module(Substitution())
         self.kore_lemmas = self.import_module(kl.KoreLemmas())
-        self._simplification_visitor = SimplificationContext(self.language_semantics, self.current_configuration)
+        self._simplification_performer = SimplificationPerformer(self.language_semantics, self.current_configuration)
 
     @property
     def initial_configuration(self) -> Pattern:
@@ -212,17 +212,17 @@ class ExecutionProofExp(proof.ProofExp):
         self._curr_config = rhs
 
         # Update the current configuration
-        self._simplification_visitor.update_configuration(self._curr_config)
+        self._simplification_performer.update_configuration(self._curr_config)
 
         return proof
 
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
-        with self._simplification_visitor as visitor:
+        with self._simplification_performer as visitor:
             visitor.apply_simplification(ordinal, substitution, location)
             # TODO: Do some proving here ...
 
         # Update the current configuration
-        self._curr_config = self._simplification_visitor.simplified_configuration
+        self._curr_config = self._simplification_performer.simplified_configuration
 
     def finalize(self) -> None:
         """Prepare proof expression for the final reachability claim"""

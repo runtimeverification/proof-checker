@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationContext, SimplificationInfo
+from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationPerformer, SimplificationInfo
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate, top
@@ -207,7 +207,7 @@ def test_visitor_get_subterm():
     subpattern3 = a_symbol.app()
     subpattern4 = b_symbol.app()
 
-    visitor = SimplificationContext(semantics, intermidiate_config)
+    visitor = SimplificationPerformer(semantics, intermidiate_config)
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
     assert visitor.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
     # ksym_reverse -> node(a, b)
@@ -235,7 +235,7 @@ def test_visitor_update_subterm():
     )
 
     # Create the visitor
-    visitor = SimplificationContext(semantics, intermidiate_config)
+    visitor = SimplificationPerformer(semantics, intermidiate_config)
 
     # Test from the get_subpattern function
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
@@ -310,7 +310,7 @@ def test_visitor_update_config():
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
 
-    visitor = SimplificationContext(semantics, intermidiate_config1)
+    visitor = SimplificationPerformer(semantics, intermidiate_config1)
     assert visitor.simplified_configuration == intermidiate_config1
 
     # Update the configuration
@@ -318,7 +318,7 @@ def test_visitor_update_config():
     assert visitor.simplified_configuration == intermidiate_config2
 
     # Reset the state
-    visitor = SimplificationContext(semantics, intermidiate_config1)
+    visitor = SimplificationPerformer(semantics, intermidiate_config1)
     visitor.update_configuration(intermidiate_config2)
     with pytest.raises(AssertionError):
         with visitor:
@@ -328,7 +328,7 @@ def test_visitor_update_config():
     # But it is possible to update the configuration after the simplification
     simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
     simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
-    visitor = SimplificationContext(semantics, simple_config_before)
+    visitor = SimplificationPerformer(semantics, simple_config_before)
     with visitor:
         visitor.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
     assert visitor._simplification_stack == []
@@ -371,7 +371,7 @@ def test_subpattern_batch():
             2,
         )
     ]
-    assert proof_obj._simplification_visitor._simplification_stack == expected_stack
+    assert proof_obj._simplification_performer._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_b.ordinal, {}, (0,))
     expected_stack = [
@@ -385,10 +385,10 @@ def test_subpattern_batch():
             1,
         )
     ]
-    assert proof_obj._simplification_visitor._simplification_stack == expected_stack
+    assert proof_obj._simplification_performer._simplification_stack == expected_stack
 
     proof_obj.simplification_event(base_case_a.ordinal, {}, (1,))
-    assert proof_obj._simplification_visitor._simplification_stack == []
+    assert proof_obj._simplification_performer._simplification_stack == []
 
     # Check the final update of the configuration
     assert proof_obj.current_configuration == tree_semantics_config_pattern(
