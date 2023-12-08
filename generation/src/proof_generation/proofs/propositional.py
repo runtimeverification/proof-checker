@@ -26,7 +26,6 @@ class Propositional(ProofExp):
     def __init__(self) -> None:
         super().__init__(
             axioms=[],
-            notations=list(PROPOSITIONAL_NOTATIONS),
             claims=[
                 Implies(phi0, phi0),  # Reflexivity
                 top(),  # Top

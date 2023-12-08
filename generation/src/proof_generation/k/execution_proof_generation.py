@@ -22,7 +22,6 @@ class ExecutionProofExp(proof.ProofExp):
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
-        super().__init__(notations=list(language_semantics.notations))
         self.subst_proofexp = self.import_module(Substitution())
         self.kore_lemmas = self.import_module(kl.KoreLemmas())
 
@@ -70,7 +69,7 @@ class ExecutionProofExp(proof.ProofExp):
         # Check that the lhs matches the current configuration
         assert (
             lhs == self.current_configuration
-        ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
+        ), f'The current configuration {str(lhs)} does not match the lhs of the rule {str(rule.pattern)}'
 
         # Add the axioms
         self.add_assumptions_for_rewrite_step(rule, substitution)
@@ -107,6 +106,6 @@ class ExecutionProofExp(proof.ProofExp):
 
         if proof_expr is None:
             print('WARNING: The proof expression is empty, ho hints were provided.')
-            return proof.ProofExp(notations=list(language_semantics.notations))
+            return proof.ProofExp()
         else:
             return proof_expr

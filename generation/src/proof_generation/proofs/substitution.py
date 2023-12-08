@@ -26,7 +26,6 @@ class Substitution(ProofExp):
     def __init__(self) -> None:
         super().__init__(
             axioms=[func_subst_axiom],
-            notations=[forall(0)],
             claims=[forall(0)(top())],
         )
         self.prop = self.import_module(Propositional())

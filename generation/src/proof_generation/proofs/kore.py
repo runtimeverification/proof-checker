@@ -159,7 +159,7 @@ KORE_NOTATIONS = (
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(notations=list(KORE_NOTATIONS))
+        super().__init__()
         self.definedness = self.import_module(Definedness())
 
 

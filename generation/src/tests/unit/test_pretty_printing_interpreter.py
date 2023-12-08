@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.proofs.propositional import Implies, Propositional, bot, neg, phi0, phi1, top
+from proof_generation.proofs.propositional import Implies, bot, neg, phi0, phi1, top
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -23,5 +23,4 @@ test_data = [
 
 @pytest.mark.parametrize('name,pattern,expected', test_data, ids=(x[0] for x in test_data))
 def test_pretty_print_propositional(name: str, pattern: Pattern, expected: str) -> None:
-    opts = Propositional().pretty_options()
-    assert pattern.pretty(opts) == expected
+    assert str(pattern) == expected

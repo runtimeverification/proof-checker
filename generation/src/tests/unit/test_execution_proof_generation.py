@@ -7,7 +7,7 @@ import pytest
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, top
+from proof_generation.pattern import Instantiate
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
@@ -170,21 +170,21 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
 
     # Create an instance of the class
     proof_expr = ExecutionProofExp(semantics, init_config=hints[0].configuration_before)
-    assert proof_expr.initial_configuration.pretty(proof_expr.pretty_options()) == configurations[0]
+    assert str(proof_expr.initial_configuration) == configurations[0]
 
     # First rewrite step
     assert isinstance(hints[0].axiom, KRewritingRule)
     proved = proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
-    assert hints[0].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[0]
-    assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[1]
-    assert proved.conc.pretty(proof_expr.pretty_options()) == claims[0]
+    assert str(hints[0].axiom.pattern) == axioms[0]
+    assert str(proof_expr.current_configuration) == configurations[1]
+    assert str(proved.conc) == claims[0]
 
     # Second rewrite step
     assert isinstance(hints[1].axiom, KRewritingRule)
     proved = proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
-    assert hints[1].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[1]
-    assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[2]
-    assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
+    assert str(hints[1].axiom.pattern) == axioms[1]
+    assert str(proof_expr.current_configuration) == configurations[2]
+    assert str(proved.conc) == claims[1]
 
 
 def test_simple_rules_pretty_printing() -> None:
@@ -227,13 +227,12 @@ def test_simple_rules_pretty_printing() -> None:
         equation_rule2 = m.equational_rule(equation_pattern2)
 
     # Check pretty printed versions
-    pretty_opt = ExecutionProofExp(semantics, init_config=top()).pretty_options()
-    assert rewrite_rule.pattern.pretty(pretty_opt) == '(ksym_sym1 k=> ksym_sym2(ksym_sym1)):ksort_srt1'
+    assert str(rewrite_rule.pattern) == '(ksym_sym1 k=> ksym_sym2(ksym_sym1)):ksort_srt1'
     assert (
-        equation_rule1.pattern.pretty(pretty_opt)
+        str(equation_rule1.pattern)
         == '(k⊤:ksort_srt1 k-> (ksym_sym1():ksort_srt1 k= (ksym_sym3() k⋀ k⊤:ksort_srt1):ksort_srt1):ksort_srt1):ksort_srt1'
     )
     assert (
-        equation_rule2.pattern.pretty(pretty_opt)
+        str(equation_rule2.pattern)
         == '(k⊤:ksort_srt2 k-> (ksym_sym4():ksort_srt2 k= (ksym_sym2(ksym_sym1) k⋀ k⊤:ksort_srt2):ksort_srt2):ksort_srt2):ksort_srt2'
     )

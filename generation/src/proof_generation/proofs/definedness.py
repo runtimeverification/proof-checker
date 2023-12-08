@@ -17,5 +17,4 @@ class Definedness(ProofExp):
     def __init__(self) -> None:
         super().__init__(
             axioms=[ceil(EVar(0))],
-            notations=[ceil, floor, subset, equals, functional],
         )

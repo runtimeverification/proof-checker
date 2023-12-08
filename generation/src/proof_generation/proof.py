@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from proof_generation.interpreter import Interpreter
-    from proof_generation.pattern import Notation, Pattern
+    from proof_generation.pattern import Pattern
 
 # Proof Expressions
 # =================
@@ -39,7 +39,6 @@ class ProofThunk:
 
 class ProofExp:
     _axioms: list[Pattern]
-    _notations: list[Notation]
     _claims: list[Pattern]
     _proof_expressions: list[ProofThunk]
 
@@ -48,12 +47,10 @@ class ProofExp:
     def __init__(
         self,
         axioms: list[Pattern] | None = None,
-        notations: list[Notation] | None = None,
         claims: list[Pattern] | None = None,
         proof_expressions: list[ProofThunk] | None = None,
     ) -> None:
         self._axioms = [] if axioms is None else axioms
-        self._notations = [] if notations is None else notations
         self._claims = [] if claims is None else claims
         self._proof_expressions = [] if proof_expressions is None else proof_expressions
         self._submodules = []
@@ -74,17 +71,6 @@ class ProofExp:
 
     def get_axioms(self) -> list[Pattern]:
         return list(self._axioms)  # Avoid reference leaking
-
-    def add_notation(self, notation: Notation) -> None:
-        if notation not in self._notations:
-            self._notations.append(notation)
-
-    def add_notations(self, notations: list[Notation]) -> None:
-        for notation in notations:
-            self.add_notation(notation)
-
-    def get_notations(self) -> list[Notation]:
-        return list(self._notations)  # Avoid reference leaking
 
     def add_claim(self, claim: Pattern) -> None:
         assert claim not in self._claims
@@ -112,7 +98,6 @@ class ProofExp:
 
     def import_module(self, module: ProofExpTypeVar) -> ProofExpTypeVar:
         self._submodules.append(module)
-        self.add_notations(module.get_notations())
         return module
 
     # Proof Rules
@@ -235,9 +220,6 @@ class ProofExp:
             for warning in interpreter.interpreting_warnings:
                 print(warning)
 
-    def pretty_options(self) -> PrettyOptions:
-        return PrettyOptions()
-
     def prettyprint(self, file_path: Path) -> None:
         self.execute_full(
             PrettyPrintingInterpreter(
@@ -246,7 +228,7 @@ class ProofExp:
                 out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
                 claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
                 proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
-                pretty_options=self.pretty_options(),
+                pretty_options=PrettyOptions(),
             )
         )
 

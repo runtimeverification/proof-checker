@@ -650,14 +650,12 @@ def test_collect_functional_axioms() -> None:
     ],
 )
 def test_pretty_print_functional_axioms(pat: Pattern, pretty_pat: str) -> None:
-    pretty_opt = KoreLemmas().pretty_options()
-    assert pat.pretty(pretty_opt) == pretty_pat
+    assert str(pat) == pretty_pat
 
 
 def test_locate_simplifications() -> None:
     semantics = node_tree()
-    proof_expr = KoreLemmas()
-    proof_expr.add_notations(list(semantics.notations))
+    KoreLemmas()
 
     init_rewrite = semantics.get_axiom(0)
     next_rewrite = semantics.get_axiom(1)
