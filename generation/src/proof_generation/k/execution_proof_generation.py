@@ -217,8 +217,8 @@ class ExecutionProofExp(proof.ProofExp):
         return proof
 
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
-        with self._simplification_performer as visitor:
-            visitor.apply_simplification(ordinal, substitution, location)
+        with self._simplification_performer as performer:
+            performer.apply_simplification(ordinal, substitution, location)
             # TODO: Do some proving here ...
 
         # Update the current configuration

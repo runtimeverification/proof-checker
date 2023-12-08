@@ -189,7 +189,7 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
 
 
-def test_visitor_get_subterm():
+def test_performer_get_subterm():
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
@@ -207,18 +207,18 @@ def test_visitor_get_subterm():
     subpattern3 = a_symbol.app()
     subpattern4 = b_symbol.app()
 
-    visitor = SimplificationPerformer(semantics, intermidiate_config)
+    performer = SimplificationPerformer(semantics, intermidiate_config)
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
-    assert visitor.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
+    assert performer.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
     # ksym_reverse -> node(a, b)
-    assert visitor.get_subterm((0,), subpattern1) == subpattern2
+    assert performer.get_subterm((0,), subpattern1) == subpattern2
     # ksym_reverse -> node -> a
-    assert visitor.get_subterm((0, 0), subpattern1) == subpattern3
+    assert performer.get_subterm((0, 0), subpattern1) == subpattern3
     # ksym_reverse -> node -> b
-    assert visitor.get_subterm((0, 1), subpattern1) == subpattern4
+    assert performer.get_subterm((0, 1), subpattern1) == subpattern4
 
 
-def test_visitor_update_subterm():
+def test_performer_update_subterm():
     # Semantics and symbols
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
@@ -234,8 +234,8 @@ def test_visitor_update_subterm():
         initial_kcell_value,
     )
 
-    # Create the visitor
-    visitor = SimplificationPerformer(semantics, intermidiate_config)
+    # Create the performer
+    performer = SimplificationPerformer(semantics, intermidiate_config)
 
     # Test from the get_subpattern function
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
@@ -243,7 +243,7 @@ def test_visitor_update_subterm():
     pattern = intermidiate_config
     plug = a_symbol.app()
     expected_result = tree_semantics_config_pattern(semantics, 'SortTree', plug)
-    assert visitor.update_subterm(location, pattern, plug) == expected_result
+    assert performer.update_subterm(location, pattern, plug) == expected_result
 
     # Update tge subpattern for the whole configuration
     # ksym_generated_top -> ksym_k -> ksym_inj -> ksym_node -> ksym_reverse -> ksym_b
@@ -259,7 +259,7 @@ def test_visitor_update_subterm():
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), a_symbol.app()),
     )
-    assert visitor.update_subterm(location, pattern, plug) == result
+    assert performer.update_subterm(location, pattern, plug) == result
 
     # Update the subpattern for a subterm without cells
     # node -> ksym_reverse
@@ -267,10 +267,10 @@ def test_visitor_update_subterm():
     pattern = node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app()))
     plug = b_symbol.app()
     result = node_symbol.app(reverse_symbol.app(a_symbol.app()), b_symbol.app())
-    assert visitor.update_subterm(location, pattern, plug) == result
+    assert performer.update_subterm(location, pattern, plug) == result
 
 
-def test_visitor_apply_substitution():
+def test_performer_apply_substitution():
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
@@ -292,7 +292,7 @@ def test_visitor_apply_substitution():
     assert substituted == expected
 
 
-def test_visitor_update_config():
+def test_performer_update_config():
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
@@ -310,31 +310,31 @@ def test_visitor_update_config():
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
 
-    visitor = SimplificationPerformer(semantics, intermidiate_config1)
-    assert visitor.simplified_configuration == intermidiate_config1
+    performer = SimplificationPerformer(semantics, intermidiate_config1)
+    assert performer.simplified_configuration == intermidiate_config1
 
     # Update the configuration
-    visitor.update_configuration(intermidiate_config2)
-    assert visitor.simplified_configuration == intermidiate_config2
+    performer.update_configuration(intermidiate_config2)
+    assert performer.simplified_configuration == intermidiate_config2
 
     # Reset the state
-    visitor = SimplificationPerformer(semantics, intermidiate_config1)
-    visitor.update_configuration(intermidiate_config2)
+    performer = SimplificationPerformer(semantics, intermidiate_config1)
+    performer.update_configuration(intermidiate_config2)
     with pytest.raises(AssertionError):
-        with visitor:
-            visitor.apply_simplification(2, {}, (0, 0))
-            visitor.update_configuration(intermidiate_config1)
+        with performer:
+            performer.apply_simplification(2, {}, (0, 0))
+            performer.update_configuration(intermidiate_config1)
 
     # But it is possible to update the configuration after the simplification
     simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
     simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
-    visitor = SimplificationPerformer(semantics, simple_config_before)
-    with visitor:
-        visitor.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
-    assert visitor._simplification_stack == []
-    assert visitor.simplified_configuration == simple_config_after
-    visitor.update_configuration(intermidiate_config1)
-    assert visitor.simplified_configuration == intermidiate_config1
+    performer = SimplificationPerformer(semantics, simple_config_before)
+    with performer:
+        performer.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
+    assert performer._simplification_stack == []
+    assert performer.simplified_configuration == simple_config_after
+    performer.update_configuration(intermidiate_config1)
+    assert performer.simplified_configuration == intermidiate_config1
 
 
 def test_subpattern_batch():
