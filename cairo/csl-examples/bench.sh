@@ -1,4 +1,5 @@
 #!/bin/bash
+# Usage: ./bench.sh <output_file>
 
 PWD=$(pwd);
 for d in */; do
