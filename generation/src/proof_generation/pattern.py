@@ -113,6 +113,13 @@ class Pattern:
         assert ret is not None, f'Expected a/an {cls.__name__} but got instead: {str(pattern)}\n'
         return ret
 
+    def apply_esubsts(self, substitutions: dict[int, Pattern]) -> Pattern:
+        pattern = self
+        # TODO: We need apply all substitutions at once as we might want changing plugs also
+        for evar_name, plug in substitutions.items():
+            pattern = pattern.apply_esubst(evar_name, plug)
+        return pattern
+
 
 @dataclass(frozen=True)
 class EVar(Pattern):
