@@ -18,18 +18,18 @@ class InterpreterTransformer(Interpreter):
     or remove redundant patterns.
     Note that transformers can, in general, be arbitrarily nested.
     sub_interpreter refers to the wrapped interpreter, while
-    innermost_interpreter refers to the base (non-transformer)
+    core_interpreter refers to the base (non-transformer)
     interpreter (which doesn't wrap an interpreter).
     """
 
     def __init__(self, sub_interpreter: Interpreter):
         super().__init__(sub_interpreter.phase)
         self.sub_interpreter = sub_interpreter
-        self.innermost_interpreter: Interpreter
+        self.core_interpreter: Interpreter
         if isinstance(sub_interpreter, InterpreterTransformer):
-            self.innermost_interpreter = sub_interpreter.innermost_interpreter
+            self.core_interpreter = sub_interpreter.core_interpreter
         else:
-            self.innermost_interpreter = sub_interpreter
+            self.core_interpreter = sub_interpreter
 
     def into_claim_phase(self) -> None:
         super().into_claim_phase()

@@ -43,7 +43,8 @@ class MemoizingInterpreter(InterpreterTransformer):
             self._patterns_for_memoization = patterns_for_memoization
 
     def pattern(self, p: Pattern) -> Pattern:
-        if isinstance(self.sub_interpreter, StatefulInterpreter) and p in self.sub_interpreter.memory:
+        assert isinstance(self.core_interpreter, StatefulInterpreter)
+        if p in self.core_interpreter.memory:
             self.load(str(p), p)
             return p
         elif p in self._patterns_for_memoization:
