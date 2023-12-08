@@ -131,7 +131,7 @@ def node_tree() -> LanguageSemantics:
                 tree_top,
                 kore_and(
                     tree_sort,
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, EVar(1), a_symbol.app())),
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, a_symbol.app(), EVar(1))),
                     tree_top,
                 ),
             )
@@ -151,7 +151,7 @@ def node_tree() -> LanguageSemantics:
                 tree_top,
                 kore_and(
                     tree_sort,
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, EVar(1), b_symbol.app())),
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, b_symbol.app(), EVar(1))),
                     tree_top,
                 ),
             )
