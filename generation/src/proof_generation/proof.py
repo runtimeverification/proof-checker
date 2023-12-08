@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, TypeVar
 from proof_generation.claim import Claim
 from proof_generation.counting_interpreter import CountingInterpreter
 from proof_generation.interpreter import ExecutionPhase
-from proof_generation.optimizing_interpreters import MemoizingInterpreter
+from proof_generation.optimizing_interpreters import InstantiationOptimizer, MemoizingInterpreter
 from proof_generation.pattern import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
 from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
 from proof_generation.proved import Proved
@@ -272,7 +272,7 @@ class ProofExp:
         if optimize:
             analyzer = CountingInterpreter(ExecutionPhase.Gamma, claims)
             self.execute_full(analyzer)
-            self.execute_full(MemoizingInterpreter(serializer, analyzer.finalize()))
+            self.execute_full(MemoizingInterpreter(InstantiationOptimizer(serializer), analyzer.finalize()))
         else:
             self.execute_full(serializer)
 
@@ -289,7 +289,7 @@ class ProofExp:
         argparser.add_argument(
             'output_format',
             type=OutputFormat,
-            help='The proof output format, which can either be binary or pretty-printed',
+            help='The proof output format: "binary" or "pretty"',
         )
         argparser.add_argument('output_dir', type=str, help='The path to the output directory')
         argparser.add_argument('slice_name', type=str, help='The input slice name')

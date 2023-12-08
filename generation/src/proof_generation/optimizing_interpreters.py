@@ -9,12 +9,13 @@ from .stateful_interpreter import StatefulInterpreter
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from .interpreter import Interpreter
     from .pattern import Pattern
     from .proved import Proved
 
 
 class InstantiationOptimizer(InterpreterTransformer):
-    def __init__(self, sub_interpreter: BasicInterpreter):
+    def __init__(self, sub_interpreter: Interpreter):
         super().__init__(sub_interpreter)
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:
@@ -33,7 +34,7 @@ class InstantiationOptimizer(InterpreterTransformer):
 
 
 class MemoizingInterpreter(InterpreterTransformer):
-    def __init__(self, sub_interpreter: BasicInterpreter, patterns_for_memoization: set[Pattern] | None = None):
+    def __init__(self, sub_interpreter: Interpreter, patterns_for_memoization: set[Pattern] | None = None):
         super().__init__(sub_interpreter)
         self._patterns_for_memoization: set[Pattern]
         if patterns_for_memoization is None:
@@ -42,7 +43,8 @@ class MemoizingInterpreter(InterpreterTransformer):
             self._patterns_for_memoization = patterns_for_memoization
 
     def pattern(self, p: Pattern) -> Pattern:
-        if isinstance(self.sub_interpreter, StatefulInterpreter) and p in self.sub_interpreter.memory:
+        assert isinstance(self.core_interpreter, StatefulInterpreter)
+        if p in self.core_interpreter.memory:
             self.load(str(p), p)
             return p
         elif p in self._patterns_for_memoization:
