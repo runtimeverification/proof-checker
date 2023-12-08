@@ -62,7 +62,7 @@ sigma2 = Symbol('s2')
             sigma1,
             App(ESubst(phi2, EVar(0), sigma1), ESubst(phi1, EVar(0), sigma1)),
         ],
-    ]
+    ],
 )
 def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: Pattern) -> None:
     assert pattern.apply_esubst(evar_id, plug) == expected
