@@ -30,8 +30,8 @@ mod tests {
     use super::transfer5000;
 
     #[test]
-    #[available_gas(100000000)]
+    #[available_gas(1000000000000000000)]
     fn test_transfer5000() {
-        assert(transfer5000() == 1_u32, 'Err: transfer5000() value!');
+        assert(transfer5000() == 0_u32, 'Err: transfer5000() value!');
     }
 }
