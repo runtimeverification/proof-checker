@@ -34,13 +34,9 @@ class InstantiationOptimizer(InterpreterTransformer):
 
 
 class MemoizingInterpreter(InterpreterTransformer):
-    def __init__(self, sub_interpreter: Interpreter, patterns_for_memoization: set[Pattern] | None = None):
+    def __init__(self, sub_interpreter: Interpreter, patterns_for_memoization: set[Pattern]):
         super().__init__(sub_interpreter)
-        self._patterns_for_memoization: set[Pattern]
-        if patterns_for_memoization is None:
-            self._patterns_for_memoization = set()
-        else:
-            self._patterns_for_memoization = patterns_for_memoization
+        self._patterns_for_memoization = patterns_for_memoization
 
     def pattern(self, p: Pattern) -> Pattern:
         assert isinstance(self.core_interpreter, StatefulInterpreter)
