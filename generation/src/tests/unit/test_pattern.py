@@ -118,6 +118,22 @@ def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: P
     assert pattern.apply_ssubst(svar_id, plug) == expected
 
 
+@pytest.mark.parametrize(
+    'pattern, plugs, expected',
+    [
+        # Atomic cases
+        [EVar(0), {0: sigma1}, sigma1],
+        [EVar(0), {0: EVar(2)}, EVar(2)],
+        [EVar(0), {1: EVar(2)}, EVar(0)],
+        # Several plugs
+        [Implies(EVar(0), EVar(1)), {0: sigma0}, Implies(sigma0, EVar(1))],
+        [Implies(EVar(0), EVar(1)), {0: sigma0, 1: sigma1}, Implies(sigma0, sigma1)],
+    ],
+)
+def test_apply_esubsts(pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern) -> None:
+    assert pattern.apply_esubsts(plugs) == expected
+
+
 def test_metavars() -> None:
     assert phi0.metavars() == {0}
     assert Implies(phi0, phi1).metavars() == {0, 1}

@@ -344,7 +344,7 @@ test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 
 .build/proofs/%.pretty-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
-	$(POETRY_RUN) python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
+	$(POETRY_RUN) python -m "proof_generation.proofs.$*" pretty $(dir $@) $* --optimize
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff
