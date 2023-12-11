@@ -224,7 +224,7 @@ class KoreLemmas(ProofExp):
         phi[p1/x] k= phi[p2/x]
         """
 
-        inner_sort, outer_sort, left, right = kore_equals.assert_matches(equality.conc)
+        inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(equality.conc)
         return self.modus_ponens(
             self.dynamic_inst(
                 self.load_axiom(keq_substitution_axiom), {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi}

@@ -522,16 +522,14 @@ MetaVar 1
 	1: ⌈ x0 ⌉
 	2: phi0
 	3: phi1
-MetaVar 2eFresh, len=1 x0 
-
+MetaVar 2
 	Stack:
 	0: ((∃ x0 . (phi0 = x0)) -> ((phi0 -> (μ X0 . X0)[{}])[{0: "(∃ x1 . (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}])"}][{0: 'phi1'}] -> phi1[phi0/x1]))
 	1: ⌈ x0 ⌉
 	2: phi0
 	3: phi1
 	4: phi2
-MetaVar 3eFresh, len=1 x0 
-
+MetaVar 3
 	Stack:
 	0: ((∃ x0 . (phi0 = x0)) -> ((phi0 -> (μ X0 . X0)[{}])[{0: "(∃ x1 . (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}])"}][{0: 'phi1'}] -> phi1[phi0/x1]))
 	1: ⌈ x0 ⌉
@@ -4900,8 +4898,7 @@ MetaVar 1
 	2: (phi2:phi0 k= phi3:phi0):phi1
 	3: phi0
 	4: phi1
-MetaVar 2eFresh, len=1 x0 
-
+MetaVar 2
 	Stack:
 	0: ((∃ x0 . (phi0 = x0)) -> ((phi0 -> (μ X0 . X0)[{}])[{0: "(∃ x1 . (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}])"}][{0: 'phi1'}] -> phi1[phi0/x1]))
 	1: ⌈ x0 ⌉
@@ -4927,8 +4924,7 @@ ESubst id=0
 	3: phi0
 	4: phi1
 	5: phi4[phi2/x0]
-MetaVar 3eFresh, len=1 x0 
-
+MetaVar 3
 	Stack:
 	0: ((∃ x0 . (phi0 = x0)) -> ((phi0 -> (μ X0 . X0)[{}])[{0: "(∃ x1 . (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}])"}][{0: 'phi1'}] -> phi1[phi0/x1]))
 	1: ⌈ x0 ⌉
