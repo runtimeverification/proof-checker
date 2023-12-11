@@ -40,7 +40,7 @@ def test_deconstruct_nary_application() -> None:
     assert deconstruct_nary_application(foo_cell.definition) == (foo_symbol, (phi0, phi1, phi2))
 
 
-def test_equivalence_with_subst() -> None:
+def test_equality_with_subst() -> None:
     theory = KoreLemmas()
 
     sort1 = Symbol('sort1')
@@ -52,6 +52,6 @@ def test_equivalence_with_subst() -> None:
 
     # Test simple case
     thunk = make_pt(kore_equals(sort1, sort2, value_a, value_b))
-    proof = theory.equivalence_with_subst(phi, thunk)
+    proof = theory.equality_with_subst(phi, thunk)
     expected = kore_equals(sort1, sort2, phi.apply_esubst(0, value_a), phi.apply_esubst(0, value_b))
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
