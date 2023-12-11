@@ -4,12 +4,26 @@ import sys
 from functools import cache
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import App, EVar, Exists, Instantiate, MetaVar, Notation, Symbol, _and, _or, bot, neg
+from proof_generation.pattern import (
+    App,
+    EVar,
+    Exists,
+    Implies,
+    Instantiate,
+    MetaVar,
+    Notation,
+    Symbol,
+    _and,
+    _or,
+    bot,
+    neg,
+)
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import Definedness, ceil, subset
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
+    from proof_generation.proof import ProofThunk
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
@@ -184,12 +198,39 @@ KORE_NOTATIONS = (
     in_sort,
 )
 
+# TODO: Prove the axiom
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> (phi4[phi2/x]:{phi0} k= phi4[phi3/x]:{phi0}):{phi1}
+keq_substitution_axiom = Implies(
+    kore_equals(phi0, phi1, phi2, phi3),
+    kore_equals(
+        phi0,
+        phi1,
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi2),
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi3),
+    ),
+)
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(notations=list(KORE_NOTATIONS))
+        super().__init__(axioms=[keq_substitution_axiom], notations=list(KORE_NOTATIONS))
         self.definedness = self.import_module(Definedness())
+
+    def equality_with_subst(self, phi: Pattern, equality: ProofThunk):
+        """
+                p1 k= p2
+        ---------------------------
+        phi[p1/x] k= phi[p2/x]
+        """
+
+        inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(equality.conc)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(keq_substitution_axiom), {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi}
+            ),
+            equality,
+        )
 
 
 if __name__ == '__main__':
