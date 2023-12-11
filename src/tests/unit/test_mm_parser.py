@@ -10,7 +10,7 @@ from proof_generation.metamath.ast import (
 )
 from proof_generation.metamath.parser import load_database
 
-BENCHMARK_LOCATION = 'generation/mm-benchmarks'
+BENCHMARK_LOCATION = 'mm-benchmarks'
 
 
 def test_parse_impreflex() -> None:

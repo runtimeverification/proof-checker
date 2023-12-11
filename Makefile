@@ -1,4 +1,4 @@
-POETRY     := poetry -C generation
+POETRY     := poetry
 POETRY_RUN := $(POETRY) run
 
 default: check test-unit
@@ -18,7 +18,7 @@ clean-kgenerated-proofs:
 	rm -rf .build/proofs/generated-from-k
 
 clean-python:
-	rm -rf generation/dist generation/.coverage generation/cov-* generation/.mypy_cache generation/.pytest_cache
+	rm -rf dist .coverage cov-* .mypy_cache .pytest_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} \;
 
 update-snapshots:
@@ -33,8 +33,7 @@ update-snapshots:
 # =============
 
 build-poetry:
-	# See: https://github.com/python-poetry/poetry/issues/8699
-	(cd generation; poetry build)
+	$(POETRY) build
 
 poetry-install:
 	$(POETRY) install
@@ -115,13 +114,13 @@ test-unit-cargo:
 TEST_ARGS :=
 
 test-python: poetry-install
-	$(POETRY_RUN) pytest generation/src/tests --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
+	$(POETRY_RUN) pytest src/tests --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 test-unit-python: poetry-install
-	$(POETRY_RUN) pytest generation/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
+	$(POETRY_RUN) pytest src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
 test-integration-python: poetry-install test-hints
-	$(POETRY_RUN) pytest generation/src/tests/integration --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
+	$(POETRY_RUN) pytest src/tests/integration --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 # Coverage
 
@@ -147,32 +146,32 @@ format-python: autoflake isort black
 check-python: check-flake8 check-mypy check-autoflake check-isort check-black pyupgrade
 
 check-flake8: poetry-install
-	$(POETRY_RUN) flake8 generation/src
+	$(POETRY_RUN) flake8 src
 
 check-mypy: poetry-install
-	$(POETRY_RUN) mypy generation/src --strict-equality
+	$(POETRY_RUN) mypy src --strict-equality
 
 autoflake: poetry-install
-	$(POETRY_RUN) autoflake --quiet --in-place generation/src
+	$(POETRY_RUN) autoflake --quiet --in-place src
 
 check-autoflake: poetry-install
-	$(POETRY_RUN) autoflake --quiet --check generation/src
+	$(POETRY_RUN) autoflake --quiet --check src
 
 isort: poetry-install
-	$(POETRY_RUN) isort generation/src
+	$(POETRY_RUN) isort src
 
 check-isort: poetry-install
-	$(POETRY_RUN) isort --check generation/src
+	$(POETRY_RUN) isort --check src
 
 black: poetry-install
-	$(POETRY_RUN) black generation/src
+	$(POETRY_RUN) black src
 
 check-black: poetry-install
-	$(POETRY_RUN) black --check generation/src
+	$(POETRY_RUN) black --check src
 
 # Optional tools
 
-PYTHON_FILES := $(shell find generation/src -type f -name '*.py')
+PYTHON_FILES := $(shell find src -type f -name '*.py')
 
 pyupgrade: poetry-install
 	$(POETRY_RUN) pyupgrade --py310-plus $(PYTHON_FILES)
@@ -180,27 +179,27 @@ pyupgrade: poetry-install
 # Proof Hints
 # ===========
 
-ALL_K_FILES=$(wildcard generation/k-benchmarks/*/*)
-K_DEFS=$(wildcard generation/k-benchmarks/*/*.k)
+ALL_K_FILES=$(wildcard k-benchmarks/*/*)
+K_DEFS=$(wildcard k-benchmarks/*/*.k)
 K_BENCHMARKS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
 
 # Filter out currently unsupported examples
-UNSUPPORTED_K_BENCHMARKS=$(wildcard generation/k-benchmarks/imp/*) \
-                         generation/k-benchmarks/imp5/transfer.imp5
+UNSUPPORTED_K_BENCHMARKS=$(wildcard k-benchmarks/imp/*) \
+                         k-benchmarks/imp5/transfer.imp5
 SUPPORTED_K_BENCHMARKS=$(filter-out ${UNSUPPORTED_K_BENCHMARKS}, ${K_BENCHMARKS})
 
 # Proof Hint Generation from LLVM
 # -------------------------------
 
-EXECUTION_HINTS=$(addsuffix .hints, $(patsubst generation/k-benchmarks%,.build/proof-hints%,${SUPPORTED_K_BENCHMARKS}))
+EXECUTION_HINTS=$(addsuffix .hints, $(patsubst k-benchmarks%,.build/proof-hints%,${SUPPORTED_K_BENCHMARKS}))
 
 .SECONDEXPANSION:
 module=$(patsubst %/,%, $(dir $*))
-.build/proof-hints/%.hints: generation/k-benchmarks/% .build/kompiled-definitions/$$(module)-kompiled/timestamp
+.build/proof-hints/%.hints: k-benchmarks/% .build/kompiled-definitions/$$(module)-kompiled/timestamp
 	mkdir -p .build/proof-hints/$(dir $*)
-	./generation/scripts/gen-execution-proof-hints.sh \
-		generation/k-benchmarks/$(dir $*)$(module).k \
-		generation/k-benchmarks/$* \
+	./scripts/gen-execution-proof-hints.sh \
+		k-benchmarks/$(dir $*)$(module).k \
+		k-benchmarks/$* \
 		.build/proof-hints/$*.hints
 
 generate-hints: $(EXECUTION_HINTS)
@@ -259,7 +258,7 @@ TRANSLATED_FROM_K=$(wildcard proofs/generated-from-k/*/*.ml-proof)
 
 .build/proofs/translated/%.ml-proof: FORCE
 	@mkdir -p $(dir $@)
-	$(POETRY_RUN) python -m "proof_generation.metamath.translate" generation/mm-benchmarks/$*.mm .build/proofs/translated/$* goal
+	$(POETRY_RUN) python -m "proof_generation.metamath.translate" mm-benchmarks/$*.mm .build/proofs/translated/$* goal
 
 PROOF_TRANSLATION_TARGETS=$(addsuffix .translate,${TRANSLATED_PROOFS})
 proofs/translated/%.ml-proof.translate: .build/proofs/translated/%.ml-proof
@@ -273,7 +272,7 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 # ---------------------
 
 .SECONDEXPANSION:
-.build/kompiled-definitions/%-kompiled/timestamp: generation/k-benchmarks/$$*/$$*.k
+.build/kompiled-definitions/%-kompiled/timestamp: k-benchmarks/$$*/$$*.k
 	mkdir -p .build/kompiled-definitions/
 	kompile --backend llvm --output-definition $(dir $@) $<
 
@@ -286,12 +285,12 @@ KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 module=$(patsubst %/,%, $(dir $*))
 proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints proofs/generated-from-k/%.ml-proof
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              k-benchmarks/$(dir $*)$(module).k \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir proofs/generated-from-k/$(dir $*)
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              k-benchmarks/$(dir $*)$(module).k \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir proofs/generated-from-k/$(dir $*) \
@@ -308,14 +307,14 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 module=$(patsubst %/,%, $(dir $*))
 .build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              k-benchmarks/$(dir $*)$(module).k \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir .build/proofs/generated-from-k/$(dir $*)
 
 .build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              k-benchmarks/$(dir $*)$(module).k \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir .build/proofs/generated-from-k/$(dir $*) \
@@ -338,11 +337,11 @@ test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 # Proof generation
 # ----------------
 
-.build/proofs/%.ml-proof: FORCE generation/src/proof_generation/proofs/%.py
+.build/proofs/%.ml-proof: FORCE src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
 	$(POETRY_RUN) python -m "proof_generation.proofs.$*" binary $(dir $@) $* --optimize
 
-.build/proofs/%.pretty-proof: FORCE generation/src/proof_generation/proofs/%.py
+.build/proofs/%.pretty-proof: FORCE src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
 	$(POETRY_RUN) python -m "proof_generation.proofs.$*" pretty $(dir $@) $* --optimize
 

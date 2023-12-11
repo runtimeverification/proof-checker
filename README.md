@@ -105,7 +105,7 @@ Currently we only profile normal execution of the checker (as opposed to `Risc0`
 Generating Proof Hints
 ======================
 
-We provide [this script](generation/scripts/gen-execution-proof-hints.sh) to
+We provide [this script](scripts/gen-execution-proof-hints.sh) to
 generate proof hints for a concrete execution of a given program. The script
 expects as arguments: (1) a K definition, (2) a program to execute using that
 definition, and (3) the output file name where the generated proof hints are
@@ -113,10 +113,10 @@ stored.
 
 An example invocation of the script is shown below:
 ```
-./generation/scripts/gen-execution-proof-hints.sh \
-   generation/k-benchmarks/single-rewrite/single-rewrite.k \
-   generation/k-benchmarks/single-rewrite/foo-a.single-rewrite \
-   generation/proof-hints/foo-a.single-rewrite.hints
+./scripts/gen-execution-proof-hints.sh \
+   k-benchmarks/single-rewrite/single-rewrite.k \
+   k-benchmarks/single-rewrite/foo-a.single-rewrite \
+   proof-hints/foo-a.single-rewrite.hints
 ```
 
 Note that the script assumes that the project is compiled, with a recent-enough
