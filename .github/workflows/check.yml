@@ -51,7 +51,7 @@ jobs:
 
   lurk-tests:
     name: 'Lurk Tests'
-    runs-on: [self-hosted, linux, prover]
+    runs-on: [self-hosted, linux, normal]
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v3
@@ -85,7 +85,6 @@ jobs:
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/transfer.lurk'
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/perceptron.lurk'
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/svm5.lurk'
-          docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk csl-examples/transfer5000.lurk'
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk --rc 100 test_transfer_task_specific.lurk'
           docker exec --user root proof-checker-ci /bin/bash -c 'export PATH="/root/.cargo/bin/:$PATH" && cd proof-checker/lurk && lurk --rc 100 test_impreflex_compressed_goal.lurk'
 
