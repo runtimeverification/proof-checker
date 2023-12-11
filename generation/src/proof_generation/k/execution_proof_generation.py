@@ -224,6 +224,25 @@ class ExecutionProofExp(proof.ProofExp):
         # Update the current configuration
         self._curr_config = self._simplification_performer.simplified_configuration
 
+    def prove_simplification(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> proof.ProofThunk:
+        # Get the rule from the semantics
+        rule = self.language_semantics.get_axiom(ordinal)
+        assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
+
+        # TODO: Get the configuration with a hole
+        
+        # TODO: Get the rule with simplifications from hints
+
+        # TODO: Get rid of side simplfications
+
+        # TODO: Get the equation as a proof thunk
+
+        # TODO: Get rid of the right hand side Top
+
+        # TODO: Apply the axiom to get equality for configurations
+        
+        raise NotImplementedError()
+
     def finalize(self) -> None:
         """Prepare proof expression for the final reachability claim"""
         # TODO: Prove the final reachability claim
