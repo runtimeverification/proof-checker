@@ -223,7 +223,6 @@ class KoreLemmas(ProofExp):
         ---------------------------
         phi0[p1/x] k= phi0[p2/x]
         """
-        # TODO: How are we going to check that x is app context hole?
 
         inner_sort, outer_sort, left, right = kore_equals.assert_matches(equivalence.conc)
         return self.modus_ponens(
