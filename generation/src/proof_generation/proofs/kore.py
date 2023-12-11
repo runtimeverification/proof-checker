@@ -217,7 +217,7 @@ class KoreLemmas(ProofExp):
         super().__init__(axioms=[keq_substitution_axiom], notations=list(KORE_NOTATIONS))
         self.definedness = self.import_module(Definedness())
 
-    def equivalence_with_subst(self, phi: Pattern, equivalence: ProofThunk):
+    def equality_with_subst(self, phi: Pattern, equality: ProofThunk):
         """
                 p1 k= p2
         ---------------------------
