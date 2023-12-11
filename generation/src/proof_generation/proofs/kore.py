@@ -205,8 +205,8 @@ keq_substitution_axiom = Implies(
     kore_equals(
         phi0,
         phi1,
-        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, MetaVar(2, e_fresh=(EVar(0),))),
-        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, MetaVar(3, e_fresh=(EVar(0),))),
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi2),
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi3),
     ),
 )
 
