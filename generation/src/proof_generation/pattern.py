@@ -78,7 +78,7 @@ def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None
 
 
 class Pattern:
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         raise NotImplementedError
 
     def metavars(self) -> set[int]:
@@ -125,7 +125,7 @@ class Pattern:
 class EVar(Pattern):
     name: int
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return name != self.name
 
     def metavars(self) -> set[int]:
@@ -161,7 +161,7 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return True
 
     def metavars(self) -> set[int]:
@@ -197,7 +197,7 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: str
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return True
 
     def metavars(self) -> set[int]:
@@ -232,8 +232,8 @@ class Implies(Pattern):
     left: Pattern
     right: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.left.evar_is_free(name) and self.right.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.left.evar_is_fresh(name) and self.right.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
@@ -265,8 +265,8 @@ class App(Pattern):
     left: Pattern
     right: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.left.evar_is_free(name) and self.right.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.left.evar_is_fresh(name) and self.right.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
@@ -294,8 +294,8 @@ class Exists(Pattern):
     var: int
     subpattern: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return name == self.var or self.subpattern.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return name == self.var or self.subpattern.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
@@ -333,8 +333,8 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.subpattern.evar_is_free(name)
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.subpattern.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
@@ -379,7 +379,7 @@ class MetaVar(Pattern):
     def metavars(self) -> set[int]:
         return {self.name}
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         return EVar(name) in self.e_fresh
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
@@ -422,12 +422,12 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         if self.var.name == name:
-            return self.plug.evar_is_free(name)
+            return self.plug.evar_is_fresh(name)
 
         # We assume that at least one instance will be replaced
-        return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
+        return self.pattern.evar_is_fresh(name) and self.plug.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
@@ -456,9 +456,9 @@ class SSubst(Pattern):
     var: SVar
     plug: Pattern
 
-    def evar_is_free(self, name: int) -> bool:
+    def evar_is_fresh(self, name: int) -> bool:
         # We assume that at least one instance will be replaced
-        return self.pattern.evar_is_free(name) and self.plug.evar_is_free(name)
+        return self.pattern.evar_is_fresh(name) and self.plug.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
@@ -503,8 +503,8 @@ class Instantiate(Pattern):
         # TODO: This should recursively remove all notation.
         return self.simplify() == o
 
-    def evar_is_free(self, name: int) -> bool:
-        return self.pattern.evar_is_free(name) or any(value.evar_is_free(name) for value in self.inst.values())
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.pattern.evar_is_fresh(name) or any(value.evar_is_fresh(name) for value in self.inst.values())
 
     def metavars(self) -> set[int]:
         ret: set[int] = set()
