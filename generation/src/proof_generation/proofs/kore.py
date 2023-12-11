@@ -199,7 +199,7 @@ KORE_NOTATIONS = (
 )
 
 # TODO: Prove the axiom
-# (phi2:{phi0} k= phi3:{phi1}) -> (phi4[phi2/x]:{phi0} k= phi4[phi3/x]:{phi0}):{phi1}
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> (phi4[phi2/x]:{phi0} k= phi4[phi3/x]:{phi0}):{phi1}
 keq_substitution_axiom = Implies(
     kore_equals(phi0, phi1, phi2, phi3),
     kore_equals(
