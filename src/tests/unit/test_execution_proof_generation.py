@@ -189,7 +189,7 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
 
 
-def test_performer_get_subterm():
+def test_performer_get_subterm() -> None:
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
@@ -218,7 +218,7 @@ def test_performer_get_subterm():
     assert performer.get_subterm((0, 1), subpattern1) == subpattern4
 
 
-def test_performer_update_subterm():
+def test_performer_update_subterm() -> None:
     # Semantics and symbols
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
@@ -239,7 +239,7 @@ def test_performer_update_subterm():
 
     # Test from the get_subpattern function
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
-    location = (0, 0, 0)
+    location: tuple[int, ...] = (0, 0, 0)
     pattern = intermidiate_config
     plug = a_symbol.app()
     expected_result = tree_semantics_config_pattern(semantics, 'SortTree', plug)
@@ -270,7 +270,7 @@ def test_performer_update_subterm():
     assert performer.update_subterm(location, pattern, plug) == result
 
 
-def test_performer_apply_substitution():
+def test_performer_apply_substitution() -> None:
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
@@ -292,7 +292,7 @@ def test_performer_apply_substitution():
     assert substituted == expected
 
 
-def test_performer_update_config():
+def test_performer_update_config() -> None:
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
@@ -337,7 +337,7 @@ def test_performer_update_config():
     assert performer.simplified_configuration == intermidiate_config1
 
 
-def test_subpattern_batch():
+def test_subpattern_batch() -> None:
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
