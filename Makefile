@@ -1,4 +1,4 @@
-POETRY     := poetry -C
+POETRY     := poetry
 POETRY_RUN := $(POETRY) run
 
 default: check test-unit
