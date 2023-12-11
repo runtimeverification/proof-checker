@@ -246,7 +246,7 @@ class ExecutionProofExp(proof.ProofExp):
                 raise NotImplementedError('TODO: Add support for equational rules')
 
         if proof_expr is None:
-            print('WARNING: The proof expression is empty, ho hints were provided.')
+            print('WARNING: The proof expression is empty, no hints were provided.')
             return proof.ProofExp(notations=list(language_semantics.notations))
         else:
             return proof_expr
