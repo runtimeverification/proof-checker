@@ -199,14 +199,14 @@ KORE_NOTATIONS = (
 )
 
 # TODO: Prove the axiom
-# (phi2:{phi0} k= phi3:{phi1}) -> (phi5[phi2/x]:{phi0} k= phi5[phi3/x]:{phi0}):{phi1}
+# (phi2:{phi0} k= phi3:{phi1}) -> (phi4[phi2/x]:{phi0} k= phi4[phi3/x]:{phi0}):{phi1}
 keq_substitution_axiom = Implies(
     kore_equals(phi0, phi1, MetaVar(2, e_fresh=(EVar(0),)), MetaVar(3, e_fresh=(EVar(0),))),
     kore_equals(
         phi0,
         phi1,
-        MetaVar(5, app_ctx_holes=(EVar(0),)).apply_esubst(0, MetaVar(2, e_fresh=(EVar(0),))),
-        MetaVar(5, app_ctx_holes=(EVar(0),)).apply_esubst(0, MetaVar(3, e_fresh=(EVar(0),))),
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, MetaVar(2, e_fresh=(EVar(0),))),
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, MetaVar(3, e_fresh=(EVar(0),))),
     ),
 )
 
@@ -217,13 +217,21 @@ class KoreLemmas(ProofExp):
         super().__init__(axioms=[keq_substitution_axiom], notations=list(KORE_NOTATIONS))
         self.definedness = self.import_module(Definedness())
 
-    def equivalence_with_subst(self, equivalence: ProofThunk):
+    def equivalence_with_subst(self, phi: Pattern, equivalence: ProofThunk):
         """
                 p1 k= p2
         ---------------------------
         phi0[p1/x] k= phi0[p2/x]
         """
-        raise NotImplementedError
+        # TODO: How are we going to check that x is app context hole?
+
+        inner_sort, outer_sort, left, right = kore_equals.assert_matches(equivalence.conc)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(keq_substitution_axiom), {0: inner_sort, 1: outer_sort, 2: left, 3: right, 4: phi}
+            ),
+            equivalence,
+        )
 
 
 if __name__ == '__main__':
