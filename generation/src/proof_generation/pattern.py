@@ -78,8 +78,11 @@ def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None
 
 
 class Pattern:
-    def evar_is_fresh(self, name: int) -> bool:
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         raise NotImplementedError
+
+    def evar_is_fresh(self, name: int) -> bool:
+        return self.evar_is_fresh_ignoring_metavars(name, frozenset())
 
     def metavars(self) -> set[int]:
         raise NotImplementedError
@@ -125,7 +128,7 @@ class Pattern:
 class EVar(Pattern):
     name: int
 
-    def evar_is_fresh(self, name: int) -> bool:
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return name != self.name
 
     def metavars(self) -> set[int]:
@@ -161,7 +164,7 @@ class EVar(Pattern):
 class SVar(Pattern):
     name: int
 
-    def evar_is_fresh(self, name: int) -> bool:
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return True
 
     def metavars(self) -> set[int]:
@@ -197,7 +200,7 @@ class SVar(Pattern):
 class Symbol(Pattern):
     name: str
 
-    def evar_is_fresh(self, name: int) -> bool:
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return True
 
     def metavars(self) -> set[int]:
@@ -232,8 +235,10 @@ class Implies(Pattern):
     left: Pattern
     right: Pattern
 
-    def evar_is_fresh(self, name: int) -> bool:
-        return self.left.evar_is_fresh(name) and self.right.evar_is_fresh(name)
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
+        return self.left.evar_is_fresh_ignoring_metavars(
+            name, ignored_metavars
+        ) and self.right.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
@@ -265,8 +270,10 @@ class App(Pattern):
     left: Pattern
     right: Pattern
 
-    def evar_is_fresh(self, name: int) -> bool:
-        return self.left.evar_is_fresh(name) and self.right.evar_is_fresh(name)
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
+        return self.left.evar_is_fresh_ignoring_metavars(
+            name, ignored_metavars
+        ) and self.right.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
@@ -294,8 +301,8 @@ class Exists(Pattern):
     var: int
     subpattern: Pattern
 
-    def evar_is_fresh(self, name: int) -> bool:
-        return name == self.var or self.subpattern.evar_is_fresh(name)
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
+        return name == self.var or self.subpattern.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
@@ -333,8 +340,8 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
-    def evar_is_fresh(self, name: int) -> bool:
-        return self.subpattern.evar_is_fresh(name)
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
+        return self.subpattern.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
@@ -379,8 +386,8 @@ class MetaVar(Pattern):
     def metavars(self) -> set[int]:
         return {self.name}
 
-    def evar_is_fresh(self, name: int) -> bool:
-        return EVar(name) in self.e_fresh
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
+        return self.name in ignored_metavars or EVar(name) in self.e_fresh
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
         # TODO implement this function by checking constraints
@@ -422,12 +429,14 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
-    def evar_is_fresh(self, name: int) -> bool:
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         if self.var.name == name:
-            return self.plug.evar_is_fresh(name)
+            return self.plug.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
         # We assume that at least one instance will be replaced
-        return self.pattern.evar_is_fresh(name) and self.plug.evar_is_fresh(name)
+        return self.pattern.evar_is_fresh_ignoring_metavars(
+            name, ignored_metavars
+        ) and self.plug.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
@@ -456,9 +465,11 @@ class SSubst(Pattern):
     var: SVar
     plug: Pattern
 
-    def evar_is_fresh(self, name: int) -> bool:
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         # We assume that at least one instance will be replaced
-        return self.pattern.evar_is_fresh(name) and self.plug.evar_is_fresh(name)
+        return self.pattern.evar_is_fresh_ignoring_metavars(
+            name, ignored_metavars
+        ) and self.plug.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
@@ -503,8 +514,10 @@ class Instantiate(Pattern):
         # TODO: This should recursively remove all notation.
         return self.simplify() == o
 
-    def evar_is_fresh(self, name: int) -> bool:
-        return self.pattern.evar_is_fresh(name) or any(value.evar_is_fresh(name) for value in self.inst.values())
+    def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
+        return self.pattern.evar_is_fresh_ignoring_metavars(name, ignored_metavars.union(self.inst.keys())) and all(
+            value.evar_is_fresh_ignoring_metavars(name, ignored_metavars) for value in self.inst.values()
+        )
 
     def metavars(self) -> set[int]:
         ret: set[int] = set()
@@ -521,16 +534,16 @@ class Instantiate(Pattern):
         return Instantiate(self.pattern.instantiate(unshadowed_delta), instantiated_subst)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        # TODO: For "complete" substitutions (where all free metavars are replaced),
-        # and the substituted EVar does not occur, we should preserve the Instantiate,
-        # and apply the esubst to self.inst.
-        return self.simplify().apply_esubst(evar_id, plug)
+        assert self.pattern.evar_is_fresh_ignoring_metavars(evar_id, frozenset(self.inst.keys()))
+        assert self.pattern.metavars() == set(self.inst.keys())
+        new_inst = frozendict({k: v.apply_esubst(evar_id, plug) for k, v in self.inst.items()})
+        return Instantiate(self.pattern, new_inst)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        # TODO: For "complete" substitutions (where all free metavars are replaced),
-        # and the substituted SVar does not occur, we should preserve the Instantiate,
-        # and apply the ssubst to self.inst.
-        return self.simplify().apply_ssubst(svar_id, plug)
+        # TODO: assert self.pattern.svar_is_fresh_ignoring_metavars(svar_id, frozenset(self.inst.keys()))
+        assert self.pattern.metavars() == set(self.inst.keys())
+        new_inst = frozendict({k: v.apply_ssubst(svar_id, plug) for k, v in self.inst.items()})
+        return Instantiate(self.pattern, new_inst)
 
     def pretty(self, opts: PrettyOptions) -> str:
         if opts.simplify_instantiations:
