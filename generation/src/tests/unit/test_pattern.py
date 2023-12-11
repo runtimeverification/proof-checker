@@ -60,7 +60,9 @@ sigma2 = Symbol('s2')
             Instantiate(App(phi0, phi1), frozendict({0: phi2, 1: phi1})),
             0,
             sigma1,
-            Instantiate(App(phi0, phi1), frozendict({0: ESubst(phi2, EVar(0), sigma1), 1: ESubst(phi1, EVar(0), sigma1)})),
+            Instantiate(
+                App(phi0, phi1), frozendict({0: ESubst(phi2, EVar(0), sigma1), 1: ESubst(phi1, EVar(0), sigma1)})
+            ),
         ],
     ],
 )
@@ -110,7 +112,9 @@ def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: P
             Instantiate(App(phi0, phi1), frozendict({0: phi2, 1: phi1})),
             0,
             sigma1,
-            Instantiate(App(phi0, phi1), frozendict({0: SSubst(phi2, SVar(0), sigma1), 1: SSubst(phi1, SVar(0), sigma1)})),
+            Instantiate(
+                App(phi0, phi1), frozendict({0: SSubst(phi2, SVar(0), sigma1), 1: SSubst(phi1, SVar(0), sigma1)})
+            ),
         ],
     ],
 )
