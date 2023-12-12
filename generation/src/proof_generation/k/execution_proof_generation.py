@@ -224,7 +224,7 @@ class ExecutionProofExp(proof.ProofExp):
         # Update the current configuration
         self._curr_config = self._simplification_performer.simplified_configuration
 
-    def prove_equality(self, rule: proof.ProofThunk) -> proof.ProofThunk:
+    def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:
         raise NotImplementedError()
 
     def finalize(self) -> None:
