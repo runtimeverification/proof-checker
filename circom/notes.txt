@@ -1,0 +1,57 @@
+H(str, X) = Sum (X ^ i) * str[i], evaluate H at some random point r.
+
+[a, b, c] = a + b * X + c * X ^ 2
+
+h(a) = H(a, r) 
+
+r should be a cryptographic hash function of the structure of the proof.
+
+My concern is that after you send a challenge r_i, the prover can make up the annotations H(r_i, A) so that it 
+pushes H(r_i, claim) into PROOF
+
+Prepare Instantation:
+- Commit a pattern in string format to
+
+Input: pattern A, 
+Computation: compute h(#A)
+Add: (h(A), |A|, i)
+
+Assuming h() is injective we can probably show a correspondence.
+
+Axiom 1: 
+
+Instantiate with patterns A and B to obtain -> A -> BA
+|X| = length of pattern x 
+
+PROOF and OBLIGATION are sets of triples of field elements. Initially they're empty.
+
+Input: h(A), |A|, h(B), |B| as proof step number i
+Computation: 
+- we will compute h(->A->BA) (in constant time that is independent of |A| and |B|)
+- we will add the tuple (h(->A->BA), |->A->BA|, i) to the PROOF set.
+
+Modus Ponens:
+
+A
+A -> B 
+B 
+
+j(X) = field element (index) that is a hint to the checker to help search for X
+Again, assume this is step i.
+
+Input: h(A), |A|, j(A), h(B), |B|, j(->AB), i
+Compute: 
+- check that i > j(A) and i > j(->AB) (comparison of integers <= N should take O(log N) gates)
+- h(->AB) from h(A), |A|, h(B) and |B|
+- Add (h(A), |A|, j(A)) to OBLIGATION
+- Add (h(->AB), |->AB|, j(->AB)) to OBLIGATION
+- Add (h(B), |B|, i) to PROOF.
+
+I want to formulate these such that in the end the proof is correct iff:
+- PROOF == OBLIGATION. 
+- (h(claim), |claim|, j(claim)) is in PROOF
+
+Encode {a, b, c} as P(X) = (X - a)(X - b)(X - c)
+
+Polynomial for each of PROOF and OBLIGATION and then evaluate them at a random point, different from R
+
