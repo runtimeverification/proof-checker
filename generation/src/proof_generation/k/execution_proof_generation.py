@@ -165,7 +165,7 @@ class ExecutionProofExp(proof.ProofExp):
     ) -> list[ConvertedAxiom]:
         subst_axioms = []
         for pattern in substitutions.values():
-            # Doublecheck that the pattern is a functional symbol and it is valid to generate the axiom
+            # Double-check that the pattern is a functional symbol and it is valid to generate the axiom
             sym, _ = kl.deconstruct_nary_application(pattern)
             assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
             k_sym = language_semantics.resolve_to_ksymbol(sym)
