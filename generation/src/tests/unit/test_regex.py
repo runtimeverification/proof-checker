@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.pattern import MetaVar, Mu, Notation, PrettyOptions, SVar, Symbol, _or
-from proof_generation.proofs.kore import nary_app
-from proof_generation.regex.brzozowski import BrzInstumentation, brzozowski, derivative, null_instr
+from proof_generation.pattern import SVar
+from proof_generation.regex.brzozowski import (
+    FixpointPatternInstr,
+    PrettyOptions,
+    brzozowski,
+    derivative,
+    ml_accepting_node,
+    null_instr,
+)
 from proof_generation.regex.regex import Choice, Concat, Epsilon, Kleene, Not, a, b, implies
 
 if TYPE_CHECKING:
@@ -47,55 +52,6 @@ def test_brzozowski() -> None:
     assert brz(even) == False
     assert brz(even_or_odd) == True
     assert brz(no_contains_a_or_no_only_b)
-
-
-ml_eps = Notation('epsilon', 0, Symbol('eps'), 'epsilon')
-ml_a = Notation('a', 0, Symbol('a'), 'a')
-ml_b = Notation('b', 0, Symbol('b'), 'b')
-ml_concat = nary_app(Symbol('concat'), 2, '[{0} {1}]')
-
-
-def ml_accepting_node(node_id: int) -> Notation:
-    return Notation(
-        'accepting',
-        2,
-        Mu(node_id, _or(ml_eps(), _or(ml_concat(ml_a(), MetaVar(0)), ml_concat(ml_b(), MetaVar(1))))),
-        f'accepting({node_id}, {{0}}, {{1}})',
-    )
-
-
-@dataclass
-class FixpointPatternInstr(BrzInstumentation):
-    """Partially computed fixpoint patterns.
-
-    None indicates the a-node's pattern has not been computed,
-    A Pattern indicates that we have finished computing the a-node's pattern
-    and are now constructing the b-node's pattern.
-    """
-
-    stack: list[None | Pattern] = field(default_factory=lambda: [])
-    pattern: None | Pattern = None
-
-    def enter_node(self) -> None:
-        self.stack.append(None)
-
-    def exit_node(self) -> None:
-        pass
-
-    def leaf(self, index: int) -> None:
-        self.node_completed(SVar(index))
-
-    def node_completed(self, p: Pattern) -> None:
-        if not self.stack:
-            assert self.pattern == None
-            self.pattern = p
-        elif self.stack[-1] == None:
-            self.stack[-1] = p
-        else:
-            a_pat = self.stack.pop()
-            assert a_pat
-            b_pat = p
-            self.node_completed(ml_accepting_node(len(self.stack))(a_pat, b_pat))
 
 
 acc = ml_accepting_node
