@@ -1,246 +1,69 @@
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
+Load (μ X0 . X0)[{}]=0
+Load (μ X0 . X0)[{}]=0
 Implies
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Save
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
 Implies
-Implies
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
+Load (μ X0 . X0)[{}]=0
 Implies
 Prop2
 Instantiate 0, 1, 2
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
 Implies
-Implies
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
+Load (μ X0 . X0)[{}]=0
 Implies
 Implies
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Save
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
 Prop1
 Instantiate 0, 1
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-SVar 0
-Mu 0
-Instantiate 
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (μ X0 . X0)[{}]=0
 Prop2
 Instantiate 0, 1, 2
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
 Implies
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Save
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
 Prop2
 Instantiate 0, 1, 2
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
-Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
-Instantiate 0
-Implies
+Load ((phi0 -> (μ X0 . X0)[{}])[{0: '((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])'}] -> (phi0 -> (μ X0 . X0)[{}])[{0: '((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])'}])=4
 Prop1
 Instantiate 0, 1
 ModusPonens
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
 Prop1
 Instantiate 0, 1
@@ -248,63 +71,25 @@ ModusPonens
 ModusPonens
 ModusPonens
 ModusPonens
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (phi0 -> (μ X0 . X0)[{}])=1
 Instantiate 0
 Prop1
 Instantiate 0, 1
 ModusPonens
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
-SVar 0
-Mu 0
-Instantiate 
+Load (μ X0 . X0)[{}]=0
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
+Load (μ X0 . X0)[{}]=0
 Prop2
 Instantiate 0, 1, 2
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load (μ X0 . X0)[{}]=0
+Load ((μ X0 . X0)[{}] -> (μ X0 . X0)[{}])=2
 Prop1
 Instantiate 0, 1
 ModusPonens
-SVar 0
-Mu 0
-Instantiate 
-SVar 0
-Mu 0
-Instantiate 
+Load (μ X0 . X0)[{}]=0
+Load (μ X0 . X0)[{}]=0
 Prop1
 Instantiate 0, 1
 ModusPonens

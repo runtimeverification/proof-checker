@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
+from proof_generation.interpreter import ExecutionPhase, Interpreter
 from proof_generation.pattern import (
     App,
     ESubst,
@@ -27,37 +27,14 @@ if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
 
 
-class ExecutionPhase(Enum):
-    Gamma = 0
-    Claim = 1
-    Proof = 2
-
-
-class BasicInterpreter:
+class BasicInterpreter(Interpreter):
     """A stateless proof interpreter. It only checks conclusions."""
 
     def __init__(self, phase: ExecutionPhase):
-        self.phase = phase
-        self._interpreting_warnings: set[str] = set()
-
-    @property
-    def safe_interpreting(self) -> bool:
-        return len(self._interpreting_warnings) == 0
-
-    @property
-    def interpreting_warnings(self) -> list[str]:
-        return list(self._interpreting_warnings)
+        super().__init__(phase)
 
     def mark_generation_unsafe(self, warning: str) -> None:
         self._interpreting_warnings.add(warning)
-
-    def into_claim_phase(self) -> None:
-        assert self.phase == ExecutionPhase.Gamma
-        self.phase = ExecutionPhase.Claim
-
-    def into_proof_phase(self) -> None:
-        assert self.phase == ExecutionPhase.Claim
-        self.phase = ExecutionPhase.Proof
 
     def evar(self, id: int) -> Pattern:
         return EVar(id)
@@ -97,43 +74,6 @@ class BasicInterpreter:
     def mu(self, var: int, subpattern: Pattern) -> Pattern:
         return Mu(var, subpattern)
 
-    def pattern(self, p: Pattern) -> Pattern:
-        match p:
-            case EVar(name):
-                return self.evar(name)
-            case SVar(name):
-                return self.svar(name)
-            case Symbol(name):
-                return self.symbol(name)
-            case Implies(left, right):
-                return self.implies(self.pattern(left), self.pattern(right))
-            case App(left, right):
-                return self.app(self.pattern(left), self.pattern(right))
-            case Exists(var, subpattern):
-                return self.exists(var, self.pattern(subpattern))
-            case Mu(var, subpattern):
-                return self.mu(var, self.pattern(subpattern))
-            case MetaVar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes):
-                return self.metavar(name, e_fresh, s_fresh, positive, negative, app_ctx_holes)
-            case Instantiate(subpattern, subst):
-                for inst in subst.values():
-                    self.pattern(inst)
-                return self.instantiate_pattern(self.pattern(subpattern), subst)
-            case ESubst(subpattern, var, plug):
-                assert isinstance(var, EVar)
-                plug = self.pattern(plug)
-                subpattern = self.pattern(subpattern)
-                assert isinstance(subpattern, MetaVar | ESubst | SSubst)
-                return self.esubst(var.name, subpattern, plug)
-            case SSubst(subpattern, var, plug):
-                assert isinstance(var, SVar)
-                plug = self.pattern(plug)
-                subpattern = self.pattern(subpattern)
-                assert isinstance(subpattern, MetaVar | ESubst | SSubst)
-                return self.ssubst(var.name, subpattern, plug)
-
-        raise NotImplementedError(f'{type(p)}')
-
     def prop1(self) -> Proved:
         phi0: MetaVar = MetaVar(0)
         phi1: MetaVar = MetaVar(1)
@@ -168,7 +108,7 @@ class BasicInterpreter:
 
     def exists_generalization(self, proved: Proved, var: EVar) -> Proved:
         l, r = Implies.extract(proved.conclusion)
-        assert r.evar_is_free(var.name), f'{str(var)} in FV({str(r)})'
+        assert r.evar_is_fresh(var.name), f'{str(var)} not in FV({str(r)})'
         return Proved(Implies(Exists(var.name, l), r))
 
     def instantiate(self, proved: Proved, delta: dict[int, Pattern]) -> Proved:

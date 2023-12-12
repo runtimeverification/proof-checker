@@ -2,6 +2,7 @@
 /.build/
 build
 cmake-build-debug
+cairo/csl-examples/*/target
 
 # Tmp directories and files
 tmp*
@@ -26,3 +27,12 @@ cairo/target
 
 # Kompiled directories
 *-kompiled
+
+# Circom 
+circom/**/*_cpp
+circom/**/*_js
+circom/**/*.zkey
+circom/**/*.sym
+circom/**/*.ptau
+circom/**/*.wtns
+circom/**/*.r1cs

@@ -1,22 +1,22 @@
-Symbol kore_Lbl'-LT-'generatedTop'-GT-'
-Symbol kore_Lbl'-LT-'T'-GT-'
-Symbol kore_Lbl'-LT-'k'-GT-'
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+Symbol ksym_Lbl'-LT-'T'-GT-'
+Symbol ksym_Lbl'-LT-'k'-GT-'
 Symbol kore_kseq
-Symbol kore_inj
+Symbol ksym_inj
 Symbol ksort_SortBlock
 App
 Symbol ksort_SortKItem
 App
-Symbol kore_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block
+Symbol ksym_Lbl'LBraRBraUnds'IMP5-SYNTAX'Unds'Block
 App
 App
-Symbol kore_dotk
+Symbol ksym_dotk
 Instantiate 
 App
 App
 App
-Symbol kore_Lbl'-LT-'s'-GT-'
-Symbol kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int
+Symbol ksym_Lbl'-LT-'s'-GT-'
+Symbol ksym_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int
 Symbol kore_dv
 Symbol ksort_SortInt
 App
@@ -56,7 +56,7 @@ App
 App
 App
 App
-Symbol kore_Lbl'-LT-'generatedCounter'-GT-'
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 Symbol kore_dv
 Symbol ksort_SortInt
 App
@@ -81,15 +81,15 @@ SVar 0
 Mu 0
 Implies
 Symbol kore_next
-Symbol kore_Lbl'-LT-'generatedTop'-GT-'
-Symbol kore_Lbl'-LT-'T'-GT-'
-Symbol kore_Lbl'-LT-'k'-GT-'
-Symbol kore_dotk
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+Symbol ksym_Lbl'-LT-'T'-GT-'
+Symbol ksym_Lbl'-LT-'k'-GT-'
+Symbol ksym_dotk
 Instantiate 
 App
 App
-Symbol kore_Lbl'-LT-'s'-GT-'
-Symbol kore_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int
+Symbol ksym_Lbl'-LT-'s'-GT-'
+Symbol ksym_Lbl'UndsCommUndsCommUndsCommUndsCommUndsCommUndsUnds'IMP5-SYNTAX'Unds'Vars5'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int'Unds'Int
 Symbol kore_dv
 Symbol ksort_SortInt
 App
@@ -129,7 +129,7 @@ App
 App
 App
 App
-Symbol kore_Lbl'-LT-'generatedCounter'-GT-'
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 Symbol kore_dv
 Symbol ksort_SortInt
 App

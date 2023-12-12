@@ -48,7 +48,7 @@ build-rust:
 	cargo build --manifest-path=rust/Cargo.toml
 
 build-risc0:
-	cargo build --manifest-path=risc0/Cargo.toml
+	cargo build --manifest-path=risc0/pi2/Cargo.toml
 
 install-kup:
 	@if ! command -v kup &> /dev/null; then \
@@ -340,11 +340,11 @@ test-proof-kgen: ${KPROOF_TRANSLATION_TARGETS}
 
 .build/proofs/%.ml-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
-	$(POETRY_RUN) python -m "proof_generation.proofs.$*" memo $(dir $@) $*
+	$(POETRY_RUN) python -m "proof_generation.proofs.$*" binary $(dir $@) $* --optimize
 
 .build/proofs/%.pretty-proof: FORCE generation/src/proof_generation/proofs/%.py
 	@mkdir -p $(dir $@)
-	$(POETRY_RUN) python -m "proof_generation.proofs.$*" pretty $(dir $@) $*
+	$(POETRY_RUN) python -m "proof_generation.proofs.$*" pretty-no-stack $(dir $@) $* --optimize
 
 PROOF_GEN_TARGETS=$(addsuffix .gen,${PROOFS})
 BIN_DIFF=./bin/proof-diff

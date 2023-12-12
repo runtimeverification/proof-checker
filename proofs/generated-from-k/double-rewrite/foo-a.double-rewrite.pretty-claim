@@ -1,20 +1,20 @@
-Symbol kore_Lbl'-LT-'generatedTop'-GT-'
-Symbol kore_Lbl'-LT-'k'-GT-'
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+Symbol ksym_Lbl'-LT-'k'-GT-'
 Symbol kore_kseq
-Symbol kore_inj
+Symbol ksym_inj
 Symbol ksort_SortFoo
 App
 Symbol ksort_SortKItem
 App
-Symbol kore_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
+Symbol ksym_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
 App
 App
-Symbol kore_dotk
+Symbol ksym_dotk
 Instantiate 
 App
 App
 App
-Symbol kore_Lbl'-LT-'generatedCounter'-GT-'
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 Symbol kore_dv
 Symbol ksort_SortInt
 App
@@ -39,23 +39,23 @@ SVar 0
 Mu 0
 Implies
 Symbol kore_next
-Symbol kore_Lbl'-LT-'generatedTop'-GT-'
-Symbol kore_Lbl'-LT-'k'-GT-'
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+Symbol ksym_Lbl'-LT-'k'-GT-'
 Symbol kore_kseq
-Symbol kore_inj
+Symbol ksym_inj
 Symbol ksort_SortFoo
 App
 Symbol ksort_SortKItem
 App
-Symbol kore_LblFooC'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
+Symbol ksym_LblFooC'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
 App
 App
-Symbol kore_dotk
+Symbol ksym_dotk
 Instantiate 
 App
 App
 App
-Symbol kore_Lbl'-LT-'generatedCounter'-GT-'
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 Symbol kore_dv
 Symbol ksort_SortInt
 App
@@ -66,23 +66,23 @@ App
 App
 Implies
 Publish
-Symbol kore_Lbl'-LT-'generatedTop'-GT-'
-Symbol kore_Lbl'-LT-'k'-GT-'
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+Symbol ksym_Lbl'-LT-'k'-GT-'
 Symbol kore_kseq
-Symbol kore_inj
+Symbol ksym_inj
 Symbol ksort_SortFoo
 App
 Symbol ksort_SortKItem
 App
-Symbol kore_LblFooA'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
+Symbol ksym_LblFooA'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
 App
 App
-Symbol kore_dotk
+Symbol ksym_dotk
 Instantiate 
 App
 App
 App
-Symbol kore_Lbl'-LT-'generatedCounter'-GT-'
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 Symbol kore_dv
 Symbol ksort_SortInt
 App
@@ -107,23 +107,23 @@ SVar 0
 Mu 0
 Implies
 Symbol kore_next
-Symbol kore_Lbl'-LT-'generatedTop'-GT-'
-Symbol kore_Lbl'-LT-'k'-GT-'
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+Symbol ksym_Lbl'-LT-'k'-GT-'
 Symbol kore_kseq
-Symbol kore_inj
+Symbol ksym_inj
 Symbol ksort_SortFoo
 App
 Symbol ksort_SortKItem
 App
-Symbol kore_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
+Symbol ksym_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo
 App
 App
-Symbol kore_dotk
+Symbol ksym_dotk
 Instantiate 
 App
 App
 App
-Symbol kore_Lbl'-LT-'generatedCounter'-GT-'
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 Symbol kore_dv
 Symbol ksort_SortInt
 App

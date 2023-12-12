@@ -41,7 +41,7 @@ def generate_proof_file(proof_gen: ProofExp, output_dir: Path, slice_name: str, 
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    mode = 'pretty' if pretty else 'binary'
+    mode = 'pretty-no-stack' if pretty else 'binary'
     proof_gen.main(['', mode, str(output_dir), slice_name])
 
 

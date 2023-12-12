@@ -8,6 +8,7 @@ from proof_generation.pattern import (
     App,
     EVar,
     Exists,
+    Implies,
     Instantiate,
     MetaVar,
     Notation,
@@ -25,8 +26,10 @@ from proof_generation.proofs.definedness import Definedness, ceil, subset
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
+    from proof_generation.proof import ProofThunk
 
 phi3 = MetaVar(3)
+phi4 = MetaVar(4)
 
 # TODO: Make sure this is handled uniformly
 inhabitant_symbol = Symbol('inhabitant')
@@ -34,13 +37,14 @@ kore_next_symbol = Symbol('kore_next')
 kore_dv_symbol = Symbol('kore_dv')
 kore_kseq_symbol = Symbol('kore_kseq')
 
+""" in_sort(element, sort) """
 in_sort = Notation('in-sort', 2, subset(phi0, App(inhabitant_symbol, phi1)), '{0}:{1}')
 
 
 @cache
 def sorted_exists(var: int) -> Notation:
     """sorted_exists(inner_sort, pattern)"""
-    # TODO: Don't forget to save the result of the function call to a proof expression object
+    # TODO: It is not included in any KORE.notations
     return Notation('sorted-exists', 2, Exists(var, _and(in_sort(EVar(var), phi0), phi1)), f'( ∃ x{var}:{0} . {1} )')
 
 
@@ -87,21 +91,25 @@ kore_equals = Notation('kore-equals', 4, kore_floor(phi0, phi1, kore_iff(phi0, p
 kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({0} ~> {1})')
 
 """ kore_in(inner_sort, outer_sort, left, right) """
-kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0}} k⊆ {3}:{0}):{1}')
+kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0} k⊆ {3}:{0}):{1}')
 
 """ kore_bottom(sort) """
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
+""" equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
+equational_as = Notation(
+    'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi0, phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
+)
+
 
 @cache
 def kore_exists(var: int) -> Notation:
-    """kore_exists(variable_sort, outer_sort, pattern)"""
-    # TODO: Don't forget to save the result of the function call to a proof expression object
+    """kore_exists(inner_sort, outer_sort, pattern)"""
     return Notation(
         'kore-exists',
         3,
         _and(sorted_exists(var)(phi0, phi2), App(inhabitant_symbol, phi1)),
-        '( k∃ {var}:{0} . {2}):{1}',
+        f'( k∃ {var}:{0} . {2}):{1}',
     )
 
 
@@ -125,6 +133,7 @@ def nary_app(symbol: Symbol, n: int, cell: bool = False) -> Notation:
     return Notation(symbol.name, n, p, fmt)
 
 
+@cache
 def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ...]]:
     match p:
         case Instantiate(_, _):
@@ -135,6 +144,39 @@ def deconstruct_nary_application(p: Pattern) -> tuple[Pattern, tuple[Pattern, ..
             return symbol, (*args, r)
         case _:
             return p, ()
+
+
+@cache
+def deconstruct_equality_rule(pattern: Pattern) -> tuple[Pattern, Pattern, Pattern, Pattern, Pattern]:
+    _, requires, imp_right = kore_implies.assert_matches(pattern)
+    _, _, eq_left, eq_right_and_ensures = kore_equals.assert_matches(imp_right)
+
+    # TODO: Potentially there can be more than one arg, but we have an assertion at converting kore patterns to catch such cases
+    _, eq_right, ensures = kore_and.assert_matches(eq_right_and_ensures)
+    return requires, eq_left, eq_right_and_ensures, eq_right, ensures
+
+
+@cache
+def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
+    collected_substitutions: dict[int, Pattern] = {}
+
+    if top_and_match := kore_and.matches(pattern):
+        _, left, right = top_and_match
+
+        for item in (left, right):
+            if let_match := equational_as.matches(item):
+                _, _, from_evar, expression, to_evar = let_match
+                if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
+                    collected_substitutions[from_evar.name] = expression
+                    collected_substitutions[to_evar.name] = expression
+            elif in_match := kore_in.matches(item):
+                _, _, var, expression = in_match
+                if isinstance(var, EVar):
+                    collected_substitutions[var.name] = expression
+            else:
+                collected_substitutions.update(matching_requires_substitution(item))
+
+    return collected_substitutions
 
 
 KORE_NOTATIONS = (
@@ -156,12 +198,39 @@ KORE_NOTATIONS = (
     in_sort,
 )
 
+# TODO: Prove the axiom
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> (phi4[phi2/x]:{phi0} k= phi4[phi3/x]:{phi0}):{phi1}
+keq_substitution_axiom = Implies(
+    kore_equals(phi0, phi1, phi2, phi3),
+    kore_equals(
+        phi0,
+        phi1,
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi2),
+        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi3),
+    ),
+)
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(notations=list(KORE_NOTATIONS))
+        super().__init__(axioms=[keq_substitution_axiom], notations=list(KORE_NOTATIONS))
         self.definedness = self.import_module(Definedness())
+
+    def equality_with_subst(self, phi: Pattern, equality: ProofThunk):
+        """
+                p1 k= p2
+        ---------------------------
+        phi[p1/x] k= phi[p2/x]
+        """
+
+        inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(equality.conc)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(keq_substitution_axiom), {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi}
+            ),
+            equality,
+        )
 
 
 if __name__ == '__main__':

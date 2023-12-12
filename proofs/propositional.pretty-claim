@@ -14,76 +14,44 @@ MetaVar 0
 MetaVar 0
 SVar 0
 Mu 0
-Instantiate 
+Save
+Save
 Implies
+Save
 Instantiate 0
 MetaVar 0
 Implies
 MetaVar 0
 Implies
 Publish
-MetaVar 0
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
-Instantiate 0
+Load (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}]=2
 MetaVar 0
 MetaVar 1
 Implies
 Implies
 Publish
 MetaVar 0
-MetaVar 0
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}]=2
+Load (phi0 -> (μ X0 . X0)[{}])=2
 Instantiate 0
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
-Instantiate 0
+Save
 Implies
 Publish
+Load (phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}]"}]=3
 MetaVar 0
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
 Implies
-Instantiate 0
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
-Instantiate 0
+Save
+Publish
+Load (μ X0 . X0)[{}]=0
 MetaVar 0
 Implies
 Publish
-SVar 0
-Mu 0
-Instantiate 
-MetaVar 0
-Implies
-Publish
-SVar 0
-Mu 0
-Instantiate 
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
+Load (μ X0 . X0)[{}]=0
+Load (phi0 -> (μ X0 . X0)[{}])=2
 Instantiate 0
-Instantiate 
 Publish
 MetaVar 0
 MetaVar 0
 Implies
+Save
 Publish

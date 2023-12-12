@@ -3,15 +3,13 @@ Symbol s1
 Symbol s2
 Prop2
 Instantiate 0, 1, 2
-Symbol s1
-Symbol s2
-Implies
+Load (s1 -> s2)=2
 Symbol s0
 Prop1
 Instantiate 0, 1
-Load Axiom (s1 -> s2)=1
+Load Axiom (s1 -> s2)=3
 ModusPonens
 ModusPonens
-Load Axiom (s0 -> s1)=0
+Load Axiom (s0 -> s1)=1
 ModusPonens
 Publish
