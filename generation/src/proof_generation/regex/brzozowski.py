@@ -98,13 +98,37 @@ def derivative(by: Letter, exp: Regex) -> Regex:
             return normalize(Not(derivative(by, e)))
         case _: raise AssertionError
 
-def brzozowski(exp: Regex, prev: set[Regex] | None = None) -> bool:
+
+class BrzInstumentation:
+    def enter_node(self) -> None:
+        pass
+
+    def exit_node(self) -> None:
+        pass
+
+    def leaf(self, index: int) -> None:
+        pass
+
+null_instr = BrzInstumentation()
+
+def brzozowski(exp: Regex, instr: BrzInstumentation, prev: list[Regex] | None = None) -> bool:
     if prev == None:
-        prev = set()
+        prev = []
     assert prev is not None
+
     if exp in prev:
+        instr.leaf(prev.index(exp))
         return True
-    prev.add(exp)
     if not has_ewp(exp):
         return False
-    return brzozowski(derivative(a, exp), prev=prev) and brzozowski(derivative(b, exp), prev=prev)
+
+    prev.append(exp)
+    instr.enter_node()
+
+    left = brzozowski(derivative(a, exp), instr, prev=prev)
+    right = brzozowski(derivative(b, exp), instr, prev=prev)
+
+    prev.pop()
+    instr.exit_node()
+    return left and right
+
