@@ -224,6 +224,9 @@ class ExecutionProofExp(proof.ProofExp):
         # Update the current configuration
         self._curr_config = self._simplification_performer.simplified_configuration
 
+    def prove_equality(self, rule: proof.ProofThunk) -> proof.ProofThunk:
+        raise NotImplementedError()
+
     def finalize(self) -> None:
         """Prepare proof expression for the final reachability claim"""
         # TODO: Prove the final reachability claim
