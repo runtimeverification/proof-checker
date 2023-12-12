@@ -11,7 +11,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KEquationalRule,
     KRewritingRule,
 )
-from proof_generation.pattern import Symbol
+from proof_generation.pattern import EVar, Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
@@ -30,12 +30,22 @@ Location = tuple[int, ...]
 @dataclass
 class SimplificationInfo:
     location: Location
+    configuration_with_hole: Pattern  # Relative to previous in stack
     initial_pattern: Pattern  # Relative to previous in stack
     simplification_result: Pattern
     simplifications_remaining: int
 
 
+@dataclass
+class SimplificationSummary:
+    configuration_with_hole: Pattern  # Used for the proving the simplification
+    equality_rule: Pattern
+    final_substitution: dict[int, Pattern]
+
+
 class SimplificationPerformer:
+    HOLE: EVar = EVar(0)
+
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
         self._language_semantics = language_semantics
         self._curr_config = init_config
@@ -55,12 +65,19 @@ class SimplificationPerformer:
 
     def apply_simplification(
         self, ordinal: int, substitution: dict[int, Pattern], location: Location
-    ) -> SimplificationInfo:
+    ) -> SimplificationSummary:
         # Check that whether it is the first simplification or not
         if not self._simplification_stack:
             sub_pattern = self.get_subterm(location, self._curr_config)
+            config_with_hole = self.update_subterm(location, self._curr_config, self.HOLE)
         else:
             sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
+            intermediate_config = self._simplification_stack[-1].configuration_with_hole.apply_esubst(
+                self.HOLE.name, self._simplification_stack[-1].simplification_result
+            )
+            config_with_hole = self.update_subterm(
+                self._simplification_stack[-1].location + location, intermediate_config, self.HOLE
+            )
 
         # Get the rule and remove extra variables added by K in addition to the ones in the K file
         rule = self._language_semantics.get_axiom(ordinal)
@@ -72,13 +89,19 @@ class SimplificationPerformer:
         simplified_rhs = simplified_rhs.apply_esubsts(substitution)
 
         # Count the number of substitutions left
-        simplifications_ramaining = self._language_semantics.count_simplifications(simplified_rhs)
+        simplifications_remaining = self._language_semantics.count_simplifications(simplified_rhs)
 
         # Create the new info object and put it on top of the stack
-        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_ramaining)
+        new_info = SimplificationInfo(
+            location, config_with_hole, sub_pattern, simplified_rhs, simplifications_remaining
+        )
         self._simplification_stack.append(new_info)
 
-        return new_info
+        return SimplificationSummary(
+            new_info.configuration_with_hole,
+            rule.pattern,
+            base_substitutions,  # TODO: This should contain both hint and side substitutions in the future
+        )
 
     def __enter__(self) -> SimplificationPerformer:
         return self
@@ -219,34 +242,48 @@ class ExecutionProofExp(proof.ProofExp):
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
         with self._simplification_performer as performer:
             performer.apply_simplification(ordinal, substitution, location)
-            # TODO: Do some proving here ...
+            # TODO: Blocked by #601, #462
+            # simplification_conf_proof = self.prove_simplification(simplification_summary, substitution)
 
         # Update the current configuration
         self._curr_config = self._simplification_performer.simplified_configuration
 
-    def prove_simplification(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> proof.ProofThunk:
-        # Get the rule from the semantics
-        rule = self.language_semantics.get_axiom(ordinal)
-        assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
+    def prove_simplification(
+        self, summary: SimplificationSummary, _tmp_metavar_substitutions: dict[int, Pattern]
+    ) -> proof.ProofThunk:
+        """Proves the simplification step."""
+        rule = summary.equality_rule
+        conf_with_hole = summary.configuration_with_hole
+        substitution = summary.final_substitution
 
-        # TODO: Get the configuration with a hole
-        
-        # TODO: Get the rule with simplifications from hints
+        # TODO: This should be done by the simplification instead of metavariables
+        # TODO: Replace with fair substitutions
+        rule_after_hint_substitutions = self.dynamic_inst(self.load_axiom(rule), _tmp_metavar_substitutions)
 
-        # TODO: Get rid of side simplfications
+        # Apply side substitutions
+        rule_after_substitutions = self.prove_rule_with_substitutions(rule_after_hint_substitutions, substitution)
 
-        # TODO: Get the equation as a proof thunk
+        # Get rid of side simplifications
+        equality_proof = self.prove_equality(rule_after_substitutions)
 
-        # TODO: Get rid of the right hand side Top
+        # Get equality for configurations
+        return self.kore_lemmas.equality_with_subst(conf_with_hole, equality_proof)
 
-        # TODO: Apply the axiom to get equality for configurations
-        
+    def prove_equality(self, rule: proof.ProofThunk) -> proof.ProofThunk:
         raise NotImplementedError()
 
     def finalize(self) -> None:
         """Prepare proof expression for the final reachability claim"""
         # TODO: Prove the final reachability claim
         return
+
+    def prove_rule_with_substitutions(
+        self, rule: proof.ProofThunk, substitutions: dict[int, Pattern]
+    ) -> proof.ProofThunk:
+        """Proves a rule with the given substitutions."""
+        with_substitutions = rule.conc.apply_esubsts(substitutions)
+        # TODO: replace it with the real proof (depends on #462)
+        return proof.ProofThunk((lambda interpreter: proof.Proved(with_substitutions)), with_substitutions)
 
     @staticmethod
     def from_proof_hints(
@@ -261,8 +298,9 @@ class ExecutionProofExp(proof.ProofExp):
             if isinstance(hint.axiom, KRewritingRule):
                 proof_expr.rewrite_event(hint.axiom, hint.substitutions)
             else:
-                # TODO: Remove the stub
-                raise NotImplementedError('TODO: Add support for equational rules')
+                # proof_expr.simplification_event(hint.axiom, hint.substitutions, hint.location)
+                # TODO: Implement this with the new hint format
+                raise NotImplementedError()
 
         if proof_expr is None:
             print('WARNING: The proof expression is empty, ho hints were provided.')

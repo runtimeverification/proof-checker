@@ -7,7 +7,7 @@ import pytest
 from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationPerformer
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, top
+from proof_generation.pattern import EVar, Instantiate, top
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
@@ -356,6 +356,7 @@ def test_subpattern_batch():
     assert isinstance(base_case_a, KEquationalRule)
 
     initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    config_with_hole = tree_semantics_config_pattern(semantics, 'SortTree', EVar(0))
     initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
     proof_obj = ExecutionProofExp(semantics, initial_config)
     location = (0, 0, 0)
@@ -363,6 +364,7 @@ def test_subpattern_batch():
     expected_stack = [
         SimplificationInfo(
             location,
+            config_with_hole,
             initial_subterm,
             node_symbol.app(
                 reverse_symbol.app(b_symbol.app()),
@@ -377,6 +379,7 @@ def test_subpattern_batch():
     expected_stack = [
         SimplificationInfo(
             location,
+            config_with_hole,
             initial_subterm,
             node_symbol.app(
                 b_symbol.app(),
