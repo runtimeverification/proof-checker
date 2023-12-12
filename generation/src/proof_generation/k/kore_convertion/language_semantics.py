@@ -601,14 +601,14 @@ class LanguageSemantics(BuilderScope):
                 right_rw_pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_rewrites(rewrite_sort_pattern, left_rw_pattern, right_rw_pattern)
-            case kore.And(_sort, ops):
+            case kore.And(_, ops):
                 # TODO: generalize to more than two operands, if needed
                 assert len(ops) == 2, f'Expected a kore "And" term with two operands, found one with {len(ops)}!'
                 left_and_pattern: Pattern = self._convert_pattern(scope, ops[0])
                 right_and_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
                 return kl.kore_and(left_and_pattern, right_and_pattern)
-            case kore.Or(_sort, ops):
+            case kore.Or(_, ops):
                 # TODO: generalize to more than two operands, if needed
                 assert len(ops) == 2, f'Expected a kore "Or" term with two operands, found one with {len(ops)}!'
                 left_or_pattern: Pattern = self._convert_pattern(scope, ops[0])
