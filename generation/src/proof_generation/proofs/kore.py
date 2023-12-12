@@ -152,7 +152,7 @@ def deconstruct_equality_rule(pattern: Pattern) -> tuple[Pattern, Pattern, Patte
     _, _, eq_left, eq_right_and_ensures = kore_equals.assert_matches(imp_right)
 
     # TODO: Potentially there can be more than one arg, but we have an assertion at converting kore patterns to catch such cases
-    _, eq_right, ensures = kore_and.assert_matches(eq_right_and_ensures)
+    eq_right, ensures = kore_and.assert_matches(eq_right_and_ensures)
     return requires, eq_left, eq_right_and_ensures, eq_right, ensures
 
 
@@ -161,7 +161,7 @@ def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
     collected_substitutions: dict[int, Pattern] = {}
 
     if top_and_match := kore_and.matches(pattern):
-        _, left, right = top_and_match
+        left, right = top_and_match
 
         for item in (left, right):
             if let_match := equational_as.matches(item):
