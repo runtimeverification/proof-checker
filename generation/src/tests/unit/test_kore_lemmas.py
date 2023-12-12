@@ -5,10 +5,12 @@ from proof_generation.pattern import App, EVar, Instantiate, MetaVar, Notation, 
 from proof_generation.proofs.kore import (
     KoreLemmas,
     deconstruct_nary_application,
-    kore_equational_as,
+    kore_and,
     kore_equals,
+    kore_equational_as,
     kore_implies,
     kore_in,
+    kore_top,
     nary_app,
 )
 from tests.unit.test_propositional import make_pt
@@ -92,4 +94,32 @@ def test_reduce_equational_in() -> None:
     thunk = make_pt(test_expression)
     proof = theory.reduce_equational_in(thunk)
     expected = conclusion
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_reduce_left_top_conjunct() -> None:
+    theory = KoreLemmas()
+
+    sort1 = Symbol('sort1')
+    value_a = Symbol('value_a')
+    ktop = kore_top(sort1)
+
+    test_expression = kore_and(sort1, ktop, value_a)
+    thunk = make_pt(test_expression)
+    proof = theory.reduce_left_top_conjunct(thunk)
+    expected = value_a
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_reduce_right_top_conjunct() -> None:
+    theory = KoreLemmas()
+
+    sort1 = Symbol('sort1')
+    value_a = Symbol('value_a')
+    ktop = kore_top(sort1)
+
+    test_expression = kore_and(sort1, value_a, ktop)
+    thunk = make_pt(test_expression)
+    proof = theory.reduce_right_top_conjunct(thunk)
+    expected = value_a
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected

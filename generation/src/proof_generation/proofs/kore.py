@@ -262,7 +262,9 @@ class KoreLemmas(ProofExp):
                 phi3
         """
         sort, requirement, conclusion = kore_implies.assert_matches(phi.conc)
-        inner_sort, outer_sort, from_evar_plug, expression, to_evar_plug = kore_equational_as.assert_matches(requirement)
+        inner_sort, outer_sort, from_evar_plug, expression, to_evar_plug = kore_equational_as.assert_matches(
+            requirement
+        )
         assert (
             from_evar_plug == expression and to_evar_plug == expression
         ), f'Requirement of equational-as is not of the form x = x: {requirement.pretty(self.pretty_options())}'
@@ -297,6 +299,44 @@ class KoreLemmas(ProofExp):
             self.dynamic_inst(
                 self.load_axiom(reduce_kore_in_requirement_axiom),
                 {0: inner_sort, 1: outer_sort, 2: expression, 3: conclusion},
+            ),
+            phi,
+        )
+
+    def reduce_right_top_conjunct(self, phi: ProofThunk):
+        """
+                phi1 k⋀ k⊤
+        ---------------------------
+                phi1
+        """
+        # TOOD: Bug, the first arg is a Metavar instead of a symbol
+        # sort, _, right = kore_and.assert_matches(phi.conc)
+        assert isinstance(phi.conc, Instantiate)
+        sort = phi.conc.inst[0]
+        left = phi.conc.inst[1]
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(remove_top_right_axiom),
+                {0: sort, 1: left},
+            ),
+            phi,
+        )
+
+    def reduce_left_top_conjunct(self, phi: ProofThunk):
+        """
+                k⊤ k⋀ phi1
+        ---------------------------
+                phi1
+        """
+        # TOOD: Bug, the first arg is a Metavar instead of a symbol
+        # sort, _, right = kore_and.assert_matches(phi.conc)
+        assert isinstance(phi.conc, Instantiate)
+        sort = phi.conc.inst[0]
+        right = phi.conc.inst[2]
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(remove_top_left_axiom),
+                {0: sort, 1: right},
             ),
             phi,
         )
