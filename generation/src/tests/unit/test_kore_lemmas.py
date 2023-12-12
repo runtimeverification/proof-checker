@@ -2,7 +2,15 @@ from frozendict import frozendict
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.pattern import App, EVar, Instantiate, MetaVar, Notation, PrettyOptions, Symbol
-from proof_generation.proofs.kore import KoreLemmas, deconstruct_nary_application, kore_equals, nary_app
+from proof_generation.proofs.kore import (
+    KoreLemmas,
+    deconstruct_nary_application,
+    kore_equational_as,
+    kore_equals,
+    kore_implies,
+    kore_in,
+    nary_app,
+)
 from tests.unit.test_propositional import make_pt
 
 phi0 = MetaVar(0)
@@ -54,4 +62,34 @@ def test_equality_with_subst() -> None:
     thunk = make_pt(kore_equals(sort1, sort2, value_a, value_b))
     proof = theory.equality_with_subst(phi, thunk)
     expected = kore_equals(sort1, sort2, phi.apply_esubst(0, value_a), phi.apply_esubst(0, value_b))
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_reduce_equational_as() -> None:
+    theory = KoreLemmas()
+
+    sort1 = Symbol('sort1')
+    sort2 = Symbol('sort2')
+    value_a = Symbol('value_a')
+    conclusion = App(Symbol('x'), Symbol('y'))
+
+    test_expression = kore_implies(sort2, kore_equational_as(sort1, sort2, value_a, value_a, value_a), conclusion)
+    thunk = make_pt(test_expression)
+    proof = theory.reduce_equational_as(thunk)
+    expected = conclusion
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_reduce_equational_in() -> None:
+    theory = KoreLemmas()
+
+    sort1 = Symbol('sort1')
+    sort2 = Symbol('sort2')
+    value_a = Symbol('value_a')
+    conclusion = App(Symbol('x'), Symbol('y'))
+
+    test_expression = kore_implies(sort2, kore_in(sort1, sort2, value_a, value_a), conclusion)
+    thunk = make_pt(test_expression)
+    proof = theory.reduce_equational_in(thunk)
+    expected = conclusion
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected

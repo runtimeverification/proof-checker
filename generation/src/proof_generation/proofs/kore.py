@@ -97,7 +97,7 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
 """ equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
-equational_as = Notation(
+kore_equational_as = Notation(
     'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi0, phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
 )
 
@@ -164,7 +164,7 @@ def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
         _, left, right = top_and_match
 
         for item in (left, right):
-            if let_match := equational_as.matches(item):
+            if let_match := kore_equational_as.matches(item):
                 _, _, from_evar, expression, to_evar = let_match
                 if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
                     collected_substitutions[from_evar.name] = expression
@@ -210,11 +210,34 @@ keq_substitution_axiom = Implies(
     ),
 )
 
+# phi1:{phi0} k/\ k⊤:{phi0} -> phi1:{phi0}
+remove_top_right_axiom = Implies(kore_and(phi0, phi1, kore_top(phi0)), phi1)
+
+# k⊤:{phi0} k/\ phi1:{phi0} -> phi1:{phi0}
+remove_top_left_axiom = Implies(kore_and(phi0, kore_top(phi0), phi1), phi1)
+
+# (equational-as(phi0, phi1, phi2, phi2, phi2) k-> phi3):{phi1} -> phi3
+reduce_equational_as_requirement_axiom = Implies(
+    kore_implies(phi1, kore_equational_as(phi0, phi1, phi2, phi2, phi2), phi3), phi3
+)
+
+# (kore_in(phi0, phi1, phi2, phi2) k-> phi3):{phi1} -> phi3
+reduce_kore_in_requirement_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), phi3), phi3)
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(axioms=[keq_substitution_axiom], notations=list(KORE_NOTATIONS))
+        super().__init__(
+            axioms=[
+                keq_substitution_axiom,
+                remove_top_right_axiom,
+                remove_top_left_axiom,
+                reduce_equational_as_requirement_axiom,
+                reduce_kore_in_requirement_axiom,
+            ],
+            notations=list(KORE_NOTATIONS),
+        )
         self.definedness = self.import_module(Definedness())
 
     def equality_with_subst(self, phi: Pattern, equality: ProofThunk):
@@ -230,6 +253,52 @@ class KoreLemmas(ProofExp):
                 self.load_axiom(keq_substitution_axiom), {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi}
             ),
             equality,
+        )
+
+    def reduce_equational_as(self, phi: ProofThunk):
+        """
+                equational-as(phi0, phi1, phi2, phi2, phi2) k-> phi3
+        ---------------------------------------------------------
+                phi3
+        """
+        sort, requirement, conclusion = kore_implies.assert_matches(phi.conc)
+        inner_sort, outer_sort, from_evar_plug, expression, to_evar_plug = kore_equational_as.assert_matches(requirement)
+        assert (
+            from_evar_plug == expression and to_evar_plug == expression
+        ), f'Requirement of equational-as is not of the form x = x: {requirement.pretty(self.pretty_options())}'
+        assert (
+            sort == outer_sort
+        ), f'Requirement of equational-as has incompatible sorts: {sort.pretty(self.pretty_options())} and {outer_sort.pretty(self.pretty_options())}'
+
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(reduce_equational_as_requirement_axiom),
+                {0: inner_sort, 1: outer_sort, 2: expression, 3: conclusion},
+            ),
+            phi,
+        )
+
+    def reduce_equational_in(self, phi: ProofThunk):
+        """
+                kore_in(phi0, phi1, phi2, phi2) k-> phi3
+        ---------------------------------------------------------
+                phi3
+        """
+        sort, requirement, conclusion = kore_implies.assert_matches(phi.conc)
+        inner_sort, outer_sort, evar_plug, expression = kore_in.assert_matches(requirement)
+        assert (
+            evar_plug == expression
+        ), f'Requirement of equational-as is not of the form x = x: {requirement.pretty(self.pretty_options())}'
+        assert (
+            sort == outer_sort
+        ), f'Requirement of equational-as has incompatible sorts: {sort.pretty(self.pretty_options())} and {outer_sort.pretty(self.pretty_options())}'
+
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(reduce_kore_in_requirement_axiom),
+                {0: inner_sort, 1: outer_sort, 2: expression, 3: conclusion},
+            ),
+            phi,
         )
 
 
