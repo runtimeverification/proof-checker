@@ -35,11 +35,11 @@ for f in "${arr[@]}"; do
 
     # Prove
     echo "Prove .."  >> "$PWD/$1"
-    platinum-prover prove ${BUILDDIR}/${filename}/${filename}_trace.json ${BUILDDIR}/${filename}/${filename}_memory.json ${BUILDDIR}/${filename}/${filename}.proof >> "$PWD/$1"
+    platinum-prover prove ${BUILDDIR}/${filename}/${filename}_trace.json ${BUILDDIR}/${filename}/${filename}_memory.json ${BUILDDIR}/${filename}/${filename}.proof | grep -E "Time spent in proving:" >> "$PWD/$1"
 
     # Verify
     echo "Verify .." >> "$PWD/$1"
-    platinum-prover verify ${BUILDDIR}/${filename}/${filename}.proof >> "$PWD/$1"
+    platinum-prover verify ${BUILDDIR}/${filename}/${filename}.proof | grep -E "Time spent in verifying:" >> "$PWD/$1"
 
     echo -e "\n" >> "$PWD/$1";
 done;
