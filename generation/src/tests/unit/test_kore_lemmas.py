@@ -90,7 +90,7 @@ def test_reduce_equational_in() -> None:
     value_a = Symbol('value_a')
     conclusion = App(Symbol('x'), Symbol('y'))
 
-    test_expression = kore_implies(sort2, kore_in(sort1, sort2, value_a, kore_and(sort1, value_a, value_a)), conclusion)
+    test_expression = kore_implies(sort2, kore_in(sort1, sort2, value_a, value_a), conclusion)
     thunk = make_pt(test_expression)
     proof = theory.reduce_equational_in(thunk)
     expected = conclusion

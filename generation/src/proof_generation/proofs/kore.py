@@ -236,9 +236,7 @@ reduce_equational_as_requirement_axiom = Implies(
 
 # TODO: Requires a proof
 # (kore_in(phi0, phi1, phi2, phi2) k-> phi3):{phi1} -> phi3
-reduce_kore_in_requirement_axiom = Implies(
-    kore_implies(phi1, kore_in(phi0, phi1, phi2, kore_and(phi0, phi2, phi2)), phi3), phi3
-)
+reduce_kore_in_requirement_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), phi3), phi3)
 
 # TODO: Requires a proof
 #  (k⊤:{phi0} k-> phi1):{phi0}
@@ -284,9 +282,7 @@ class KoreLemmas(ProofExp):
                 phi3
         """
         _, requirement, conclusion = kore_implies.assert_matches(phi.conc)
-        inner_sort, outer_sort, _, expression, _ = kore_equational_as.assert_matches(
-            requirement
-        )
+        inner_sort, outer_sort, _, expression, _ = kore_equational_as.assert_matches(requirement)
         return self.modus_ponens(
             self.dynamic_inst(
                 self.load_axiom(reduce_equational_as_requirement_axiom),
@@ -297,7 +293,7 @@ class KoreLemmas(ProofExp):
 
     def reduce_equational_in(self, phi: ProofThunk):
         """
-                kore_in(phi0, phi1, phi2, phi2 k⋀ phi2) k-> phi3
+                kore_in(phi0, phi1, phi2, phi2) k-> phi3
         ---------------------------------------------------------
                 phi3
         """
