@@ -72,9 +72,9 @@ def rewrite_with_cell() -> LanguageSemantics:
             c_symbol = mod.symbol('c', foo_sort, is_functional=True, is_ctor=True)
             mod.symbol('dotk', k_sort, is_functional=True, is_ctor=True)
 
-            c1 = rewrite_with_cells_config_pattern(semantics, a_symbol.app(), MetaVar(0))
-            c2 = rewrite_with_cells_config_pattern(semantics, b_symbol.app(), MetaVar(0))
-            c3 = rewrite_with_cells_config_pattern(semantics, c_symbol.app(), MetaVar(0))
+            c1 = rewrite_with_cells_config_pattern(semantics, a_symbol.app(), EVar(0))
+            c2 = rewrite_with_cells_config_pattern(semantics, b_symbol.app(), EVar(0))
+            c3 = rewrite_with_cells_config_pattern(semantics, c_symbol.app(), EVar(0))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c1, c2))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c2, c3))
 
