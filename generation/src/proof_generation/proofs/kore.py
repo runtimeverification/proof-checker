@@ -210,17 +210,33 @@ keq_substitution_axiom = Implies(
     ),
 )
 
+# TODO: Requires a proof
 # phi1:{phi0} k/\ k⊤:{phi0} -> phi1:{phi0}
 remove_top_right_axiom = Implies(kore_and(phi0, phi1, kore_top(phi0)), phi1)
 
+# TODO: Requires a proof
 # k⊤:{phi0} k/\ phi1:{phi0} -> phi1:{phi0}
 remove_top_left_axiom = Implies(kore_and(phi0, kore_top(phi0), phi1), phi1)
 
+# TODO: Requires a proof
+# ((k⊤:{phi0} k/\ phi1:{phi0}) k-> phi2):{phi0} -> (phi1:{phi0} k-> phi2)):{phi0}
+remove_top_imp_left_axiom = Implies(
+    kore_implies(phi0, kore_and(phi0, kore_top(phi0), phi1), phi2), kore_implies(phi0, phi1, phi2)
+)
+
+# TODO: Requires a proof
+# ((phi1:{phi0} k/\ k⊤:{phi0}) k-> phi2):{phi0} -> (phi1:{phi0} k-> phi2)):{phi0}
+remove_top_imp_right_axiom = Implies(
+    kore_implies(phi0, kore_and(phi0, phi1, kore_top(phi0)), phi2), kore_implies(phi0, phi1, phi2)
+)
+
+# TODO: Requires a proof
 # (equational-as(phi0, phi1, phi2, phi2, phi2) k-> phi3):{phi1} -> phi3
 reduce_equational_as_requirement_axiom = Implies(
     kore_implies(phi1, kore_equational_as(phi0, phi1, phi2, phi2, phi2), phi3), phi3
 )
 
+# TODO: Requires a proof
 # (kore_in(phi0, phi1, phi2, phi2) k-> phi3):{phi1} -> phi3
 reduce_kore_in_requirement_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), phi3), phi3)
 
@@ -235,6 +251,8 @@ class KoreLemmas(ProofExp):
                 remove_top_left_axiom,
                 reduce_equational_as_requirement_axiom,
                 reduce_kore_in_requirement_axiom,
+                remove_top_imp_left_axiom,
+                remove_top_imp_right_axiom,
             ],
             notations=list(KORE_NOTATIONS),
         )
@@ -337,6 +355,38 @@ class KoreLemmas(ProofExp):
             self.dynamic_inst(
                 self.load_axiom(remove_top_left_axiom),
                 {0: sort, 1: right},
+            ),
+            phi,
+        )
+
+    def reduce_right_top_imp_conjunct(self, phi: ProofThunk):
+        """
+                phi1 k⋀ k⊤
+        ---------------------------
+                phi1
+        """
+        sort, left_conj, conclusion = kore_implies.assert_matches(phi.conc)
+        _, left, _ = kore_and.assert_matches(left_conj)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(remove_top_imp_right_axiom),
+                {0: sort, 1: left, 2: conclusion},
+            ),
+            phi,
+        )
+
+    def reduce_left_top_imp_conjunct(self, phi: ProofThunk):
+        """
+                k⊤ k⋀ phi1
+        ---------------------------
+                phi1
+        """
+        sort, left_conj, conclusion = kore_implies.assert_matches(phi.conc)
+        _, _, right = kore_and.assert_matches(left_conj)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(remove_top_imp_left_axiom),
+                {0: sort, 1: right, 2: conclusion},
             ),
             phi,
         )
