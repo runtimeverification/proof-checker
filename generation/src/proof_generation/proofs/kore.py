@@ -230,9 +230,7 @@ remove_top_imp_right_axiom = Implies(
 
 # TODO: Requires a proof
 # (equational-as(phi0, phi1, phi2, phi2, phi2) k-> phi3):{phi1} -> phi3
-reduce_equational_as_axiom = Implies(
-    kore_implies(phi1, kore_equational_as(phi0, phi1, phi2, phi2, phi2), phi3), phi3
-)
+reduce_equational_as_axiom = Implies(kore_implies(phi1, kore_equational_as(phi0, phi1, phi2, phi2, phi2), phi3), phi3)
 
 # TODO: Requires a proof
 # (kore_in(phi0, phi1, phi2, phi2) k-> phi3):{phi1} -> phi3

@@ -400,12 +400,13 @@ def test_subpattern_batch():
 
 def test_prove_equality_from_rule() -> None:
     semantics = node_tree()
-    tree_sort = semantics.get_sort('SortTree').aml_symbol
-    reverse_symbol = semantics.get_symbol('reverse')
-    semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
     node_symbol = semantics.get_symbol('node')
+    reverse_symbol = semantics.get_symbol('reverse')
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+
+    # Create a new proof expression
     proof_expr = ExecutionProofExp(semantics, init_config=top())
 
     # reverse(a) <-> a
@@ -413,36 +414,36 @@ def test_prove_equality_from_rule() -> None:
     assert isinstance(base_case_a, KEquationalRule)
     rule_with_substitution = base_case_a.pattern.apply_esubsts({0: a_symbol.app(), 1: a_symbol.app()})
 
-    thunk = make_pt(rule_with_substitution)
-    expected = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
-    proof = proof_expr.prove_equality_from_rule(thunk)
-    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
     # reverse(b) <-> b
     base_case_b = semantics.get_axiom(3)
     assert isinstance(base_case_b, KEquationalRule)
     rule_with_substitution = base_case_b.pattern.apply_esubsts({0: b_symbol.app(), 1: b_symbol.app()})
 
-    thunk = make_pt(rule_with_substitution)
-    expected = kore_equals(tree_sort, tree_sort, reverse_symbol.app(b_symbol.app()), b_symbol.app())
-    proof = proof_expr.prove_equality_from_rule(thunk)
-    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(b_symbol.app()), b_symbol.app())
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
     # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
     rec_case = semantics.get_axiom(4)
     assert isinstance(rec_case, KEquationalRule)
-    lhs = node_symbol.app(a_symbol.app(), b_symbol.app())
-    rule_with_substitution = rec_case.pattern.apply_esubsts({0: lhs, 1: a_symbol.app(), 2: b_symbol.app()})
+    node_a_b_subterm = node_symbol.app(a_symbol.app(), b_symbol.app())
+    rule_with_substitution = rec_case.pattern.apply_esubsts({0: node_a_b_subterm, 1: a_symbol.app(), 2: b_symbol.app()})
 
-    thunk = make_pt(rule_with_substitution)
-    expected = kore_equals(
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(
         tree_sort,
         tree_sort,
-        reverse_symbol.app(lhs),
+        reverse_symbol.app(node_a_b_subterm),
         node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
     )
-    proof = proof_expr.prove_equality_from_rule(thunk)
-    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
 
 def test_simple_rules_pretty_printing() -> None:
