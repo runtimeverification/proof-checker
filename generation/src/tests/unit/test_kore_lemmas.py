@@ -106,7 +106,7 @@ def test_reduce_right_top_eq_conjunct() -> None:
     value_b = Symbol('value_b')
     ktop = kore_top(sort1)
 
-    test_expression = kore_equals(sort1, sort2, value_a, kore_and(sort1, value_b, ktop))
+    test_expression = kore_equals(sort1, sort2, value_a, kore_and(value_b, ktop))
     thunk = make_pt(test_expression)
     proof = theory.reduce_right_top_eq_conjunct(thunk)
     expected = kore_equals(sort1, sort2, value_a, value_b)
@@ -121,7 +121,7 @@ def test_reduce_left_top_imp_conjunct() -> None:
     value_b = Symbol('value_b')
     ktop = kore_top(sort1)
 
-    test_expression = kore_implies(sort1, kore_and(sort1, ktop, value_a), value_b)
+    test_expression = kore_implies(sort1, kore_and(ktop, value_a), value_b)
     thunk = make_pt(test_expression)
     proof = theory.reduce_left_top_imp_conjunct(thunk)
     expected = kore_implies(sort1, value_a, value_b)
@@ -136,7 +136,7 @@ def test_reduce_right_top_imp_conjunct() -> None:
     value_b = Symbol('value_b')
     ktop = kore_top(sort1)
 
-    test_expression = kore_implies(sort1, kore_and(sort1, value_a, ktop), value_b)
+    test_expression = kore_implies(sort1, kore_and(value_a, ktop), value_b)
     thunk = make_pt(test_expression)
     proof = theory.reduce_right_top_imp_conjunct(thunk)
     expected = kore_implies(sort1, value_a, value_b)

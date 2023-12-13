@@ -236,7 +236,7 @@ class ExecutionProofExp(proof.ProofExp):
                 proof = self.kore_lemmas.reduce_top_imp(exp)
                 return proof, cached_requires
             elif match := kl.kore_and.matches(cached_requires):
-                _, left, right = match
+                left, right = match
                 if match := kl.kore_top.matches(left):
                     proof = self.kore_lemmas.reduce_left_top_imp_conjunct(exp)
                     rest_requires = right

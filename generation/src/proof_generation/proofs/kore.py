@@ -97,7 +97,7 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
 """ equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
-equational_as = Notation(
+kore_equational_as = Notation(
     'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
 )
 
@@ -213,19 +213,19 @@ keq_substitution_axiom = Implies(
 # TODO: Requires a proof
 # (phi1 k= phi2 k/\ k⊤:{phi0}):{phi1}
 remove_right_top_eq_axiom = Implies(
-    kore_equals(phi0, phi1, phi2, kore_and(phi0, phi3, kore_top(phi0))), kore_equals(phi0, phi1, phi2, phi3)
+    kore_equals(phi0, phi1, phi2, kore_and(phi3, kore_top(phi0))), kore_equals(phi0, phi1, phi2, phi3)
 )
 
 # TODO: Requires a proof
 # ((k⊤:{phi0} k/\ phi1:{phi0}) k-> phi2):{phi0} -> (phi1:{phi0} k-> phi2)):{phi0}
 remove_top_imp_left_axiom = Implies(
-    kore_implies(phi0, kore_and(phi0, kore_top(phi0), phi1), phi2), kore_implies(phi0, phi1, phi2)
+    kore_implies(phi0, kore_and(kore_top(phi0), phi1), phi2), kore_implies(phi0, phi1, phi2)
 )
 
 # TODO: Requires a proof
 # ((phi1:{phi0} k/\ k⊤:{phi0}) k-> phi2):{phi0} -> (phi1:{phi0} k-> phi2)):{phi0}
 remove_top_imp_right_axiom = Implies(
-    kore_implies(phi0, kore_and(phi0, phi1, kore_top(phi0)), phi2), kore_implies(phi0, phi1, phi2)
+    kore_implies(phi0, kore_and(phi1, kore_top(phi0)), phi2), kore_implies(phi0, phi1, phi2)
 )
 
 # TODO: Requires a proof
@@ -314,7 +314,7 @@ class KoreLemmas(ProofExp):
                 phi0 k= phi1
         """
         inner_sort, outer_sort, left, right_conj = kore_equals.assert_matches(phi.conc)
-        _, right, _ = kore_and.assert_matches(right_conj)
+        right, _ = kore_and.assert_matches(right_conj)
         return self.modus_ponens(
             self.dynamic_inst(
                 self.load_axiom(remove_right_top_eq_axiom),
@@ -330,7 +330,7 @@ class KoreLemmas(ProofExp):
                 phi1 k-> phi2
         """
         sort, left_conj, conclusion = kore_implies.assert_matches(phi.conc)
-        _, left, _ = kore_and.assert_matches(left_conj)
+        left, _ = kore_and.assert_matches(left_conj)
         return self.modus_ponens(
             self.dynamic_inst(
                 self.load_axiom(remove_top_imp_right_axiom),
@@ -346,7 +346,7 @@ class KoreLemmas(ProofExp):
                 phi1 k-> phi2
         """
         sort, left_conj, conclusion = kore_implies.assert_matches(phi.conc)
-        _, _, right = kore_and.assert_matches(left_conj)
+        _, right = kore_and.assert_matches(left_conj)
         return self.modus_ponens(
             self.dynamic_inst(
                 self.load_axiom(remove_top_imp_left_axiom),
