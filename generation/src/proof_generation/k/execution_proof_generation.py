@@ -233,16 +233,16 @@ class ExecutionProofExp(proof.ProofExp):
                 proof = self.kore_lemmas.reduce_equational_in(exp)
                 return proof, cached_requires
             elif kl.kore_top.matches(imp_right):
-                proof = self.kore_lemmas.reduce_top_imp(exp)
+                proof = self.kore_lemmas.reduce_top_in_imp(exp)
                 return proof, cached_requires
             elif match := kl.kore_and.matches(cached_requires):
                 left, right = match
                 if match := kl.kore_top.matches(left):
-                    proof = self.kore_lemmas.reduce_left_top_imp_conjunct(exp)
+                    proof = self.kore_lemmas.reduce_left_top_in_imp(exp)
                     rest_requires = right
                     return reduce_tops(proof, rest_requires)
                 elif match := kl.kore_top.matches(right):
-                    proof = self.kore_lemmas.reduce_right_top_imp_conjunct(exp)
+                    proof = self.kore_lemmas.reduce_right_top_in_imp(exp)
                     rest_requires = left
                     return reduce_tops(proof, rest_requires)
                 else:
@@ -255,7 +255,7 @@ class ExecutionProofExp(proof.ProofExp):
         proof, _ = reduce_tops(rule, requires)
 
         # Remove the ensures
-        equality_proof = self.kore_lemmas.reduce_right_top_eq_conjunct(proof)
+        equality_proof = self.kore_lemmas.reduce_right_top_in_eq(proof)
 
         return equality_proof
 

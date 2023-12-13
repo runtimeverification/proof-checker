@@ -108,7 +108,7 @@ def test_reduce_right_top_eq_conjunct() -> None:
 
     test_expression = kore_equals(sort1, sort2, value_a, kore_and(value_b, ktop))
     thunk = make_pt(test_expression)
-    proof = theory.reduce_right_top_eq_conjunct(thunk)
+    proof = theory.reduce_right_top_in_eq(thunk)
     expected = kore_equals(sort1, sort2, value_a, value_b)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
@@ -123,7 +123,7 @@ def test_reduce_left_top_imp_conjunct() -> None:
 
     test_expression = kore_implies(sort1, kore_and(ktop, value_a), value_b)
     thunk = make_pt(test_expression)
-    proof = theory.reduce_left_top_imp_conjunct(thunk)
+    proof = theory.reduce_left_top_in_imp(thunk)
     expected = kore_implies(sort1, value_a, value_b)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
@@ -138,7 +138,7 @@ def test_reduce_right_top_imp_conjunct() -> None:
 
     test_expression = kore_implies(sort1, kore_and(value_a, ktop), value_b)
     thunk = make_pt(test_expression)
-    proof = theory.reduce_right_top_imp_conjunct(thunk)
+    proof = theory.reduce_right_top_in_imp(thunk)
     expected = kore_implies(sort1, value_a, value_b)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
@@ -152,6 +152,6 @@ def test_reduce_top_imp() -> None:
 
     test_expression = kore_implies(sort1, ktop, value_a)
     thunk = make_pt(test_expression)
-    proof = theory.reduce_top_imp(thunk)
+    proof = theory.reduce_top_in_imp(thunk)
     expected = value_a
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
