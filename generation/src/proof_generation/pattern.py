@@ -540,10 +540,7 @@ class Instantiate(Pattern):
         return Instantiate(self.pattern, new_inst)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        # TODO: assert self.pattern.svar_is_fresh_ignoring_metavars(svar_id, frozenset(self.inst.keys()))
-        assert self.pattern.metavars() == set(self.inst.keys())
-        new_inst = frozendict({k: v.apply_ssubst(svar_id, plug) for k, v in self.inst.items()})
-        return Instantiate(self.pattern, new_inst)
+        raise NotImplementedError
 
     def pretty(self, opts: PrettyOptions) -> str:
         if opts.simplify_instantiations:
