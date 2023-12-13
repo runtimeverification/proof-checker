@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from proof_generation.pattern import SVar
 
 from .regex import Choice, Concat, EmptySet, Epsilon, Kleene, Letter, Not, a, b, less_than
-from .theory_of_words import ml_accepting_node
+from .theory_of_words import Words
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -216,4 +216,4 @@ class FixpointPatternInstr(BrzInstumentation):
             a_pat = self.stack.pop()
             assert a_pat
             b_pat = p
-            self.node_completed(ml_accepting_node(len(self.stack))(a_pat, b_pat))
+            self.node_completed(Words.notations.accepting_node(len(self.stack))(a_pat, b_pat))
