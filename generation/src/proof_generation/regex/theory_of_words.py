@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..pattern import MetaVar, Mu, Notation, Symbol, _or
 from ..proofs.kore import nary_app
+from ..proofs.propositional import Propositional
 
 ml_eps = Notation('epsilon', 0, Symbol('eps'), 'epsilon')
 ml_a = Notation('a', 0, Symbol('a'), 'a')
@@ -16,3 +17,8 @@ def ml_accepting_node(node_id: int) -> Notation:
         Mu(node_id, _or(ml_eps(), _or(ml_concat(ml_a(), MetaVar(0)), ml_concat(ml_b(), MetaVar(1))))),
         f'accepting({node_id}, {{0}}, {{1}})',
     )
+
+
+class Words(Propositional):
+    def __init__(self):
+        super().__init__()

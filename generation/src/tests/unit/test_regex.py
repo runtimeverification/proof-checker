@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from proof_generation.interpreter import ExecutionPhase
 from proof_generation.pattern import PrettyOptions, SVar
+from proof_generation.proof import Claim
 from proof_generation.regex.brzozowski import (
     FixpointPatternInstr,
     brzozowski,
@@ -13,6 +15,8 @@ from proof_generation.regex.brzozowski import (
     null_instr,
 )
 from proof_generation.regex.regex import Choice, Concat, Epsilon, Kleene, Not, a, b, implies
+from proof_generation.regex.theory_of_words import Words
+from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -86,3 +90,11 @@ def test_fixpoint_pattern(exp: Regex, expected: Pattern) -> None:
     assert instr.pattern
     assert instr.pattern.pretty(pretty_options) == expected.pretty(pretty_options)
     assert instr.pattern == expected
+
+
+def test_theory_of_words() -> None:
+    words = Words()
+    claims = [Claim(claim) for claim in words.get_claims()]
+    interpreter = StatefulInterpreter(ExecutionPhase.Gamma, claims=claims)
+    words.execute_full(interpreter)
+    assert interpreter.claims == []
