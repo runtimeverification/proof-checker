@@ -33,6 +33,7 @@ class SimplificationInfo:
     initial_pattern: Pattern  # Relative to previous in stack
     simplification_result: Pattern
     simplifications_remaining: int
+    proof: ProofThunk
 
 
 class SimplificationPerformer:
@@ -40,6 +41,7 @@ class SimplificationPerformer:
         self._language_semantics = language_semantics
         self._curr_config = init_config
         self._simplification_stack: list[SimplificationInfo] = []
+        self.proof = None # If None, the batch has not been proved yet
 
     @property
     def simplified_configuration(self) -> Pattern:
@@ -53,15 +55,25 @@ class SimplificationPerformer:
         assert not self.in_simplification, 'Simplification is in progress'
         self._curr_config = new_current_configuration
 
-    def apply_simplification(
-        self, ordinal: int, substitution: dict[int, Pattern], location: Location
-    ) -> SimplificationInfo:
+    def __enter__(self) -> SimplificationPerformer:
+        return self
+
+    def enter_context(self, location: Location) -> SimplificationInfo:
         # Check that whether it is the first simplification or not
         if not self._simplification_stack:
             sub_pattern = self.get_subterm(location, self._curr_config)
         else:
             sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
 
+        # Create the new info object and put it on top of the stack
+        new_info = SimplificationInfo(location, sub_pattern, sub_pattern, 0, eq_id) # ADD phi = phi to kore lemmas called as eq_id and instantiate it with phi := init_config/self_config
+        self._simplification_stack.append(new_info)
+
+        return new_info
+
+    def apply_simplification(
+        self, ordinal: int, substitution: dict[int, Pattern], location: Location
+    ) -> None:
         # Get the rule and remove extra variables added by K in addition to the ones in the K file
         rule = self._language_semantics.get_axiom(ordinal)
         assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
@@ -75,13 +87,19 @@ class SimplificationPerformer:
         simplifications_ramaining = self._language_semantics.count_simplifications(simplified_rhs)
 
         # Create the new info object and put it on top of the stack
-        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_ramaining)
+        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, 0, proof_given_by_ordinal(ordinal, substitution))
         self._simplification_stack.append(new_info)
 
-        return new_info
+        self._curr_config = simplified_rhs
 
-    def __enter__(self) -> SimplificationPerformer:
-        return self
+    def proof_given_by_ordinal(self, ordinal, substitution) -> ProofThunk:
+        # return basically an instantiated equality axiom used in apply_simplification as proofThunk
+        pass
+
+    def update_equality_proof(self, proof: ProofThunk) -> ProofThunk:
+        # This will call the Lemma from https://github.com/orgs/runtimeverification/projects/47?pane=issue&itemId=45845212
+        # instantiated as I sketched in Sketch for 3.
+        pass
 
     def __exit__(
         self,
@@ -98,11 +116,13 @@ class SimplificationPerformer:
                 last_info.simplification_result = self.update_subterm(
                     exhausted_info.location, last_info.simplification_result, exhausted_info.simplification_result
                 )
+                last_info.proof = update_equality_proof(last_info.proof)
             else:
                 # If the stack is empty, then we need to update the current configuration as we processed the batch
                 self._curr_config = self.update_subterm(
                     exhausted_info.location, self._curr_config, exhausted_info.simplification_result
                 )
+                self.proof = exhausted_info.proof
 
     def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:
         # subpattern, left = self._get_subpattern_rec(list(location), pattern)
@@ -219,10 +239,13 @@ class ExecutionProofExp(proof.ProofExp):
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
         with self._simplification_performer as performer:
             performer.apply_simplification(ordinal, substitution, location)
-            # TODO: Do some proving here ...
 
         # Update the current configuration
-        self._curr_config = self._simplification_performer.simplified_configuration
+        if performer.proof is not None: # This means that we finished the batch and proof is ready
+            self._curr_config = self._simplification_performer.simplified_configuration
+            self._proof_expressions[-1] = self.prove_lift_through_rewrite(self.performer.proof, self._proof_expressions[-1])
+            # This completes step1
+            # TODO: Reset self.performer
 
     def finalize(self) -> None:
         """Prepare proof expression for the final reachability claim"""
