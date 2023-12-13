@@ -93,7 +93,7 @@ ${LLVM_LINK} -S "${OUTPUT_LLVM_LINK_1}" "${LIB_C}/zkllvm-libc.ll" -o "${OUTPUT_L
 echo "Generate circuit"
 TIME1=$(date +%s%3N);
 
-${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas --print_circuit_output > /dev/null
+${ASSIGNER} -b "${OUTPUT_LLVM_LINK_2}" -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas
 
 TIME2=$(date +%s%3N);
 CIRCUIT_TIME=$(expr $TIME2 - $TIME1)
