@@ -7,12 +7,7 @@ import pytest
 from proof_generation.interpreter import ExecutionPhase
 from proof_generation.pattern import SVar
 from proof_generation.proof import Claim
-from proof_generation.regex.brzozowski import (
-    FixpointPatternInstr,
-    brzozowski,
-    derivative,
-    null_instr,
-)
+from proof_generation.regex.brzozowski import FixpointPatternInstr, brzozowski, derivative, null_instr
 from proof_generation.regex.regex import Choice, Concat, Epsilon, Kleene, Not, a, b, implies
 from proof_generation.regex.theory_of_words import Words
 from proof_generation.stateful_interpreter import StatefulInterpreter
@@ -41,10 +36,12 @@ asb_star_or_bsa_star = Choice(Kleene(Concat(Kleene(a), b)), Kleene(Concat(Kleene
 even_or_odd = Choice(even, odd)
 no_contains_a_or_no_only_b = Choice(Not(Concat(top, Concat(a, top))), Not(Kleene(b)))
 
+
 def test_notations() -> None:
     words = Words()
     opts = words.pretty_options()
     assert acc(0)(SVar(0), SVar(0)).pretty(opts) == 'accepting(0, X0, X0)'
+
 
 def test_brzozowski() -> None:
     assert brz(a) == False
