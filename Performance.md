@@ -24,7 +24,7 @@
 | perceptron       |    11   |            |           0.84 |           0.597 |          1.437 |
 | svm5             |    9    |            |           0.82 |           0.607 |          1.427 |
 | transfer         |    34   |            |          2.205 |           0.595 |          2.800 |
-| transfer5000*    |  330387 |            |        487.322 |           4.899 |        492.221 |
+| transfer5000*    |  505037 |            |              ∞ |               ∞ |              ∞ |
 
 * Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
