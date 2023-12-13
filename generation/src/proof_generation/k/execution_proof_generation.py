@@ -104,6 +104,7 @@ class SimplificationPerformer:
     def update_equality_proof(self, proof: ProofThunk) -> ProofThunk:
         # This will call the Lemma 2. from https://github.com/orgs/runtimeverification/projects/47?pane=issue&itemId=45845212
         # instantiated as I sketched in Sketch for 3.
+        # and apply transitivity of equality
         pass
 
     def __exit__(
