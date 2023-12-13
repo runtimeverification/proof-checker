@@ -54,17 +54,17 @@ kore_top = Notation('kore-top', 1, App(inhabitant_symbol, phi0), 'k⊤:{0}')
 """ kore_not(sort, pattern) """
 kore_not = Notation('kore-not', 2, _and(neg(phi1), kore_top(phi0)), '(k¬{1}):{0}')
 
-""" kore_and(sort, pattern, pattern) """
-kore_and = Notation('kore-and', 3, _and(phi1, phi2), '({1} k⋀ {2})')
+""" kore_and(pattern, pattern) """
+kore_and = Notation('kore-and', 2, _and(phi0, phi1), '({0} k⋀ {1})')
 
-""" kore_or(sort, pattern, pattern) """
-kore_or = Notation('kore-or', 3, _or(phi1, phi2), '({1} k⋁ {2})')
+""" kore_or(pattern, pattern) """
+kore_or = Notation('kore-or', 2, _or(phi0, phi1), '({0} k⋁ {1})')
 
 """ kore_next(sort, pattern) """
 kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '♦{1}')
 
 """ kore_implies(sort, pattern, pattern) """
-kore_implies = Notation('kore-implies', 3, kore_or(phi0, kore_not(phi0, phi1), phi2), '({1} k-> {2}):{0}')
+kore_implies = Notation('kore-implies', 3, kore_or(kore_not(phi0, phi1), phi2), '({1} k-> {2}):{0}')
 
 """ kore_rewrites(sort, left, right) """
 kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({1} k=> {2}):{0}')
@@ -80,7 +80,7 @@ kore_floor = Notation('kore-floor', 3, kore_not(phi1, kore_ceil(phi0, phi1, kore
 
 """ kore_iff(sort, left, right) """
 kore_iff = Notation(
-    'kore-iff', 3, kore_and(phi0, kore_implies(phi0, phi1, phi2), kore_implies(phi0, phi2, phi1)), '({1} k<-> {2}):{0}'
+    'kore-iff', 3, kore_and(kore_implies(phi0, phi1, phi2), kore_implies(phi0, phi2, phi1)), '({1} k<-> {2}):{0}'
 )
 
 """ kore_equals(inner_sort, outer_sort, left, right) """
@@ -97,8 +97,8 @@ kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2,
 kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
 
 """ equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
-kore_equational_as = Notation(
-    'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi0, phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
+equational_as = Notation(
+    'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
 )
 
 
@@ -152,7 +152,7 @@ def deconstruct_equality_rule(pattern: Pattern) -> tuple[Pattern, Pattern, Patte
     _, _, eq_left, eq_right_and_ensures = kore_equals.assert_matches(imp_right)
 
     # TODO: Potentially there can be more than one arg, but we have an assertion at converting kore patterns to catch such cases
-    _, eq_right, ensures = kore_and.assert_matches(eq_right_and_ensures)
+    eq_right, ensures = kore_and.assert_matches(eq_right_and_ensures)
     return requires, eq_left, eq_right_and_ensures, eq_right, ensures
 
 
@@ -161,7 +161,7 @@ def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
     collected_substitutions: dict[int, Pattern] = {}
 
     if top_and_match := kore_and.matches(pattern):
-        _, left, right = top_and_match
+        left, right = top_and_match
 
         for item in (left, right):
             if let_match := kore_equational_as.matches(item):
