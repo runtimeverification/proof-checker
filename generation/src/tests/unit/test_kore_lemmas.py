@@ -90,38 +90,26 @@ def test_reduce_equational_in() -> None:
     value_a = Symbol('value_a')
     conclusion = App(Symbol('x'), Symbol('y'))
 
-    test_expression = kore_implies(sort2, kore_in(sort1, sort2, value_a, value_a), conclusion)
+    test_expression = kore_implies(sort2, kore_in(sort1, sort2, value_a, kore_and(sort1, value_a, value_a)), conclusion)
     thunk = make_pt(test_expression)
     proof = theory.reduce_equational_in(thunk)
     expected = conclusion
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
 
-def test_reduce_left_top_conjunct() -> None:
+def test_reduce_right_top_eq_conjunct() -> None:
     theory = KoreLemmas()
 
     sort1 = Symbol('sort1')
+    sort2 = Symbol('sort2')
     value_a = Symbol('value_a')
+    value_b = Symbol('value_b')
     ktop = kore_top(sort1)
 
-    test_expression = kore_and(sort1, ktop, value_a)
+    test_expression = kore_equals(sort1, sort2, value_a, kore_and(sort1, value_b, ktop))
     thunk = make_pt(test_expression)
-    proof = theory.reduce_left_top_conjunct(thunk)
-    expected = value_a
-    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
-
-
-def test_reduce_right_top_conjunct() -> None:
-    theory = KoreLemmas()
-
-    sort1 = Symbol('sort1')
-    value_a = Symbol('value_a')
-    ktop = kore_top(sort1)
-
-    test_expression = kore_and(sort1, value_a, ktop)
-    thunk = make_pt(test_expression)
-    proof = theory.reduce_right_top_conjunct(thunk)
-    expected = value_a
+    proof = theory.reduce_right_top_eq_conjunct(thunk)
+    expected = kore_equals(sort1, sort2, value_a, value_b)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
 
@@ -152,4 +140,18 @@ def test_reduce_right_top_imp_conjunct() -> None:
     thunk = make_pt(test_expression)
     proof = theory.reduce_right_top_imp_conjunct(thunk)
     expected = kore_implies(sort1, value_a, value_b)
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_reduce_top_imp() -> None:
+    theory = KoreLemmas()
+
+    sort1 = Symbol('sort1')
+    value_a = Symbol('value_a')
+    ktop = kore_top(sort1)
+
+    test_expression = kore_implies(sort1, ktop, value_a)
+    thunk = make_pt(test_expression)
+    proof = theory.reduce_top_imp(thunk)
+    expected = value_a
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
