@@ -634,7 +634,7 @@ def test_collect_functional_axioms() -> None:
             cbb_pe = ExecutionProofExp(sem, d(c(b), b))
             cbb_pe.rewrite_event(
                 double_evar_krule,
-                {0: a(b), 1: b},
+                {0: c(b), 1: b},
             )
             assert functional(c(b)) in cbb_pe.get_axioms()
             assert functional(b) in cbb_pe.get_axioms()
