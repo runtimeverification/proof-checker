@@ -84,7 +84,7 @@ class Pattern:
     def evar_is_fresh(self, name: int) -> bool:
         return self.evar_is_fresh_ignoring_metavars(name, frozenset())
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         raise NotImplementedError
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -131,7 +131,7 @@ class EVar(Pattern):
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return name != self.name
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return set()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -167,7 +167,7 @@ class SVar(Pattern):
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return True
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return set()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -203,7 +203,7 @@ class Symbol(Pattern):
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return True
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return set()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -240,7 +240,7 @@ class Implies(Pattern):
             name, ignored_metavars
         ) and self.right.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return self.left.metavars().union(self.right.metavars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -275,7 +275,7 @@ class App(Pattern):
             name, ignored_metavars
         ) and self.right.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return self.left.metavars().union(self.right.metavars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -304,7 +304,7 @@ class Exists(Pattern):
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return name == self.var or self.subpattern.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return self.subpattern.metavars()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -343,7 +343,7 @@ class Mu(Pattern):
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return self.subpattern.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return self.subpattern.metavars()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -383,8 +383,8 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
 
-    def metavars(self) -> set[int]:
-        return {self.name}
+    def metavars(self) -> set[MetaVar]:
+        return {self}
 
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         return self.name in ignored_metavars or EVar(name) in self.e_fresh
@@ -438,7 +438,7 @@ class ESubst(Pattern):
             name, ignored_metavars
         ) and self.plug.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return self.pattern.metavars().union(self.plug.metavars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -471,7 +471,7 @@ class SSubst(Pattern):
             name, ignored_metavars
         ) and self.plug.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
-    def metavars(self) -> set[int]:
+    def metavars(self) -> set[MetaVar]:
         return self.pattern.metavars().union(self.plug.metavars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -519,11 +519,11 @@ class Instantiate(Pattern):
             value.evar_is_fresh_ignoring_metavars(name, ignored_metavars) for value in self.inst.values()
         )
 
-    def metavars(self) -> set[int]:
-        ret: set[int] = set()
+    def metavars(self) -> set[MetaVar]:
+        ret: set[MetaVar] = set()
         for v in self.pattern.metavars():
-            if v in self.inst:
-                ret = ret.union(self.inst[v].metavars())
+            if v.name in self.inst:
+                ret = ret.union(self.inst[v.name].metavars())
             else:
                 ret.add(v)
         return ret
@@ -535,7 +535,7 @@ class Instantiate(Pattern):
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         assert self.pattern.evar_is_fresh_ignoring_metavars(evar_id, frozenset(self.inst.keys()))
-        assert self.pattern.metavars() == set(self.inst.keys())
+        assert {x.name for x in self.pattern.metavars()} == set(self.inst.keys())
         new_inst = frozendict({k: v.apply_esubst(evar_id, plug) for k, v in self.inst.items()})
         return Instantiate(self.pattern, new_inst)
 
@@ -566,7 +566,7 @@ class Notation:
     def __post_init__(self) -> None:
         if self.definition.metavars():
             assert (
-                max(self.definition.metavars()) < self.arity
+                max({x.name for x in self.definition.metavars()}) < self.arity
             ), f'Notation {self.label}: Number of variables used is greater than Arity.'
 
     def __call__(self, *args: Pattern) -> Pattern:
