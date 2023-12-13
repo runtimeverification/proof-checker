@@ -58,9 +58,6 @@ def test_brzozowski() -> None:
 
 
 acc = ml_accepting_node
-ten_nodes = (acc(i) for i in range(0, 10))
-pretty_options = PrettyOptions(notations={n.definition: n for n in ten_nodes}, simplify_instantiations=False)
-
 
 # fmt: off
 @pytest.mark.parametrize('exp,expected',
@@ -85,10 +82,13 @@ pretty_options = PrettyOptions(notations={n.definition: n for n in ten_nodes}, s
 )
 # fmt: on
 def test_fixpoint_pattern(exp: Regex, expected: Pattern) -> None:
+    words = Words()
+    pretty_opts = words.pretty_options()
+
     instr = FixpointPatternInstr()
     assert brzozowski(exp, instr) == True
     assert instr.pattern
-    assert instr.pattern.pretty(pretty_options) == expected.pretty(pretty_options)
+    assert instr.pattern.pretty(pretty_opts) == expected.pretty(pretty_opts)
     assert instr.pattern == expected
 
 

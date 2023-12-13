@@ -22,3 +22,6 @@ def ml_accepting_node(node_id: int) -> Notation:
 class Words(Propositional):
     def __init__(self):
         super().__init__()
+        self.add_notations([ml_eps, ml_a, ml_b, ml_concat])
+        ten_nodes = (ml_accepting_node(i) for i in range(0, 10))
+        self.add_notations(ten_nodes)
