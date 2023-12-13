@@ -66,7 +66,7 @@ class SimplificationPerformer:
             sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
 
         # Create the new info object and put it on top of the stack
-        # TODO: simplifications_remaining here will probably not work with __exit__ as intended
+        # TODO: simplifications_remaining=0 here will probably not work with __exit__ as intended
         new_info = SimplificationInfo(location, sub_pattern, sub_pattern, 0, eq_id) # ADD phi = phi to kore lemmas called as eq_id and instantiate it with phi := init_config/curr_config at this stage
         self._simplification_stack.append(new_info)
 
