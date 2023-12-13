@@ -66,7 +66,8 @@ class SimplificationPerformer:
             sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
 
         # Create the new info object and put it on top of the stack
-        new_info = SimplificationInfo(location, sub_pattern, sub_pattern, 0, eq_id) # ADD phi = phi to kore lemmas called as eq_id and instantiate it with phi := init_config/self_config
+        # TODO: simplifications_remaining here will probably not work with __exit__ as intended
+        new_info = SimplificationInfo(location, sub_pattern, sub_pattern, 0, eq_id) # ADD phi = phi to kore lemmas called as eq_id and instantiate it with phi := init_config/curr_config at this stage
         self._simplification_stack.append(new_info)
 
         return new_info
@@ -74,9 +75,12 @@ class SimplificationPerformer:
     def apply_simplification(
         self, ordinal: int, substitution: dict[int, Pattern], location: Location
     ) -> None:
-        # Get the rule and remove extra variables added by K in addition to the ones in the K file
+        # Get the rule and assert the lhs equals current config that we are simplifying
         rule = self._language_semantics.get_axiom(ordinal)
         assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
+        assert rule.left == self._curr_config
+
+        # Remove extra variables added by K in addition to the ones in the K file
         base_substitutions = rule.substitutions_from_requires
         simplified_rhs = rule.right.apply_esubsts(base_substitutions)
 
@@ -90,14 +94,15 @@ class SimplificationPerformer:
         new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_ramaining, proof_given_by_ordinal(ordinal, substitution))
         self._simplification_stack.append(new_info)
 
+        # Update current config
         self._curr_config = simplified_rhs
 
     def proof_given_by_ordinal(self, ordinal, substitution) -> ProofThunk:
-        # return basically an instantiated equality axiom used in apply_simplification as proofThunk
+        # return basically an instantiated equality axiom used in apply_simplification as ProofThunk
         pass
 
     def update_equality_proof(self, proof: ProofThunk) -> ProofThunk:
-        # This will call the Lemma from https://github.com/orgs/runtimeverification/projects/47?pane=issue&itemId=45845212
+        # This will call the Lemma 2. from https://github.com/orgs/runtimeverification/projects/47?pane=issue&itemId=45845212
         # instantiated as I sketched in Sketch for 3.
         pass
 
