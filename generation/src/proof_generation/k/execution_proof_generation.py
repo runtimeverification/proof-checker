@@ -248,9 +248,9 @@ class ExecutionProofExp(proof.ProofExp):
             performer.apply_simplification(ordinal, substitution, location)
 
         # Update the current configuration
-        if performer.proof is not None: # This means that we finished the batch and proof is ready
+        if self._simplification_performer.proof is not None: # This means that we finished the batch and proof is ready
             self._curr_config = self._simplification_performer.simplified_configuration
-            self._proof_expressions[-1] = self.prove_lift_through_rewrite(self.performer.proof, self._proof_expressions[-1])
+            self._proof_expressions[-1] = self.prove_lift_through_rewrite(self._simplification_performer.proof, self._proof_expressions[-1])
             # This completes step1
             # TODO: Reset self.performer
 
