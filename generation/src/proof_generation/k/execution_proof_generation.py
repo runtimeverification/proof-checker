@@ -225,7 +225,39 @@ class ExecutionProofExp(proof.ProofExp):
         self._curr_config = self._simplification_performer.simplified_configuration
 
     def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:
-        raise NotImplementedError()
+        def reduce_tops(exp: proof.ProofThunk, cached_requires: Pattern) -> tuple[proof.ProofThunk, Pattern]:
+            if kl.kore_equational_as.matches(cached_requires):
+                proof = self.kore_lemmas.reduce_equational_as(exp)
+                return proof, cached_requires
+            elif kl.kore_in.matches(cached_requires):
+                proof = self.kore_lemmas.reduce_equational_in(exp)
+                return proof, cached_requires
+            elif kl.kore_top.matches(imp_right):
+                proof = self.kore_lemmas.reduce_top_imp(exp)
+                return proof, cached_requires
+            elif match := kl.kore_and.matches(cached_requires):
+                _, left, right = match
+                if match := kl.kore_top.matches(left):
+                    proof = self.kore_lemmas.reduce_left_top_imp_conjunct(exp)
+                    rest_requires = right
+                    return reduce_tops(proof, rest_requires)
+                elif match := kl.kore_top.matches(right):
+                    proof = self.kore_lemmas.reduce_right_top_imp_conjunct(exp)
+                    rest_requires = left
+                    return reduce_tops(proof, rest_requires)
+                else:
+                    return exp, cached_requires
+            return exp, cached_requires
+
+        _, requires, imp_right = kl.kore_implies.assert_matches(rule.conc)
+
+        # Find tops and cut them off
+        proof, _ = reduce_tops(rule, requires)
+
+        # Remove the ensures
+        equality_proof = self.kore_lemmas.reduce_right_top_eq_conjunct(proof)
+
+        return equality_proof
 
     def finalize(self) -> None:
         """Prepare proof expression for the final reachability claim"""
