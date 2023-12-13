@@ -243,6 +243,7 @@ class ExecutionProofExp(proof.ProofExp):
 
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
         with self._simplification_performer as performer:
+            performer.enter_context(location)
             performer.apply_simplification(ordinal, substitution, location)
 
         # Update the current configuration
