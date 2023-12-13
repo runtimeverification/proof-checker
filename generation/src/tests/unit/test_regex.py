@@ -99,3 +99,27 @@ def test_theory_of_words() -> None:
     interpreter = StatefulInterpreter(ExecutionPhase.Gamma, claims=claims)
     words.execute_full(interpreter)
     assert interpreter.claims == []
+
+
+def test_dfa_total() -> None:
+    words = Words()
+    claims = [Claim(claim) for claim in words.get_claims()]
+    words.add_claim(acc(0)(SVar(0), SVar(0)))
+    words.add_proof_expression(
+        words.total_dfa_is_valid_init(
+            0,  # binder
+            words.total_dfa_is_valid_recursive(
+                0,  # binder
+                # Since these are constant proofs,
+                # we can probably merge them into `total_dfa_is_valid_recursive`.
+                words.accepting_has_ewp(0),
+                words.accepting_has_ewp(0),
+                words.total_dfa_is_valid_base(),
+                words.total_dfa_is_valid_base(),
+            ),
+        )
+    )
+
+    interpreter = StatefulInterpreter(ExecutionPhase.Gamma, claims=claims)
+    words.execute_full(interpreter)
+    assert interpreter.claims == []

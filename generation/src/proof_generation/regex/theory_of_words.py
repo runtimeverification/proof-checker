@@ -34,6 +34,18 @@ class Words(Propositional):
     notations = _Notations()
 
     """
+    General Lemmas
+    --------------
+    """
+
+    def accepting_has_ewp(self, binder: int) -> ProofThunk:
+        """
+        An accepting node contains the empty word.
+
+        Words |-  epsilon ->  accepting(binder, _, _)
+        """
+
+    """
     Proving (the ML representation of) the language of a DFA is total
     -----------------------------------------------------------------
 
@@ -71,15 +83,16 @@ class Words(Propositional):
         """
 
     def total_dfa_is_valid_recursive(
+        self,
         binder: int,
-        a_is_accepting: ProofThunk,
-        b_is_accepting: ProofThunk,
+        a_has_ewp: ProofThunk,
+        b_has_ewp: ProofThunk,
         a_recurse: ProofThunk,
         b_recurse: ProofThunk,
     ) -> ProofThunk:
         """
-           a_is_accepting: `epsilon -> s[ accepting(fp_unf_a, fp_unf_b) / X ] fp_unf_a`
-           b_is_accepting: `epsilon -> s[ accepting(fp_unf_a, fp_unf_b) / X ] fp_unf_b`
+           a_has_ewp: epsilon -> s[ accepting(fp_unf_a, fp_unf_b) / X ] fp_unf_a
+           b_has_ewp: epsilon -> s[ accepting(fp_unf_a, fp_unf_b) / X ] fp_unf_b
            a_recurse: (SSubst[ (ctximp_app box (sVar box . top_letter) accepting(fp_unf_a, fp_unf_b) / X ] fp_ctximp_a) . top_letter) -> SSubst[ accepting(fp_unf_a, fp_unf_b) / X ] fp_unf_a$
            b_recurse: (SSubst[ (ctximp_app box (sVar box . top_letter) accepting(fp_unf_a, fp_unf_b) / X ] fp_ctximp_b) . top_letter) -> SSubst[ accepting(fp_unf_a, fp_unf_b) / X ] fp_unf_b$
            ------------------------
