@@ -87,7 +87,7 @@ class SimplificationPerformer:
         simplifications_ramaining = self._language_semantics.count_simplifications(simplified_rhs)
 
         # Create the new info object and put it on top of the stack
-        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, 0, proof_given_by_ordinal(ordinal, substitution))
+        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_ramaining, proof_given_by_ordinal(ordinal, substitution))
         self._simplification_stack.append(new_info)
 
         self._curr_config = simplified_rhs
