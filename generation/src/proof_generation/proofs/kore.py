@@ -229,15 +229,15 @@ remove_top_imp_right_axiom = Implies(
 )
 
 # TODO: Requires a proof
-# (equational-as(phi0, phi1, phi2, phi2, phi2) k-> phi3):{phi1} -> phi3
+# (phi2:{phi0} k⊆ (phi2 k/\ phi2):{phi0}):{phi1} k-> phi3):{phi1} -> phi3
 reduce_equational_as_axiom = Implies(kore_implies(phi1, kore_equational_as(phi0, phi1, phi2, phi2, phi2), phi3), phi3)
 
 # TODO: Requires a proof
-# (kore_in(phi0, phi1, phi2, phi2) k-> phi3):{phi1} -> phi3
+# (phi2:{phi0} k⊆ phi2:{phi0} k-> phi3):{phi1} -> phi3
 reduce_in_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), phi3), phi3)
 
 # TODO: Requires a proof
-#  (k⊤:{phi0} k-> phi1):{phi0}
+# (k⊤:{phi0} k-> phi1):{phi0}
 reduce_top_axiom = Implies(kore_implies(phi0, kore_top(phi0), phi1), phi1)
 
 
@@ -275,7 +275,7 @@ class KoreLemmas(ProofExp):
 
     def reduce_equational_as(self, phi: ProofThunk):
         """
-                equational-as(phi0, phi1, phi2, phi2, phi2) k-> phi3
+                (phi2 k⊆ (phi2 k⋀ phi2)) k-> phi3
         ---------------------------------------------------------
                 phi3
         """
@@ -291,7 +291,7 @@ class KoreLemmas(ProofExp):
 
     def reduce_equational_in(self, phi: ProofThunk):
         """
-                kore_in(phi0, phi1, phi2, phi2) k-> phi3
+                (phi2 k⊆ phi2) k-> phi3
         ---------------------------------------------------------
                 phi3
         """
