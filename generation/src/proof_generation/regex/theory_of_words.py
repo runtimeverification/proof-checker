@@ -1,10 +1,15 @@
 from __future__ import annotations
 
-from typing import NamedTuple
+from typing import TYPE_CHECKING
 
 from ..pattern import MetaVar, Mu, Notation, SVar, Symbol, _or
 from ..proofs.kore import nary_app
 from ..proofs.propositional import Propositional
+
+if TYPE_CHECKING:
+    from typing import Final
+
+    from ..proof import ProofThunk
 
 
 class Words(Propositional):
@@ -14,7 +19,7 @@ class Words(Propositional):
         ten_nodes = (self.notations.accepting_node(i) for i in range(0, 10))
         self.add_notations(ten_nodes)
 
-    class _Notations(NamedTuple):
+    class _Notations:
         eps: Final = Notation('epsilon', 0, Symbol('eps'), 'epsilon')
         a: Final = Notation('a', 0, Symbol('a'), 'a')
         b: Final = Notation('b', 0, Symbol('b'), 'b')
