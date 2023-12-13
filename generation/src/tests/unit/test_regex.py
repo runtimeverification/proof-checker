@@ -4,10 +4,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.pattern import SVar
+from proof_generation.pattern import PrettyOptions, SVar
 from proof_generation.regex.brzozowski import (
     FixpointPatternInstr,
-    PrettyOptions,
     brzozowski,
     derivative,
     ml_accepting_node,

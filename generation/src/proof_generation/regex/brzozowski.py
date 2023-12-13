@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import MetaVar, Mu, Notation, SVar, Symbol, _or
-from proof_generation.proofs.kore import nary_app
+from proof_generation.pattern import SVar
 
 from .regex import Choice, Concat, EmptySet, Epsilon, Kleene, Letter, Not, a, b, less_than
+from .theory_of_words import ml_accepting_node
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -183,20 +183,6 @@ def brzozowski(exp: Regex, instr: BrzInstumentation, prev: list[Regex] | None = 
 
 # Proof Generation
 # ================
-
-ml_eps = Notation('epsilon', 0, Symbol('eps'), 'epsilon')
-ml_a = Notation('a', 0, Symbol('a'), 'a')
-ml_b = Notation('b', 0, Symbol('b'), 'b')
-ml_concat = nary_app(Symbol('concat'), 2, '[{0} {1}]')
-
-
-def ml_accepting_node(node_id: int) -> Notation:
-    return Notation(
-        'accepting',
-        2,
-        Mu(node_id, _or(ml_eps(), _or(ml_concat(ml_a(), MetaVar(0)), ml_concat(ml_b(), MetaVar(1))))),
-        f'accepting({node_id}, {{0}}, {{1}})',
-    )
 
 
 @dataclass
