@@ -677,9 +677,8 @@ class LanguageSemantics(BuilderScope):
             case kore.Top(sort):
                 top_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 return kl.kore_top(top_sort_pattern)
-            case kore.Bottom(sort):
-                bottom_sort_pattern = self._convert_sort(scope, sort)
-                return kl.kore_bottom(bottom_sort_pattern)
+            case kore.Bottom(_):
+                return kl.kore_bottom()
             case kore.DV(sort, value):
                 dv_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 value_symbol: Pattern = Symbol(str(value.value))

@@ -93,8 +93,8 @@ kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({
 """ kore_in(inner_sort, outer_sort, left, right) """
 kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0} k⊆ {3}:{0}):{1}')
 
-""" kore_bottom(sort) """
-kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
+""" kore_bottom() """
+kore_bottom = Notation('kore-bottom', 0, bot(), 'k⊥')
 
 """ equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
 kore_equational_as = Notation(
