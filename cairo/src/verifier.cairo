@@ -524,7 +524,7 @@ mod tests {
         let term = Term::Pattern(bot());
         stack.push(term);
         let pop_term = pop_stack(ref stack);
-        assert(stack.len() == 0, 'Hmm.. stack_size should be 0!');
+        assert(stack.is_empty(), 'Hmm.. stack_size should be 0!');
     // This test ins't possible yet because of the lack of equality
     //assert(pop_term == term, 'Hmm.. pop_term should be term!');
     }
@@ -537,7 +537,7 @@ mod tests {
         let term = Term::Pattern(bot());
         stack.push(term);
         let pop_term = pop_stack_pattern(ref stack);
-        assert(stack.len() == 0, 'Hmm.. stack_size should be 0!');
+        assert(stack.is_empty(), 'Hmm.. stack_size should be 0!');
     // This test ins't possible yet because of the lack of equality
     //assert(pop_term == term, 'Hmm.. pop_term should be term!');
     }
@@ -550,7 +550,7 @@ mod tests {
         let term = Term::Proved(bot());
         stack.push(term);
         let pop_term = pop_stack_proved(ref stack);
-        assert(stack.len() == 0, 'Hmm.. stack_size should be 0!');
+        assert(stack.is_empty(), 'Hmm.. stack_size should be 0!');
     // This test ins't possible yet because of the lack of equality
     //assert(pop_term == term, 'Hmm.. pop_term should be term!');
     }
