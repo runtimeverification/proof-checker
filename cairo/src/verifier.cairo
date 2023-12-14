@@ -291,16 +291,16 @@ fn execute_instructions(
     let phi2 = metavar_unconstrained(2);
 
     // Axioms
-    let prop1 = implies(phi0.clone(), implies(phi1.clone(), phi0.clone()));
+    let _prop1 = implies(phi0.clone(), implies(phi1.clone(), phi0.clone()));
 
-    let prop2 = implies(
+    let _prop2 = implies(
         implies(phi0.clone(), implies(phi1.clone(), phi2.clone())),
         implies(implies(phi0.clone(), phi1), implies(phi0.clone(), phi2))
     );
-    let prop3 = implies(not(not(phi0.clone())), phi0.clone());
-    let quantifier = implies(esubst(phi0.clone(), 0, evar(1)), exists(0, phi0));
+    let _prop3 = implies(not(not(phi0.clone())), phi0.clone());
+    let _quantifier = implies(esubst(phi0.clone(), 0, evar(1)), exists(0, phi0));
 
-    let existence = exists(0, evar(0));
+    let _existence = exists(0, evar(0));
 
     // For enums we must implement all cases to make match works
     loop {
