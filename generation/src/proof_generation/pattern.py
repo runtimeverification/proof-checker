@@ -433,7 +433,11 @@ class ESubst(Pattern):
         if self.var.name == name:
             return self.plug.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
 
-        # We assume that at least one instance will be replaced
+        # This check may be slightly stronger than necessary in the case
+        # where `self.var` is fresh in `self.pattern`, but `name` is not fresh in `self.plug`.
+        # Since `evar_if_fresh` may return `False` when freshness in not known this is OK.
+        # Indeed this option may be better for efficiency, since it is unlikely that such
+        # an `ESubst` is constructed, where the user doesn't have control over its construction.
         return self.pattern.evar_is_fresh_ignoring_metavars(
             name, ignored_metavars
         ) and self.plug.evar_is_fresh_ignoring_metavars(name, ignored_metavars)
