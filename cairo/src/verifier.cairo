@@ -1,3 +1,6 @@
+use core::box::BoxTrait;
+use core::array::ArrayTrait;
+use core::option::OptionTrait;
 use ml_checker_cairo::pattern;
 use ml_checker_cairo::term::Term;
 use ml_checker_cairo::stack::{StackStructure, StackTrait, ClaimTrait};
@@ -349,10 +352,19 @@ fn execute_instructions(
                                     Term::Proved(p) => memory.append(Term::Proved(p.clone())),
                                 }
                             },
-                            Option::None => { panic!("Save needs needs term on stack"); },
+                            Option::None => { panic!("Save needs term on the Stack"); },
                         }
                     },
-                    Instruction::Load => { panic!("Load not implemented!"); },
+                    Instruction::Load => {
+                        let index: u32 = buffer
+                            .pop_front()
+                            .expect('Error on Load instruction')
+                            .into();
+                        match memory.get(index).expect('Load needs term on Memory').unbox() {
+                            Term::Pattern(p) => stack.push(Term::Pattern(p.clone())),
+                            Term::Proved(p) => stack.push(Term::Proved(p.clone())),
+                        }
+                    },
                     Instruction::Publish => match phase {
                         ExecutionPhase::Gamma => memory
                             .append(Term::Proved(pop_stack_pattern(ref stack))),
@@ -428,6 +440,9 @@ fn verify(
 // Unit tests module
 #[cfg(test)]
 mod tests {
+    use core::clone::Clone;
+    use core::traits::Into;
+    use core::box::BoxTrait;
     use core::option::OptionTrait;
     use core::array::ArrayTrait;
     use super::verify;
@@ -546,5 +561,28 @@ mod tests {
             proved_phi_implies_phi == Term::Proved(phi_implies_phi),
             'Expect proved::phi_implies_phi'
         );
+    }
+
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_save_and_load() {
+        let proof: Array<InstByte> = array![137, 0, // CleanMetaVar
+         28, // Save 
+        ];
+
+        let mut stack: Stack = StackTrait::new();
+        let mut memory: Memory = array![];
+        let mut claims: Claims = ClaimTrait::new();
+
+        let phi = metavar_unconstrained(0);
+
+        execute_instructions(proof, ref stack, ref memory, ref claims, ExecutionPhase::Gamma);
+        let mut pattern_phi: Term = memory.get(0).expect('Expected memory element').unbox().clone();
+        assert(pattern_phi == Term::Pattern(phi.clone()), 'Expect pattern::phi');
+        execute_instructions(
+            array![29, 0], ref stack, ref memory, ref claims, ExecutionPhase::Gamma
+        );
+        pattern_phi = stack.pop();
+        assert(pattern_phi == Term::Pattern(phi.clone()), 'Expect pattern::phi');
     }
 }
