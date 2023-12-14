@@ -12,17 +12,17 @@
 ## zkLLVM
 |     Examples     | CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
 |:----------------:|:--------------------:|:---------------------:|:--------:|
-| perceptron       |                 0.45 |                 0.650 |          |
-| svm5             |                 0.45 |                 0.630 |          |
-| transfer         |                 0.44 |                 0.630 |          |
+| perceptron       |                0.450 |                 0.650 |          |
+| svm5             |                0.450 |                 0.630 |          |
+| transfer         |                0.440 |                 0.630 |          |
 | transfer5000     |                0.823 |                38.842 |          |
 
 
 ## Lurk
 |     Examples     |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:----------------:|:-------:|:----------:|:--------------:|:---------------:|:--------------:|
-| perceptron       |    11   |            |           0.84 |           0.597 |          1.437 |
-| svm5             |    9    |            |           0.82 |           0.607 |          1.427 |
+| perceptron       |    11   |            |          0.840 |           0.597 |          1.437 |
+| svm5             |    9    |            |          0.820 |           0.607 |          1.427 |
 | transfer         |    34   |            |          2.205 |           0.595 |          2.800 |
 | transfer5000*    |  505037 |            |              ∞ |               ∞ |              ∞ |
 
