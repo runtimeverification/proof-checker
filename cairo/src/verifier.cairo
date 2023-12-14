@@ -10,8 +10,8 @@ use core::option::Option::{None, Some};
 use pattern::Pattern;
 use pattern::Pattern::{EVar, SVar, Symbol, Implies, App, Exists, Mu, MetaVar, ESubst, SSubst};
 use pattern::{
-    evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained, metavar_e_fresh,
-    metavar_s_fresh, esubst, ssubst
+    Id, evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained,
+    metavar_e_fresh, metavar_s_fresh, esubst, ssubst
 };
 
 // Boxes.
@@ -249,6 +249,10 @@ fn bot() -> Pattern {
 #[inline(always)]
 fn not(pat: Pattern) -> Pattern {
     return implies(pat, bot());
+}
+
+fn forall(evar: Id, pat: Pattern) -> Pattern {
+    return not(exists(evar, not(pat)));
 }
 
 /// Proof checker
