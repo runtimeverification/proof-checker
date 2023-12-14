@@ -340,7 +340,18 @@ fn execute_instructions(
                     Instruction::KnasterTarski => { panic!("KnasterTarski not implemented!"); },
                     Instruction::Instantiate => { panic!("Instantiate not implemented!"); },
                     Instruction::Pop => { panic!("Pop not implemented!"); },
-                    Instruction::Save => { panic!("Save not implemented!"); },
+                    Instruction::Save => {
+                        let term = stack.last();
+                        match term {
+                            Option::Some(p) => {
+                                match p {
+                                    Term::Pattern(p) => memory.append(Term::Pattern(p.clone())),
+                                    Term::Proved(p) => memory.append(Term::Proved(p.clone())),
+                                }
+                            },
+                            Option::None => { panic!("Save needs needs term on stack"); },
+                        }
+                    },
                     Instruction::Load => { panic!("Load not implemented!"); },
                     Instruction::Publish => { panic!("Publish not implemented!"); },
                     Instruction::CleanMetaVar => { panic!("NoOp not implemented!"); },
