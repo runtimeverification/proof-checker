@@ -184,27 +184,12 @@ fn ssubst(pattern: Pattern, svar_id: Id, plug: Pattern) -> Pattern {
 
 impl PatternOptionBoxClone of Clone<Option<Box<Pattern>>> {
     fn clone(self: @Option<Box<Pattern>>) -> Option<Box<Pattern>> {
-        return self.clone();
+        match self {
+            Option::Some(box_pat) => {
+                let mut result: Pattern = box_pat.as_snapshot().unbox().clone();
+                return Option::Some(BoxTrait::new(result));
+            },
+            Option::None => { Option::None }
+        }
     }
 }
-// impl PatternOptionBoxPartialEq of PartialEq<Option<Box<Pattern>>> {
-//     fn eq(lhs: @Option<Box<Pattern>>, rhs: @Option<Box<Pattern>>) -> core::bool {
-//         true
-//     }
-
-//     fn ne(lhs: @Option<Box<Pattern>>, rhs: @Option<Box<Pattern>>) -> core::bool {
-//         false
-//     }
-// }
-
-// impl PatternPartialEq of PartialEq<Pattern> {
-//     fn eq(lhs: @Pattern, rhs: @Pattern) -> core::bool {
-//         true
-//     }
-
-//     fn ne(lhs: @Pattern, rhs: @Pattern) -> core::bool {
-//         false
-//     }
-// }
-
-
