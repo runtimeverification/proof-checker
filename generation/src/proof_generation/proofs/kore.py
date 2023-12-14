@@ -60,14 +60,14 @@ kore_and = Notation('kore-and', 2, _and(phi0, phi1), '({0} k⋀ {1})')
 """ kore_or(pattern, pattern) """
 kore_or = Notation('kore-or', 2, _or(phi0, phi1), '({0} k⋁ {1})')
 
-""" kore_next(sort, pattern) """
-kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '♦{1}')
+""" kore_next(pattern) """
+kore_next = Notation('kore-next', 1, App(kore_next_symbol, phi0), '♦{0}')
 
 """ kore_implies(sort, pattern, pattern) """
 kore_implies = Notation('kore-implies', 3, kore_or(kore_not(phi0, phi1), phi2), '({1} k-> {2}):{0}')
 
 """ kore_rewrites(sort, left, right) """
-kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({1} k=> {2}):{0}')
+kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi2)), '({1} k=> {2}):{0}')
 
 """ kore_dv(sort, value) """
 kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), 'dv({1}):{0}')
