@@ -1,6 +1,6 @@
 use ml_checker_cairo::pattern;
-use ml_checker_cairo::term::{Term, Entry};
-use ml_checker_cairo::stack::{Stack, StackTrait};
+use ml_checker_cairo::term::Term;
+use ml_checker_cairo::stack::{StackStructure, StackTrait, ClaimTrait};
 
 use core::option::Option::{None, Some};
 
@@ -227,8 +227,9 @@ fn forall(evar: Id, pat: Pattern) -> Pattern {
 /// Proof checker
 /// =============
 
-type Claims = Array<Pattern>;
-type Memory = Array<Entry>;
+type Stack = StackStructure<Term>;
+type Claims = StackStructure<Pattern>;
+type Memory = Array<Term>;
 
 /// Stack manipulation
 /// ------------------
@@ -256,7 +257,7 @@ fn pop_stack_proved(ref stack: Stack) -> Pattern {
 /// Main implementation
 /// -------------------
 
-#[derive(Drop)]
+#[derive(Drop, Copy)]
 enum ExecutionPhase {
     Gamma,
     Claim,
@@ -280,7 +281,6 @@ fn read_u8_vec(ref buffer: Array<u8>) -> Array<u8> {
 fn execute_instructions(
     mut buffer: Array<u8>,
     ref stack: Stack,
-    ref stack_size: u32,
     ref memory: Memory,
     ref claims: Claims,
     phase: ExecutionPhase,
@@ -352,13 +352,11 @@ fn verify(
     gamma_buffer: Array<InstByte>, claims_buffer: Array<InstByte>, proof_buffer: Array<InstByte>
 ) {
     let mut stack: Stack = StackTrait::new();
-    let mut stack_size: u32 = 0;
     let mut memory: Memory = array![];
-    let mut claims: Claims = array![];
+    let mut claims: Claims = ClaimTrait::new();
     execute_instructions(
         gamma_buffer,
         ref stack, // stack is empty initially.
-        ref stack_size, // stack_size is 0 initially.
         ref memory, // memory is empty initially.
         ref claims, // claims is unused in this phase.
         ExecutionPhase::Gamma
@@ -369,7 +367,6 @@ fn verify(
     execute_instructions(
         claims_buffer,
         ref stack, // stack is empty initially.
-        ref stack_size, // stack_size is 0 initially.
         ref memory, // reuse memory.
         ref claims, // claims populated in this phase.
         ExecutionPhase::Claim
@@ -380,7 +377,6 @@ fn verify(
     execute_instructions(
         proof_buffer,
         ref stack, // stack is empty initially.
-        ref stack_size, // stack_size is 0 initially.
         ref memory, // axioms are used as initial memory.
         ref claims, // claims are consumed by publish instruction.
         ExecutionPhase::Proof
