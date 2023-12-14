@@ -425,16 +425,86 @@ fn verify(gamma: Array<u8>, claims: Array<u8>, proofs: Array<u8>) -> core::bool 
 // Unit tests module
 #[cfg(test)]
 mod tests {
+    use core::array::ArrayTrait;
     use super::verify;
 
     #[test]
-    #[available_gas(100000)]
+    #[available_gas(1000000000000000)]
     fn it_works() {
         let gamma = ArrayTrait::<u8>::new();
         let claims = ArrayTrait::<u8>::new();
         let proofs = ArrayTrait::<u8>::new();
 
         assert(verify(gamma, claims, proofs), 'Hmm.. verify failed!');
+    }
+
+    use super::push;
+    use super::Term;
+    use super::bot;
+    use super::Stack;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_stack_push() {
+        let mut stack:Stack = array![];
+        let mut stack_size = 0;
+        let term = Term::Pattern(bot());
+        push(ref stack, ref stack_size, term);
+        assert(stack_size == 1, 'Hmm.. stack_size should be 1!');
+    }
+
+    use super::pop_stack;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_stack_pop() {
+        let mut stack:Stack = array![];
+        let mut stack_size = 0;
+        let term = Term::Pattern(bot());
+        push(ref stack, ref stack_size, term);
+        let pop_term = pop_stack(ref stack, ref stack_size);
+        assert(stack_size == 0, 'Hmm.. stack_size should be 0!');
+        // This test ins't possible yet because of the lack of equality
+        //assert(pop_term == term, 'Hmm.. pop_term should be term!');
+    }
+
+    use super::pop_stack_pattern;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_stack_pop_pattern() {
+        let mut stack:Stack = array![];
+        let mut stack_size = 0;
+        let term = Term::Pattern(bot());
+        push(ref stack, ref stack_size, term);
+        let pop_term = pop_stack_pattern(ref stack, ref stack_size);
+        assert(stack_size == 0, 'Hmm.. stack_size should be 0!');
+        // This test ins't possible yet because of the lack of equality
+        //assert(pop_term == term, 'Hmm.. pop_term should be term!');
+    }
+
+    use super::pop_stack_proved;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_stack_pop_proved() {
+        let mut stack:Stack = array![];
+        let mut stack_size = 0;
+        let term = Term::Proved(bot());
+        push(ref stack, ref stack_size, term);
+        let pop_term = pop_stack_proved(ref stack, ref stack_size);
+        assert(stack_size == 0, 'Hmm.. stack_size should be 0!');
+        // This test ins't possible yet because of the lack of equality
+        //assert(pop_term == term, 'Hmm.. pop_term should be term!');
+    }
+
+    use super::read_u8_vec;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_read_u8_vec() {
+        let mut buffer = array![];
+        buffer.append(3);
+        buffer.append(1);
+        buffer.append(2);
+        buffer.append(3);
+        let result = read_u8_vec(ref buffer);
+        assert(result.len() == 3, 'Hmm this should have length 3!');
     }
 }
 
