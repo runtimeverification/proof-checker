@@ -18,6 +18,7 @@ These programs are:
   with an input vector of length 5
 - `svm-5`: a [support vector machine (SVM)](https://en.wikipedia.org/wiki/Support_vector_machine)
   model that classifies data points in a 5-dimensional space. 
+
 The reference pseudocode of these examples are available at the end 
 of this document. 
 
@@ -41,7 +42,7 @@ of a logical proof that shows the correctness of `Pgm` written in language `PL`.
 Thus, we call this benchmark set Proofs of Proofs, as we generate
 (ZK) proofs of (logical) proofs. 
 
-## ZK Backends
+### ZK Backends
 
 We consider the following ZK backends:
 - [Cairo](https://www.cairo-lang.org/)
@@ -49,9 +50,14 @@ We consider the following ZK backends:
 - [RISC Zero](https://www.risczero.com/)
 - [zkLLVM](https://github.com/NilFoundation/zkLLVM)
 
-# Benchmark: Direct Implementation
+## Performance Tables
 
-## Risc 0
+- machine spec: AMD Ryzen 9 7950X(16 cores/32 threads/128GB), 4090RTX
+- performance time measured in seconds
+
+### Direct Implementation
+
+#### Risc 0: v0.16.1
 |   Examples   |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
 |:------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
 | perceptron   |  21156  |     0.028     |     0.027     |      2.397     |      0.605     |      0.029      |      0.028      |      2.426     |      0.633     |
@@ -60,7 +66,7 @@ We consider the following ZK backends:
 | transfer     |  21156  |     0.028     |     0.028     |      2.429     |      0.593     |      0.030      |      0.030      |      2.459     |      0.623     |
 
 
-## zkLLVM
+#### zkLLVM
 |     Examples     | CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
 |:----------------:|:--------------------:|:---------------------:|:--------:|
 | perceptron       |                 0.95 |                 0.135 |          |
@@ -69,7 +75,7 @@ We consider the following ZK backends:
 | transfer-batch   |                0.797 |                 40.34 |          |
 
 
-## Lurk
+#### Lurk
 |     Examples     |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:----------------:|:-------:|:----------:|:--------------:|:---------------:|:--------------:|
 | perceptron       |    11   |            |           0.84 |           0.597 |          1.437 |
@@ -80,7 +86,7 @@ We consider the following ZK backends:
 * Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
 
-## Cairo0
+#### Cairo0
 |     Examples     | CPU Exec Time | CPU Prove Time | CPU Verify Time | CPU Total Time |
 |:-----------------|:-------------:|:--------------:|:---------------:|:---------------|
 | perceptron       |         0.438 |          0.149 |           0.007 |          0.594 |
@@ -89,9 +95,9 @@ We consider the following ZK backends:
 | transfer5000*    |         6.799 |         26.311 |           0.867 |         33.977 |
 
 
-# Proof Checker
+### Proofs of Proofs
 
-## Risc 0
+#### Risc 0: v0.16.1
 |             Examples            |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
 |:-------------------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
 | perceptron-goal                 | 3207528 |       50      |     0.079     |     124.330    |     29.055     |        56       |      0.086      |     122.839    |     29.141     |
@@ -102,7 +108,7 @@ We consider the following ZK backends:
 | impreflex-compressed-goal       |   66366 |       17      |     0.019     |       4.915    |      1.112     |        18       |      0.020      |       4.740    |      1.132     |
 
 
-## zkLLVM
+#### zkLLVM
 |             Examples            |CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
 |:-------------------------------:|:-------------------:|:---------------------:|:--------:|
 | impreflex-compressed-goal       |               5.798 |                372.76 |          |
@@ -113,7 +119,7 @@ We consider the following ZK backends:
 | transfer-batch-1k-goal          |                ∞    |                     ∞ |          |
 
 
-## Lurk
+#### Lurk
 |             Examples            | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:-------------------------------:|:------:|:----------:|:--------------:|:---------------:|:--------------:|
 | transfer-task-specific*         | 148870 |    861.443 |        193.836 |           4.199 |        198.035 |
