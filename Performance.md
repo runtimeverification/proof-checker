@@ -1,10 +1,13 @@
 # Experiments and Evaluation of ZK Backends
 
 We present our experiments and evaluation of several ZK backends.  
-Our benchmark can be divided into two categories:
+
+## Benchmark Set Description
+
+We use two benchmark sets for our evaluation:
 Direct Implementation and Proofs of Proofs. 
 
-## Benchmark Set - Direct Implementation
+### Direct Implementation
 
 In this category, we consider four simple programs in the areas of blockchain and AI
 and use several ZK backends to directly generate their ZK proofs. 
@@ -22,7 +25,7 @@ Given a ZK backend, we directly implement these programs in the
 programming language to the backend and generate ZK proof
 of their execution traces. 
 
-## Benchmark Set - Proofs of Proofs
+### Proofs of Proofs
 
 In this category, we combine ZK proofs and logical/mathematical proofs. 
 For a program `Pgm` in a programming language `PL`, we use the
