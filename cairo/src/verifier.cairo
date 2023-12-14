@@ -326,8 +326,22 @@ enum ExecutionPhase {
     Proof,
 }
 
+fn read_u8_vec(ref buffer: Array<u8>) -> Array<u8> {
+    let mut result = array![];
+    let mut i = 0;
+    let len:u8 = buffer.pop_front().expect('Expected length for array');
+    loop {
+        if i == len {
+            break;
+        }
+        result.append(buffer.pop_front().unwrap());
+        i += 1;
+    };
+    return result;
+}
+
 fn execute_instructions(
-    mut buffer: Array<InstByte>,
+    mut buffer: Array<u8>,
     ref stack: Stack,
     ref stack_size: u32,
     ref memory: Memory,
