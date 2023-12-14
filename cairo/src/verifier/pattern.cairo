@@ -17,19 +17,7 @@ use core::array::Array;
 type Id = u8;
 type IdList = Array<Id>;
 
-fn copyList(list: @IdList) -> IdList {
-    let mut result: IdList = array![];
-    let mut span = list.clone();
-    loop {
-        match span.pop_front() {
-            Option::Some(v) => { result.append(v); },
-            Option::None => { break (); },
-        };
-    };
-    return result;
-}
-
-#[derive(Drop)]
+#[derive(Drop, Clone)]
 struct ImpliesType {
     left: Option<Box<Pattern>>,
     right: Option<Box<Pattern>>,
@@ -53,7 +41,7 @@ struct MuType {
     subpattern: Option<Box<Pattern>>,
 }
 
-#[derive(Drop)]
+#[derive(Drop, Clone)]
 struct MetaVarType {
     id: Id,
     e_fresh: IdList,
@@ -77,7 +65,7 @@ struct SSubstType {
     plug: Option<Box<Pattern>>,
 }
 
-#[derive(Drop)]
+#[derive(Drop, Clone)]
 enum Pattern {
     EVar: Id,
     SVar: Id,
@@ -212,12 +200,6 @@ fn ssubst(pattern: Pattern, svar_id: Id, plug: Pattern) -> Pattern {
 
 impl PatternOptionBoxClone of Clone<Option<Box<Pattern>>> {
     fn clone(self: @Option<Box<Pattern>>) -> Option<Box<Pattern>> {
-        return self.clone();
-    }
-}
-
-impl PatternClone of Clone<Pattern> {
-    fn clone(self: @Pattern) -> Pattern {
         return self.clone();
     }
 }
