@@ -1,4 +1,52 @@
-# CSL Examples
+# Experiments and Evaluation of ZK Backends
+
+We present our experiments and evaluation of several ZK backends.  
+Our benchmark can be divided into two categories:
+Direct Implementation and Proofs of Proofs. 
+
+## Benchmark Set - Direct Implementation
+
+In this category, we consider four simple programs in the areas of blockchain and AI
+and use several ZK backends to directly generate their ZK proofs. 
+These programs are:
+- `transfer`: a simplified version of the ERC20 transfer function;
+- `batch-transfer-5k`: a while loop that executes `transfer` for 5000 times; 
+- `perceptron-5`: a single-layer [perceptron](https://en.wikipedia.org/wiki/Perceptron) 
+  with an input vector of length 5
+- `svm-5`: a [support vector machine (SVM)](https://en.wikipedia.org/wiki/Support_vector_machine)
+  model that classifies data points in a 5-dimensional space. 
+The reference pseudocode of these examples are available at the end 
+of this document. 
+
+Given a ZK backend, we directly implement these programs in the
+programming language to the backend and generate ZK proof
+of their execution traces. 
+
+## Benchmark Set - Proofs of Proofs
+
+In this category, we combine ZK proofs and logical/mathematical proofs. 
+For a program `Pgm` in a programming language `PL`, we use the
+[K framework](https://kframework.org) to generate
+a logical proof `PI(Pgm, PL)` that shows the correctness of an execution
+trace of `Pgm` using directly a formal semantics of `PL`. 
+Such a logical proof can be automatically checked by a logical proof checker
+`proof_check(PI(Pgm, PL))`. 
+Then, we generate a ZK proof that shows the correctness of
+an execution trace of `proof_check`. 
+In other words, we generate a ZK proof that shows the correctness
+of a logical proof that shows the correctness of `Pgm` written in language `PL`. 
+Thus, we call this benchmark set Proofs of Proofs, as we generate
+(ZK) proofs of (logical) proofs. 
+
+## ZK Backends
+
+We consider the following ZK backends:
+- [Cairo](https://www.cairo-lang.org/)
+- [Lurk](https://lurk-lang.org/)
+- [RISC Zero](https://www.risczero.com/)
+- [zkLLVM](https://github.com/NilFoundation/zkLLVM)
+
+# Benchmark: Direct Implementation
 
 ## Risc 0
 |   Examples   |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
