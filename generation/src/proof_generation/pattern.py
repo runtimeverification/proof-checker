@@ -576,7 +576,7 @@ class Notation:
 
     def print_instantiation(self, applied: Instantiate, opts: PrettyOptions) -> str:
         assert applied.pattern == self.definition
-        pretty_opts = [p.pretty(opts) for p in applied.inst.values()]
+        pretty_opts = [p.pretty(opts) for _, p in sorted(applied.inst.items())]
         try:
             return self.format_str.format(*pretty_opts)
         except Exception as e:
