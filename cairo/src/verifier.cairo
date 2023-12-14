@@ -259,57 +259,92 @@ fn forall(evar: Id, pat: Pattern) -> Pattern {
 /// =============
 
 #[derive(Drop)]
-type Stack = Array<Term>;
+struct Stack {
+    elements: Array<Term>,
+    len: u32,
+}
+
+trait StackTrait {
+    fn new() -> Stack;
+    fn push(ref self: Stack, term: Term);
+    fn pop(ref self: Stack) -> Term;
+    fn is_empty(ref self: Stack) -> bool;
+    fn clear(ref self: Stack);
+    fn len(ref self: Stack) -> u32;
+}
+
+impl StackTraitImpl of StackTrait {
+    fn new() -> Stack {
+        return Stack { elements: array![], len: 0, };
+    }
+
+    fn push(ref self: Stack, term: Term) {
+        self.elements.append(term);
+        self.len += 1;
+    }
+    fn pop(ref self: Stack) -> Term {
+        if self.is_empty() {
+            panic!("Insufficient stack items.");
+        }
+
+        let mut new_stack = array![];
+        let mut pop_term: Term = Term::Pattern(bot());
+        let mut i = 0;
+
+        loop {
+            let term = self.elements.pop_front();
+            match term {
+                Option::Some(term) => {
+                    if i == self.len - 1 {
+                        pop_term = term;
+                        break;
+                    }
+                    new_stack.append(term);
+                    i += 1;
+                },
+                Option::None => { break; }
+            }
+        };
+
+        self.elements = new_stack;
+        self.len -= 1;
+
+        return pop_term;
+    }
+
+    fn is_empty(ref self: Stack) -> bool {
+        return self.len == 0;
+    }
+
+    fn clear(ref self: Stack) {
+        self.elements = array![];
+        self.len = 0;
+    }
+
+    fn len(ref self: Stack) -> u32 {
+        return self.len;
+    }
+}
+
 type Claims = Array<Pattern>;
 type Memory = Array<Entry>;
 
-/// Stack manipulation (Temporary!!)
+/// Stack manipulation
 /// ------------------
-fn push(ref stack: Stack, ref stack_size: u32, term: Term) {
-    stack.append(term);
-    stack_size += 1;
+fn pop_stack(ref stack: Stack) -> Term {
+    return stack.pop();
 }
 
-fn pop_stack(ref stack: Stack, ref stack_size: u32) -> Term {
-    if stack_size == 0 {
-        panic!("Insufficient stack items.");
-    }
-
-    let mut new_stack = array![];
-    let mut pop_term: Term = Term::Pattern(bot());
-    let mut i = 0;
-
-    loop {
-        let term = stack.pop_front();
-        match term {
-            Option::Some(term) => {
-                if i == stack_size - 1 {
-                    pop_term = term;
-                    break;
-                }
-                new_stack.append(term);
-                i += 1;
-            },
-            Option::None => { break; }
-        }
-    };
-
-    stack = new_stack;
-    stack_size -= 1;
-
-    return pop_term;
-}
-
-fn pop_stack_pattern(ref stack: Stack, ref stack_size: u32) -> Pattern {
-    let term = pop_stack(ref stack, ref stack_size);
+fn pop_stack_pattern(ref stack: Stack) -> Pattern {
+    let term = pop_stack(ref stack);
     match term {
         Term::Pattern(pat) => { return pat; },
         Term::Proved(_) => panic!("Expected pattern on stack."),
     }
 }
 
-fn pop_stack_proved(ref stack: Stack, ref stack_size: u32) -> Pattern {
-    let term = pop_stack(ref stack, ref stack_size);
+fn pop_stack_proved(ref stack: Stack) -> Pattern {
+    let term = pop_stack(ref stack);
     match term {
         Term::Pattern(_) => panic!("Expected proved on stack."),
         Term::Proved(pat) => { return pat; },
@@ -414,7 +449,7 @@ fn execute_instructions(
 fn verify(
     gamma_buffer: Array<InstByte>, claims_buffer: Array<InstByte>, proof_buffer: Array<InstByte>
 ) {
-    let mut stack: Stack = array![];
+    let mut stack: Stack = StackTrait::new();
     let mut stack_size: u32 = 0;
     let mut memory: Memory = array![];
     let mut claims: Claims = array![];
@@ -427,7 +462,7 @@ fn verify(
         ExecutionPhase::Gamma
     );
 
-    stack = array![];
+    stack.clear();
 
     execute_instructions(
         claims_buffer,
@@ -438,7 +473,7 @@ fn verify(
         ExecutionPhase::Claim
     );
 
-    stack = array![];
+    stack.clear();
 
     execute_instructions(
         proof_buffer,
@@ -468,30 +503,28 @@ mod tests {
         verify(gamma, claims, proofs);
     }
 
-    use super::push;
+    use super::StackTrait;
     use super::Term;
     use super::bot;
     use super::Stack;
     #[test]
     #[available_gas(1000000000000000)]
     fn test_stack_push() {
-        let mut stack: Stack = array![];
-        let mut stack_size = 0;
+        let mut stack: Stack = StackTrait::new();
         let term = Term::Pattern(bot());
-        push(ref stack, ref stack_size, term);
-        assert(stack_size == 1, 'Hmm.. stack_size should be 1!');
+        stack.push(term);
+        assert(stack.len() == 1, 'Hmm.. stack_size should be 1!');
     }
 
     use super::pop_stack;
     #[test]
     #[available_gas(1000000000000000)]
     fn test_stack_pop() {
-        let mut stack: Stack = array![];
-        let mut stack_size = 0;
+        let mut stack: Stack = StackTrait::new();
         let term = Term::Pattern(bot());
-        push(ref stack, ref stack_size, term);
-        let pop_term = pop_stack(ref stack, ref stack_size);
-        assert(stack_size == 0, 'Hmm.. stack_size should be 0!');
+        stack.push(term);
+        let pop_term = pop_stack(ref stack);
+        assert(stack.len() == 0, 'Hmm.. stack_size should be 0!');
     // This test ins't possible yet because of the lack of equality
     //assert(pop_term == term, 'Hmm.. pop_term should be term!');
     }
@@ -500,12 +533,11 @@ mod tests {
     #[test]
     #[available_gas(1000000000000000)]
     fn test_stack_pop_pattern() {
-        let mut stack: Stack = array![];
-        let mut stack_size = 0;
+        let mut stack: Stack = StackTrait::new();
         let term = Term::Pattern(bot());
-        push(ref stack, ref stack_size, term);
-        let pop_term = pop_stack_pattern(ref stack, ref stack_size);
-        assert(stack_size == 0, 'Hmm.. stack_size should be 0!');
+        stack.push(term);
+        let pop_term = pop_stack_pattern(ref stack);
+        assert(stack.len() == 0, 'Hmm.. stack_size should be 0!');
     // This test ins't possible yet because of the lack of equality
     //assert(pop_term == term, 'Hmm.. pop_term should be term!');
     }
@@ -514,12 +546,11 @@ mod tests {
     #[test]
     #[available_gas(1000000000000000)]
     fn test_stack_pop_proved() {
-        let mut stack: Stack = array![];
-        let mut stack_size = 0;
+        let mut stack: Stack = StackTrait::new();
         let term = Term::Proved(bot());
-        push(ref stack, ref stack_size, term);
-        let pop_term = pop_stack_proved(ref stack, ref stack_size);
-        assert(stack_size == 0, 'Hmm.. stack_size should be 0!');
+        stack.push(term);
+        let pop_term = pop_stack_proved(ref stack);
+        assert(stack.len() == 0, 'Hmm.. stack_size should be 0!');
     // This test ins't possible yet because of the lack of equality
     //assert(pop_term == term, 'Hmm.. pop_term should be term!');
     }
