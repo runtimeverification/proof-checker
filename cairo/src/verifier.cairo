@@ -311,7 +311,11 @@ fn execute_instructions(
                     Instruction::EVar => { panic!("EVar not implemented!"); },
                     Instruction::SVar => { panic!("SVar not implemented!"); },
                     Instruction::Symbol => { panic!("Symbol not implemented!"); },
-                    Instruction::Implies => { panic!("Implies not implemented!"); },
+                    Instruction::Implies => {
+                        let left = pop_stack_pattern(ref stack);
+                        let right = pop_stack_pattern(ref stack);
+                        stack.push(Term::Pattern(implies(left, right)));
+                    },
                     Instruction::App => { panic!("App not implemented!"); },
                     Instruction::Exists => { panic!("Exists not implemented!"); },
                     Instruction::Mu => { panic!("Mu not implemented!"); },
