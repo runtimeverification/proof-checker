@@ -339,14 +339,7 @@ fn execute_instructions(
                     Instruction::Save => { panic!("Save not implemented!"); },
                     Instruction::Load => { panic!("Load not implemented!"); },
                     Instruction::Publish => { panic!("Publish not implemented!"); },
-                    Instruction::CleanMetaVar => {
-                        let id: Id = buffer.pop_front().unwrap().into();
-
-                        let metavar_pat = metavar_unconstrained(id);
-
-                        // Clean metavars are always well-formed
-                        stack.push(Term::Pattern(metavar_pat));
-                    },
+                    Instruction::CleanMetaVar =>  { panic!("NoOp not implemented!"); },
                     Instruction::NoOp => { panic!("NoOp not implemented!"); },
                 }
             },
@@ -406,8 +399,6 @@ mod tests {
     #[available_gas(1000000000000000)]
     fn it_works() {
         let mut gamma = ArrayTrait::<u8>::new();
-        gamma.append(137);
-        gamma.append(0);
         let mut claims = ArrayTrait::<u8>::new();
         let mut proofs = ArrayTrait::<u8>::new();
 
