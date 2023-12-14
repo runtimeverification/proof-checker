@@ -291,13 +291,13 @@ fn execute_instructions(
     let phi2 = metavar_unconstrained(2);
 
     // Axioms
-    let _prop1 = implies(phi0.clone(), implies(phi1.clone(), phi0.clone()));
+    let prop1 = implies(phi0.clone(), implies(phi1.clone(), phi0.clone()));
 
-    let _prop2 = implies(
+    let prop2 = implies(
         implies(phi0.clone(), implies(phi1.clone(), phi2.clone())),
         implies(implies(phi0.clone(), phi1), implies(phi0.clone(), phi2))
     );
-    let _prop3 = implies(not(not(phi0.clone())), phi0.clone());
+    let prop3 = implies(not(not(phi0.clone())), phi0.clone());
     let _quantifier = implies(esubst(phi0.clone(), 0, evar(1)), exists(0, phi0));
 
     let _existence = exists(0, evar(0));
@@ -322,9 +322,9 @@ fn execute_instructions(
                     Instruction::MetaVar => { panic!("MetaVar not implemented!"); },
                     Instruction::ESubst => { panic!("ESubst not implemented!"); },
                     Instruction::SSubst => { panic!("SSubst not implemented!"); },
-                    Instruction::Prop1 => { panic!("Prop1 not implemented!"); },
-                    Instruction::Prop2 => { panic!("Prop2 not implemented!"); },
-                    Instruction::Prop3 => { panic!("Prop3 not implemented!"); },
+                    Instruction::Prop1 => stack.push(Term::Pattern(prop1.clone())),
+                    Instruction::Prop2 => stack.push(Term::Pattern(prop2.clone())),
+                    Instruction::Prop3 => stack.push(Term::Pattern(prop3.clone())),
                     Instruction::Quantifier => { panic!("Quantifier not implemented!"); },
                     Instruction::PropagationOr => { panic!("PropagationOr not implemented!"); },
                     Instruction::PropagationExists => {
