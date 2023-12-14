@@ -420,11 +420,10 @@ mod tests {
     fn test_stack_pop() {
         let mut stack: Stack = StackTrait::new();
         let term = Term::Pattern(bot());
-        stack.push(term);
+        stack.push(term.clone());
         let pop_term = pop_stack(ref stack);
         assert(stack.is_empty(), 'Hmm.. stack_size should be 0!');
-    // This test ins't possible yet because of the lack of equality
-    //assert(pop_term == term, 'Hmm.. pop_term should be term!');
+        assert(pop_term == term, 'Hmm.. pop_term should be term!');
     }
 
     use super::pop_stack_pattern;
@@ -432,12 +431,12 @@ mod tests {
     #[available_gas(1000000000000000)]
     fn test_stack_pop_pattern() {
         let mut stack: Stack = StackTrait::new();
-        let term = Term::Pattern(bot());
-        stack.push(term);
+        let pat = bot();
+        stack.push(Term::Pattern(pat.clone()));
         let pop_term = pop_stack_pattern(ref stack);
         assert(stack.is_empty(), 'Hmm.. stack_size should be 0!');
-    // This test ins't possible yet because of the lack of equality
-    //assert(pop_term == term, 'Hmm.. pop_term should be term!');
+        // This test ins't possible yet because of the lack of equality
+        assert(pop_term == pat, 'Hmm.. pop_term should be term!');
     }
 
     use super::pop_stack_proved;
@@ -445,12 +444,12 @@ mod tests {
     #[available_gas(1000000000000000)]
     fn test_stack_pop_proved() {
         let mut stack: Stack = StackTrait::new();
-        let term = Term::Proved(bot());
-        stack.push(term);
+        let pat = bot();
+        stack.push(Term::Proved(pat.clone()));
         let pop_term = pop_stack_proved(ref stack);
         assert(stack.is_empty(), 'Hmm.. stack_size should be 0!');
-    // This test ins't possible yet because of the lack of equality
-    //assert(pop_term == term, 'Hmm.. pop_term should be term!');
+        // This test ins't possible yet because of the lack of equality
+        assert(pop_term == pat, 'Hmm.. pop_term should be term!');
     }
 
     use super::read_u8_vec;
