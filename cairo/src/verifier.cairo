@@ -263,6 +263,59 @@ type Stack = Array<Term>;
 type Claims = Array<Pattern>;
 type Memory = Array<Entry>;
 
+/// Stack manipulation (Temporary!!)
+/// ------------------
+fn push(ref stack: Stack, ref stack_size: u32, term: Term) {
+    stack.append(term);
+    stack_size += 1;
+}
+
+fn pop_stack(ref stack: Stack, ref stack_size: u32) -> Term {
+    if stack_size == 0 {
+        panic!("Insufficient stack items.");
+    }
+
+    let mut new_stack = array![];
+    let mut pop_term: Term = Term::Pattern(bot());
+    let mut i = 0;
+
+    loop {
+        let term = stack.pop_front();
+        match term {
+            Option::Some(term) => {
+                if i == stack_size - 1 {
+                    pop_term = term;
+                    break;
+                }
+                new_stack.append(term);
+                i += 1;
+            },
+            Option::None => { break; }
+        }
+    };
+
+    stack = new_stack;
+    stack_size -= 1;
+
+    return pop_term;
+}
+
+fn pop_stack_pattern(ref stack: Stack, ref stack_size: u32) -> Pattern {
+    let term = pop_stack(ref stack, ref stack_size);
+    match term {
+        Term::Pattern(pat) => { return pat; },
+        Term::Proved(_) => panic!("Expected pattern on stack."),
+    }
+}
+
+fn pop_stack_proved(ref stack: Stack, ref stack_size: u32) -> Pattern {
+    let term = pop_stack(ref stack, ref stack_size);
+    match term {
+        Term::Pattern(_) => panic!("Expected proved on stack."),
+        Term::Proved(pat) => { return pat; },
+    }
+}
+
 /// Main implementation
 /// -------------------
 
@@ -275,9 +328,10 @@ enum ExecutionPhase {
 
 fn execute_instructions(
     mut buffer: Array<InstByte>,
-    mut stack: Stack,
-    mut memory: Memory,
-    mut claims: Claims,
+    ref stack: Stack,
+    ref stack_size: u32,
+    ref memory: Memory,
+    ref claims: Claims,
     phase: ExecutionPhase,
 ) {
     // Metavars
@@ -344,6 +398,13 @@ fn execute_instructions(
 }
 
 fn verify(gamma: Array<u8>, claims: Array<u8>, proofs: Array<u8>) -> core::bool {
+    let mut stack: Stack = array![];
+    let mut stack_size: u32 = 0;
+    let mut memory: Memory = array![];
+    let mut claims: Claims = array![];
+    execute_instructions(
+        gamma, ref stack, ref stack_size, ref memory, ref claims, ExecutionPhase::Gamma
+    );
     true
 }
 
