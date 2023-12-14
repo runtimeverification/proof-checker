@@ -411,15 +411,45 @@ fn execute_instructions(
     }
 }
 
-fn verify(gamma: Array<u8>, claims: Array<u8>, proofs: Array<u8>) -> core::bool {
+fn verify(
+    gamma_buffer: Array<InstByte>, claims_buffer: Array<InstByte>, proof_buffer: Array<InstByte>
+) {
     let mut stack: Stack = array![];
     let mut stack_size: u32 = 0;
     let mut memory: Memory = array![];
     let mut claims: Claims = array![];
     execute_instructions(
-        gamma, ref stack, ref stack_size, ref memory, ref claims, ExecutionPhase::Gamma
+        gamma_buffer,
+        ref stack, // stack is empty initially.
+        ref stack_size, // stack_size is 0 initially.
+        ref memory, // memory is empty initially.
+        ref claims, // claims is unused in this phase.
+        ExecutionPhase::Gamma
     );
-    true
+
+    stack = array![];
+
+    execute_instructions(
+        claims_buffer,
+        ref stack, // stack is empty initially.
+        ref stack_size, // stack_size is 0 initially.
+        ref memory, // reuse memory.
+        ref claims, // claims populated in this phase.
+        ExecutionPhase::Claim
+    );
+
+    stack = array![];
+
+    execute_instructions(
+        proof_buffer,
+        ref stack, // stack is empty initially.
+        ref stack_size, // stack_size is 0 initially.
+        ref memory, // axioms are used as initial memory.
+        ref claims, // claims are consumed by publish instruction.
+        ExecutionPhase::Proof
+    );
+
+    assert(claims.is_empty(), 'Claims should be empty!');
 }
 
 // Unit tests module
@@ -431,11 +461,11 @@ mod tests {
     #[test]
     #[available_gas(1000000000000000)]
     fn it_works() {
-        let gamma = ArrayTrait::<u8>::new();
-        let claims = ArrayTrait::<u8>::new();
-        let proofs = ArrayTrait::<u8>::new();
+        let mut gamma = ArrayTrait::<u8>::new();
+        let mut claims = ArrayTrait::<u8>::new();
+        let mut proofs = ArrayTrait::<u8>::new();
 
-        assert(verify(gamma, claims, proofs), 'Hmm.. verify failed!');
+        verify(gamma, claims, proofs);
     }
 
     use super::push;
