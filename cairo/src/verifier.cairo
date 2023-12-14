@@ -372,7 +372,14 @@ fn execute_instructions(
                             }
                         },
                     },
-                    Instruction::CleanMetaVar => { panic!("NoOp not implemented!"); },
+                    Instruction::CleanMetaVar => {
+                        let id: Id = buffer.pop_front().unwrap().into();
+
+                        let metavar_pat = metavar_unconstrained(id);
+
+                        // Clean metavars are always well-formed
+                        stack.push(Term::Pattern(metavar_pat));
+                    },
                     Instruction::NoOp => { panic!("NoOp not implemented!"); },
                 }
             },
