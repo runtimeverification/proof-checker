@@ -1,10 +1,7 @@
-use core::array::ArrayTrait;
-mod pattern;
+use ml_checker_cairo::pattern;
+use ml_checker_cairo::term::{Term, Entry};
+use ml_checker_cairo::stack::{Stack, StackTrait};
 
-use core::clone::Clone;
-use core::traits::Into;
-use core::traits::TryInto;
-use core::OptionTrait;
 use core::option::Option::{None, Some};
 
 use pattern::Pattern;
@@ -13,13 +10,6 @@ use pattern::{
     Id, evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained,
     metavar_e_fresh, metavar_s_fresh, esubst, ssubst
 };
-
-// Boxes.
-use box::{Box, BoxTrait};
-
-use core::traits::{Index, Default, Felt252DictValue};
-use core::array::Array;
-
 
 // Instructions
 // ============
@@ -219,27 +209,6 @@ fn from(value: felt252) -> Instruction {
     }
 }
 
-/// Terms
-/// =====
-///
-/// Terms define the in-memory representation of matching logic patterns and proofs.
-/// However, since we only implement a proof checker in this program we do not need
-/// an explicit representation of the entire hilbert proof tree.
-/// We only need to store the conclusion of things that are proved so far.
-/// We use the `Proved` variant for this.
-
-#[derive(Drop)]
-enum Term {
-    Pattern: Pattern,
-    Proved: Pattern,
-}
-
-#[derive(Drop)]
-enum Entry {
-    Pattern: Pattern,
-    Proved: Pattern,
-}
-
 // Notation
 #[inline(always)]
 fn bot() -> Pattern {
@@ -258,79 +227,12 @@ fn forall(evar: Id, pat: Pattern) -> Pattern {
 /// Proof checker
 /// =============
 
-#[derive(Drop)]
-struct Stack {
-    elements: Array<Term>,
-    len: u32,
-}
-
-trait StackTrait {
-    fn new() -> Stack;
-    fn push(ref self: Stack, term: Term);
-    fn pop(ref self: Stack) -> Term;
-    fn is_empty(ref self: Stack) -> bool;
-    fn clear(ref self: Stack);
-    fn len(ref self: Stack) -> u32;
-}
-
-impl StackTraitImpl of StackTrait {
-    fn new() -> Stack {
-        return Stack { elements: array![], len: 0, };
-    }
-
-    fn push(ref self: Stack, term: Term) {
-        self.elements.append(term);
-        self.len += 1;
-    }
-    fn pop(ref self: Stack) -> Term {
-        if self.is_empty() {
-            panic!("Insufficient stack items.");
-        }
-
-        let mut new_stack = array![];
-        let mut pop_term: Term = Term::Pattern(bot());
-        let mut i = 0;
-
-        loop {
-            let term = self.elements.pop_front();
-            match term {
-                Option::Some(term) => {
-                    if i == self.len - 1 {
-                        pop_term = term;
-                        break;
-                    }
-                    new_stack.append(term);
-                    i += 1;
-                },
-                Option::None => { break; }
-            }
-        };
-
-        self.elements = new_stack;
-        self.len -= 1;
-
-        return pop_term;
-    }
-
-    fn is_empty(ref self: Stack) -> bool {
-        return self.len == 0;
-    }
-
-    fn clear(ref self: Stack) {
-        self.elements = array![];
-        self.len = 0;
-    }
-
-    fn len(ref self: Stack) -> u32 {
-        return self.len;
-    }
-}
-
 type Claims = Array<Pattern>;
 type Memory = Array<Entry>;
 
 /// Stack manipulation
 /// ------------------
+#[inline(always)]
 fn pop_stack(ref stack: Stack) -> Term {
     return stack.pop();
 }
@@ -437,7 +339,14 @@ fn execute_instructions(
                     Instruction::Save => { panic!("Save not implemented!"); },
                     Instruction::Load => { panic!("Load not implemented!"); },
                     Instruction::Publish => { panic!("Publish not implemented!"); },
-                    Instruction::CleanMetaVar => { panic!("CleanMetaVar not implemented!"); },
+                    Instruction::CleanMetaVar => {
+                        let id: Id = buffer.pop_front().unwrap().into();
+
+                        let metavar_pat = metavar_unconstrained(id);
+
+                        // Clean metavars are always well-formed
+                        stack.push(Term::Pattern(metavar_pat));
+                    },
                     Instruction::NoOp => { panic!("NoOp not implemented!"); },
                 }
             },
@@ -497,6 +406,8 @@ mod tests {
     #[available_gas(1000000000000000)]
     fn it_works() {
         let mut gamma = ArrayTrait::<u8>::new();
+        gamma.append(137);
+        gamma.append(0);
         let mut claims = ArrayTrait::<u8>::new();
         let mut proofs = ArrayTrait::<u8>::new();
 

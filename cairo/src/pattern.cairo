@@ -1,19 +1,3 @@
-use core::traits::PanicDestruct;
-use core::traits::Destruct;
-use core::clone::Clone;
-use core::traits::Copy;
-use core::traits::Into;
-use core::traits::TryInto;
-use core::OptionTrait;
-use core::option::Option::{None, Some};
-use core::traits::SnapshotCopy;
-
-// Boxes.
-use box::{Box, BoxTrait};
-
-use core::traits::{Index, Default, Felt252DictValue};
-use core::array::Array;
-
 type Id = u8;
 type IdList = Array<Id>;
 
