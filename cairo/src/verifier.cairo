@@ -353,7 +353,25 @@ fn execute_instructions(
                         }
                     },
                     Instruction::Load => { panic!("Load not implemented!"); },
-                    Instruction::Publish => { panic!("Publish not implemented!"); },
+                    Instruction::Publish => match phase {
+                        ExecutionPhase::Gamma => memory
+                            .append(Term::Proved(pop_stack_pattern(ref stack))),
+                        ExecutionPhase::Claim => {
+                            let claim = pop_stack_pattern(ref stack);
+                            claims.push(claim)
+                        },
+                        ExecutionPhase::Proof => {
+                            let claim = claims.pop();
+                            let theorem = pop_stack_proved(ref stack);
+                            // Missing PartialEq for Terms and Pattern
+                            if claim != theorem {
+                                panic!(
+                                    "Claim != Theorem" //"This proof does not prove the requested claim: {:?}, theorem: {:?}",
+                                //claim, theorem
+                                );
+                            }
+                        },
+                    },
                     Instruction::CleanMetaVar => { panic!("NoOp not implemented!"); },
                     Instruction::NoOp => { panic!("NoOp not implemented!"); },
                 }
