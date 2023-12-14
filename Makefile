@@ -286,12 +286,12 @@ KGEN_PROOF_TRANSLATION_TARGETS=$(addsuffix .kgenerate,${TRANSLATED_FROM_K})
 module=$(patsubst %/,%, $(dir $*))
 proofs/generated-from-k/%.ml-proof.kgenerate: .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints proofs/generated-from-k/%.ml-proof
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              $(module) \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir proofs/generated-from-k/$(dir $*)
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              $(module) \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir proofs/generated-from-k/$(dir $*) \
@@ -308,14 +308,14 @@ update-k-proofs: ${KGEN_PROOF_TRANSLATION_TARGETS}
 module=$(patsubst %/,%, $(dir $*))
 .build/proofs/generated-from-k/%.ml-proof: FORCE .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              $(module) \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir .build/proofs/generated-from-k/$(dir $*)
 
 .build/proofs/generated-from-k/%.pretty-proof: FORCE .build/kompiled-definitions/$$(module)-kompiled/timestamp .build/proof-hints/%.hints
 	$(POETRY_RUN) python -m "proof_generation.k.proof_gen" \
-	              generation/k-benchmarks/$(dir $*)$(module).k \
+	              $(module) \
 				  .build/proof-hints/$*.hints \
 				  .build/kompiled-definitions/$(module)-kompiled \
 				  --proof-dir .build/proofs/generated-from-k/$(dir $*) \

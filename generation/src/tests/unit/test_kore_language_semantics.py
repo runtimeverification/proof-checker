@@ -127,11 +127,9 @@ def node_tree() -> LanguageSemantics:
             tree_sort = tree_sort_obj.aml_symbol
             tree_top = kore_top(tree_sort)
             requires = kore_and(
-                tree_sort,
                 tree_top,
                 kore_and(
-                    tree_sort,
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, a_symbol.app(), EVar(1))),
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(a_symbol.app(), EVar(1))),
                     tree_top,
                 ),
             )
@@ -141,33 +139,29 @@ def node_tree() -> LanguageSemantics:
             equational_pattern = kore_implies(
                 tree_sort,
                 requires,
-                kore_equals(tree_sort, tree_sort, left, kore_and(tree_sort, right, ensures)),
+                kore_equals(tree_sort, tree_sort, left, kore_and(right, ensures)),
             )
             mod.equational_rule(equational_pattern)
 
             # reverse(b) = b
             requires = kore_and(
-                tree_sort,
                 tree_top,
                 kore_and(
-                    tree_sort,
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(tree_sort, b_symbol.app(), EVar(1))),
+                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(b_symbol.app(), EVar(1))),
                     tree_top,
                 ),
             )
             equational_pattern = kore_implies(
                 tree_sort,
                 requires,
-                kore_equals(tree_sort, tree_sort, left, kore_and(tree_sort, right, ensures)),
+                kore_equals(tree_sort, tree_sort, left, kore_and(right, ensures)),
             )
             mod.equational_rule(equational_pattern)
 
             # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
             requires = kore_and(
-                tree_sort,
                 tree_top,
                 kore_and(
-                    tree_sort,
                     kore_in(tree_sort, tree_sort, EVar(0), node_symbol.app(EVar(1), EVar(2))),
                     tree_top,
                 ),
@@ -179,7 +173,7 @@ def node_tree() -> LanguageSemantics:
                 kore_implies(
                     tree_sort,
                     requires,
-                    kore_equals(tree_sort, tree_sort, eq3_left, kore_and(tree_sort, eq3_right, ensures)),
+                    kore_equals(tree_sort, tree_sort, eq3_left, kore_and(eq3_right, ensures)),
                 )
             )
 
@@ -434,7 +428,7 @@ def test_rules() -> None:
     left1 = sym1.app()
     right1 = sym3.app()
     ensures1 = kore_top(sort1.aml_symbol)
-    rhs_with_ensures1 = kore_and(sort1.aml_symbol, right1, ensures1)
+    rhs_with_ensures1 = kore_and(right1, ensures1)
     equation_pattern1 = kore_implies(
         sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, rhs_with_ensures1)
     )
@@ -443,7 +437,7 @@ def test_rules() -> None:
     left2 = sym4.app()
     right2 = sym2.app(sym1.aml_symbol)
     ensures2 = kore_top(sort2.aml_symbol)
-    rhs_with_ensures2 = kore_and(sort2.aml_symbol, right2, ensures2)
+    rhs_with_ensures2 = kore_and(right2, ensures2)
     equation_pattern2 = kore_implies(
         sort2.aml_symbol,
         requires2,

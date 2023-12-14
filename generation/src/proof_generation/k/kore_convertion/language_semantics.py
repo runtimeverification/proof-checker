@@ -601,22 +601,20 @@ class LanguageSemantics(BuilderScope):
                 right_rw_pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_rewrites(rewrite_sort_pattern, left_rw_pattern, right_rw_pattern)
-            case kore.And(sort, ops):
+            case kore.And(_, ops):
                 # TODO: generalize to more than two operands, if needed
                 assert len(ops) == 2, f'Expected a kore "And" term with two operands, found one with {len(ops)}!'
-                and_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 left_and_pattern: Pattern = self._convert_pattern(scope, ops[0])
                 right_and_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
-                return kl.kore_and(and_sort_pattern, left_and_pattern, right_and_pattern)
-            case kore.Or(sort, ops):
+                return kl.kore_and(left_and_pattern, right_and_pattern)
+            case kore.Or(_, ops):
                 # TODO: generalize to more than two operands, if needed
                 assert len(ops) == 2, f'Expected a kore "Or" term with two operands, found one with {len(ops)}!'
-                or_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 left_or_pattern: Pattern = self._convert_pattern(scope, ops[0])
                 right_or_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
-                return kl.kore_or(or_sort_pattern, left_or_pattern, right_or_pattern)
+                return kl.kore_or(left_or_pattern, right_or_pattern)
             case kore.In(input_sort, output_sort, left, right):
                 in_input_sort_pattern = self._convert_sort(scope, input_sort)
                 in_output_sort_pattern = self._convert_sort(scope, output_sort)
