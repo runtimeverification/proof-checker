@@ -428,6 +428,7 @@ fn verify(
 // Unit tests module
 #[cfg(test)]
 mod tests {
+    use core::option::OptionTrait;
     use core::array::ArrayTrait;
     use super::verify;
 
@@ -504,5 +505,46 @@ mod tests {
         let result = read_u8_vec(ref buffer);
         assert(result.len() == 3, 'Hmm this should have length 3!');
     }
-}
 
+    use super::implies;
+    use super::metavar_unconstrained;
+    use super::InstByte;
+    use super::Instruction;
+    use super::execute_instructions;
+    use super::ExecutionPhase;
+    use super::ClaimTrait;
+    use super::Memory;
+    use super::Claims;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_construct_phi_implies_phi() {
+        let proof: Array<InstByte> = array![
+            137,
+            0, // CleanMetaVar
+            137,
+            0, // CleanMetaVar
+            5, // Implies 
+            28, // Save 
+            30 // Publish
+        ];
+
+        let mut stack: Stack = StackTrait::new();
+        let mut memory: Array<Term> = array![];
+        let mut claims: Claims = ClaimTrait::new();
+
+        let phi = metavar_unconstrained(0);
+        let phi_implies_phi = implies(phi.clone(), phi.clone());
+
+        execute_instructions(proof, ref stack, ref memory, ref claims, ExecutionPhase::Gamma);
+        let mut pattern_phi_implies_phi = memory.pop_front().expect('Expected memory element');
+        assert(
+            pattern_phi_implies_phi == Term::Pattern(phi_implies_phi.clone()),
+            'Expect pattern::phi_implies_phi'
+        );
+        let proved_phi_implies_phi = memory.pop_front().expect('Expected memory element');
+        assert(
+            proved_phi_implies_phi == Term::Proved(phi_implies_phi),
+            'Expect proved::phi_implies_phi'
+        );
+    }
+}
