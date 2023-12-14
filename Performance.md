@@ -65,8 +65,8 @@
 ## Lurk
 |             Examples            | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:-------------------------------:|:------:|:----------:|:--------------:|:---------------:|:--------------:|
-| transfer-task-specific*         | 148870 |    861.443 |        193.836 |           4.199 |        198.035 |
-| impreflex-compressed-goal*      | 55651  |    341.466 |        108.962 |           4.209 |        113.171 |
+| transfer-task-specific*         | 148870 |            |        193.836 |           4.199 |        198.035 |
+| impreflex-compressed-goal*      | 55651  |            |        108.962 |           4.209 |        113.171 |
 | perceptron-goal                 | 6404208|            |              ∞ |               ∞ |                |
 | svm5-goal                       | 6404208|            |              ∞ |               ∞ |                |
 | transfer-batch-1k-goal          |30122047|            |              ∞ |               ∞ |                |
