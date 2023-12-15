@@ -329,9 +329,9 @@ fn execute_instructions(
                     Instruction::MetaVar => { panic!("MetaVar not implemented!"); },
                     Instruction::ESubst => { panic!("ESubst not implemented!"); },
                     Instruction::SSubst => { panic!("SSubst not implemented!"); },
-                    Instruction::Prop1 => stack.push(Term::Pattern(prop1.clone())),
-                    Instruction::Prop2 => stack.push(Term::Pattern(prop2.clone())),
-                    Instruction::Prop3 => stack.push(Term::Pattern(prop3.clone())),
+                    Instruction::Prop1 => stack.push(Term::Proved(prop1.clone())),
+                    Instruction::Prop2 => stack.push(Term::Proved(prop2.clone())),
+                    Instruction::Prop3 => stack.push(Term::Proved(prop3.clone())),
                     Instruction::Quantifier => { panic!("Quantifier not implemented!"); },
                     Instruction::PropagationOr => { panic!("PropagationOr not implemented!"); },
                     Instruction::PropagationExists => {
