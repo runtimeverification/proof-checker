@@ -464,6 +464,7 @@ class ESubst(Pattern):
     plug: Pattern
 
     def __post_init__(self) -> None:
+        # Check that ESubst is not redundant
         assert self.var != self.plug
         assert not self.pattern.evar_is_fresh(self.var.name)
 
@@ -505,6 +506,7 @@ class SSubst(Pattern):
     plug: Pattern
 
     def __post_init__(self) -> None:
+        # Check that SSubst is not redundant
         assert self.var != self.plug
         # TODO: Add this check
         # assert not self.pattern.s_fresh(self.var)
