@@ -1,3 +1,4 @@
+use core::option::OptionTrait;
 use ml_checker_cairo::term::Term;
 use ml_checker_cairo::term::Pattern;
 use ml_checker_cairo::verifier::bot;
@@ -37,18 +38,13 @@ impl StackTraitImpl of StackTrait {
         let mut i = 0;
 
         loop {
-            let term = self.elements.pop_front();
-            match term {
-                Option::Some(term) => {
-                    if i == self.len - 1 {
-                        pop_term = term;
-                        break;
-                    }
-                    new_stack.append(term);
-                    i += 1;
-                },
-                Option::None => { break; }
+            let term = self.elements.pop_front().expect('Insufficient stack items.');
+            if i == self.len - 1 {
+                pop_term = term;
+                break;
             }
+            new_stack.append(term);
+            i += 1;
         };
 
         self.elements = new_stack;

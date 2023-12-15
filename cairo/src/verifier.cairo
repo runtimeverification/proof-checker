@@ -339,7 +339,7 @@ fn execute_instructions(
                     Instruction::Save => { panic!("Save not implemented!"); },
                     Instruction::Load => { panic!("Load not implemented!"); },
                     Instruction::Publish => { panic!("Publish not implemented!"); },
-                    Instruction::CleanMetaVar =>  { panic!("NoOp not implemented!"); },
+                    Instruction::CleanMetaVar => { panic!("NoOp not implemented!"); },
                     Instruction::NoOp => { panic!("NoOp not implemented!"); },
                 }
             },
