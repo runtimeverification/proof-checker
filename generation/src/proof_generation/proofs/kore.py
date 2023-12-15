@@ -240,6 +240,9 @@ reduce_in_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), ph
 # (k⊤:{phi0} k-> phi1):{phi0}
 reduce_top_axiom = Implies(kore_implies(phi0, kore_top(phi0), phi1), phi1)
 
+# (phi2:{phi0} k= phi2:{phi0}):{phi1}
+eq_id_axiom = kore_equals(phi0, phi1, phi2, phi2)
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
@@ -253,6 +256,7 @@ class KoreLemmas(ProofExp):
                 left_top_in_imp_axiom,
                 remove_top_imp_right_axiom,
                 reduce_top_axiom,
+                eq_id_axiom,
             ],
             notations=list(KORE_NOTATIONS),
         )
@@ -366,6 +370,16 @@ class KoreLemmas(ProofExp):
                 {0: sort, 1: conclusion},
             ),
             phi,
+        )
+
+    def sorted_eq_id(self, sort: Pattern, phi: Pattern):
+        """
+        ---------------------------
+                phi k= phi
+        """
+        return self.dynamic_inst(
+            self.load_axiom(eq_id_axiom),
+            {0: sort, 1: sort, 2: phi},
         )
 
 
