@@ -799,4 +799,31 @@ mod tests {
         pattern_phi = stack.pop();
         assert(pattern_phi == Term::Pattern(phi.clone()), 'Expect pattern::phi');
     }
+
+    use super::evar;
+    use super::instantiate_internal;
+    use super::Pattern;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_instantiate() {
+        let x0 = evar(0);
+        let x0_implies_x0 = implies(x0.clone(), x0.clone());
+
+        let phi0 = metavar_unconstrained(0);
+        let mut phi0_implies_phi0: Pattern = implies(phi0.clone(), phi0.clone());
+
+        let mut vars0 = array![0];
+        let mut plugs0 = array![x0.clone()];
+
+        let expected = Option::Some(x0_implies_x0.clone());
+        let result: Option<Pattern> = instantiate_internal(
+            ref phi0_implies_phi0, ref vars0, ref plugs0
+        );
+        assert(expected == result, 'Expect x0_implies_x0');
+
+        let mut vars1 = array![1];
+        let expected: Option<Pattern> = Option::None;
+        let result = instantiate_internal(ref phi0_implies_phi0, ref vars1, ref plugs0);
+        assert(expected == result, 'Expect None');
+    }
 }
