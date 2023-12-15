@@ -363,6 +363,32 @@ def test_performer_update_config():
     assert performer.simplified_configuration == intermidiate_config1
 
 
+def test_trivial_proof() -> None:
+    semantics = node_tree()
+    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+    reverse_symbol = semantics.get_symbol('reverse')
+    a_symbol = semantics.get_symbol('a')
+
+    config = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        reverse_symbol.app(a_symbol.app()),
+    )
+
+    prover = SimplificationProver(semantics)
+    proof = prover.trivial_proof(config)
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
+        top_sort, top_sort, config, config
+    )
+
+    expression = reverse_symbol.app(a_symbol.app())
+    proof = prover.trivial_proof(expression)
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
+        tree_sort, tree_sort, expression, expression
+    )
+
+
 def test_subpattern_batch():
     semantics = node_tree()
     reverse_symbol = semantics.get_symbol('reverse')

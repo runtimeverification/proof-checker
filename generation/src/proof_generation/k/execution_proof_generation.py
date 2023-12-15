@@ -10,8 +10,11 @@ from proof_generation.k.kore_convertion.language_semantics import (
     ConvertedAxiom,
     KEquationalRule,
     KRewritingRule,
+    KSort,
+    KSortVar,
+    KSymbol,
 )
-from proof_generation.pattern import EVar, Symbol
+from proof_generation.pattern import EVar, Pattern, Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
@@ -20,7 +23,6 @@ if TYPE_CHECKING:
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-    from proof_generation.pattern import Pattern
     from proof_generation.proof import ProofThunk
 
 
@@ -56,11 +58,28 @@ class SimplificationProver(proof.ProofExp):
         # Apply transitivity for configurations
         raise NotImplementedError()
 
-    def trivial_proof(self, configuration_pattern: Pattern) -> proof.ProofThunk:
-        # Returns the proof of the trivial equality phi = phi
-        # TODO: simplifications_remaining=0 here will probably not work with __exit__ as intended
-        # ADD phi = phi to kore lemmas called as eq_id and instantiate it with phi := init_config/curr_config at this stage
-        raise NotImplementedError()
+    def trivial_proof(self, pattern: Pattern) -> proof.ProofThunk:
+        symbol, *rest = kl.deconstruct_nary_application(pattern)
+        assert isinstance(symbol, Symbol), f'Pattern {pattern.pretty(self.pretty_options())} is not an application'
+        ksymbol = self.language_semantics.resolve_to_ksymbol(symbol)
+        assert isinstance(
+            ksymbol, KSymbol
+        ), f'Pattern {symbol.pretty(self.pretty_options())} is unknown to the semantics'
+        ksort = ksymbol.output_sort
+
+        sort: Pattern
+        if isinstance(ksort, KSortVar):
+            param_index = ksymbol.sort_params.index(ksort)
+            sort_parameter = rest[param_index]
+            assert isinstance(sort_parameter, Pattern)
+            sort = sort_parameter
+        elif isinstance(ksort, KSort):
+            sort = ksort.aml_symbol
+        else:
+            raise NotImplementedError()
+
+        assert isinstance(sort, Pattern), f'Cannot find sort for {pattern.pretty(self.pretty_options())}'
+        return self.kore_lemmas.sorted_eq_id(sort, pattern)
 
     def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:
         def reduce_requirement_rec(exp: proof.ProofThunk, cached_requires: Pattern) -> tuple[proof.ProofThunk, Pattern]:
