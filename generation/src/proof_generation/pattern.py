@@ -460,6 +460,8 @@ phi2 = MetaVar(2)
     Class to represent pending evar substitutions
     It should almost never be used directly, instead use apply_esubst!
 """
+
+
 @dataclass(frozen=True)
 class ESubst(Pattern):
     pattern: MetaVar | ESubst | SSubst
@@ -506,6 +508,8 @@ class ESubst(Pattern):
     Class to represent pending svar substitutions
     It should almost never be used directly, instead use apply_ssubst!
 """
+
+
 @dataclass(frozen=True)
 class SSubst(Pattern):
     pattern: MetaVar | ESubst | SSubst
