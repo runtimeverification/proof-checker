@@ -134,6 +134,7 @@ class SimplificationPerformer:
             self._current_config = config_with_hole
         else:
             sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
+            self._curr_subterm = sub_pattern
 
         # Create the new info object and put it on top of the stack
         new_info = SimplificationInfo(location, sub_pattern, sub_pattern, 0, self.prover.trivial_proof(sub_pattern))
@@ -178,15 +179,15 @@ class SimplificationPerformer:
             if self._simplification_stack:
                 # If the stack is non-empty, then we need to update the simplification on top of the stack
                 parent_info = self._simplification_stack[-1]
+
+                parent_config_with_hole = self.make_ctx_pattern(parent_info, child_info.location)
                 parent_info.simplifications_remaining -= 1
-                parent_info.simplification_result = self.update_subterm(
-                    child_info.location, parent_info.simplification_result, child_info.simplification_result
+                parent_info.simplification_result = parent_config_with_hole.apply_esubst(
+                    0, child_info.simplification_result
                 )
                 parent_info.proof = self.prover.equality_transitivity(
                     parent_info.proof,
-                    self.prover.apply_framing_lemma(
-                        child_info.proof, self.make_ctx_pattern(parent_info, child_info.location)
-                    ),
+                    self.prover.apply_framing_lemma(child_info.proof, parent_config_with_hole),
                 )
             else:
                 # If the stack is empty, then we need to update the current configuration as we processed the batch
@@ -204,7 +205,7 @@ class SimplificationPerformer:
         return updated
 
     def make_ctx_pattern(self, info: SimplificationInfo, location: Location) -> Pattern:
-        raise NotImplementedError()
+        return self.update_subterm(location, info.simplification_result, EVar(0))
 
     def _subpattern_search_rec(
         self, loc: list[int], pattern: Pattern, plug: Pattern | None = None

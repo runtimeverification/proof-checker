@@ -383,9 +383,12 @@ def test_subpattern_batch():
 
     initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
     initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
-    proof_obj = ExecutionProofExp(semantics, initial_config)
+
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), initial_config)
     location = (0, 0, 0)
-    proof_obj.simplification_event(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()}, location)
+    performer.enter_context(location)
+    performer.apply_simplification(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()})
+    performer.exit_context()
     expected_stack = [
         SimplificationInfo(
             location,
@@ -398,9 +401,16 @@ def test_subpattern_batch():
             make_pt(phi0),
         )
     ]
-    assert proof_obj._simplification_performer._simplification_stack == expected_stack
+    # Direct comparison doesn't work anymore because of added proof thunks
+    assert len(performer._simplification_stack) == len(expected_stack)
+    assert performer._simplification_stack[-1].location == expected_stack[-1].location
+    assert performer._simplification_stack[-1].initial_pattern == expected_stack[-1].initial_pattern
+    assert performer._simplification_stack[-1].simplification_result == expected_stack[-1].simplification_result
+    assert performer._simplification_stack[-1].simplifications_remaining == expected_stack[-1].simplifications_remaining
 
-    proof_obj.simplification_event(base_case_b.ordinal, {}, (0,))
+    performer.enter_context((0,))
+    performer.apply_simplification(base_case_b.ordinal, {})
+    performer.exit_context()
     expected_stack = [
         SimplificationInfo(
             location,
@@ -413,13 +423,18 @@ def test_subpattern_batch():
             make_pt(phi0),
         )
     ]
-    assert proof_obj._simplification_performer._simplification_stack == expected_stack
-
-    proof_obj.simplification_event(base_case_a.ordinal, {}, (1,))
-    assert proof_obj._simplification_performer._simplification_stack == []
+    assert len(performer._simplification_stack) == len(expected_stack)
+    assert performer._simplification_stack[-1].location == expected_stack[-1].location
+    assert performer._simplification_stack[-1].initial_pattern == expected_stack[-1].initial_pattern
+    assert performer._simplification_stack[-1].simplification_result == expected_stack[-1].simplification_result
+    assert performer._simplification_stack[-1].simplifications_remaining == expected_stack[-1].simplifications_remaining
+    performer.enter_context((1,))
+    performer.apply_simplification(base_case_a.ordinal, {})
+    performer.exit_context()
+    assert performer._simplification_stack == []
 
     # Check the final update of the configuration
-    assert proof_obj.current_configuration == tree_semantics_config_pattern(
+    assert performer.simplified_configuration == tree_semantics_config_pattern(
         semantics, 'SortTree', node_symbol.app(b_symbol.app(), a_symbol.app())
     )
 
