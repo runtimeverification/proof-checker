@@ -1,3 +1,8 @@
+use core::traits::Into;
+use core::traits::Destruct;
+use core::array::SpanTrait;
+use ml_checker_cairo::pattern::PatternTrait;
+use core::clone::Clone;
 use core::box::BoxTrait;
 use core::array::ArrayTrait;
 use core::option::OptionTrait;
@@ -13,7 +18,9 @@ use pattern::{
     evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained, metavar_e_fresh,
     metavar_s_fresh, esubst, ssubst
 };
-use pattern::{Id, IdList, ImpliesType, AppType, ExistsType, MuType, ESubstType, SSubstType};
+use pattern::{
+    Id, IdList, ImpliesType, AppType, ExistsType, MuType, ESubstType, SSubstType, MetaVarType
+};
 
 // Instructions
 // ============
@@ -228,8 +235,30 @@ fn forall(evar: Id, pat: Pattern) -> Pattern {
     return not(exists(evar, not(pat)));
 }
 
+fn instantiate_internal(
+    ref p: Pattern, ref vars: IdList, ref plugs: Array<Pattern>,
+) -> Option<Pattern> {
+    match p.clone() {
+        Pattern::EVar(_) => Option::None,
+        Pattern::SVar(_) => Option::None,
+        Pattern::Symbol(_) => Option::None,
+        Pattern::Implies(_) => Option::None,
+        Pattern::App(_) => Option::None,
+        Pattern::Exists(_) => Option::None,
+        Pattern::Mu(_) => Option::None,
+        Pattern::MetaVar(_) => Option::None,
+        Pattern::ESubst(_) => Option::None,
+        Pattern::SSubst(_) => Option::None,
+    }
+}
 
-fn instantiate_in_place(ref p: Pattern, ref ids: IdList, ref plugs: Array<Pattern>) {}
+fn instantiate_in_place(ref p: Pattern, ref ids: IdList, ref plugs: Array<Pattern>) {
+    let option_ret = instantiate_internal(ref p, ref ids, ref plugs);
+    match option_ret {
+        Option::Some(ret) => { p = ret; },
+        Option::None => { panic!("Instantiation failed!"); },
+    }
+}
 
 /// Proof checker
 /// =============
