@@ -37,13 +37,13 @@ class DummyProver(SimplificationProver):
     def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> ProofThunk:
         return make_pt(phi0)
 
-    def equality_proof(self, ordinal: int, substitution: dict[int, Pattern]) -> ProofThunk:
+    def equality_proof(self, rule: Pattern, substitution: dict[int, Pattern]) -> ProofThunk:
         return make_pt(phi0)
 
     def equality_transitivity(self, last_proof: ProofThunk, new_proof: ProofThunk) -> ProofThunk:
         return make_pt(phi0)
 
-    def trivial_proof(self, configuration_pattern: Pattern) -> ProofThunk:
+    def trivial_proof(self, pattern: Pattern) -> ProofThunk:
         return make_pt(phi0)
 
 

@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-    from proof_generation.proof import ProofThunk
 
 
 Location = tuple[int, ...]
@@ -45,18 +44,24 @@ class SimplificationProver(proof.ProofExp):
         self.subst_proofexp = self.import_module(Substitution())
         self.kore_lemmas = self.import_module(kl.KoreLemmas())
 
-    def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> proof.ProofThunk:
-        # This will call the Lemma 2. from https://github.com/orgs/runtimeverification/projects/47?pane=issue&itemId=45845212
-        # instantiated as I sketched in Sketch for 3.
-        # and apply transitivity of equality
-        raise NotImplementedError()
+    def apply_framing_lemma(self, equality_proof: proof.ProofThunk, context: Pattern) -> proof.ProofThunk:
+        return self.kore_lemmas.equality_with_subst(context, equality_proof)
 
-    def equality_proof(self, ordinal: int, substitution: dict[int, Pattern]) -> proof.ProofThunk:
-        raise NotImplementedError()
+    def equality_proof(self, rule: Pattern, substitution: dict[int, Pattern]) -> proof.ProofThunk:
+        rule_axiom = self.load_axiom(rule)
+        rule_with_substitutions = self.prove_substitutions(rule_axiom, substitution)
+        return self.prove_equality_from_rule(rule_with_substitutions)
 
     def equality_transitivity(self, last_proof: proof.ProofThunk, new_proof: proof.ProofThunk) -> proof.ProofThunk:
         # Apply transitivity for configurations
         raise NotImplementedError()
+
+    def prove_substitutions(self, pattern: proof.ProofThunk, substitutions: dict[int, Pattern]) -> proof.ProofThunk:
+        # TODO: Get functional axioms (check out the proof expr below)
+        # TODO: Apply the substitution lemma
+        # TODO: Using the hacky temporary implementation until we don't have the substitutions
+        substituted = pattern.conc.apply_esubsts(substitutions)
+        return proof.ProofThunk((lambda interpreter: proof.Proved(substituted)), substituted)
 
     def trivial_proof(self, pattern: Pattern) -> proof.ProofThunk:
         symbol, *rest = kl.deconstruct_nary_application(pattern)
@@ -123,7 +128,7 @@ class SimplificationPerformer:
         self._language_semantics = language_semantics
         self._simplification_stack: list[SimplificationInfo] = []
         self.prover = prover
-        self.proof: ProofThunk | None = None  # If None, the batch has not been proved yet
+        self.proof: proof.ProofThunk | None = None  # If None, the batch has not been proved yet
         self._current_config = init_config
         self._curr_subterm = init_config
 
@@ -186,7 +191,7 @@ class SimplificationPerformer:
         self._simplification_stack[-1].simplification_result = simplified_rhs
         self._simplification_stack[-1].simplifications_remaining = simplifications_remaining
         self._simplification_stack[-1].proof = self.prover.equality_transitivity(
-            self._simplification_stack[-1].proof, self.prover.equality_proof(ordinal, substitution)
+            self._simplification_stack[-1].proof, self.prover.equality_proof(rule.pattern, substitution)
         )
 
         # Update current config
