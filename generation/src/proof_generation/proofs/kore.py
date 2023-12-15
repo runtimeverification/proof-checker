@@ -30,6 +30,8 @@ phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 phi3 = MetaVar(3)
 phi4 = MetaVar(4)
+phi5 = MetaVar(5)
+phi6 = MetaVar(6)
 
 # TODO: Make sure this is handled uniformly
 inhabitant_symbol = Symbol('inhabitant')
@@ -241,7 +243,7 @@ reduce_in_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), ph
 reduce_top_axiom = Implies(kore_implies(phi0, kore_top(phi0), phi1), phi1)
 
 # TODO: Prove the axiom
-# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> ( ♦(phi4[phi2/x]):{phi0} k= ♦(phi4[phi3/x]):{phi0} ):{phi1}
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} k-> ( ♦(phi4[phi2/x]):{phi0} k= ♦(phi4[phi3/x]):{phi0} ):{phi1}
 keq_next_substitution_axiom = Implies(
     kore_equals(phi0, phi1, phi2, phi3),
     kore_equals(
@@ -249,6 +251,17 @@ keq_next_substitution_axiom = Implies(
         phi1,
         kore_next(MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi2)),
         kore_next(MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi3)),
+    ),
+)
+
+# TODO: Prove the axiom
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} k-> ((phi5 k-> phi2):{phi4} k-> (phi5 k-> phi3):{phi4}):{phi6}
+keq_implication_axiom = Implies(
+    kore_equals(phi0, phi1, phi2, phi3),
+    kore_implies(
+        phi6,
+        kore_implies(phi4, phi5, phi2),
+        kore_implies(phi4, phi5, phi3),
     ),
 )
 
@@ -266,6 +279,7 @@ class KoreLemmas(ProofExp):
                 remove_top_imp_right_axiom,
                 reduce_top_axiom,
                 keq_next_substitution_axiom,
+                keq_implication_axiom,
             ],
             notations=list(KORE_NOTATIONS),
         )
