@@ -627,11 +627,10 @@ class LanguageSemantics(BuilderScope):
                 not_op_pattern: Pattern = self._convert_pattern(scope, op)
 
                 return kl.kore_not(not_sort_pattern, not_op_pattern)
-            case kore.Next(sort, op):
-                next_sort_pattern: Pattern = self._convert_sort(scope, sort)
+            case kore.Next(_, op):
                 next_op_pattern: Pattern = self._convert_pattern(scope, op)
 
-                return kl.kore_next(next_sort_pattern, next_op_pattern)
+                return kl.kore_next(next_op_pattern)
             case kore.Implies(sort, left, right):
                 implies_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 implies_left: Pattern = self._convert_pattern(scope, left)
@@ -678,9 +677,8 @@ class LanguageSemantics(BuilderScope):
             case kore.Top(sort):
                 top_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 return kl.kore_top(top_sort_pattern)
-            case kore.Bottom(sort):
-                bottom_sort_pattern = self._convert_sort(scope, sort)
-                return kl.kore_bottom(bottom_sort_pattern)
+            case kore.Bottom(_):
+                return kl.kore_bottom()
             case kore.DV(sort, value):
                 dv_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 value_symbol: Pattern = Symbol(str(value.value))

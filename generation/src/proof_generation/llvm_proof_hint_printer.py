@@ -63,7 +63,7 @@ class LLVMHintsPrinter:
         show_rules: bool = False,
     ) -> None:
         def dump(text: str, depth: int, end: str = '\n') -> None:
-            self.out.write(f'{"  " * depth}{text}' + end)
+            self.out.write('  ' * depth + text + end)
 
         def dump_rule(event: LLVMRewriteEvent, depth: int, verbose_terms: int) -> None:
             tag = 'Rule' if isinstance(event, LLVMRuleEvent) else 'Side Condition'
@@ -91,7 +91,7 @@ class LLVMHintsPrinter:
                 dump(f'Result: {term_to_str(event.result, verbose_terms)}', depth + 1)
             else:
                 assert isinstance(event, kore.Pattern)
-                dump(f'{"Config" if top else "Term"}: {term_to_str(event, verbose_terms)}', depth)
+                dump(('Config' if top else 'Term') + ': ' + term_to_str(event, verbose_terms), depth)
 
         depth = 0
         for step_event in self.hints.pre_trace:
