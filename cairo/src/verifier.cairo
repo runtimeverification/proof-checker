@@ -10,9 +10,10 @@ use core::option::Option::{None, Some};
 use pattern::Pattern;
 use pattern::Pattern::{EVar, SVar, Symbol, Implies, App, Exists, Mu, MetaVar, ESubst, SSubst};
 use pattern::{
-    Id, IdList, evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained,
-    metavar_e_fresh, metavar_s_fresh, esubst, ssubst
+    evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained, metavar_e_fresh,
+    metavar_s_fresh, esubst, ssubst
 };
+use pattern::{Id, IdList, ImpliesType, AppType, ExistsType, MuType, ESubstType, SSubstType};
 
 // Instructions
 // ============
@@ -339,7 +340,51 @@ fn execute_instructions(
                     Instruction::PreFixpoint => { panic!("PreFixpoint not implemented!"); },
                     Instruction::Existence => { panic!("Existence not implemented!"); },
                     Instruction::Singleton => { panic!("Singleton not implemented!"); },
-                    Instruction::ModusPonens => { panic!("ModusPonens not implemented!"); },
+                    Instruction::ModusPonens => {
+                        let premise2 = pop_stack_proved(ref stack);
+                        let premise1: Pattern = pop_stack_proved(ref stack);
+                        match premise1 {
+                            Pattern::Implies(ImpliesType{left,
+                            right }) => {
+                                let left = left.unwrap().unbox();
+                                if left != premise2 {
+                                    panic!(
+                                        "Antecedents do not match for modus ponens.\nleft.psi:\n{:?}\n\n right:\n{:?}\n",
+                                        left,
+                                        premise2
+                                    );
+                                }
+                                stack.push(Term::Proved(right.unwrap().unbox().clone()))
+                            },
+                            Pattern::EVar(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::SVar(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::Symbol(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::App(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::Exists(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::Mu(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::MetaVar(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::ESubst(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                            Pattern::SSubst(_) => panic!(
+                                "Expected an implication as a first parameter."
+                            ),
+                        };
+                    },
                     Instruction::Generalization => { panic!("Generalization not implemented!"); },
                     Instruction::Frame => { panic!("Frame not implemented!"); },
                     Instruction::Substitution => { panic!("Substitution not implemented!"); },
