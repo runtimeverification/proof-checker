@@ -395,6 +395,57 @@ class KoreLemmas(ProofExp):
             phi,
         )
 
+    def subst_in_rewrite_target(self, phi0: Pattern, phi1: Pattern, equality: ProofThunk, imp: ProofThunk):
+        """
+        p1 k= p2        phi0  k-> next(phi1[p1/x])
+        ------------------------------------------
+                phi0  k-> next(phi1[p2/x])
+        """
+
+        # Proof Outline:
+        # 1. Axiom p1 k= p2 -> (next(phi0[p1/x])  k= next(phi0[p2/x]))
+        # 2. Axiom p1 k= p2 -> ((psi k-> p1) -> (psi k-> p2))
+        # 3. Function:
+        #    (a) p1 k= p2         (b) phi0  k-> next phi1[p1/x]
+        #    --------------------------------------------------
+        #    (c) phi0  k-> next phi1[p2/x]
+
+        # - MP on 1 and a, with subst p1 |-> p1, p2 |-> p2, phi0 |-> phi1
+        #     ==(d)=>> next(phi1[p1/x])  k= next(phi1[p2/x])
+
+        # - MP on 2 and d, with subst p1 |-> next(phi1[p1/x]), p2 |-> next(phi1[p2/x]), psi |-> phi0
+        #     ==(e)=>> ((phi0 -> (next(phi1[p1/x])) k-> (phi0 -> next(phi1[p2/x]))))
+
+        # - MP on e and b, with subst identity
+        #     ==(f)=>> phi0 -> next(phi1[p2/x]))
+
+        inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(equality.conc)
+        imp_sort, imp_left, imp_right = kore_implies.assert_matches(imp.conc) # Not needed?
+
+        # MP on "Axiom p1 k= p2 -> (next(phi0[p1/x])  k= next(phi0[p2/x]))" and "p1 k= p2", with p1 |-> p1, p2 |-> p2, phi0 |-> phi1
+        # conclude: next(phi1[p1/x])  k= next(phi1[p2/x])
+        eq_next = self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(keq_next_substitution_axiom), {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi1}
+            ),
+            equality,
+        )
+
+        # MP on "Axiom: p1 k= p2 -> ((psi k-> p1) -> (psi k-> p2))" and "eq_next: next(phi1[p1/x])  k= next(phi1[p2/x])", with subst p1 |-> next(phi1[p1/x]), p2 |-> next(phi1[p2/x]), psi |-> phi0
+        # conclude: ((phi0 -> (next(phi1[p1/x])) k-> (phi0 -> next(phi1[p2/x]))))
+        inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(eq_next.conc)
+        phi0_imp_imp = self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(keq_implication_axiom),
+                {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi0, 5: outer_sort},  # Not sure what sort for 5!!
+            ),
+            eq_next,
+        )
+
+        # MP on "phi0_imp_imp: ((phi0 -> (next(phi1[p1/x])) k-> (phi0 -> next(phi1[p2/x]))))" and "Premise: phi0  k-> next(phi1[p1/x])", with identity subst
+        # conclude: phi0 -> next(phi1[p2/x]))
+        return self.modus_ponens(phi0_imp_imp, imp)
+
 
 if __name__ == '__main__':
     KoreLemmas().main(sys.argv)
