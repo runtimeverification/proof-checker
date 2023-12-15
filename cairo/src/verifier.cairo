@@ -242,7 +242,26 @@ fn instantiate_internal(
         Pattern::EVar(_) => Option::None,
         Pattern::SVar(_) => Option::None,
         Pattern::Symbol(_) => Option::None,
-        Pattern::Implies(_) => Option::None,
+        Pattern::Implies(ImpliesType{left,
+        right }) => {
+            let mut left = left.unwrap().unbox();
+            let mut right = right.unwrap().unbox();
+
+            let mut inst_left = instantiate_internal(ref left, ref vars, ref plugs);
+            let mut inst_right = instantiate_internal(ref right, ref vars, ref plugs);
+
+            if inst_left.is_none() && inst_right.is_none() {
+                return Option::None;
+            } else {
+                if inst_left.is_none() {
+                    inst_left = Option::Some(left.clone());
+                }
+                if inst_right.is_none() {
+                    inst_right = Option::Some(right.clone());
+                }
+                return Option::Some(implies(inst_left.unwrap(), inst_right.unwrap()));
+            }
+        },
         Pattern::App(_) => Option::None,
         Pattern::Exists(_) => Option::None,
         Pattern::Mu(_) => Option::None,
