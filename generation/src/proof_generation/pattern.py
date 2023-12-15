@@ -359,6 +359,11 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
+    def __post_init__(self) -> None:
+        pass
+        # TODO: Add this test
+        # assert self.subpattern.positive(var)
+
     def evar_is_fresh(self, name: int) -> bool:
         return self.subpattern.evar_is_fresh(name)
 
@@ -404,6 +409,10 @@ class MetaVar(Pattern):
     positive: tuple[SVar, ...] = ()
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
+
+    def __post_init__(self) -> None:
+        for evar_id in self.e_fresh:
+            assert evar_id not in self.app_ctx_holes
 
     def metavars(self) -> set[int]:
         return {self.name}
@@ -454,6 +463,10 @@ class ESubst(Pattern):
     var: EVar
     plug: Pattern
 
+    def __post_init__(self) -> None:
+        assert self.var != self.plug
+        assert not self.pattern.evar_is_fresh(self.var.name)
+
     def evar_is_fresh(self, name: int) -> bool:
         if self.var.name == name:
             return self.plug.evar_is_fresh(name)
@@ -490,6 +503,11 @@ class SSubst(Pattern):
     pattern: MetaVar | ESubst | SSubst
     var: SVar
     plug: Pattern
+
+    def __post_init__(self) -> None:
+        assert self.var != self.plug
+        # TODO: Add this check
+        # assert not self.pattern.s_fresh(self.var)
 
     def evar_is_fresh(self, name: int) -> bool:
         # We assume that at least one instance will be replaced

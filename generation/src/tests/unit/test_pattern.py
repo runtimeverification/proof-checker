@@ -197,3 +197,28 @@ stack_mixed1 = lambda term: ESubst(SSubst(pattern=term, var=SVar(1), plug=EVar(1
 )
 def test_instantiate_subst(pattern: Pattern, plugs: dict[int, Pattern], expected: Pattern) -> None:
     assert pattern.instantiate(plugs) == expected
+
+
+@pytest.mark.parametrize(
+    'pattern, expected',
+    [
+        # Atomic cases
+        [EVar(0), {EVar(0)}],
+        [SVar(0), {SVar(0)}],
+        [Symbol('0'), set()],
+        [MetaVar(0), set()],
+        # More complicated
+        [Implies(EVar(0), SVar(1)), {EVar(0), SVar(1)}],
+        [Exists(0, Implies(EVar(0), SVar(0))), {SVar(0)}],
+        [Mu(0, Implies(EVar(0), SVar(0))), {EVar(0)}],
+        # Substs need to plug in at least one instance
+        [ESubst(MetaVar(0), EVar(0), EVar(1)), {EVar(1)}],
+        [SSubst(MetaVar(0), SVar(0), EVar(1)), {EVar(1)}],
+        [SSubst(MetaVar(0), SVar(0), Symbol('1')), set()],
+        # Instantiate
+        [Instantiate(MetaVar(0), frozendict({0: EVar(0)})), {EVar(0)}],
+        [Instantiate(ESubst(MetaVar(0), EVar(0), EVar(1)), frozendict({0: EVar(0)})), {EVar(1)}],
+    ],
+)
+def test_fv(pattern: Pattern, expected: set[EVar | SVar]) -> None:
+    assert pattern.fv() == expected
