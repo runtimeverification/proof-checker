@@ -5,136 +5,109 @@ Part 3
 
 Rank-1-Constraint-Systems.
 
-A valid R1-CS constraint looks like this:
+A valid R1CS constraint looks like this:
+
+(a DOT x) * (b DOT x) = (c DOT x) (mod P)
+
+- DOT is the dot-product ([a, b] DOT [c, d] = a * c + b * d)
+- a, b, c are arrays of constants
+- x is an array of variables (or possibly the constant 1)
+
+Examples:
+
+(3x + 5y + 1)(4x + 6) = 25y
+3x + 5 = 0
+4x^2 + 4x + 1 == y
+^^^
+(2x + 1)(2x + 1) == y
 
 
+A R1CS instance is a set of several such constraints.
 
-template NOT() {
-    signal input a;
-    signal output result;
+There exist SNARK backends (e.g PLONK) which can produce a succinct proof of a valid solution to a R1CS.
+The goal is to express computation as R1CS.
 
-    result <== 1 - a;
-    // -a is easily desugared to (P - a)
-}
+For example, note that R1CS can express arithmetic circuits, by assigning variables to gates and 
+enforcing gate types by using constraints:
 
-template AND() {
-    signal input a;
-    signal input b;
-    signal output result;
+// result as a SUM gate
+x + y - result == 0
 
-    result <== a * b;
-}
 
-template OR() {
-    signal input a;
-    signal input b;
-    signal output result;
+// result as a PRODUCT gate
+x * y - result == 0
 
-    // result<== ??;
-}
+x^3 == 0
 
-// Parameter: constant N, known at compile-time
-// Input: binary array "a" of size N;
-// Result: Logical OR of values in "a" 
+as R1CS:
 
-template MultiOR(N) {
-    signal input a[N];
-    signal part[N];
-    signal output result;
+a = 0
+a = b * x
+b = x * x
 
-    for (var i = 0; i < N; i++) {
-        if (i == 0) {
-            part[i] <== a[i];
-        } else {
-            part[i] <== OR()(part[i - 1], a[i]);
-        }
-    }
+The Circom compiler actually generates R1CS, along with hints on how to satisfy them.
 
-    result <== part[N - 1];
-}
+*/
 
-// Input: binary values: a, b, flag
-// Output: (a AND b) if flag is 1, (a OR b) otherwise
+template Example() {
+    signal input x;
+    signal output y;
 
-template If_expr() {
-    signal input a;
-    signal input b;
-    signal input flag;
+    // Computation.
+    // This is what the prover should do to compute y
+    y <-- 2 * x;
+    // Constraint:
+    // This is what ends up in the R1CS and needs to be satisfied
+    y === 2 * x;
 
-    signal and <== AND()(a, b);
-    signal or <== OR()(a, b);
-    signal not_flag <== NOT()(flag);
-
-    signal and_option <== flag * and;
-    signal or_option <== not_flag * or;
-
-    signal output result <== and_option + or_option; 
+    // Equivalently and most often used in Circom:   
+     y <=== 2 * x;
 }
 
 /*
-Input: arbitrary integer a;
-Output: 1 if a == 0 and 0 otherwise
-
-We use Fermat's theorem which states that if P is prime, then:
-forall x > 0, x ^ (P - 1) = 1 (mod P)
-
-Obviously, x ^ (P - 1) = 0 if x == 0.
-
-So we want to return 1 - (x ^ (P - 1)).
-
-Actual prime used by circom is huge so let's assume it's actually 17 so we can compile :).
+Are there notable situations where computation and constraint differ considerably?
 */
 
+/* 
+Yes! 
+Here's IsZero written in 2 constraints.
+*/
 
-template IsZeroSlow() {
-    //var actual_p = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+template IsZero() {
     signal input x;
-    signal output result;
-    signal part[17];
+    signal output out;
+    signal inv;
 
+    // Computation uses modular division, 
+    // It can do so because it's performed outside
+    // the constraint system
+    inv <-- x !=0 ? 1/x : 0;
 
-    part[0] <== 1;
+    // Constraint 1
+    out <== 1 - x*inv ;
+    // Constraint 2 
+    x*out === 0;
 
-    for (var i = 1; i < 17; i ++) {
-        part[i] <== part[i - 1] * x;
-    }
-
-    result <== 1 - part[16];
+    // If (x, out) = (0, 1) both constraints are met, regardless of inv
+    // If (x, out) = (0, 0) Constraint 1 cannot be satisfied, regardless of inv
+    // If (x, out) = (>0, 1) Constraint 2 is not satisfied, regardless of inv
+    // If (x, out) = (>0, 0) Constraint 2 is satisfied, Constraint 1 CAN be satisfied by choosing inv = x ^(-1)
 }
 
-// Parameter: C
-// Input: a
-// Result: 1 if a == C, 0 otherwise
+/*
+More generally, we can try to provide SPECS for computations which are easier to verify in R1CS
+than the computation itself.
 
-template EqConst(C) {
-    signal input a;
-    signal output result;
+Another example is sorting, which can be specified as:
+- Input and output are identical as multisets
+- Output is ordered
 
-    result <== IsZeroSlow()(a - C);
-}
+Checking these properties is less expensive than sorting itself (by a factor of log N!).
 
-// Parameter: constant N, known at compile-time
-// Input: Array "a" of size N;
-// Input: Integer "index" assumed to be < N;
-// Result: Value of a[index] 
+SIDE-COMMENT: 
+The thought process resembles formal verification.
+If there will exist a sizable market for developing verifiable computation via constraint systems,
+we might be in a prime position to consult/audit such projects. 
+*/
 
-template Load(N) {
-    signal input a[N];
-    signal input index;
-    signal term[N], coef[N], part[N];
-    signal output result;
-
-    for (var i = 0; i < N; i++) {
-        coef[i] <== EqConst(i)(index);
-        term[i] <== a[i] * coef[i];
-        if (i == 0) {
-            part[i] <== a[i];
-        } else {
-            part[i] <== part[i - 1] + term[i];
-        }
-    }
-
-    result <== part[N - 1];
-}
-
-component main = Load(5);
+component main = IsZero();

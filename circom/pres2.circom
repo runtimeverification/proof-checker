@@ -3,17 +3,10 @@ pragma circom 2.1.0;
 /*
 Part 2
 
-Circom is a DSL for generating something called Rank-1-Constraint-Systems, which we'll get to later.
-But first, let's consider Circom as a DSL for generating arithmetic circuits of the following kind. 
-- Each gate is either input, output or intermediate.
-- Intermediate gates are sum or multiplication of exactly two arguments (gates or constants).
-- Operations are taking place modulo a prime P (usually ~256 bits long)
-*/
-
 /* We'll now go through a few basic arithmetic circuits which should convince you of
 their theoretical expressiveness while also getting you acquainted with some of their quirks. */
 
-/* Let's start with boolean operators. In the following, assume that the inputs are 0 or 1 and note that we want
+/* Let's start with some boolean operators. In the following, assume that the inputs are 0 or 1 and note that we want
 results to be 0 or 1 as well. */
 
 template NOT() {
@@ -21,7 +14,6 @@ template NOT() {
     signal output result;
 
     result <== 1 - a;
-    // -a is easily desugared to (P - a)
 }
 
 template AND() {
@@ -37,7 +29,7 @@ template OR() {
     signal input b;
     signal output result;
 
-    // result<== ??;
+    result <== a + b - a * b;
 }
 
 // Parameter: constant N, known at compile-time
@@ -75,11 +67,13 @@ template If_expr() {
     signal and_option <== flag * and;
     signal or_option <== not_flag * or;
 
+    // result <== flag * AND()(a,b) + (1 - flag) * OR(a,b)
+
     signal output result <== and_option + or_option; 
 }
 
 /*
-Input: arbitrary integer a;
+Input: arbitrary integer a (can be 11 e.g);
 Output: 1 if a == 0 and 0 otherwise
 
 We use Fermat's theorem which states that if P is prime, then:
@@ -90,11 +84,16 @@ Obviously, x ^ (P - 1) = 0 if x == 0.
 So we want to return 1 - (x ^ (P - 1)).
 
 Actual prime used by circom is huge so let's assume it's actually 17 so we can compile :).
+
+5 ^ 16 = 1 (mod 17)
+12 ^ 16 = 1 (mod 17)
+2 ^ 16 = 1 (mod 17)
+0 ^ 16 = 0 (mod 17)
+
+x -> x ^ 2 -> x ^ 4 -> x ^ 8
 */
 
-
 template IsZeroSlow() {
-    //var actual_p = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
     signal input x;
     signal output result;
     signal part[17];
@@ -126,6 +125,8 @@ template EqConst(C) {
 // Input: Integer "index" assumed to be < N;
 // Result: Value of a[index] 
 
+// Result = EqConst(0)(x) * a[0] + EqConst(1)(x) * a[1] + ... EqConst(i)(x) * a[i].. 
+
 template Load(N) {
     signal input a[N];
     signal input index;
@@ -144,5 +145,7 @@ template Load(N) {
 
     result <== part[N - 1];
 }
+
+// Also note that you can't simulate unbounded iteration in circuits
 
 component main = Load(5);

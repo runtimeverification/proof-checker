@@ -7,7 +7,8 @@ Circom is a DSL for generating something called Rank-1-Constraint-Systems, which
 But first, let's consider Circom as a DSL for generating arithmetic circuits of the following kind. 
 - Each gate is either input, output or intermediate.
 - Intermediate gates are sum or multiplication of exactly two arguments (gates or constants).
-- Operations are taking place modulo a prime P (usually ~256 bits long)
+- Operations are taking place modulo a prime P (21888242871839275222246405745257275088548364400416034343698204186575808495617)
+- Gates cannot be reused
 */
 
 // Let's evaluate the multivariate polynomial:
