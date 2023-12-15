@@ -240,6 +240,18 @@ reduce_in_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), ph
 # (k⊤:{phi0} k-> phi1):{phi0}
 reduce_top_axiom = Implies(kore_implies(phi0, kore_top(phi0), phi1), phi1)
 
+# TODO: Prove the axiom
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> ( ♦(phi4[phi2/x]):{phi0} k= ♦(phi4[phi3/x]):{phi0} ):{phi1}
+keq_next_substitution_axiom = Implies(
+    kore_equals(phi0, phi1, phi2, phi3),
+    kore_equals(
+        phi0,
+        phi1,
+        kore_next(MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi2)),
+        kore_next(MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi3)),
+    ),
+)
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
@@ -253,6 +265,7 @@ class KoreLemmas(ProofExp):
                 left_top_in_imp_axiom,
                 remove_top_imp_right_axiom,
                 reduce_top_axiom,
+                keq_next_substitution_axiom,
             ],
             notations=list(KORE_NOTATIONS),
         )
