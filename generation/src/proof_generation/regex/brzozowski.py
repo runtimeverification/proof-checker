@@ -3,14 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import SVar
-
+from ..aml import SVar
 from .regex import Choice, Concat, EmptySet, Epsilon, Kleene, Letter, Not, a, b, less_than
 from .theory_of_words import Words
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
-
+    from ..aml import Pattern
     from .regex import Regex
 
 

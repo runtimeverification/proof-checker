@@ -4,16 +4,16 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.interpreter import ExecutionPhase
-from proof_generation.pattern import SVar
+from proof_generation.aml import EVar, Mu, SVar
+from proof_generation.interpreter import BasicInterpreter, ExecutionPhase, StatefulInterpreter
 from proof_generation.proof import Claim
+from proof_generation.proofs.propositional import _or
 from proof_generation.regex.brzozowski import FixpointPatternInstr, brzozowski, derivative, null_instr
 from proof_generation.regex.regex import Choice, Concat, Epsilon, Kleene, Not, a, b, implies
 from proof_generation.regex.theory_of_words import Words
-from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Instantiate, Pattern
     from proof_generation.regex.regex import Regex
 
 even = Kleene(Choice(Concat(a, a), Choice(Concat(a, b), Choice(Concat(b, a), Concat(b, b)))))
@@ -101,25 +101,60 @@ def test_theory_of_words() -> None:
     assert interpreter.claims == []
 
 
+def subst_in_mu(p: Mu | Instantiate, plug: Pattern) -> Pattern:
+    d = Mu.deconstruct(p)
+    assert d
+    binder, phi = d
+    return phi.apply_ssubst(binder, plug)
+
+
+def unfold(p: Mu | Instantiate) -> Pattern:
+    return subst_in_mu(p, p)
+
+
+def destruct_accepting_no_mu(p: Pattern) -> tuple[Pattern, Pattern]:
+    _eps, rest = _or.assert_matches(p)
+    a_term, b_term = _or.assert_matches(rest)
+    _a, a_child = Words.notations.concat.assert_matches(a_term)
+    _b, b_child = Words.notations.concat.assert_matches(b_term)
+    return a_child, b_child
+
+
 def test_dfa_total() -> None:
     words = Words()
-    claims = [Claim(claim) for claim in words.get_claims()]
     words.add_claim(acc(0)(SVar(0), SVar(0)))
+    claims = [Claim(claim) for claim in words.get_claims()]
+
+    root = acc(0)(SVar(0), SVar(0))
+    a_unf, b_unf = destruct_accepting_no_mu(unfold(root))
+    aa_unf, ab_unf = acc(0).assert_matches(a_unf)
+    ba_unf, bb_unf = acc(0).assert_matches(b_unf)
+
+    ind_hyp = words.notations.ctximp(0)(
+        words.notations.concat(EVar(0), words.notations.top_letter()),
+        root,
+    )
+    a_ind, b_ind = destruct_accepting_no_mu(subst_in_mu(root, ind_hyp))
+    print('a_ind', words.pretty(a_ind))
+    print('a_unf', words.pretty(a_unf))
+
     words.add_proof_expression(
         words.total_dfa_is_valid_init(
-            0,  # binder
+            0,
             words.total_dfa_is_valid_recursive(
-                0,  # binder
-                # Since these are constant proofs,
-                # we can probably merge them into `total_dfa_is_valid_recursive`.
-                words.accepting_has_ewp(0),
-                words.accepting_has_ewp(0),
-                words.total_dfa_is_valid_base(),
-                words.total_dfa_is_valid_base(),
+                0,
+                SVar(0),
+                SVar(0),
+                SVar(0),
+                SVar(0),
+                words.accepting_has_ewp(0, a_unf),
+                words.accepting_has_ewp(0, b_unf),
+                words.total_dfa_is_valid_base(a_unf),
+                words.total_dfa_is_valid_base(a_unf),
             ),
         )
     )
 
-    interpreter = StatefulInterpreter(ExecutionPhase.Gamma, claims=claims)
+    interpreter = BasicInterpreter(ExecutionPhase.Gamma, claims=claims)
     words.execute_full(interpreter)
     assert interpreter.claims == []
