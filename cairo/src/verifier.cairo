@@ -10,7 +10,7 @@ use core::option::Option::{None, Some};
 use pattern::Pattern;
 use pattern::Pattern::{EVar, SVar, Symbol, Implies, App, Exists, Mu, MetaVar, ESubst, SSubst};
 use pattern::{
-    Id, evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained,
+    Id, IdList, evar, svar, symbol, implies, app, exists, mu, metavar, metavar_unconstrained,
     metavar_e_fresh, metavar_s_fresh, esubst, ssubst
 };
 
@@ -227,6 +227,9 @@ fn forall(evar: Id, pat: Pattern) -> Pattern {
     return not(exists(evar, not(pat)));
 }
 
+
+fn instantiate_in_place(ref p: Pattern, ref ids: IdList, ref plugs: Array<Pattern>) {}
+
 /// Proof checker
 /// =============
 
@@ -341,7 +344,37 @@ fn execute_instructions(
                     Instruction::Frame => { panic!("Frame not implemented!"); },
                     Instruction::Substitution => { panic!("Substitution not implemented!"); },
                     Instruction::KnasterTarski => { panic!("KnasterTarski not implemented!"); },
-                    Instruction::Instantiate => { panic!("Instantiate not implemented!"); },
+                    Instruction::Instantiate => {
+                        let n: u8 = buffer.pop_front().expect('Insufficient parms Instantiate');
+                        let mut ids: IdList = ArrayTrait::new();
+                        let mut plugs: Array<Pattern> = ArrayTrait::new();
+
+                        let metaterm = pop_stack(ref stack);
+
+                        let mut i = 0;
+                        loop {
+                            if i == n {
+                                break;
+                            }
+                            ids
+                                .append(
+                                    buffer.pop_front().expect('Expected id for Instantiate').into()
+                                );
+                            plugs.append(pop_stack_pattern(ref stack));
+                            i += 1;
+                        };
+
+                        match metaterm {
+                            Term::Pattern(mut p) => {
+                                instantiate_in_place(ref p, ref ids, ref plugs);
+                                stack.push(Term::Pattern(p));
+                            },
+                            Term::Proved(mut p) => {
+                                instantiate_in_place(ref p, ref ids, ref plugs);
+                                stack.push(Term::Proved(p));
+                            }
+                        }
+                    },
                     Instruction::Pop => { panic!("Pop not implemented!"); },
                     Instruction::Save => {
                         let term = stack.last();
@@ -386,7 +419,7 @@ fn execute_instructions(
                         },
                     },
                     Instruction::CleanMetaVar => {
-                        let id: Id = buffer.pop_front().unwrap().into();
+                        let id: Id = buffer.pop_front().expect('Expected id for MetaVar').into();
 
                         let metavar_pat = metavar_unconstrained(id);
 
