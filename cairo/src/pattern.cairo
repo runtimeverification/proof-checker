@@ -63,6 +63,36 @@ enum Pattern {
     SSubst: SSubstType // pattern, svar_id, plug
 }
 
+trait PatternTrait {
+    fn e_fresh(self: @Pattern, evar: Id) -> core::bool;
+    fn s_fresh(self: @Pattern, svar: Id) -> core::bool;
+    fn positive(self: @Pattern, meta_var: Id) -> core::bool;
+    fn negative(self: @Pattern, meta_var: Id) -> core::bool;
+    fn well_formed(self: @Pattern) -> core::bool;
+    fn is_redundant_subst(self: @Pattern) -> core::bool;
+}
+
+impl PatternTraitImpl of PatternTrait {
+    fn e_fresh(self: @Pattern, evar: Id) -> core::bool {
+        true
+    }
+    fn s_fresh(self: @Pattern, svar: Id) -> core::bool {
+        true
+    }
+    fn positive(self: @Pattern, meta_var: Id) -> core::bool {
+        true
+    }
+    fn negative(self: @Pattern, meta_var: Id) -> core::bool {
+        true
+    }
+    fn well_formed(self: @Pattern) -> core::bool {
+        true
+    }
+    fn is_redundant_subst(self: @Pattern) -> core::bool {
+        true
+    }
+}
+
 /// Pattern construction utilities
 /// ------------------------------
 fn evar(id: Id) -> Pattern {
