@@ -91,8 +91,9 @@ class SimplificationPerformer:
         simplifications_ramaining = self._language_semantics.count_simplifications(simplified_rhs)
 
         # Create the new info object and put it on top of the stack
-        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_ramaining, proof_given_by_ordinal(ordinal, substitution))
-        self._simplification_stack.append(new_info)
+       self._simplification_stack[-1].simplifed_pattern = simplified_rhs, 
+       self._simplification_stack[-1].simplifcations_remaining = simplifications_ramaining,
+       self._simplification_stack[-1].proof = equality_transitivty(self._simplification_stack[-1].proof,  proof_given_by_ordinal(ordinal, substitution)))
 
         # Update current config
         self._curr_config = simplified_rhs
@@ -101,7 +102,7 @@ class SimplificationPerformer:
         # return basically an instantiated equality axiom used in apply_simplification as ProofThunk
         pass
 
-    def update_equality_proof(self, proof: ProofThunk) -> ProofThunk:
+    def apply_framing_lemma(self, equality_proof: ProofThunk, context : Pattern) -> ProofThunk:
         # This will call the Lemma 2. from https://github.com/orgs/runtimeverification/projects/47?pane=issue&itemId=45845212
         # instantiated as I sketched in Sketch for 3.
         # and apply transitivity of equality
@@ -122,7 +123,7 @@ class SimplificationPerformer:
                 last_info.simplification_result = self.update_subterm(
                     exhausted_info.location, last_info.simplification_result, exhausted_info.simplification_result
                 )
-                last_info.proof = update_equality_proof(last_info.proof)
+                last_info.proof = equality_transitivty(last_info.proof, apply_framing_lemma(exhausted_info.proof, self.make_ctx_pattern(last_info, exhausted_info.location)))
             else:
                 # If the stack is empty, then we need to update the current configuration as we processed the batch
                 self._curr_config = self.update_subterm(
