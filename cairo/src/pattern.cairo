@@ -1,31 +1,31 @@
 type Id = u8;
 type IdList = Array<Id>;
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 struct ImpliesType {
     left: Option<Box<Pattern>>,
     right: Option<Box<Pattern>>,
 }
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 struct AppType {
     left: Option<Box<Pattern>>,
     right: Option<Box<Pattern>>,
 }
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 struct ExistsType {
     var: Id,
     subpattern: Option<Box<Pattern>>,
 }
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 struct MuType {
     var: Id,
     subpattern: Option<Box<Pattern>>,
 }
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 struct MetaVarType {
     id: Id,
     e_fresh: IdList,
@@ -35,21 +35,21 @@ struct MetaVarType {
     app_ctx_holes: IdList,
 }
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 struct ESubstType {
     pattern: Option<Box<Pattern>>,
     evar_id: Id,
     plug: Option<Box<Pattern>>,
 }
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 struct SSubstType {
     pattern: Option<Box<Pattern>>,
     svar_id: Id,
     plug: Option<Box<Pattern>>,
 }
 
-#[derive(PartialEq, Drop, Clone)]
+#[derive(Debug, PartialEq, Drop, Clone)]
 enum Pattern {
     EVar: Id,
     SVar: Id,

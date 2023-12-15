@@ -378,8 +378,9 @@ fn execute_instructions(
                             // Missing PartialEq for Terms and Pattern
                             if claim != theorem {
                                 panic!(
-                                    "Claim != Theorem" //"This proof does not prove the requested claim: {:?}, theorem: {:?}",
-                                //claim, theorem
+                                    "This proof does not prove the requested claim: {:?}, theorem: {:?}",
+                                    claim,
+                                    theorem
                                 );
                             }
                         },
