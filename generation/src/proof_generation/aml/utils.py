@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
-from .syntax import App, EVar, Exists, Implies, Instantiate, MetaVar, Mu, Pattern, SVar, Symbol
+from .syntax import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from .syntax import InstantiationDict, PrettyOptions
@@ -70,7 +70,14 @@ def match_single(
         if pat_mu[0] != inst_mu[0]:
             return None
         return match_single(pat_mu[1], inst_mu[1], ret)
-    # TODO Consider adding cases for ESubst/SSubst
+    if (
+        isinstance(pattern, ESubst)
+        or isinstance(pattern, SSubst)
+        or isinstance(instance, ESubst)
+        or isinstance(instance, SSubst)
+    ):
+        raise NotImplementedError
+
     return None
 
 
