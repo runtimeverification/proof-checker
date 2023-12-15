@@ -538,7 +538,8 @@ class Instantiate(Pattern):
         return Instantiate(self.pattern.instantiate(unshadowed_delta), instantiated_subst)
 
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
-        assert self.pattern.evar_is_fresh_ignoring_metavars(evar_id, frozenset(self.inst.keys()))
+        if not self.pattern.evar_is_fresh_ignoring_metavars(evar_id, frozenset(self.inst.keys())):
+            return self.simplify().apply_esubst(evar_id, plug)
         complete_inst = frozendict({x.name: x for x in self.pattern.metavars()}) | self.inst
         new_inst = frozendict({k: v.apply_esubst(evar_id, plug) for k, v in complete_inst.items()})
         return Instantiate(self.pattern, new_inst)
