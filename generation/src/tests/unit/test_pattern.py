@@ -45,15 +45,16 @@ sigma2 = Symbol('s2')
         # Subst on substs should stack
         [
             ESubst(phi0, EVar(0), sigma1),
-            0,
-            sigma1,
-            ESubst(ESubst(phi0, EVar(0), sigma1), EVar(0), sigma1),
+            # EVar(0) is fresh in ^^, so we can only apply ESubst on other EVar
+            1,
+            sigma2,
+            ESubst(ESubst(phi0, EVar(0), sigma1), EVar(1), sigma2),
         ],
         [
             SSubst(phi0, SVar(0), sigma1),
             0,
-            sigma1,
-            ESubst(SSubst(phi0, SVar(0), sigma1), EVar(0), sigma1),
+            sigma2,
+            ESubst(SSubst(phi0, SVar(0), sigma1), EVar(0), sigma2),
         ],
         # Instantiate/Notation
         [
@@ -147,10 +148,8 @@ def test_metavars() -> None:
     assert SSubst(phi1, SVar(0), phi0).metavars() == {1, 0}
 
     assert ESubst(MetaVar(1), EVar(0), phi0).metavars() == {0, 1}
-    assert ESubst(MetaVar(1, e_fresh=(EVar(0),)), EVar(0), phi0).metavars() == {0, 1}  # TODO: Do we want {1} instead?
 
     assert SSubst(MetaVar(1), SVar(0), phi0).metavars() == {0, 1}
-    assert SSubst(MetaVar(1, s_fresh=(SVar(0),)), SVar(0), phi0).metavars() == {0, 1}  # TODO: Do we want {1} instead?
 
 
 # Subst 0 for 1 and then 1 for 2
