@@ -5,10 +5,15 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationPerformer
+from proof_generation.k.execution_proof_generation import (
+    ExecutionProofExp,
+    SimplificationInfo,
+    SimplificationPerformer,
+    SimplificationProver,
+)
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, top
+from proof_generation.pattern import Instantiate, phi0, top
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
@@ -24,6 +29,22 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
+    from proof_generation.pattern import Pattern
+    from proof_generation.proof import ProofThunk
+
+
+class DummyProver(SimplificationProver):
+    def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> ProofThunk:
+        return make_pt(phi0)
+
+    def equality_proof(self, ordinal: int, substitution: dict[int, Pattern]) -> ProofThunk:
+        return make_pt(phi0)
+
+    def equality_transitivity(self, last_proof: ProofThunk, new_proof: ProofThunk) -> ProofThunk:
+        return make_pt(phi0)
+
+    def trivial_proof(self, configuration_pattern: Pattern) -> ProofThunk:
+        return make_pt(phi0)
 
 
 def rewrite_hints() -> list[RewriteStepExpression]:
@@ -209,7 +230,7 @@ def test_performer_get_subterm():
     subpattern3 = a_symbol.app()
     subpattern4 = b_symbol.app()
 
-    performer = SimplificationPerformer(semantics, intermidiate_config)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config)
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
     assert performer.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
     # ksym_reverse -> node(a, b)
@@ -237,7 +258,7 @@ def test_performer_update_subterm():
     )
 
     # Create the performer
-    performer = SimplificationPerformer(semantics, intermidiate_config)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config)
 
     # Test from the get_subpattern function
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
@@ -312,7 +333,7 @@ def test_performer_update_config():
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
 
-    performer = SimplificationPerformer(semantics, intermidiate_config1)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config1)
     assert performer.simplified_configuration == intermidiate_config1
 
     # Update the configuration
@@ -320,21 +341,25 @@ def test_performer_update_config():
     assert performer.simplified_configuration == intermidiate_config2
 
     # Reset the state
-    performer = SimplificationPerformer(semantics, intermidiate_config1)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config1)
     performer.update_configuration(intermidiate_config2)
+    performer.enter_context((0, 0))
+    performer.apply_simplification(2, {})
     with pytest.raises(AssertionError):
-        with performer:
-            performer.apply_simplification(2, {}, (0, 0))
-            performer.update_configuration(intermidiate_config1)
+        performer.update_configuration(intermidiate_config1)
+    performer.exit_context()
 
     # But it is possible to update the configuration after the simplification
     simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
     simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
-    performer = SimplificationPerformer(semantics, simple_config_before)
-    with performer:
-        performer.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), simple_config_before)
+    performer.enter_context((0, 0, 0))
+    performer.apply_simplification(2, {})  # reverse(a) -> a
+    performer.exit_context()
     assert performer._simplification_stack == []
     assert performer.simplified_configuration == simple_config_after
+
+    # Update the config after simplification
     performer.update_configuration(intermidiate_config1)
     assert performer.simplified_configuration == intermidiate_config1
 
@@ -371,6 +396,7 @@ def test_subpattern_batch():
                 reverse_symbol.app(a_symbol.app()),
             ),
             2,
+            make_pt(phi0),
         )
     ]
     assert proof_obj._simplification_performer._simplification_stack == expected_stack
@@ -385,6 +411,7 @@ def test_subpattern_batch():
                 reverse_symbol.app(a_symbol.app()),
             ),
             1,
+            make_pt(phi0),
         )
     ]
     assert proof_obj._simplification_performer._simplification_stack == expected_stack
@@ -407,7 +434,7 @@ def test_prove_equality_from_rule() -> None:
     tree_sort = semantics.get_sort('SortTree').aml_symbol
 
     # Create a new proof expression
-    proof_expr = ExecutionProofExp(semantics, init_config=top())
+    proof_expr = SimplificationProver(semantics)
 
     # reverse(a) <-> a
     base_case_a = semantics.get_axiom(2)
