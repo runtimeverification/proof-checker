@@ -265,7 +265,94 @@ fn instantiate_internal(
         Pattern::App(_) => Option::None,
         Pattern::Exists(_) => Option::None,
         Pattern::Mu(_) => Option::None,
-        Pattern::MetaVar(_) => Option::None,
+        Pattern::MetaVar(MetaVarType{id,
+        e_fresh,
+        s_fresh,
+        positive,
+        negative,
+        app_ctx_holes }) => {
+            let mut pos: u32 = 0;
+            let mut e_fresh = e_fresh.clone();
+            let mut s_fresh = s_fresh.clone();
+            let mut negative = negative.clone();
+            let mut positive = positive.clone();
+            let mut _app_ctx_holes = app_ctx_holes; // To supress warning
+            let mut ret: Option<Pattern> = Option::None;
+            let plugs_as_ref: @Array<Pattern> = @plugs;
+            let mut vars_clone = vars.clone();
+            loop {
+                match vars_clone.pop_front() {
+                    Option::Some(var) => {
+                        if var == id {
+                            loop {
+                                match e_fresh.pop_front() {
+                                    Option::Some(evar) => {
+                                        let plug: Pattern = plugs_as_ref.at(pos).clone();
+                                        if !plug.e_fresh(evar) {
+                                            panic!(
+                                                "Instantiation of MetaVar {} breaks a freshness constraint: EVar {}",
+                                                id,
+                                                evar
+                                            );
+                                        }
+                                    },
+                                    Option::None => {}
+                                }
+                                match s_fresh.pop_front() {
+                                    Option::Some(svar) => {
+                                        let plug: Pattern = plugs_as_ref.at(pos).clone();
+                                        if !plug.s_fresh(svar) {
+                                            panic!(
+                                                "Instantiation of MetaVar {} breaks a freshness constraint: SVar {}",
+                                                id,
+                                                svar
+                                            );
+                                        }
+                                    },
+                                    Option::None => {}
+                                }
+                                match positive.pop_front() {
+                                    Option::Some(svar) => {
+                                        let plug: Pattern = plugs_as_ref.at(pos).clone();
+                                        if !plug.positive(svar) {
+                                            panic!(
+                                                "Instantiation of MetaVar {} breaks a positivity constraint: SVar {:?}",
+                                                id,
+                                                svar
+                                            );
+                                        }
+                                    },
+                                    Option::None => {}
+                                }
+                                match negative.pop_front() {
+                                    Option::Some(svar) => {
+                                        let plug: Pattern = plugs_as_ref.at(pos).clone();
+                                        if !plug.negative(svar) {
+                                            panic!(
+                                                "Instantiation of MetaVar {} breaks a negativity constraint: SVar {:?}",
+                                                id,
+                                                svar
+                                            );
+                                        }
+                                    },
+                                    Option::None => {}
+                                }
+
+                                if pos >= plugs_as_ref.len() {
+                                    panic!("Substitution does not contain a corresponding value.")
+                                }
+
+                                ret = Option::Some(plugs_as_ref.at(pos).clone());
+                                break;
+                            }
+                        }
+                        pos += 1;
+                    },
+                    Option::None => { break; }
+                }
+            };
+            return ret;
+        },
         Pattern::ESubst(_) => Option::None,
         Pattern::SSubst(_) => Option::None,
     }
