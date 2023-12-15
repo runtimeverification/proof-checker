@@ -556,27 +556,21 @@ fn execute_instructions(
                         }
                     },
                     Instruction::Pop => { let _ = pop_stack(ref stack); },
-                    Instruction::Save => {
-                        let term = stack.last();
-                        match term {
-                            Option::Some(p) => {
-                                match p {
-                                    Term::Pattern(p) => memory.append(Term::Pattern(p.clone())),
-                                    Term::Proved(p) => memory.append(Term::Proved(p.clone())),
-                                }
-                            },
-                            Option::None => { panic!("Save needs term on the Stack"); },
-                        }
-                    },
+                    Instruction::Save => memory
+                        .append(stack.last().expect('Save needs term on the stack').clone()),
                     Instruction::Load => {
                         let index: u32 = buffer
                             .pop_front()
                             .expect('Error on Load instruction')
                             .into();
-                        match memory.get(index).expect('Load needs term on Memory').unbox() {
-                            Term::Pattern(p) => stack.push(Term::Pattern(p.clone())),
-                            Term::Proved(p) => stack.push(Term::Proved(p.clone())),
-                        }
+                        stack
+                            .push(
+                                memory
+                                    .get(index)
+                                    .expect('Load needs term on Memory')
+                                    .unbox()
+                                    .clone()
+                            );
                     },
                     Instruction::Publish => match phase {
                         ExecutionPhase::Gamma => memory
