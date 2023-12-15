@@ -236,6 +236,9 @@ class ProofExp:
     def pretty_options(self) -> PrettyOptions:
         return PrettyOptions(notations={n.definition: n for n in self._notations})
 
+    def pretty(self, p: Pattern) -> str:
+        return p.pretty(self.pretty_options())
+
     def get_serializing_interpreter(
         self,
         output_format: OutputFormat,
