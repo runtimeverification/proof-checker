@@ -555,7 +555,7 @@ fn execute_instructions(
                             }
                         }
                     },
-                    Instruction::Pop => { panic!("Pop not implemented!"); },
+                    Instruction::Pop => { let _ = pop_stack(ref stack); },
                     Instruction::Save => {
                         let term = stack.last();
                         match term {
@@ -825,5 +825,86 @@ mod tests {
         let expected: Option<Pattern> = Option::None;
         let result = instantiate_internal(ref phi0_implies_phi0, ref vars1, ref plugs0);
         assert(expected == result, 'Expect None');
+    }
+
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_impreflex_compress_goal() {
+        let gamma_buffer: Array<InstByte> = array![];
+        let claim_buffer: Array<InstByte> = array![137, 0, 137, 0, 5, 28, 30];
+        let proof_buffer: Array<InstByte> = array![
+            137,
+            0,
+            137,
+            0,
+            137,
+            0,
+            5,
+            28,
+            5,
+            28,
+            29,
+            0,
+            137,
+            0,
+            29,
+            0,
+            137,
+            0,
+            5,
+            5,
+            29,
+            2,
+            29,
+            0,
+            5,
+            137,
+            0,
+            29,
+            0,
+            137,
+            0,
+            13,
+            26,
+            3,
+            2,
+            1,
+            0,
+            137,
+            0,
+            29,
+            0,
+            12,
+            26,
+            2,
+            1,
+            0,
+            21,
+            28,
+            27,
+            27,
+            27,
+            29,
+            3,
+            137,
+            0,
+            137,
+            0,
+            12,
+            26,
+            2,
+            1,
+            0,
+            21,
+            28,
+            27,
+            27,
+            27,
+            29,
+            4,
+            30
+        ];
+
+        verify(gamma_buffer, claim_buffer, proof_buffer);
     }
 }
