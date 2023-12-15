@@ -11,7 +11,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KEquationalRule,
     KRewritingRule,
 )
-from proof_generation.pattern import Symbol
+from proof_generation.pattern import EVar, Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
@@ -102,14 +102,15 @@ class SimplificationProver(proof.ProofExp):
 class SimplificationPerformer:
     def __init__(self, language_semantics: LanguageSemantics, prover: SimplificationProver, init_config: Pattern):
         self._language_semantics = language_semantics
-        self._curr_config = init_config
         self._simplification_stack: list[SimplificationInfo] = []
         self.prover = prover
         self.proof: ProofThunk | None = None  # If None, the batch has not been proved yet
+        self._current_config = init_config
+        self._curr_subterm = init_config
 
     @property
     def simplified_configuration(self) -> Pattern:
-        return self._curr_config
+        return self._current_config
 
     @property
     def in_simplification(self) -> bool:
@@ -117,7 +118,7 @@ class SimplificationPerformer:
 
     def update_configuration(self, new_current_configuration: Pattern) -> None:
         assert not self.in_simplification, 'Simplification is in progress'
-        self._curr_config = new_current_configuration
+        self._current_config = new_current_configuration
 
     def enter_context(self, location):
         # Reset the proof
@@ -125,7 +126,12 @@ class SimplificationPerformer:
 
         # Check that whether it is the first simplification or not
         if not self._simplification_stack:
-            sub_pattern = self.get_subterm(location, self._curr_config)
+            config_with_hole, sub_pattern, location_remained = self._subpattern_search_rec(
+                location, self._current_config, EVar(0)
+            )
+            assert not location_remained, f'Location {location} is invalid for pattern {str(self._current_config)}'
+            self._curr_subterm = sub_pattern
+            self._current_config = config_with_hole
         else:
             sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
 
@@ -139,15 +145,19 @@ class SimplificationPerformer:
         # Get the rule and assert the lhs equals current config that we are simplifying
         rule = self._language_semantics.get_axiom(ordinal)
         assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
-        # TODO: Adjust the following assertion
-        # assert rule.left == self._curr_config
 
         # Remove extra variables added by K in addition to the ones in the K file
         base_substitutions = rule.substitutions_from_requires
-        simplified_rhs = rule.right.apply_esubsts(base_substitutions)
+        simplified_rule = rule.pattern.apply_esubsts(base_substitutions)
 
         # Now apply the substitutions from the hint
-        simplified_rhs = simplified_rhs.apply_esubsts(substitution)
+        simplified_rule = simplified_rule.apply_esubsts(substitution)
+
+        # Deconstruct the rule
+        _, simplified_lhs, _, simplified_rhs, _ = kl.deconstruct_equality_rule(simplified_rule)
+
+        # Check that the simplification is applicable
+        assert self._curr_subterm == simplified_lhs
 
         # Count the number of substitutions left
         simplifications_remaining = self._language_semantics.count_simplifications(simplified_rhs)
@@ -160,7 +170,7 @@ class SimplificationPerformer:
         )
 
         # Update current config
-        self._curr_config = simplified_rhs
+        self._curr_subterm = simplified_rhs
 
     def exit_context(self) -> None:
         while self._simplification_stack and self._simplification_stack[-1].simplifications_remaining == 0:
@@ -180,9 +190,7 @@ class SimplificationPerformer:
                 )
             else:
                 # If the stack is empty, then we need to update the current configuration as we processed the batch
-                self._curr_config = self.update_subterm(
-                    child_info.location, self._curr_config, child_info.simplification_result
-                )
+                self._current_config = self._current_config.apply_esubst(0, child_info.simplification_result)
                 self.proof = child_info.proof
 
     def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:

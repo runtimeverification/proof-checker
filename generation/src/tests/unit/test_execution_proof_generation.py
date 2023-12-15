@@ -325,7 +325,7 @@ def test_performer_update_config():
     intermidiate_config1 = tree_semantics_config_pattern(
         semantics,
         'SortTree',
-        node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
+        reverse_symbol.app(a_symbol.app()),
     )
     intermidiate_config2 = tree_semantics_config_pattern(
         semantics,
@@ -342,8 +342,7 @@ def test_performer_update_config():
 
     # Reset the state
     performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config1)
-    performer.update_configuration(intermidiate_config2)
-    performer.enter_context((0, 0))
+    performer.enter_context((0, 0, 0))
     performer.apply_simplification(2, {})
     with pytest.raises(AssertionError):
         performer.update_configuration(intermidiate_config1)
