@@ -72,9 +72,50 @@ trait PatternTrait {
     fn is_redundant_subst(self: @Pattern) -> core::bool;
 }
 
+fn contains(idlist: @IdList, id: Id) -> bool {
+    let mut list_span = idlist.span();
+
+    loop {
+        match list_span.pop_front() {
+            Option::Some(v) => { if *v == id {
+                break true;
+            } },
+            Option::None => { break false; },
+        };
+    }
+}
+
 impl PatternTraitImpl of PatternTrait {
     fn e_fresh(self: @Pattern, evar: Id) -> core::bool {
-        true
+        match self {
+            Pattern::EVar(name) => *name != evar,
+            Pattern::SVar(_) => true,
+            Pattern::Symbol(_) => true,
+            Pattern::Implies(args) => { let left_unbox = args.left.clone().unwrap().unbox();
+                                        let right_unbox = args.right.clone().unwrap().unbox();
+                                        left_unbox.e_fresh(evar) && right_unbox.e_fresh(evar)
+                                      },
+            Pattern::App(args) => { let left_unbox = args.left.clone().unwrap().unbox();
+                                    let right_unbox = args.right.clone().unwrap().unbox();
+                                    left_unbox.e_fresh(evar) && right_unbox.e_fresh(evar)
+                                  },
+            Pattern::Exists(args) => { let supattern_unbox = args.subpattern.clone().unwrap().unbox();
+                                       evar == *args.var || supattern_unbox.e_fresh(evar)
+                                     },
+            Pattern::Mu(args) => { let supattern_unbox = args.subpattern.clone().unwrap().unbox();
+                                    supattern_unbox.e_fresh(evar)
+                                 },
+            Pattern::MetaVar(args) => { contains(args.e_fresh, evar) },
+            Pattern::ESubst(args) => { let plug_unbox = args.plug.clone().unwrap().unbox();
+                                       if evar == *args.evar_id { return plug_unbox.e_fresh(evar); }
+                                       let pattern_unbox = args.pattern.clone().unwrap().unbox();
+                                       pattern_unbox.e_fresh(evar) && plug_unbox.e_fresh(evar)
+                                     },
+            Pattern::SSubst(args) => { let pattern_unbox = args.pattern.clone().unwrap().unbox();
+                                       let plug_unbox = args.plug.clone().unwrap().unbox();
+                                       pattern_unbox.e_fresh(evar) && plug_unbox.e_fresh(evar)
+                                     },
+        }
     }
     fn s_fresh(self: @Pattern, svar: Id) -> core::bool {
         true
@@ -244,5 +285,47 @@ impl PatternOptionBoxClone of Clone<Option<Box<Pattern>>> {
             },
             Option::None => { Option::None }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use core::array::ArrayTrait;
+
+    use super::evar;
+    use super::exists;
+    use super::implies;
+    use super::metavar_s_fresh;
+    use super::app;
+    use super::esubst;
+    use super::ssubst;
+    use super::PatternTrait;
+
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_efresh() {
+        let evar = evar(1);
+        let left = exists(1, evar.clone());
+        assert!(left.e_fresh(1));
+
+        let right = exists(2, evar);
+        assert!(!right.e_fresh(1));
+
+        let implication = implies(left.clone(), right.clone());
+        assert!(!implication.e_fresh(1));
+
+        let mut positive = ArrayTrait::<u8>::new();
+        positive.append(2);
+        let mut negative = ArrayTrait::<u8>::new();
+        negative.append(2);
+        let mvar = metavar_s_fresh(1, 2, positive, negative);
+        let metaapp = app(left.clone(), mvar);
+        assert!(!metaapp.e_fresh(2));
+
+        let esubst_ = esubst(right.clone(), 1, left.clone());
+        assert!(esubst_.e_fresh(1));
+
+        let ssubst_ = ssubst(right, 1, left);
+        assert!(!ssubst_.e_fresh(1));
     }
 }
