@@ -167,6 +167,7 @@ def test_sorted_eq_id() -> None:
     expected = kore_equals(sort1, sort1, value_a, value_a)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
+
 def test_sorted_eq_trans() -> None:
     theory = KoreLemmas()
 
@@ -175,12 +176,8 @@ def test_sorted_eq_trans() -> None:
     value_b = Symbol('value_b')
     value_c = Symbol('value_c')
 
-    eq_a_b = make_pt(
-        kore_equals(sort1, sort1, value_a, value_b)
-    )
-    eq_b_c = make_pt(
-        kore_equals(sort1, sort1, value_b, value_c)
-    )
+    eq_a_b = make_pt(kore_equals(sort1, sort1, value_a, value_b))
+    eq_b_c = make_pt(kore_equals(sort1, sort1, value_b, value_c))
     proof = theory.sorted_eq_trans(eq_a_b, eq_b_c)
     expected = kore_equals(sort1, sort1, value_a, value_c)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected

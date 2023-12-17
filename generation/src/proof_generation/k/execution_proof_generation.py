@@ -47,12 +47,13 @@ class SimplificationProver(proof.ProofExp):
     def apply_framing_lemma(self, equality_proof: proof.ProofThunk, context: Pattern) -> proof.ProofThunk:
         return self.kore_lemmas.equality_with_subst(context, equality_proof)
 
-    def equality_proof(self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]) -> proof.ProofThunk:
+    def equality_proof(
+        self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
+    ) -> proof.ProofThunk:
         self.add_axiom(rule)
         rule_axiom = self.load_axiom(rule)
         return self.prove_substitutions(
-            self.prove_equality_from_rule(rule_axiom.apply_esubsts(base_substitutions)),
-            substitutions
+            self.prove_equality_from_rule(rule_axiom.apply_esubsts(base_substitutions)), substitutions
         )
 
     def equality_transitivity(self, last_proof: proof.ProofThunk, new_proof: proof.ProofThunk) -> proof.ProofThunk:
@@ -194,7 +195,8 @@ class SimplificationPerformer:
         self._simplification_stack[-1].simplification_result = simplified_rhs
         self._simplification_stack[-1].simplifications_remaining = simplifications_remaining
         self._simplification_stack[-1].proof = self.prover.equality_transitivity(
-            self._simplification_stack[-1].proof, self.prover.equality_proof(rule.pattern, base_substitutions, substitution)
+            self._simplification_stack[-1].proof,
+            self.prover.equality_proof(rule.pattern, base_substitutions, substitution),
         )
 
         # Update current config
