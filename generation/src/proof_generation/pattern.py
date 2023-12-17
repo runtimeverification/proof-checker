@@ -86,8 +86,8 @@ class Pattern:
 
     def occurring_vars(self) -> set[EVar | SVar]:
         """
-            Returns the set of all free variables occurring in the pattern
-            Makes no guarantees about freshness!
+        Returns the set of all free variables occurring in the pattern
+        Makes no guarantees about freshness!
         """
 
         raise NotImplementedError
@@ -502,8 +502,6 @@ class ESubst(Pattern):
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
-
-
 
 
 @dataclass(frozen=True)
