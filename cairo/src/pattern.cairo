@@ -77,9 +77,26 @@ fn contains(idlist: @IdList, id: Id) -> bool {
 
     loop {
         match list_span.pop_front() {
-            Option::Some(v) => { if *v == id {
-                break true;
-            } },
+            Option::Some(v) => {
+                if *v == id {
+                    break true;
+                }
+            },
+            Option::None => { break false; },
+        };
+    }
+}
+
+fn containsElementOf(thislist: @IdList, otherlist: @IdList) -> bool {
+    let mut thislist_span = thislist.span();
+
+    loop {
+        match thislist_span.pop_front() {
+            Option::Some(v) => {
+                if contains(otherlist, *v) {
+                    break true;
+                }
+            },
             Option::None => { break false; },
         };
     }
@@ -253,11 +270,76 @@ impl PatternTraitImpl of PatternTrait {
     }
 
     fn well_formed(self: @Pattern) -> core::bool {
-        true
+        match self {
+            Pattern::EVar(_) => { panic!("Not implemented!"); true },
+            Pattern::SVar(_) => { panic!("Not implemented!"); true },
+            Pattern::Symbol(_) => { panic!("Not implemented!"); true },
+            Pattern::Implies(_) => { panic!("Not implemented!"); true },
+            Pattern::App(_) => { panic!("Not implemented!"); true },
+            Pattern::Exists(_) => { panic!("Not implemented!"); true },
+            Pattern::Mu(MuType{var, subpattern}) => {
+                let subpattern_unbox = subpattern.clone().unwrap().unbox();
+                subpattern_unbox.positive(*var)
+            },
+            Pattern::MetaVar(MetaVarType{e_fresh, app_ctx_holes, ..}) => {
+                !containsElementOf(app_ctx_holes, e_fresh)
+            },
+            Pattern::ESubst(ESubstType{pattern, ..}) => {
+                let not_redundant_subst = !self.is_redundant_subst();
+                let pattern_unbox = pattern.clone().unwrap().unbox();
+                match pattern_unbox {
+                     Pattern::EVar(_) => false,
+                     Pattern::SVar(_) => false,
+                     Pattern::Symbol(_) => false,
+                     Pattern::Implies(_) => false,
+                     Pattern::App(_) => false,
+                     Pattern::Exists(_) => false,
+                     Pattern::Mu(_) => false,
+                     Pattern::MetaVar(_) => not_redundant_subst,
+                     Pattern::ESubst(_) => not_redundant_subst,
+                     Pattern::SSubst(_) => not_redundant_subst,
+                }
+            },
+            Pattern::SSubst(SSubstType{pattern, ..}) => {
+                let not_redundant_subst = !self.is_redundant_subst();
+                let pattern_unbox = pattern.clone().unwrap().unbox();
+                match pattern_unbox {
+                     Pattern::EVar(_) => false,
+                     Pattern::SVar(_) => false,
+                     Pattern::Symbol(_) => false,
+                     Pattern::Implies(_) => false,
+                     Pattern::App(_) => false,
+                     Pattern::Exists(_) => false,
+                     Pattern::Mu(_) => false,
+                     Pattern::MetaVar(_) => not_redundant_subst,
+                     Pattern::ESubst(_) => not_redundant_subst,
+                     Pattern::SSubst(_) => not_redundant_subst,
+                }
+            },
+        }
     }
 
     fn is_redundant_subst(self: @Pattern) -> core::bool {
-        true
+        match self {
+            Pattern::EVar(_) => false,
+            Pattern::SVar(_) => false,
+            Pattern::Symbol(_) => false,
+            Pattern::Implies(_) => false,
+            Pattern::App(_) => false,
+            Pattern::Exists(_) => false,
+            Pattern::Mu(_) => false,
+            Pattern::MetaVar(_) => false,
+            Pattern::ESubst(ESubstType{pattern, evar_id, plug}) => {
+                let pattern_unbox = pattern.clone().unwrap().unbox();
+                let plug_unbox = plug.clone().unwrap().unbox();
+                evar(*evar_id) == plug_unbox || pattern_unbox.e_fresh(*evar_id)
+            },
+            Pattern::SSubst(SSubstType{pattern, svar_id, plug}) => {
+                let pattern_unbox = pattern.clone().unwrap().unbox();
+                let plug_unbox = plug.clone().unwrap().unbox();
+                svar(*svar_id) == plug_unbox || pattern_unbox.s_fresh(*svar_id)
+            },
+        }
     }
 }
 
@@ -456,11 +538,7 @@ mod tests {
         let implication = implies(left.clone(), right.clone());
         assert!(!implication.e_fresh(1));
 
-        let mut positive = ArrayTrait::<u8>::new();
-        positive.append(2);
-        let mut negative = ArrayTrait::<u8>::new();
-        negative.append(2);
-        let mvar = metavar_s_fresh(1, 2, positive, negative);
+        let mvar = metavar_s_fresh(1, 2, array![2], array![2]);
         let metaapp = app(left.clone(), mvar);
         assert!(!metaapp.e_fresh(2));
 
@@ -486,11 +564,7 @@ mod tests {
         let implication = implies(left.clone(), right.clone());
         assert!(!implication.s_fresh(1));
 
-        let mut positive = ArrayTrait::<u8>::new();
-        positive.append(2);
-        let mut negative = ArrayTrait::<u8>::new();
-        negative.append(2);
-        let mvar = metavar_s_fresh(1, 2, positive, negative);
+        let mvar = metavar_s_fresh(1, 2, array![2], array![2]);
         let metaapp = app(left.clone(), right.clone());
         assert!(!metaapp.s_fresh(1));
 
@@ -502,6 +576,44 @@ mod tests {
 
         let ssubst_ = ssubst(right, 1, left);
         assert!(ssubst_.s_fresh(1));
+    }
+
+    use super::metavar;
+    #[test]
+    fn test_wellformedness_fresh() {
+        let phi0_s_fresh_0 = metavar_s_fresh(0, 0, array![0], array![0]);
+        assert!(phi0_s_fresh_0.well_formed());
+
+        let phi1 = metavar(1, array![1, 2, 0], array![], array![], array![], array![2]);
+        assert!(!phi1.well_formed());
+    }
+
+    use super::metavar_e_fresh;
+    #[test]
+    fn test_wellformedness_esubst_ssubst() {
+        let phi0_x1_s1 = esubst(metavar_unconstrained(0), 1, symbol(1));
+        assert!(phi0_x1_s1.well_formed());
+
+        let s0_x1_s1 = esubst(symbol(0), 1, symbol(1));
+        assert!(!s0_x1_s1.well_formed());
+
+        let phi0_x1_x1 = esubst(metavar_unconstrained(0), 1, evar(1));
+        assert!(!phi0_x1_x1.well_formed());
+
+        let phi0_fresh_x1_s1 = esubst(metavar_e_fresh(0, 1, array![], array![]), 1, symbol(1));
+        assert!(!phi0_fresh_x1_s1.well_formed());
+
+        let phi0_x1_s1 = ssubst(metavar_unconstrained(0), 1, symbol(1));
+        assert!(phi0_x1_s1.well_formed());
+
+        let phi0_x1_x1 = ssubst(metavar_unconstrained(0), 1, svar(1));
+        assert!(!phi0_x1_x1.well_formed());
+
+        let s0_x1_s1 = ssubst(symbol(0), 1, symbol(1));
+        assert!(!s0_x1_s1.well_formed());
+
+        let phi0_fresh_x1_s1 = ssubst(metavar_s_fresh(0, 1, array![], array![]), 1, symbol(1));
+        assert!(!phi0_fresh_x1_s1.well_formed());
     }
 
     use super::symbol;
@@ -596,37 +708,33 @@ mod tests {
         assert!(!metavar_unconstrained(1).negative(2));
 
         // Do not imply positivity from freshness
-        assert!(!metavar_s_fresh(1, 1, ArrayTrait::<u8>::new(), ArrayTrait::<u8>::new()).positive(1));
-        assert!(!metavar_s_fresh(1, 1, ArrayTrait::<u8>::new(), ArrayTrait::<u8>::new()).negative(1));
-        let mut positive1 = ArrayTrait::<u8>::new();
-        positive1.append(1);
-        let mut negative1 = ArrayTrait::<u8>::new();
-        negative1.append(1);
-        assert!(metavar_s_fresh(1, 1, positive1.clone(), negative1.clone()).positive(1));
-        assert!(metavar_s_fresh(1, 1, positive1.clone(), negative1.clone()).negative(1));
-        assert!(metavar_s_fresh(1, 1, positive1.clone(), ArrayTrait::<u8>::new()).positive(1));
-        assert!(metavar_s_fresh(1, 1, ArrayTrait::<u8>::new(), negative1).negative(1));
+        assert!(!metavar_s_fresh(1, 1, array![], array![]).positive(1));
+        assert!(!metavar_s_fresh(1, 1, array![], array![]).negative(1));
+        assert!(metavar_s_fresh(1, 1, array![1], array![1]).positive(1));
+        assert!(metavar_s_fresh(1, 1, array![1], array![1]).negative(1));
+        assert!(metavar_s_fresh(1, 1, array![1], array![]).positive(1));
+        assert!(metavar_s_fresh(1, 1, array![], array![1]).negative(1));
 
-        assert!(!metavar_s_fresh(1, 1, ArrayTrait::<u8>::new(), ArrayTrait::<u8>::new()).positive(2));
-        assert!(!metavar_s_fresh(1, 1, ArrayTrait::<u8>::new(), ArrayTrait::<u8>::new()).negative(2));
+        assert!(!metavar_s_fresh(1, 1, array![], array![]).positive(2));
+        assert!(!metavar_s_fresh(1, 1, array![], array![]).negative(2));
 
         // ESubst
         assert!(!esubst(metavar_unconstrained(0), 0, x0.clone()).positive(0));
         assert!(!esubst(metavar_unconstrained(0), 0, x1.clone()).positive(0));
-        assert!(!esubst(metavar_s_fresh(0, 1, positive1.clone(), ArrayTrait::<u8>::new()), 0, x1.clone()).positive(0));
+        assert!(!esubst(metavar_s_fresh(0, 1, array![1], array![]), 0, x1.clone()).positive(0));
 
         assert!(!esubst(metavar_unconstrained(0), 0, x0.clone()).negative(0));
         assert!(!esubst(metavar_unconstrained(0), 0, x1.clone()).negative(0));
-        assert!(!esubst(metavar_s_fresh(0, 1, positive1.clone(), ArrayTrait::<u8>::new()), 0, x1.clone()).negative(0));
+        assert!(!esubst(metavar_s_fresh(0, 1, array![1], array![]), 0, x1.clone()).negative(0));
 
         // SSubst
         assert!(!ssubst(metavar_unconstrained(0), 0, x0.clone()).positive(0));
         assert!(ssubst(metavar_unconstrained(0), 0, x1.clone()).positive(0));
-        assert!(ssubst(metavar_s_fresh(0, 1, positive1.clone(), ArrayTrait::<u8>::new()), 0, x1.clone()).positive(0));
+        assert!(ssubst(metavar_s_fresh(0, 1, array![1], array![]), 0, x1.clone()).positive(0));
 
         assert!(!ssubst(metavar_unconstrained(0), 0, x0.clone()).negative(0));
         assert!(ssubst(metavar_unconstrained(0), 0, x1.clone()).negative(0));
-        assert!(ssubst(metavar_s_fresh(0, 1, positive1, ArrayTrait::<u8>::new()), 0, x1.clone()).negative(0));
+        assert!(ssubst(metavar_s_fresh(0, 1, array![1], array![]), 0, x1.clone()).negative(0));
 
         // Combinations
         assert!(!neg_x1.positive(1));
@@ -643,5 +751,41 @@ mod tests {
         let negx1_implies_x1 = implies( neg_x1.clone(), x1.clone());
         assert!(negx1_implies_x1.positive(1));
         assert!(!negx1_implies_x1.negative(1));
+    }
+
+    #[test]
+    fn test_wellformedness_positive() {
+        let svar = svar(1);
+        let mux_x = mu(1, svar.clone());
+        assert!(mux_x.well_formed());
+
+        let mux_x2 = mu(2, not(svar.clone()));
+        assert!(mux_x2.well_formed());
+
+        let mux_x3 = mu(2, not(symbol(1)));
+        assert!(mux_x3.well_formed());
+
+        let mux_x = mu(1, not(svar.clone()));
+        assert!(!mux_x.well_formed());
+
+        let phi = metavar_s_fresh(97, 2, array![], array![]);
+        let mux_phi = mu(1, phi);
+        assert!(!mux_phi.well_formed());
+
+        // Even though freshness implies positivity, we do not want to do any
+        // additional reasoning and let everything on the prover
+        let phi2 = metavar_s_fresh(98, 1, array![], array![]);
+        let mux_phi2 = mu(1, phi2);
+        assert!(!mux_phi2.well_formed());
+
+        // It's ok if 2 is negative, the only thing we care about is that 2 is guaranteed to be positive
+        // (we can instantiate without this variable)
+        let phi3 = metavar_s_fresh(99, 1, array![2], array![2]);
+        let mux_phi3 = mu(2, phi3);
+        assert!(mux_phi3.well_formed());
+
+        let phi4 = metavar_s_fresh(100, 1, array![2], array![]);
+        let mux_phi4 = mu(2, phi4);
+        assert!(mux_phi4.well_formed());
     }
 }
