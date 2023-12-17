@@ -52,11 +52,8 @@ class SimplificationProver(proof.ProofExp):
     ) -> proof.ProofThunk:
         self.add_axiom(rule)
         return self.prove_substitutions(
-            self.prove_equality_from_rule(
-                self.prove_substitutions(
-                    self.load_axiom(rule), base_substitutions
-                )
-            ), substitutions
+            self.prove_equality_from_rule(self.prove_substitutions(self.load_axiom(rule), base_substitutions)),
+            substitutions,
         )
 
     def equality_transitivity(self, last_proof: proof.ProofThunk, new_proof: proof.ProofThunk) -> proof.ProofThunk:
