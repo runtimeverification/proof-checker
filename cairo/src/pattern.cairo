@@ -117,8 +117,37 @@ impl PatternTraitImpl of PatternTrait {
                                      },
         }
     }
+
     fn s_fresh(self: @Pattern, svar: Id) -> core::bool {
-        true
+        match self {
+            Pattern::EVar(_) => true,
+            Pattern::SVar(name) => *name != svar,
+            Pattern::Symbol(_) => true,
+            Pattern::Implies(args) => { let left_unbox = args.left.clone().unwrap().unbox();
+                                        let right_unbox = args.right.clone().unwrap().unbox();
+                                        left_unbox.s_fresh(svar) && right_unbox.s_fresh(svar)
+                                      },
+            Pattern::App(args) => { let left_unbox = args.left.clone().unwrap().unbox();
+                                    let right_unbox = args.right.clone().unwrap().unbox();
+                                    left_unbox.s_fresh(svar) && right_unbox.s_fresh(svar)
+                                  },
+            Pattern::Exists(args) => { let supattern_unbox = args.subpattern.clone().unwrap().unbox();
+                                       supattern_unbox.s_fresh(svar)
+                                     },
+            Pattern::Mu(args) => { let supattern_unbox = args.subpattern.clone().unwrap().unbox();
+                                   svar == *args.var || supattern_unbox.s_fresh(svar)
+                                 },
+            Pattern::MetaVar(args) => { contains(args.s_fresh, svar) },
+            Pattern::ESubst(args) => { let pattern_unbox = args.pattern.clone().unwrap().unbox();
+                                       let plug_unbox = args.plug.clone().unwrap().unbox();
+                                       pattern_unbox.s_fresh(svar) && plug_unbox.s_fresh(svar)
+                                     },
+            Pattern::SSubst(args) => { let plug_unbox = args.plug.clone().unwrap().unbox();
+                                       if svar == *args.svar_id { return plug_unbox.s_fresh(svar); }
+                                       let pattern_unbox = args.pattern.clone().unwrap().unbox();
+                                       pattern_unbox.s_fresh(svar) && plug_unbox.s_fresh(svar)
+                                     },
+        }
     }
     fn positive(self: @Pattern, meta_var: Id) -> core::bool {
         true
@@ -327,5 +356,38 @@ mod tests {
 
         let ssubst_ = ssubst(right, 1, left);
         assert!(!ssubst_.e_fresh(1));
+    }
+
+    use super::svar;
+    use super::mu;
+    #[test]
+    #[available_gas(1000000000000000)]
+    fn test_sfresh() {
+        let svar = svar(1);
+        let left = mu(1, svar.clone());
+        assert!(left.s_fresh(1));
+
+        let right = mu(2, svar);
+        assert!(!right.s_fresh(1));
+
+        let implication = implies(left.clone(), right.clone());
+        assert!(!implication.s_fresh(1));
+
+        let mut positive = ArrayTrait::<u8>::new();
+        positive.append(2);
+        let mut negative = ArrayTrait::<u8>::new();
+        negative.append(2);
+        let mvar = metavar_s_fresh(1, 2, positive, negative);
+        let metaapp = app(left.clone(), right.clone());
+        assert!(!metaapp.s_fresh(1));
+
+        let metaapp2 = app(left.clone(), mvar);
+        assert!(metaapp2.s_fresh(2));
+
+        let esubst_ = esubst(right.clone(), 1, left.clone());
+        assert!(!esubst_.s_fresh(1));
+
+        let ssubst_ = ssubst(right, 1, left);
+        assert!(ssubst_.s_fresh(1));
     }
 }
