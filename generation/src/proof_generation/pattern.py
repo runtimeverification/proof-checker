@@ -456,14 +456,14 @@ phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 
-"""
-    Class to represent pending evar substitutions
-    It should almost never be used directly, instead use apply_esubst!
-"""
-
 
 @dataclass(frozen=True)
 class ESubst(Pattern):
+    """
+    Represents evar substitutions over meta-variables.
+    It should almost never be used directly, instead use apply_esubst!
+    """
+
     pattern: MetaVar | ESubst | SSubst
     var: EVar
     plug: Pattern
