@@ -50,7 +50,10 @@ class DummyProver(SimplificationProver):
 
     def equality_transitivity(self, last_proof: ProofThunk, new_proof: ProofThunk) -> ProofThunk:
         sort1, sort2, phi0, phi1 = kore_equals.assert_matches(last_proof.conc)
-        sort1, sort2, phi1_p, phi2 = kore_equals.assert_matches(new_proof.conc)
+        sort1_p, sort2_p, phi1_p, phi2 = kore_equals.assert_matches(new_proof.conc)
+        assert sort1 == sort1_p
+        assert sort2 == sort2_p
+        assert phi1 == phi1_p
         return make_pt(kore_equals(sort1, sort2, phi0, phi2))
 
 
@@ -421,6 +424,7 @@ def test_subpattern_batch():
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
+    # top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
     tree_sort = semantics.get_sort('SortTree').aml_symbol
 
     # Rules
@@ -545,9 +549,11 @@ def test_subpattern_batch():
     )
 
     # Check proof
-    # assert performer.proof and performer.proof.conc == kore_equals(
-    #    tree_sort, tree_sort, initial_config, performer.simplified_configuration
-    # )
+    assert performer.proof.conc
+    _, _, left, right = kore_equals.assert_matches(performer.proof.conc)
+    # For some reason this does not work
+    # assert left == initial_config
+    # assert right == performer.simplified_configuration
 
 
 def test_prove_equality_from_rule() -> None:
