@@ -51,9 +51,12 @@ class SimplificationProver(proof.ProofExp):
         self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
     ) -> proof.ProofThunk:
         self.add_axiom(rule)
-        rule_axiom = self.load_axiom(rule)
         return self.prove_substitutions(
-            self.prove_equality_from_rule(rule_axiom.apply_esubsts(base_substitutions)), substitutions
+            self.prove_equality_from_rule(
+                self.prove_substitutions(
+                    self.load_axiom(rule), base_substitutions
+                )
+            ), substitutions
         )
 
     def equality_transitivity(self, last_proof: proof.ProofThunk, new_proof: proof.ProofThunk) -> proof.ProofThunk:

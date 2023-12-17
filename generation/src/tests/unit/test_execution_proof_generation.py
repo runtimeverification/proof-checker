@@ -13,7 +13,7 @@ from proof_generation.k.execution_proof_generation import (
 )
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, phi0, top
+from proof_generation.pattern import Instantiate, top
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
@@ -36,9 +36,7 @@ if TYPE_CHECKING:
 class DummyProver(SimplificationProver):
     def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> ProofThunk:
         sort0, sort1, left, right = kore_equals.assert_matches(equality_proof.conc)
-        return make_pt(kore_equals(
-            sort0, sort1, context.apply_esubst(0, left), context.apply_esubst(0, right)
-        ))
+        return make_pt(kore_equals(sort0, sort1, context.apply_esubst(0, left), context.apply_esubst(0, right)))
 
     def equality_proof(
         self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
@@ -406,8 +404,10 @@ def test_subpattern_batch():
     def eq_stackinfo(received_info: SimplificationInfo, expected_info: SimplificationInfo) -> bool:
         popts = simpl_prover.pretty_options()
         assert received_info.proof.conc == expected_info.proof.conc, (
-            "Received: " + received_info.proof.conc.pretty(popts) + " \n Expected: " +
-            expected_info.proof.conc.pretty(popts)
+            'Received: '
+            + received_info.proof.conc.pretty(popts)
+            + ' \n Expected: '
+            + expected_info.proof.conc.pretty(popts)
         )
 
         return (
