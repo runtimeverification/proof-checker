@@ -84,6 +84,14 @@ class Pattern:
     def metavars(self) -> set[int]:
         raise NotImplementedError
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        """
+        Returns the set of all free variables occurring in the pattern
+        Makes no guarantees about freshness!
+        """
+
+        raise NotImplementedError
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
@@ -131,6 +139,9 @@ class EVar(Pattern):
     def metavars(self) -> set[int]:
         return set()
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return {self}
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
@@ -166,6 +177,9 @@ class SVar(Pattern):
 
     def metavars(self) -> set[int]:
         return set()
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return {self}
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
@@ -203,6 +217,9 @@ class Symbol(Pattern):
     def metavars(self) -> set[int]:
         return set()
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return set()
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
@@ -238,6 +255,9 @@ class Implies(Pattern):
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.left.occurring_vars().union(self.right.occurring_vars())
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -271,6 +291,9 @@ class App(Pattern):
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.left.occurring_vars().union(self.right.occurring_vars())
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -299,6 +322,9 @@ class Exists(Pattern):
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.subpattern.occurring_vars().difference({EVar(self.var)})
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -333,11 +359,19 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
+    def __post_init__(self) -> None:
+        pass
+        # TODO: Add this test
+        # assert self.subpattern.positive(var)
+
     def evar_is_fresh(self, name: int) -> bool:
         return self.subpattern.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.subpattern.occurring_vars().difference({SVar(self.var)})
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -376,11 +410,18 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
 
+    def __post_init__(self) -> None:
+        for evar_id in self.e_fresh:
+            assert evar_id not in self.app_ctx_holes
+
     def metavars(self) -> set[int]:
         return {self.name}
 
     def evar_is_fresh(self, name: int) -> bool:
         return EVar(name) in self.e_fresh
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return set()
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
         # TODO implement this function by checking constraints
@@ -418,9 +459,19 @@ phi2 = MetaVar(2)
 
 @dataclass(frozen=True)
 class ESubst(Pattern):
+    """
+    Represents evar substitutions over meta-variables.
+    It should almost never be used directly, instead use apply_esubst!
+    """
+
     pattern: MetaVar | ESubst | SSubst
     var: EVar
     plug: Pattern
+
+    def __post_init__(self) -> None:
+        # Check that ESubst is not redundant
+        assert self.var != self.plug
+        assert not self.pattern.evar_is_fresh(self.var.name)
 
     def evar_is_fresh(self, name: int) -> bool:
         if self.var.name == name:
@@ -431,6 +482,9 @@ class ESubst(Pattern):
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.pattern.occurring_vars().difference({self.var}).union(self.plug.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -452,9 +506,20 @@ class ESubst(Pattern):
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
+    """
+    Represent svar substitutions over meta-variables.
+    It should almost never be used directly, instead use apply_ssubst!
+    """
+
     pattern: MetaVar | ESubst | SSubst
     var: SVar
     plug: Pattern
+
+    def __post_init__(self) -> None:
+        # Check that SSubst is not redundant
+        assert self.var != self.plug
+        # TODO: Add this check
+        # assert not self.pattern.s_fresh(self.var)
 
     def evar_is_fresh(self, name: int) -> bool:
         # We assume that at least one instance will be replaced
@@ -462,6 +527,9 @@ class SSubst(Pattern):
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.pattern.occurring_vars().difference({self.var}).union(self.plug.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -515,6 +583,9 @@ class Instantiate(Pattern):
                 ret.add(v)
         return ret
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.simplify().occurring_vars()
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})
         unshadowed_delta = {k: v for k, v in delta.items() if k not in self.inst}
@@ -558,6 +629,8 @@ class Notation:
             assert (
                 max(self.definition.metavars()) < self.arity
             ), f'Notation {self.label}: Number of variables used is greater than Arity.'
+
+        assert self.definition.occurring_vars() == set()
 
     def __call__(self, *args: Pattern) -> Pattern:
         assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
