@@ -504,14 +504,15 @@ class ESubst(Pattern):
         return self.pretty(PrettyOptions())
 
 
-"""
-    Class to represent pending svar substitutions
-    It should almost never be used directly, instead use apply_ssubst!
-"""
 
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
+    """
+    Represent svar substitutions over meta-variables.
+    It should almost never be used directly, instead use apply_ssubst!
+    """
+
     pattern: MetaVar | ESubst | SSubst
     var: SVar
     plug: Pattern
