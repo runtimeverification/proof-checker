@@ -219,5 +219,5 @@ def test_instantiate_subst(pattern: Pattern, plugs: dict[int, Pattern], expected
         [Instantiate(ESubst(MetaVar(0), EVar(0), EVar(1)), frozendict({0: EVar(0)})), {EVar(1)}],
     ],
 )
-def test_fv(pattern: Pattern, expected: set[EVar | SVar]) -> None:
-    assert pattern.fv() == expected
+def test_occurring_vars(pattern: Pattern, expected: set[EVar | SVar]) -> None:
+    assert pattern.occurring_vars() == expected

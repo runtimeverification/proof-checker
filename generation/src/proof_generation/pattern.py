@@ -84,12 +84,12 @@ class Pattern:
     def metavars(self) -> set[int]:
         raise NotImplementedError
 
-    """
-        Returns the set of all free variables occurring in the pattern
-        Makes no guarantees about freshness!
-    """
+    def occurring_vars(self) -> set[EVar | SVar]:
+        """
+            Returns the set of all free variables occurring in the pattern
+            Makes no guarantees about freshness!
+        """
 
-    def fv(self) -> set[EVar | SVar]:
         raise NotImplementedError
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -139,7 +139,7 @@ class EVar(Pattern):
     def metavars(self) -> set[int]:
         return set()
 
-    def fv(self) -> set[EVar | SVar]:
+    def occurring_vars(self) -> set[EVar | SVar]:
         return {self}
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -178,7 +178,7 @@ class SVar(Pattern):
     def metavars(self) -> set[int]:
         return set()
 
-    def fv(self) -> set[EVar | SVar]:
+    def occurring_vars(self) -> set[EVar | SVar]:
         return {self}
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -217,7 +217,7 @@ class Symbol(Pattern):
     def metavars(self) -> set[int]:
         return set()
 
-    def fv(self) -> set[EVar | SVar]:
+    def occurring_vars(self) -> set[EVar | SVar]:
         return set()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -255,8 +255,8 @@ class Implies(Pattern):
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
 
-    def fv(self) -> set[EVar | SVar]:
-        return self.left.fv().union(self.right.fv())
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.left.occurring_vars().union(self.right.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -291,8 +291,8 @@ class App(Pattern):
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
 
-    def fv(self) -> set[EVar | SVar]:
-        return self.left.fv().union(self.right.fv())
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.left.occurring_vars().union(self.right.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -323,8 +323,8 @@ class Exists(Pattern):
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
 
-    def fv(self) -> set[EVar | SVar]:
-        return self.subpattern.fv().difference({EVar(self.var)})
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.subpattern.occurring_vars().difference({EVar(self.var)})
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -370,8 +370,8 @@ class Mu(Pattern):
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
 
-    def fv(self) -> set[EVar | SVar]:
-        return self.subpattern.fv().difference({SVar(self.var)})
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.subpattern.occurring_vars().difference({SVar(self.var)})
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -420,7 +420,7 @@ class MetaVar(Pattern):
     def evar_is_fresh(self, name: int) -> bool:
         return EVar(name) in self.e_fresh
 
-    def fv(self) -> set[EVar | SVar]:
+    def occurring_vars(self) -> set[EVar | SVar]:
         return set()
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
@@ -483,8 +483,8 @@ class ESubst(Pattern):
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
 
-    def fv(self) -> set[EVar | SVar]:
-        return self.pattern.fv().difference({self.var}).union(self.plug.fv())
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.pattern.occurring_vars().difference({self.var}).union(self.plug.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -530,8 +530,8 @@ class SSubst(Pattern):
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
 
-    def fv(self) -> set[EVar | SVar]:
-        return self.pattern.fv().difference({self.var}).union(self.plug.fv())
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.pattern.occurring_vars().difference({self.var}).union(self.plug.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -585,8 +585,8 @@ class Instantiate(Pattern):
                 ret.add(v)
         return ret
 
-    def fv(self) -> set[EVar | SVar]:
-        return self.simplify().fv()
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.simplify().occurring_vars()
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})
@@ -632,7 +632,7 @@ class Notation:
                 max(self.definition.metavars()) < self.arity
             ), f'Notation {self.label}: Number of variables used is greater than Arity.'
 
-        assert self.definition.fv() == set()
+        assert self.definition.occurring_vars() == set()
 
     def __call__(self, *args: Pattern) -> Pattern:
         assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
