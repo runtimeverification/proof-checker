@@ -35,7 +35,10 @@ if TYPE_CHECKING:
 
 class DummyProver(SimplificationProver):
     def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> ProofThunk:
-        return make_pt(context.apply_esubst(0, equality_proof.conc))
+        sort0, sort1, left, right = kore_equals.assert_matches(equality_proof.conc)
+        return make_pt(kore_equals(
+            sort0, sort1, context.apply_esubst(0, left), context.apply_esubst(0, right)
+        ))
 
     def equality_proof(
         self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
@@ -48,10 +51,9 @@ class DummyProver(SimplificationProver):
         return make_pt(equation_proof.conc.apply_esubsts(substitutions))
 
     def equality_transitivity(self, last_proof: ProofThunk, new_proof: ProofThunk) -> ProofThunk:
-        # sort1, sort2, phi0, phi1 = kore_equals.assert_matches(last_proof.conc)
-        # sort1, sort2, phi1_p, phi2 = kore_equals.assert_matches(new_proof.conc)
-        # return make_pt(kore_equals(sort1, sort2, phi0, phi2))
-        return make_pt(phi0)
+        sort1, sort2, phi0, phi1 = kore_equals.assert_matches(last_proof.conc)
+        sort1, sort2, phi1_p, phi2 = kore_equals.assert_matches(new_proof.conc)
+        return make_pt(kore_equals(sort1, sort2, phi0, phi2))
 
 
 def rewrite_hints() -> list[RewriteStepExpression]:
@@ -398,15 +400,15 @@ def test_trivial_proof() -> None:
 
 def test_subpattern_batch():
     semantics = node_tree()
-    SimplificationProver(semantics)
+    simpl_prover = SimplificationProver(semantics)
 
     # TODO: Implement __eq__ on SimplificationInfo by comparing conclusions on the ProofThunks
     def eq_stackinfo(received_info: SimplificationInfo, expected_info: SimplificationInfo) -> bool:
-        # popts = simpl_prover.pretty_options()
-        # assert received_info.proof.conc == expected_info.proof.conc, (
-        #    "Received: " + received_info.proof.conc.pretty(popts) + " \n Expected: " +
-        #    expected_info.proof.conc.pretty(popts)
-        # )
+        popts = simpl_prover.pretty_options()
+        assert received_info.proof.conc == expected_info.proof.conc, (
+            "Received: " + received_info.proof.conc.pretty(popts) + " \n Expected: " +
+            expected_info.proof.conc.pretty(popts)
+        )
 
         return (
             received_info.location == expected_info.location
