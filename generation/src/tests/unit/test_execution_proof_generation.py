@@ -388,6 +388,14 @@ def test_trivial_proof() -> None:
         tree_sort, tree_sort, expression, expression
     )
 
+# TODO: Implement __eq__ on SimplificationInfo by comparing conclusions on the ProofThunks
+def eq_stackinfo(received_info: SimplificationInfo, expected_info: SimplificationInfo) -> bool:
+    return (
+        received_info.location == expected_info.location and
+        received_info.initial_pattern == expected_info.initial_pattern and
+        received_info.simplification_result == expected_info.simplification_result and
+        received_info.simplifications_remaining == expected_info.simplifications_remaining
+    )
 
 def test_subpattern_batch():
     semantics = node_tree()
@@ -397,13 +405,13 @@ def test_subpattern_batch():
     b_symbol = semantics.get_symbol('b')
 
     # Rules
-    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
     rec_case = semantics.get_axiom(4)
     assert isinstance(rec_case, KEquationalRule)
-    # reverse(b) <-> b
+    # reverse(b) = b
     base_case_b = semantics.get_axiom(3)
     assert isinstance(base_case_b, KEquationalRule)
-    # reverse(a) <-> a
+    # reverse(a) = a
     base_case_a = semantics.get_axiom(2)
     assert isinstance(base_case_a, KEquationalRule)
 
@@ -429,13 +437,30 @@ def test_subpattern_batch():
     ]
     # Direct comparison doesn't work anymore because of added proof thunks
     assert len(performer._simplification_stack) == len(expected_stack)
-    assert performer._simplification_stack[-1].location == expected_stack[-1].location
-    assert performer._simplification_stack[-1].initial_pattern == expected_stack[-1].initial_pattern
-    assert performer._simplification_stack[-1].simplification_result == expected_stack[-1].simplification_result
-    assert performer._simplification_stack[-1].simplifications_remaining == expected_stack[-1].simplifications_remaining
+    assert eq_stackinfo(performer._simplification_stack[-1], expected_stack[-1])
 
     performer.enter_context((0,))
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (0,),
+            reverse_symbol.app(b_symbol.app()),
+            reverse_symbol.app(b_symbol.app()),
+            0,
+            make_pt(phi0),
+        )
+    ]
     performer.apply_simplification(base_case_b.ordinal, {})
+    expected_stack.pop()
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (0,),
+            reverse_symbol.app(b_symbol.app()),
+            b_symbol.app(),
+            0,
+            make_pt(phi0),
+        )
+    ]
+    assert eq_stackinfo(performer._simplification_stack[-1], expected_stack[-1])
     performer.exit_context()
     expected_stack = [
         SimplificationInfo(
@@ -450,12 +475,29 @@ def test_subpattern_batch():
         )
     ]
     assert len(performer._simplification_stack) == len(expected_stack)
-    assert performer._simplification_stack[-1].location == expected_stack[-1].location
-    assert performer._simplification_stack[-1].initial_pattern == expected_stack[-1].initial_pattern
-    assert performer._simplification_stack[-1].simplification_result == expected_stack[-1].simplification_result
-    assert performer._simplification_stack[-1].simplifications_remaining == expected_stack[-1].simplifications_remaining
+    assert eq_stackinfo(performer._simplification_stack[-1], expected_stack[-1])
+
     performer.enter_context((1,))
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (1,),
+            reverse_symbol.app(a_symbol.app()),
+            reverse_symbol.app(a_symbol.app()),
+            0,
+            make_pt(phi0),
+        )
+    ]
     performer.apply_simplification(base_case_a.ordinal, {})
+    expected_stack.pop()
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (1,),
+            reverse_symbol.app(a_symbol.app()),
+            a_symbol.app(),
+            0,
+            make_pt(phi0),
+        )
+    ]
     performer.exit_context()
     assert performer._simplification_stack == []
 
