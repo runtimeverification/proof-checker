@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
-from .syntax import Implies, Instantiate, MetaVar, Mu, Pattern, PrettyOptions, SVar, phi0, phi1
 from .matching import match_single
+from .syntax import Implies, Instantiate, MetaVar, Mu, SVar, phi0, phi1
 
 if TYPE_CHECKING:
-    pass
+    from .syntax import Pattern, PrettyOptions
 
 
 @dataclass(frozen=True)

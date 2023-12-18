@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.aml import Instantiate, top
-from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
+from proof_generation.interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationPerformer
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression

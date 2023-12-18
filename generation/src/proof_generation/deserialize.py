@@ -8,7 +8,7 @@ from proof_generation.interpreter import ExecutionPhase
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
-    from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
+    from proof_generation.interpreter import PrettyPrintingInterpreter
 
 
 class DeserializingException(Exception):

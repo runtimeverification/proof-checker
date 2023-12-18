@@ -1,7 +1,7 @@
 from frozendict import frozendict
 
 from proof_generation.aml import App, EVar, Instantiate, MetaVar, Notation, PrettyOptions, Symbol
-from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
+from proof_generation.interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.proofs.kore import (
     KoreLemmas,
     deconstruct_nary_application,

@@ -3,16 +3,16 @@ from __future__ import annotations
 from collections import namedtuple
 from typing import TYPE_CHECKING
 
-from proof_generation.aml import App, Exists, Implies, Mu
-from proof_generation.proved import Proved
-from proof_generation.stateful_interpreter import StatefulInterpreter
+from ..aml import App, Exists, Implies, Mu
+from ..proved import Proved
+from .stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from proof_generation.aml import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
-    from proof_generation.claim import Claim
-    from proof_generation.interpreter import ExecutionPhase
+    from ..aml import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from ..claim import Claim
+    from .interpreter import ExecutionPhase
 
 
 class CountingInterpreter(StatefulInterpreter):

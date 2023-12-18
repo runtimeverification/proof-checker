@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .syntax import App, EVar, Exists, Implies, MetaVar, Mu, Pattern, SVar, Symbol
+from .syntax import App, EVar, Exists, Implies, MetaVar, Mu, SVar, Symbol
 
 if TYPE_CHECKING:
-    pass
+    from .syntax import Pattern
 
 
 def match_single(

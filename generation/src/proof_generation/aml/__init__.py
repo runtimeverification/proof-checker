@@ -1,4 +1,4 @@
-from .matching import *
-from .notation import *
+from .matching import match, match_single
+from .notation import *  # noqa: F403
 from .notation import _and, _or
-from .syntax import *
+from .syntax import *  # noqa: F403

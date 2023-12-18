@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from proof_generation.aml import Implies, _and, _or, bot, equiv, imp, neg, phi0, phi1, phi2, top
-from proof_generation.interpreter import ExecutionPhase
-from proof_generation.stateful_interpreter import StatefulInterpreter
+from proof_generation.interpreter import ExecutionPhase, StatefulInterpreter
 from proof_generation.tautology import (
     CFAnd,
     CFBot,
@@ -22,7 +21,7 @@ from proof_generation.tautology import (
 
 if TYPE_CHECKING:
     from proof_generation.aml import Pattern
-    from proof_generation.basic_interpreter import BasicInterpreter
+    from proof_generation.interpreter import BasicInterpreter
     from proof_generation.tautology import Clause, ClauseConjunction, ConjForm
 
 

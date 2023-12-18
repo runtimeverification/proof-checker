@@ -8,6 +8,8 @@ from frozendict import frozendict
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from .notation import Notation
+
 
 class Pattern:
     def evar_is_fresh(self, name: int) -> bool:
@@ -553,5 +555,3 @@ class Instantiate(Pattern):
 class PrettyOptions:
     simplify_instantiations: bool = False
     notations: Mapping[Pattern, Notation] = frozendict({})
-
-
