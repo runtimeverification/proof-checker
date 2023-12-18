@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from proof_generation.interpreter import Interpreter
+from .interpreter import Interpreter
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from .pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
-    from .proved import Proved
+    from ..aml import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from ..proved import Proved
 
 
 class InterpreterTransformer(Interpreter):

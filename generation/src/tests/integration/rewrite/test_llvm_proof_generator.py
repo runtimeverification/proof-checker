@@ -6,16 +6,16 @@ from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
 
+from proof_generation.aml import App, Instantiate, Symbol
 from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
 from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
 from proof_generation.k.proof_gen import get_kompiled_definition, read_proof_hint
-from proof_generation.pattern import App, Instantiate, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from proof_generation.aml import Pattern
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-    from proof_generation.pattern import Pattern
 
 
 HINTS_DIR = '.build/proof-hints'

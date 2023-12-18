@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.pattern import bot, imp
+from proof_generation.aml import bot, imp
 from proof_generation.proofs.propositional import _or, neg, phi0, phi1, phi2
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
 
 test_pattern_pairs = [
     (phi0, phi0, True),
