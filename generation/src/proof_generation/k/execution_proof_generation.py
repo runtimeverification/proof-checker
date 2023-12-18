@@ -36,6 +36,16 @@ class SimplificationInfo:
     simplifications_remaining: int
     proof: proof.ProofThunk
 
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, SimplificationInfo)
+            and self.location == __value.location
+            and self.initial_pattern == __value.initial_pattern
+            and self.simplification_result == __value.simplification_result
+            and self.simplifications_remaining == __value.simplifications_remaining
+            and self.proof.conc == __value.proof.conc
+        )
+
 
 class SimplificationProver(proof.ProofExp):
     def __init__(self, language_semantics: LanguageSemantics):
