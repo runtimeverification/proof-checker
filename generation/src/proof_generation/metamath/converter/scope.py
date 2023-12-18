@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from proof_generation.aml import EVar, MetaVar, SVar
 from proof_generation.metamath.ast import Metavariable
 from proof_generation.metamath.converter.vardict import VarDict
-from proof_generation.pattern import EVar, MetaVar, SVar
 
 if TYPE_CHECKING:
+    from proof_generation.aml import Pattern
     from proof_generation.metamath.converter.representation import Notation
-    from proof_generation.pattern import Pattern
 
 
 class Scope:

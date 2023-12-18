@@ -1,6 +1,6 @@
+from proof_generation.aml import Instantiate, MetaVar
 from proof_generation.interpreter import ExecutionPhase
 from proof_generation.optimizing_interpreters import InstantiationOptimizer
-from proof_generation.pattern import Instantiate, MetaVar
 from proof_generation.stateful_interpreter import StatefulInterpreter
 
 

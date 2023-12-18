@@ -1,9 +1,9 @@
 from io import BytesIO
 
+from proof_generation.aml import MetaVar
 from proof_generation.instruction import Instruction
 from proof_generation.interpreter import ExecutionPhase
 from proof_generation.optimizing_interpreters import MemoizingInterpreter
-from proof_generation.pattern import MetaVar
 from proof_generation.serializing_interpreter import SerializingInterpreter
 from tests.unit.test_proof import uncons_metavar_instrs
 

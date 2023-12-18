@@ -4,27 +4,14 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
+from proof_generation.aml import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol, bot
 from proof_generation.interpreter import ExecutionPhase, Interpreter
-from proof_generation.pattern import (
-    App,
-    ESubst,
-    EVar,
-    Exists,
-    Implies,
-    Instantiate,
-    MetaVar,
-    Mu,
-    SSubst,
-    SVar,
-    Symbol,
-    bot,
-)
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
 
 
 class BasicInterpreter(Interpreter):

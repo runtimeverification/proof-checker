@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from proof_generation.aml import Pattern
 from proof_generation.instruction import Instruction
 from proof_generation.interpreter import ExecutionPhase
-from proof_generation.pattern import Pattern
 from proof_generation.proved import Proved
 
 if TYPE_CHECKING:

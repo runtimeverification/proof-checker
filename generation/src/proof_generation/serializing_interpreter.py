@@ -8,10 +8,10 @@ from proof_generation.io_interpreter import IOInterpreter
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from proof_generation.aml import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
     from proof_generation.claim import Claim
     from proof_generation.interpreter import ExecutionPhase
     from proof_generation.io_interpreter import IO
-    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
     from proof_generation.proved import Proved
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implies, Symbol
+from proof_generation.aml import Implies, Symbol
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.propositional import Propositional
 

@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from proof_generation.aml import Instantiate, top
 from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationPerformer
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, top
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,

@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import EVar, Exists, Implies, MetaVar, Notation
+from proof_generation.aml import EVar, Exists, Implies, MetaVar, Notation
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import equals
 from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1, top

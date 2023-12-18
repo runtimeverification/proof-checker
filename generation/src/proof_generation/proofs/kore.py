@@ -4,25 +4,12 @@ import sys
 from functools import cache
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import (
-    App,
-    EVar,
-    Exists,
-    Implies,
-    Instantiate,
-    MetaVar,
-    Notation,
-    Symbol,
-    _and,
-    _or,
-    bot,
-    neg,
-)
+from proof_generation.aml import App, EVar, Exists, Implies, Instantiate, MetaVar, Notation, Symbol, _and, _or, bot, neg
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import Definedness, ceil, subset
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
     from proof_generation.proof import ProofThunk
 
 phi0 = MetaVar(0)
