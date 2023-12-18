@@ -4,6 +4,7 @@ from itertools import count
 
 from pytest import mark, raises
 
+from proof_generation.aml import App, EVar, MetaVar, Pattern, Symbol, phi0, phi1
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
@@ -14,7 +15,6 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSymbol,
     LanguageSemantics,
 )
-from proof_generation.pattern import App, EVar, MetaVar, Pattern, Symbol, phi0, phi1
 from proof_generation.proofs.definedness import equals, floor, functional, subset
 from proof_generation.proofs.kore import (
     KoreLemmas,

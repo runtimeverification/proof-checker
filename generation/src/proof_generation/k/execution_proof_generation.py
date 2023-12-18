@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
+from proof_generation.aml import Symbol
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
     ConvertedAxiom,
     KEquationalRule,
     KRewritingRule,
 )
-from proof_generation.pattern import Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
@@ -19,9 +19,9 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
     from types import TracebackType
 
+    from proof_generation.aml import Pattern
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-    from proof_generation.pattern import Pattern
 
 
 Location = tuple[int, ...]

@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
-from proof_generation.pattern import Implies, Symbol
+from proof_generation.aml import Implies, Symbol
+from proof_generation.interpreter import BasicInterpreter, ExecutionPhase, StatefulInterpreter
 from proof_generation.proof import ProofThunk
 from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1
 from proof_generation.proofs.small_theory import SmallTheory
 from proof_generation.proved import Proved
-from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
 
 
 def make_pt(p: Pattern) -> ProofThunk:

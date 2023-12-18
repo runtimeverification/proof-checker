@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
-from proof_generation.pattern import App, EVar, Instantiate, MetaVar, Pattern, Symbol
+from proof_generation.aml import App, EVar, Instantiate, MetaVar, Pattern, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.pattern import Notation, SVar
+    from proof_generation.aml import Notation, SVar
 
 T = TypeVar('T')
 P = ParamSpec('P')

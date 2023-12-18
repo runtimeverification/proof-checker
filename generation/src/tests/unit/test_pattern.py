@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 import pytest
 from frozendict import frozendict
 
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.aml import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
 
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)

@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from proof_generation.aml import App, ESubst, EVar, Exists, Implies, MetaVar, SVar, Symbol
 from proof_generation.metamath.ast import AxiomaticStatement, Block, ConstantStatement, FloatingStatement
 from proof_generation.metamath.converter.converter import MetamathConverter
 from proof_generation.metamath.converter.representation import Axiom, AxiomWithAntecedents, Lemma, LemmaWithAntecedents
 from proof_generation.metamath.parser import load_database
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, SVar, Symbol
 
 if TYPE_CHECKING:
+    from proof_generation.aml import Pattern
     from proof_generation.metamath.ast import Database
-    from proof_generation.pattern import Pattern
 
 BENCHMARK_LOCATION = 'generation/mm-benchmarks'
 
