@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
-from .matching import match_single
 from .syntax import Implies, Instantiate, MetaVar, Mu, SVar, phi0, phi1
+from .utils import match_single
 
 if TYPE_CHECKING:
     from .syntax import Pattern, PrettyOptions
