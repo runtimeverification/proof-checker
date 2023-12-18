@@ -59,22 +59,22 @@ We consider the following ZK backends:
 
 ### Direct Implementation
 
-#### CairoZero
+#### CairoZero (v0.12.3)
 |     Examples     | CPU Exec Time | CPU Prove Time | CPU Verify Time | CPU Total Time |
-|:-----------------|:-------------:|:--------------:|:---------------:|:---------------|
+|:-----------------|:-------------:|:--------------:|:---------------:|:--------------:|
 | perceptron       |         0.438 |          0.149 |           0.007 |          0.594 |
-| svm              |         0.442 |          0.175 |           0.007 |          0.624 |
+| svm5             |         0.442 |          0.175 |           0.007 |          0.624 |
 | transfer         |         0.441 |          0.185 |           0.008 |          0.634 |
-| batch-transfer   |         6.799 |         26.311 |           0.867 |         33.977 |
+| transfer5000*    |         6.799 |         26.311 |           0.867 |         33.977 |
 
 
 #### Lurk
 |     Examples     |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:----------------:|:-------:|:----------:|:--------------:|:---------------:|:--------------:|
-| perceptron       |    11   |            |           0.84 |           0.597 |          1.437 |
-| svm5             |    9    |            |           0.82 |           0.607 |          1.427 |
+| perceptron       |    11   |            |          0.840 |           0.597 |          1.437 |
+| svm5             |    9    |            |          0.820 |           0.607 |          1.427 |
 | transfer         |    34   |            |          2.205 |           0.595 |          2.800 |
-| transfer5000*    |  330387 |            |        487.322 |           4.899 |        492.221 |
+| transfer5000*    |  505037 |            |              ∞ |               ∞ |              ∞ |
 
 * Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
@@ -83,26 +83,26 @@ We consider the following ZK backends:
 |   Examples   |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
 |:------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
 | perceptron   |  21156  |     0.029     |     0.017     |      2.316     |      0.639     |      0.001      |      0.001      |      2.346     |      0.657     |
-| svm         |  21156  |     0.028     |     0.028     |      2.323     |      0.599     |      0.002      |      0.001      |      2.353     |      0.628     |
-| batch-transfer | 754199  |     0.057     |     0.041     |     37.970     |      7.670     |      0.001      |      0.001      |     38.028     |      7.712     |
+| svm5         |  21156  |     0.028     |     0.028     |      2.323     |      0.599     |      0.002      |      0.001      |      2.353     |      0.628     |
+| transfer5000 | 754199  |     0.057     |     0.041     |     37.970     |      7.670     |      0.001      |      0.001      |     38.028     |      7.712     |
 | transfer     |  21156  |     0.029     |     0.017     |      2.336     |      0.571     |      0.002      |      0.001      |      2.367     |      0.589     |
 
 
 #### zkLLVM
 |     Examples     | CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
 |:----------------:|:--------------------:|:---------------------:|:--------:|
-| perceptron      |                 0.95 |                 0.135 |          |
-| svm             |                 0.96 |                 0.135 |          |
-| transfer         |                 0.97 |                 0.133 |          |
-| batch-transfer   |                0.797 |                 40.34 |          |
+| perceptron       |                0.450 |                 0.650 |          |
+| svm5             |                0.450 |                 0.630 |          |
+| transfer         |                0.440 |                 0.630 |          |
+| transfer5000     |                0.823 |                38.842 |          |
 
 ### Proofs of Proofs
 
 #### Lurk
 |             Examples            | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:-------------------------------:|:------:|:----------:|:--------------:|:---------------:|:--------------:|
-| transfer-task-specific*         | 148870 |    861.443 |        193.836 |           4.199 |        198.035 |
-| impreflex-compressed-goal*      | 55651  |    341.466 |        108.962 |           4.209 |        113.171 |
+| transfer-task-specific*         | 148870 |            |        193.836 |           4.199 |        198.035 |
+| impreflex-compressed-goal*      | 55651  |            |        108.962 |           4.209 |        113.171 |
 | perceptron-goal                 | 6404208|            |              ∞ |               ∞ |                |
 | svm5-goal                       | 6404208|            |              ∞ |               ∞ |                |
 | transfer-batch-1k-goal          |30122047|            |              ∞ |               ∞ |                |
