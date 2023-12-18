@@ -10,6 +10,7 @@ from proof_generation.proofs.kore import (
     kore_equational_as,
     kore_implies,
     kore_in,
+    kore_next,
     kore_top,
     nary_app,
 )
@@ -154,6 +155,30 @@ def test_reduce_top_imp() -> None:
     thunk = make_pt(test_expression)
     proof = theory.reduce_top_in_imp(thunk)
     expected = value_a
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_subst_in_rewrite_target() -> None:
+    theory = KoreLemmas()
+
+    # Premise 1: p1 k= p2
+    inner_sort = Symbol('inner_sort')
+    outer_sort = Symbol('outer_sort')
+    p1 = Symbol('p1')
+    p2 = Symbol('p2')
+    premise1 = kore_equals(inner_sort, outer_sort, p1, p2)
+
+    # Premise 2: phi0  k-> next(phi1[p1/x])
+    phi0 = Symbol('phi0')
+    phi1 = MetaVar(0, app_ctx_holes=(EVar(0),))
+    premise2 = kore_implies(outer_sort, phi0, kore_next(phi1.apply_esubst(0, p1)))
+
+    thunk1 = make_pt(premise1)
+    thunk2 = make_pt(premise2)
+    proof = theory.subst_in_rewrite_target(thunk1, thunk2)
+
+    # Expected conclusion: phi0 k-> next(phi1[p2/x])
+    expected = kore_implies(outer_sort, phi0, kore_next(phi1.apply_esubst(0, p2)))
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
 
