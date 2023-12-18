@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.basic_interpreter import BasicInterpreter, ExecutionPhase
+from proof_generation.interpreter.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.k.execution_proof_generation import (
     ExecutionProofExp,
     SimplificationInfo,
@@ -13,7 +13,7 @@ from proof_generation.k.execution_proof_generation import (
 )
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import EVar, Instantiate, top
+from proof_generation.aml import EVar, Instantiate, Pattern, top
 from proof_generation.proof import ProofThunk
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
-    from proof_generation.pattern import Pattern
 
 
 class DummyProver(SimplificationProver):

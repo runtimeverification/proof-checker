@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from proof_generation.basic_interpreter import BasicInterpreter
-from proof_generation.proved import Proved
+from ..proved import Proved
+from .basic_interpreter import BasicInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from proof_generation.claim import Claim
-    from proof_generation.interpreter import ExecutionPhase
-    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from ..aml import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from ..claim import Claim
+    from .interpreter import ExecutionPhase
 
 
 class StatefulInterpreter(BasicInterpreter):

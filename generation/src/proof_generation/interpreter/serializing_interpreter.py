@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from proof_generation.instruction import Instruction
-from proof_generation.io_interpreter import IOInterpreter
+from ..instruction import Instruction
+from .io_interpreter import IOInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from proof_generation.claim import Claim
-    from proof_generation.interpreter import ExecutionPhase
-    from proof_generation.io_interpreter import IO
-    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
-    from proof_generation.proved import Proved
+    from ..aml import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from ..claim import Claim
+    from ..proved import Proved
+    from .interpreter import ExecutionPhase
+    from .io_interpreter import IO
 
 
 class SerializingInterpreter(IOInterpreter):

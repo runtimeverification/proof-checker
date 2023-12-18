@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import IO, TYPE_CHECKING, Any
 
-from proof_generation.stateful_interpreter import StatefulInterpreter
+from .stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from proof_generation.claim import Claim
-    from proof_generation.interpreter import ExecutionPhase
+
+    from .interpreter import ExecutionPhase
 
 
 class IOInterpreter(StatefulInterpreter):
