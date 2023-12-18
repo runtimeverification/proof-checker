@@ -5,16 +5,18 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from proof_generation.aml import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions, SVar, Symbol, phi0
 from proof_generation.claim import Claim
 from proof_generation.deserialize import deserialize_instructions
 from proof_generation.instruction import Instruction
-from proof_generation.interpreter import ExecutionPhase
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, PrettyOptions, SVar, Symbol, phi0
-from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
+from proof_generation.interpreter import (
+    ExecutionPhase,
+    PrettyPrintingInterpreter,
+    SerializingInterpreter,
+    StatefulInterpreter,
+)
 from proof_generation.proof import ProofExp, ProofThunk, Proved
 from proof_generation.proofs.propositional import Propositional
-from proof_generation.serializing_interpreter import SerializingInterpreter
-from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from proof_generation.proof import Pattern

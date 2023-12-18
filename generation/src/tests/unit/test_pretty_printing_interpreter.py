@@ -7,7 +7,7 @@ import pytest
 from proof_generation.proofs.propositional import Implies, Propositional, bot, neg, phi0, phi1, top
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
 
 # fmt: off
 test_data = [

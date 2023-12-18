@@ -3,11 +3,11 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import Implies, MetaVar, _and, _or, bot, equiv, neg, phi0, phi1, phi2, top
+from proof_generation.aml import Implies, MetaVar, _and, _or, bot, equiv, neg, phi0, phi1, phi2, top
 from proof_generation.proof import ProofExp
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
     from proof_generation.proof import ProofThunk
 
 

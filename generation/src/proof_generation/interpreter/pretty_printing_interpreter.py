@@ -2,16 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, TextIO
 
-from proof_generation.io_interpreter import IOInterpreter
-from proof_generation.pattern import PrettyOptions
 from proof_generation.proved import Proved
+
+from ..aml import PrettyOptions
+from .io_interpreter import IOInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
 
     from proof_generation.claim import Claim
-    from proof_generation.interpreter import ExecutionPhase
-    from proof_generation.pattern import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+
+    from ..aml import ESubst, EVar, MetaVar, Pattern, SSubst, SVar
+    from .interpreter import ExecutionPhase
 
 
 class PrettyPrintingInterpreter(IOInterpreter):
