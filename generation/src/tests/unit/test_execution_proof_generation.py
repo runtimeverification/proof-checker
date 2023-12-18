@@ -399,26 +399,28 @@ def test_trivial_proof() -> None:
     )
 
 
-def test_subpattern_batch():
+@pytest.mark.parametrize(
+    'prover',
+    [
+        DummyProver,
+        SimplificationProver,
+    ],
+)
+def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     semantics = node_tree()
-    simpl_prover = SimplificationProver(semantics)
+    simpl_prover = prover(semantics)
+    isinstance(simpl_prover, SimplificationProver)
 
-    # TODO: Implement __eq__ on SimplificationInfo by comparing conclusions on the ProofThunks
     def eq_stackinfo(received_info: SimplificationInfo, expected_info: SimplificationInfo) -> bool:
         popts = simpl_prover.pretty_options()
+        # Simplifies debugging
         assert received_info.proof.conc == expected_info.proof.conc, (
             'Received: '
             + received_info.proof.conc.pretty(popts)
             + ' \n Expected: '
             + expected_info.proof.conc.pretty(popts)
         )
-
-        return (
-            received_info.location == expected_info.location
-            and received_info.initial_pattern == expected_info.initial_pattern
-            and received_info.simplification_result == expected_info.simplification_result
-            and received_info.simplifications_remaining == expected_info.simplifications_remaining
-        )
+        return received_info == expected_info
 
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
