@@ -5,7 +5,21 @@ from typing import TYPE_CHECKING
 import pytest
 from frozendict import frozendict
 
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.pattern import (
+    App,
+    ESubst,
+    EVar,
+    Exists,
+    Implies,
+    Instantiate,
+    MetaVar,
+    Mu,
+    SSubst,
+    SVar,
+    Symbol,
+    bot,
+    neg,
+)
 
 if TYPE_CHECKING:
     from proof_generation.pattern import Pattern
@@ -130,6 +144,18 @@ def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: P
         [EVar(0), {0: sigma1}, sigma1],
         [EVar(0), {0: EVar(2)}, EVar(2)],
         [EVar(0), {1: EVar(2)}, EVar(0)],
+        [Instantiate(EVar(0), frozendict()), {0: sigma0}, sigma0],
+        # Notation (Instantiate with no free E/SVars) is being preserved
+        [
+            Instantiate(Implies(phi0, bot()), frozendict({0: EVar(0)})),
+            {0: sigma0},
+            Instantiate(Implies(phi0, bot()), frozendict({0: sigma0})),
+        ],
+        [
+            Instantiate(Implies(neg(phi0), phi1), frozendict({0: EVar(0)})),
+            {0: sigma0},
+            Instantiate(Implies(neg(phi0), phi1), frozendict({0: sigma0, 1: ESubst(phi1, EVar(0), sigma0)})),
+        ],
         # Several plugs
         [Implies(EVar(0), EVar(1)), {0: sigma0}, Implies(sigma0, EVar(1))],
         [Implies(EVar(0), EVar(1)), {0: sigma0, 1: sigma1}, Implies(sigma0, sigma1)],
