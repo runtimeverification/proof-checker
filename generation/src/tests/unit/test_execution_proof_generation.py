@@ -14,6 +14,7 @@ from proof_generation.k.execution_proof_generation import (
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.pattern import Instantiate, top
+from proof_generation.proof import ProofThunk
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
@@ -30,7 +31,6 @@ if TYPE_CHECKING:
 
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.pattern import Pattern
-    from proof_generation.proof import ProofThunk
 
 
 class DummyProver(SimplificationProver):
@@ -544,16 +544,17 @@ def test_subpattern_batch():
     assert performer._simplification_stack == []
 
     # Check the final update of the configuration
+    simplified_subterm = node_symbol.app(b_symbol.app(), a_symbol.app())
     assert performer.simplified_configuration == tree_semantics_config_pattern(
-        semantics, 'SortTree', node_symbol.app(b_symbol.app(), a_symbol.app())
+        semantics, 'SortTree', simplified_subterm
     )
 
     # Check proof
+    assert isinstance(performer.proof, ProofThunk)
     assert performer.proof.conc
     _, _, left, right = kore_equals.assert_matches(performer.proof.conc)
-    # For some reason this does not work
-    # assert left == initial_config
-    # assert right == performer.simplified_configuration
+    assert left == initial_subterm
+    assert right == simplified_subterm
 
 
 def test_prove_equality_from_rule() -> None:
