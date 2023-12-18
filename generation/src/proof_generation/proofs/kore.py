@@ -31,8 +31,6 @@ phi1 = MetaVar(1)
 phi2 = MetaVar(2)
 phi3 = MetaVar(3)
 phi4 = MetaVar(4)
-phi5 = MetaVar(5)
-phi6 = MetaVar(6)
 
 # TODO: Make sure this is handled uniformly
 inhabitant_symbol = Symbol('inhabitant')
