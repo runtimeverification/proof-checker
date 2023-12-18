@@ -22,7 +22,7 @@ class Notation:
     def __post_init__(self) -> None:
         if self.definition.metavars():
             assert (
-                max(self.definition.metavars()) < self.arity
+                max({x.name for x in self.definition.metavars()}) < self.arity
             ), f'Notation {self.label}: Number of variables used is greater than Arity.'
 
         assert self.definition.occurring_vars() == set()
