@@ -177,7 +177,7 @@ def test_subst_in_rewrite_target() -> None:
     thunk2 = make_pt(premise2)
     proof = theory.subst_in_rewrite_target(thunk1, thunk2)
 
-    # Expected conclusion: phi0 -> next(phi1[p2/x])
+    # Expected conclusion: phi0 k-> next(phi1[p2/x])
     expected = kore_implies(outer_sort, phi0, kore_next(phi1.apply_esubst(0, p2)))
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
