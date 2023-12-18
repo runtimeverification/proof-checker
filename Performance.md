@@ -76,7 +76,7 @@ We consider the following ZK backends:
 | [transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer.lurk)          |    34   |            |          2.205 |           0.595 |          2.800 |
 | [transfer5000](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer5000.lurk)* |  505037 |            |              ∞ |               ∞ |              ∞ |
 
-* Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
+\* Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
 
 #### RISC Zero (v0.16.1)
@@ -109,34 +109,34 @@ We consider the following ZK backends:
 | [transfer-simple-compressed-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_simple_compressed_goal.lurk) | 3202986|            |              ∞ |               ∞ |                |
 
 
-* Using `lurk --rc 400 ...`
-** CPU time is outdated as we can't get only CPU execution due to a bug on Lurk's
+\* Using `lurk --rc 400 ...`
+
+\** CPU time is outdated as we can't get only CPU execution due to a bug on Lurk's
 own implementation
 
 
 #### RISC Zero (v0.16.1)
-|             Examples***            |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
-|:-------------------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
-| perceptron-goal                 | 3212385 |     0.071     |     0.066     |     128.392    |     28.829     |      0.006      |      0.006      |     128.469    |     28.901     |
-| svm5-goal                       | 3212385 |     0.050     |     0.050     |     128.013    |     28.520     |      0.006      |      0.006      |     128.069    |     28.576     |
-| transfer-batch-1k-goal          | 6722986 |     0.112     |     0.129     |     274.692    |     58.901     |      0.011      |      0.011      |     274.815    |     59.041     |
-| transfer-simple-compressed-goal | 1142529 |     0.056     |     0.052     |      48.921    |     10.606     |      0.002      |      0.003      |      48.979    |     10.661     |
-| transfer-task-specific          |   89319 |     0.022     |     0.031     |       4.736    |      1.128     |      0.001      |      0.001      |       4.759    |      1.160     |
-| impreflex-compressed-goal       |   67460 |     0.031     |     0.031     |       4.705    |      1.097     |      0.001      |      0.002      |       4.737    |      1.130     |
+|             Examples*            |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
+|:--------------------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
+| perceptron-goal                  | 3212385 |     0.071     |     0.066     |     128.392    |     28.829     |      0.006      |      0.006      |     128.469    |     28.901     |
+| svm5-goal                        | 3212385 |     0.050     |     0.050     |     128.013    |     28.520     |      0.006      |      0.006      |     128.069    |     28.576     |
+| transfer-batch-1k-goal           | 6722986 |     0.112     |     0.129     |     274.692    |     58.901     |      0.011      |      0.011      |     274.815    |     59.041     |
+| transfer-simple-compressed-goal  | 1142529 |     0.056     |     0.052     |      48.921    |     10.606     |      0.002      |      0.003      |      48.979    |     10.661     |
+| transfer-task-specific           |   89319 |     0.022     |     0.031     |       4.736    |      1.128     |      0.001      |      0.001      |       4.759    |      1.160     |
+| impreflex-compressed-goal        |   67460 |     0.031     |     0.031     |       4.705    |      1.097     |      0.001      |      0.002      |       4.737    |      1.130     |
 
-#### zkLLVM
-|             Examples****            |CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
-|:-------------------------------:|:-------------------:|:---------------------:|:--------:|
-| impreflex-compressed-goal       |               5.798 |                372.76 |          |
-| perceptron-goal                 |             359.743 |                     ∞ |          |
-| svm5-goal                       |             359.371 |                     ∞ |          |
-| transfer-task-specific          |              11.678 |                784.11 |          |
-| transfer-simple-compressed-goal |              91.160 |              7188.792 |          |
-| transfer-batch-1k-goal          |                ∞    |                     ∞ |          |
-
-
-***For the RISC Zero $PI^2$ implementation, we have the main implementation defined [here](https://github.com/runtimeverification/proof-checker/tree/main/risc0/pi2) and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/proofs/translated).
+\* For the RISC Zero $PI^2$ implementation, we have the main implementation defined [here](https://github.com/runtimeverification/proof-checker/tree/main/risc0/pi2) and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/proofs/translated).
 The inputs are split into three files: `*-gamma`, `*-claim`, and `*-proof`. Ultimately, we expect that all $PI^2$ implementations will support an unique binary input format, and therefore, all implementations will share these same inputs and have only one main implementation.
 
-****For the zkLLVM $PI^2$ implementation, we have the main implementation defined [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/src) and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/inputs).
+#### zkLLVM
+|             Examples*            |CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
+|:--------------------------------:|:-------------------:|:---------------------:|:--------:|
+| impreflex-compressed-goal        |               5.798 |                372.76 |          |
+| perceptron-goal                  |             359.743 |                     ∞ |          |
+| svm5-goal                        |             359.371 |                     ∞ |          |
+| transfer-task-specific           |              11.678 |                784.11 |          |
+| transfer-simple-compressed-goal  |              91.160 |              7188.792 |          |
+| transfer-batch-1k-goal           |                ∞    |                     ∞ |          |
+
+\* For the zkLLVM $PI^2$ implementation, we have the main implementation defined [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/src) and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/inputs).
 The inputs are split and encoded into three arrays on each file to match the input requirements of the zkLLVM implementation. 
