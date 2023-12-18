@@ -60,53 +60,53 @@ We consider the following ZK backends:
 ### Direct Implementation
 
 #### CairoZero (v0.12.3)
-|     Examples     | CPU Exec Time | CPU Prove Time | CPU Verify Time | CPU Total Time |
-|:-----------------|:-------------:|:--------------:|:---------------:|:--------------:|
-| perceptron       |         0.438 |          0.149 |           0.007 |          0.594 |
-| svm5             |         0.442 |          0.175 |           0.007 |          0.624 |
-| transfer         |         0.441 |          0.185 |           0.008 |          0.634 |
-| transfer5000*    |         6.799 |         26.311 |           0.867 |         33.977 |
+|                                                             Examples                                                         | CPU Exec Time | CPU Prove Time | CPU Verify Time | CPU Total Time |
+|:-----------------------------------------------------------------------------------------------------------------------------|:-------------:|:--------------:|:---------------:|:--------------:|
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/perceptron.cairo)      |         0.438 |          0.149 |           0.007 |          0.594 |
+| [svm5](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/svm5.cairo)                  |         0.442 |          0.175 |           0.007 |          0.624 |
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/transfer.cairo)          |         0.441 |          0.185 |           0.008 |          0.634 |
+| [transfer5000](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/transfer5000.cairo)* |         6.799 |         26.311 |           0.867 |         33.977 |
 
 
 #### Lurk
-|     Examples     |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
-|:----------------:|:-------:|:----------:|:--------------:|:---------------:|:--------------:|
-| perceptron       |    11   |            |          0.840 |           0.597 |          1.437 |
-| svm5             |    9    |            |          0.820 |           0.607 |          1.427 |
-| transfer         |    34   |            |          2.205 |           0.595 |          2.800 |
-| transfer5000*    |  505037 |            |              ∞ |               ∞ |              ∞ |
+|                                                       Examples                                                      |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
+|:-------------------------------------------------------------------------------------------------------------------:|:-------:|:----------:|:--------------:|:---------------:|:--------------:|
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/perceptron.lurk)      |    11   |            |          0.840 |           0.597 |          1.437 |
+| [svm5](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/svm5.lurk)                  |    9    |            |          0.820 |           0.607 |          1.427 |
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer.lurk)          |    34   |            |          2.205 |           0.595 |          2.800 |
+| [transfer5000](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer5000.lurk)* |  505037 |            |              ∞ |               ∞ |              ∞ |
 
 * Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
 
 #### RISC Zero (v0.16.1)
-|   Examples   |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
-|:------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
-| perceptron   |  21156  |     0.029     |     0.017     |      2.316     |      0.639     |      0.001      |      0.001      |      2.346     |      0.657     |
-| svm5         |  21156  |     0.028     |     0.028     |      2.323     |      0.599     |      0.002      |      0.001      |      2.353     |      0.628     |
-| transfer5000 | 754199  |     0.057     |     0.041     |     37.970     |      7.670     |      0.001      |      0.001      |     38.028     |      7.712     |
-| transfer     |  21156  |     0.029     |     0.017     |      2.336     |      0.571     |      0.002      |      0.001      |      2.367     |      0.589     |
+|                                                         Examples                                                            |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
+|:---------------------------------------------------------------------------------------------------------------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/perceptron.rs)     |  21156  |     0.029     |     0.017     |      2.316     |      0.639     |      0.001      |      0.001      |      2.346     |      0.657     |
+| [svm5](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/svm5.rs)                 |  21156  |     0.028     |     0.028     |      2.323     |      0.599     |      0.002      |      0.001      |      2.353     |      0.628     |
+| [transfer5000](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/transfer5000.rs) | 754199  |     0.057     |     0.041     |     37.970     |      7.670     |      0.001      |      0.001      |     38.028     |      7.712     |
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/transfer.rs)         |  21156  |     0.029     |     0.017     |      2.336     |      0.571     |      0.002      |      0.001      |      2.367     |      0.589     |
 
 
 #### zkLLVM
-|     Examples     | CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
-|:----------------:|:--------------------:|:---------------------:|:--------:|
-| perceptron       |                0.450 |                 0.650 |          |
-| svm5             |                0.450 |                 0.630 |          |
-| transfer         |                0.440 |                 0.630 |          |
-| transfer5000     |                0.823 |                38.842 |          |
+|                                                  Examples                                                     | CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
+|:-------------------------------------------------------------------------------------------------------------:|:--------------------:|:---------------------:|:--------:|
+| [perceptron](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/perceptron)     |                0.450 |                 0.650 |          |
+| [svm5](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/svm5)                 |                0.450 |                 0.630 |          |
+| [transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer)         |                0.440 |                 0.630 |          |
+| [transfer5000](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer5000) |                0.823 |                38.842 |          |
 
 ### Proofs of Proofs
 
 #### Lurk
-|             Examples            | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
-|:-------------------------------:|:------:|:----------:|:--------------:|:---------------:|:--------------:|
-| transfer-task-specific*         | 148870 |            |        193.836 |           4.199 |        198.035 |
-| impreflex-compressed-goal*      | 55651  |            |        108.962 |           4.209 |        113.171 |
-| perceptron-goal                 | 6404208|            |              ∞ |               ∞ |                |
-| svm5-goal                       | 6404208|            |              ∞ |               ∞ |                |
-| transfer-batch-1k-goal          |30122047|            |              ∞ |               ∞ |                |
-| transfer-simple-compressed-goal | 3202986|            |              ∞ |               ∞ |                |
+|                                                                   Examples                                                                       | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
+|:------------------------------------------------------------------------------------------------------------------------------------------------:|:------:|:----------:|:--------------:|:---------------:|:--------------:|
+| [transfer-task-specific](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_task_specific.lurk)*                  | 148870 |            |        193.836 |           4.199 |        198.035 |
+| [impreflex-compressed-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_impreflex_compressed_goal.lurk)*            | 55651  |            |        108.962 |           4.209 |        113.171 |
+| [perceptron-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_perceptron_goal.lurk)                                 | 6404208|            |              ∞ |               ∞ |                |
+| [svm5-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_svm5_goal.lurk)                                             | 6404208|            |              ∞ |               ∞ |                |
+| [transfer-batch-1k-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_batch_1k_goal.lurk)                   |30122047|            |              ∞ |               ∞ |                |
+| [transfer-simple-compressed-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_simple_compressed_goal.lurk) | 3202986|            |              ∞ |               ∞ |                |
 
 
 * Using `lurk --rc 400 ...`
@@ -115,7 +115,7 @@ own implementation
 
 
 #### RISC Zero (v0.16.1)
-|             Examples            |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
+|             Examples***            |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
 |:-------------------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
 | perceptron-goal                 | 3212385 |     0.071     |     0.066     |     128.392    |     28.829     |      0.006      |      0.006      |     128.469    |     28.901     |
 | svm5-goal                       | 3212385 |     0.050     |     0.050     |     128.013    |     28.520     |      0.006      |      0.006      |     128.069    |     28.576     |
@@ -125,7 +125,7 @@ own implementation
 | impreflex-compressed-goal       |   67460 |     0.031     |     0.031     |       4.705    |      1.097     |      0.001      |      0.002      |       4.737    |      1.130     |
 
 #### zkLLVM
-|             Examples            |CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
+|             Examples****            |CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
 |:-------------------------------:|:-------------------:|:---------------------:|:--------:|
 | impreflex-compressed-goal       |               5.798 |                372.76 |          |
 | perceptron-goal                 |             359.743 |                     ∞ |          |
@@ -133,3 +133,10 @@ own implementation
 | transfer-task-specific          |              11.678 |                784.11 |          |
 | transfer-simple-compressed-goal |              91.160 |              7188.792 |          |
 | transfer-batch-1k-goal          |                ∞    |                     ∞ |          |
+
+
+***For the RISC Zero $PI^2$ implementation, we have the main implementation defined [here](https://github.com/runtimeverification/proof-checker/tree/main/risc0/pi2) and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/proofs/translated).
+The inputs are split into three files: `*-gamma`, `*-claim`, and `*-proof`. Ultimately, we expect that all $PI^2$ implementations will support an unique binary input format, and therefore, all implementations will share these same inputs and have only one main implementation.
+
+****For the zkLLVM $PI^2$ implementation, we have the main implementation defined [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/src) and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/inputs).
+The inputs are split and encoded into three arrays on each file to match the input requirements of the zkLLVM implementation. 
