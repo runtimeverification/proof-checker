@@ -13,7 +13,7 @@ from proof_generation.k.execution_proof_generation import (
 )
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, top
+from proof_generation.pattern import EVar, Instantiate, top
 from proof_generation.proof import ProofThunk
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
@@ -603,6 +603,124 @@ def test_prove_equality_from_rule() -> None:
     )
     equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
     assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+    # Same but with a rule with partial substitution
+    node_subterm = node_symbol.app(EVar(1), EVar(2))
+    rule_with_substitution = rec_case.pattern.apply_esubsts({0: node_subterm})
+
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(
+        tree_sort,
+        tree_sort,
+        reverse_symbol.app(node_subterm),
+        node_symbol.app(reverse_symbol.app(EVar(2)), reverse_symbol.app(EVar(1))),
+    )
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+
+def test_apply_framing_lemma() -> None:
+    semantics = node_tree()
+    semantics = node_tree()
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    expression1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    expression2 = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
+    configuration_hole = tree_semantics_config_pattern(semantics, 'SortTree', EVar(0))
+
+    config1 = tree_semantics_config_pattern(semantics, 'SortTree', expression1)
+    config2 = tree_semantics_config_pattern(semantics, 'SortTree', expression2)
+
+    equality_pt = make_pt(kore_equals(tree_sort, tree_sort, expression1, expression2))
+    exprected_result = make_pt(kore_equals(tree_sort, tree_sort, config1, config2))
+
+    prover = SimplificationProver(semantics)
+    proof = prover.apply_framing_lemma(equality_pt, configuration_hole)
+
+    # Check the logic of the prover and the dummy prover
+    dummy_proof = DummyProver(semantics).apply_framing_lemma(equality_pt, configuration_hole)
+    assert dummy_proof.conc == exprected_result.conc
+    assert dummy_proof.conc == proof.conc
+
+    # Check the proof with the basic interpreter
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == exprected_result.conc
+
+
+def test_equality_proof() -> None:
+    semantics = node_tree()
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    node_symbol = semantics.get_symbol('node')
+    reverse_symbol = semantics.get_symbol('reverse')
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+
+    # Create a new proof expression
+    proof_expr = SimplificationProver(semantics)
+
+    # reverse(a) <-> a
+    base_case_a = semantics.get_axiom(2)
+    base_substitutions: dict[int, Pattern] = {0: a_symbol.app(), 1: a_symbol.app()}
+    main_substitutions: dict[int, Pattern] = {}
+    assert isinstance(base_case_a, KEquationalRule)
+
+    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    proof = proof_expr.equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
+    dummy_proof = DummyProver(semantics).equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
+    assert dummy_proof.conc == expected_equation
+    assert dummy_proof.conc == proof.conc
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    rec_case = semantics.get_axiom(4)
+    assert isinstance(rec_case, KEquationalRule)
+    node_subterm = node_symbol.app(EVar(1), EVar(2))
+    base_substitutions = {0: node_subterm}
+    main_substitutions = {1: a_symbol.app(), 2: b_symbol.app()}
+
+    expected_equation = kore_equals(
+        tree_sort,
+        tree_sort,
+        reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
+        node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
+    )
+    proof = proof_expr.equality_proof(rec_case.pattern, base_substitutions, main_substitutions)
+    dummy_proof = DummyProver(semantics).equality_proof(rec_case.pattern, base_substitutions, main_substitutions)
+    assert dummy_proof.conc == expected_equation
+    assert dummy_proof.conc == proof.conc
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+
+def test_equality_transitivity() -> None:
+    semantics = node_tree()
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    expression1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    expression3 = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
+    expression2 = node_symbol.app(b_symbol.app(), a_symbol.app())
+
+    prover = SimplificationProver(semantics)
+
+    proof1 = make_pt(kore_equals(tree_sort, tree_sort, expression1, expression2))
+    proof2 = make_pt(kore_equals(tree_sort, tree_sort, expression2, expression3))
+    exprected_result = make_pt(kore_equals(tree_sort, tree_sort, expression1, expression3))
+
+    proof = prover.equality_transitivity(proof1, proof2)
+
+    # Check the logic of the prover and the dummy prover
+    dummy_proof = DummyProver(semantics).equality_transitivity(proof1, proof2)
+    assert dummy_proof.conc == exprected_result.conc
+    assert dummy_proof.conc == proof.conc
+
+    # Check the proof with the basic interpreter
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == exprected_result.conc
 
 
 def test_simple_rules_pretty_printing() -> None:
