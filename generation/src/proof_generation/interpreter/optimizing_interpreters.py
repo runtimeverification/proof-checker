@@ -9,9 +9,9 @@ from .stateful_interpreter import StatefulInterpreter
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from ..aml import Pattern
+    from ..proved import Proved
     from .interpreter import Interpreter
-    from .pattern import Pattern
-    from .proved import Proved
 
 
 class InstantiationOptimizer(InterpreterTransformer):

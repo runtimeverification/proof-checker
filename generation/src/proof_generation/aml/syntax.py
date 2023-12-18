@@ -8,73 +8,7 @@ from frozendict import frozendict
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-
-def match_single(
-    pattern: Pattern, instance: Pattern, extend: dict[int, Pattern] | None = None
-) -> dict[int, Pattern] | None:
-    ret: dict[int, Pattern] | None
-    ret = extend if extend else {}
-
-    if isinstance(pattern, MetaVar):
-        id = pattern.name
-        if id in ret:
-            if ret[id] != instance:
-                return None
-        else:
-            if not pattern.can_be_replaced_by(instance):
-                return None
-            ret[id] = instance
-        return ret
-    if (pat_imp := Implies.unwrap(pattern)) and (inst_imp := Implies.unwrap(instance)):
-        ret = match_single(pat_imp[0], inst_imp[0], ret)
-        if ret is None:
-            return None
-        return match_single(pat_imp[1], inst_imp[1], ret)
-    # The following three cases are more verbose because a 0 returned by the
-    # deconstruct is still interpreted as False even though it is not None
-    pat_evar = EVar.deconstruct(pattern)
-    inst_evar = EVar.deconstruct(instance)
-    if (pat_evar is not None) and (inst_evar is not None):
-        if pat_evar != inst_evar:
-            return None
-        return ret
-    pat_svar = SVar.deconstruct(pattern)
-    inst_svar = SVar.deconstruct(instance)
-    if (pat_svar is not None) and (inst_svar is not None):
-        if pat_svar != inst_svar:
-            return None
-        return ret
-    pat_sym = Symbol.deconstruct(pattern)
-    inst_sym = Symbol.deconstruct(instance)
-    if (pat_sym is not None) and (inst_sym is not None):
-        if pat_sym != inst_sym:
-            return None
-        return ret
-    if (pat_app := App.unwrap(pattern)) and (inst_app := App.unwrap(instance)):
-        ret = match_single(pat_app[0], inst_app[0], ret)
-        if ret is None:
-            return None
-        return match_single(pat_app[1], inst_app[1], ret)
-    if (pat_ex := Exists.deconstruct(pattern)) and (inst_ex := Exists.deconstruct(instance)):
-        if pat_ex[0] != inst_ex[0]:
-            return None
-        return match_single(pat_ex[1], inst_ex[1], ret)
-    if (pat_mu := Mu.deconstruct(pattern)) and (inst_mu := Mu.deconstruct(instance)):
-        if pat_mu[0] != inst_mu[0]:
-            return None
-        return match_single(pat_mu[1], inst_mu[1], ret)
-    # TODO Consider adding cases for ESubst/SSubst
-    return None
-
-
-def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None:
-    ret: dict[int, Pattern] = {}
-    for pattern, instance in equations:
-        submatch = match_single(pattern, instance, ret)
-        if not submatch:
-            return None
-        ret = submatch
-    return ret
+    from .notation import Notation
 
 
 class Pattern:
@@ -82,6 +16,14 @@ class Pattern:
         raise NotImplementedError
 
     def metavars(self) -> set[int]:
+        raise NotImplementedError
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        """
+        Returns the set of all free variables occurring in the pattern
+        Makes no guarantees about freshness!
+        """
+
         raise NotImplementedError
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
@@ -131,6 +73,9 @@ class EVar(Pattern):
     def metavars(self) -> set[int]:
         return set()
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return {self}
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
@@ -166,6 +111,9 @@ class SVar(Pattern):
 
     def metavars(self) -> set[int]:
         return set()
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return {self}
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
@@ -203,6 +151,9 @@ class Symbol(Pattern):
     def metavars(self) -> set[int]:
         return set()
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return set()
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         return self
 
@@ -238,6 +189,9 @@ class Implies(Pattern):
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.left.occurring_vars().union(self.right.occurring_vars())
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -271,6 +225,9 @@ class App(Pattern):
     def metavars(self) -> set[int]:
         return self.left.metavars().union(self.right.metavars())
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.left.occurring_vars().union(self.right.occurring_vars())
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
             return self
@@ -299,6 +256,9 @@ class Exists(Pattern):
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.subpattern.occurring_vars().difference({EVar(self.var)})
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -333,11 +293,19 @@ class Mu(Pattern):
     var: int
     subpattern: Pattern
 
+    def __post_init__(self) -> None:
+        pass
+        # TODO: Add this test
+        # assert self.subpattern.positive(var)
+
     def evar_is_fresh(self, name: int) -> bool:
         return self.subpattern.evar_is_fresh(name)
 
     def metavars(self) -> set[int]:
         return self.subpattern.metavars()
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.subpattern.occurring_vars().difference({SVar(self.var)})
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -376,11 +344,18 @@ class MetaVar(Pattern):
     negative: tuple[SVar, ...] = ()
     app_ctx_holes: tuple[EVar, ...] = ()
 
+    def __post_init__(self) -> None:
+        for evar_id in self.e_fresh:
+            assert evar_id not in self.app_ctx_holes
+
     def metavars(self) -> set[int]:
         return {self.name}
 
     def evar_is_fresh(self, name: int) -> bool:
         return EVar(name) in self.e_fresh
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return set()
 
     def can_be_replaced_by(self, pat: Pattern) -> bool:
         # TODO implement this function by checking constraints
@@ -418,9 +393,19 @@ phi2 = MetaVar(2)
 
 @dataclass(frozen=True)
 class ESubst(Pattern):
+    """
+    Represents evar substitutions over meta-variables.
+    It should almost never be used directly, instead use apply_esubst!
+    """
+
     pattern: MetaVar | ESubst | SSubst
     var: EVar
     plug: Pattern
+
+    def __post_init__(self) -> None:
+        # Check that ESubst is not redundant
+        assert self.var != self.plug
+        assert not self.pattern.evar_is_fresh(self.var.name)
 
     def evar_is_fresh(self, name: int) -> bool:
         if self.var.name == name:
@@ -431,6 +416,9 @@ class ESubst(Pattern):
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.pattern.occurring_vars().difference({self.var}).union(self.plug.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -452,9 +440,20 @@ class ESubst(Pattern):
 
 @dataclass(frozen=True)
 class SSubst(Pattern):
+    """
+    Represent svar substitutions over meta-variables.
+    It should almost never be used directly, instead use apply_ssubst!
+    """
+
     pattern: MetaVar | ESubst | SSubst
     var: SVar
     plug: Pattern
+
+    def __post_init__(self) -> None:
+        # Check that SSubst is not redundant
+        assert self.var != self.plug
+        # TODO: Add this check
+        # assert not self.pattern.s_fresh(self.var)
 
     def evar_is_fresh(self, name: int) -> bool:
         # We assume that at least one instance will be replaced
@@ -462,6 +461,9 @@ class SSubst(Pattern):
 
     def metavars(self) -> set[int]:
         return self.pattern.metavars().union(self.plug.metavars())
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.pattern.occurring_vars().difference({self.var}).union(self.plug.occurring_vars())
 
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         if not delta:
@@ -515,6 +517,9 @@ class Instantiate(Pattern):
                 ret.add(v)
         return ret
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        return self.simplify().occurring_vars()
+
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         instantiated_subst = frozendict({k: v.instantiate(delta) for k, v in self.inst.items()})
         unshadowed_delta = {k: v for k, v in delta.items() if k not in self.inst}
@@ -547,51 +552,6 @@ class Instantiate(Pattern):
 
 
 @dataclass(frozen=True)
-class Notation:
-    label: str
-    arity: int
-    definition: Pattern
-    format_str: str
-
-    def __post_init__(self) -> None:
-        if self.definition.metavars():
-            assert (
-                max(self.definition.metavars()) < self.arity
-            ), f'Notation {self.label}: Number of variables used is greater than Arity.'
-
-    def __call__(self, *args: Pattern) -> Pattern:
-        assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
-        return Instantiate(self.definition, frozendict(enumerate(args)))
-
-    def matches(self, pattern: Pattern) -> None | tuple[Pattern, ...]:
-        match = match_single(self.definition, pattern)
-        if match is None:
-            return None
-        return tuple((match[i] if i in match else MetaVar(i)) for i in range(self.arity))
-
-    def assert_matches(self, pattern: Pattern) -> tuple[Pattern, ...]:
-        if match := self.matches(pattern):
-            return match
-        raise AssertionError(f'Does not match notation {self.label}: {str(pattern)}')
-
-    def print_instantiation(self, applied: Instantiate, opts: PrettyOptions) -> str:
-        assert applied.pattern == self.definition
-        pretty_opts = [p.pretty(opts) for p in applied.inst.values()]
-        try:
-            return self.format_str.format(*pretty_opts)
-        except Exception as e:
-            raise ValueError(f'Cannot format malformed notation {self.label}: {self.format_str}') from e
-
-
-@dataclass(frozen=True)
 class PrettyOptions:
     simplify_instantiations: bool = False
     notations: Mapping[Pattern, Notation] = frozendict({})
-
-
-bot = Notation('bot', 0, Mu(0, SVar(0)), '⊥')
-neg = Notation('not', 1, Implies(MetaVar(0), bot()), '¬{0}')
-top = Notation('top', 0, neg(bot()), '⊤')
-_and = Notation('and', 2, neg(Implies(phi0, neg(phi1))), '({0} ⋀ {1})')
-_or = Notation('or', 2, Implies(neg(phi0), phi1), '({0} ⋁ {1})')
-equiv = Notation('equiv', 2, _and(Implies(phi0, phi1), Implies(phi1, phi0)), f'({0} <-> {1})')

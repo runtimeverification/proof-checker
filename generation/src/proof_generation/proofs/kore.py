@@ -4,25 +4,12 @@ import sys
 from functools import cache
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import (
-    App,
-    EVar,
-    Exists,
-    Implies,
-    Instantiate,
-    MetaVar,
-    Notation,
-    Symbol,
-    _and,
-    _or,
-    bot,
-    neg,
-)
+from proof_generation.aml import App, EVar, Exists, Implies, Instantiate, MetaVar, Notation, Symbol, _and, _or, bot, neg
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import Definedness, ceil, subset
 
 if TYPE_CHECKING:
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
     from proof_generation.proof import ProofThunk
 
 phi0 = MetaVar(0)
@@ -60,14 +47,14 @@ kore_and = Notation('kore-and', 2, _and(phi0, phi1), '({0} k⋀ {1})')
 """ kore_or(pattern, pattern) """
 kore_or = Notation('kore-or', 2, _or(phi0, phi1), '({0} k⋁ {1})')
 
-""" kore_next(sort, pattern) """
-kore_next = Notation('kore-next', 2, App(kore_next_symbol, phi1), '♦{1}')
+""" kore_next(pattern) """
+kore_next = Notation('kore-next', 1, App(kore_next_symbol, phi0), '♦{0}')
 
 """ kore_implies(sort, pattern, pattern) """
 kore_implies = Notation('kore-implies', 3, kore_or(kore_not(phi0, phi1), phi2), '({1} k-> {2}):{0}')
 
 """ kore_rewrites(sort, left, right) """
-kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi0, phi2)), '({1} k=> {2}):{0}')
+kore_rewrites = Notation('kore-rewrites', 3, kore_implies(phi0, phi1, kore_next(phi2)), '({1} k=> {2}):{0}')
 
 """ kore_dv(sort, value) """
 kore_dv = Notation('kore-dv', 2, App(App(kore_dv_symbol, phi0), phi1), 'dv({1}):{0}')
@@ -93,11 +80,11 @@ kore_kseq = Notation('kore-kseq', 2, App(App(kore_kseq_symbol, phi0), phi1), '({
 """ kore_in(inner_sort, outer_sort, left, right) """
 kore_in = Notation('kore-in', 4, kore_floor(phi0, phi1, kore_implies(phi0, phi2, phi3)), '({2}:{0} k⊆ {3}:{0}):{1}')
 
-""" kore_bottom(sort) """
-kore_bottom = Notation('kore-bottom', 1, bot(), 'k⊥')
+""" kore_bottom() """
+kore_bottom = Notation('kore-bottom', 0, bot(), 'k⊥')
 
 """ equational-as(inner_sort, outer_sort, from_evar, expression, to_evar) """
-equational_as = Notation(
+kore_equational_as = Notation(
     'kore-equational-as', 5, kore_in(phi0, phi1, phi2, kore_and(phi3, phi4)), '({2}:{0} k⊆ ({3} k⋀ {4}):{0}):{1}'
 )
 
@@ -164,7 +151,7 @@ def matching_requires_substitution(pattern: Pattern) -> dict[int, Pattern]:
         left, right = top_and_match
 
         for item in (left, right):
-            if let_match := equational_as.matches(item):
+            if let_match := kore_equational_as.matches(item):
                 _, _, from_evar, expression, to_evar = let_match
                 if isinstance(from_evar, EVar) and isinstance(to_evar, EVar) and from_evar.name != to_evar.name:
                     collected_substitutions[from_evar.name] = expression
@@ -210,11 +197,52 @@ keq_substitution_axiom = Implies(
     ),
 )
 
+# TODO: Requires a proof
+# (phi1 k= phi2 k/\ k⊤:{phi0}):{phi1}
+right_top_in_eq_axiom = Implies(
+    kore_equals(phi0, phi1, phi2, kore_and(phi3, kore_top(phi0))), kore_equals(phi0, phi1, phi2, phi3)
+)
+
+# TODO: Requires a proof
+# ((k⊤:{phi0} k/\ phi1:{phi0}) k-> phi2):{phi0} -> (phi1:{phi0} k-> phi2)):{phi0}
+left_top_in_imp_axiom = Implies(
+    kore_implies(phi0, kore_and(kore_top(phi0), phi1), phi2), kore_implies(phi0, phi1, phi2)
+)
+
+# TODO: Requires a proof
+# ((phi1:{phi0} k/\ k⊤:{phi0}) k-> phi2):{phi0} -> (phi1:{phi0} k-> phi2)):{phi0}
+remove_top_imp_right_axiom = Implies(
+    kore_implies(phi0, kore_and(phi1, kore_top(phi0)), phi2), kore_implies(phi0, phi1, phi2)
+)
+
+# TODO: Requires a proof
+# (phi2:{phi0} k⊆ (phi2 k/\ phi2):{phi0}):{phi1} k-> phi3):{phi1} -> phi3
+reduce_equational_as_axiom = Implies(kore_implies(phi1, kore_equational_as(phi0, phi1, phi2, phi2, phi2), phi3), phi3)
+
+# TODO: Requires a proof
+# (phi2:{phi0} k⊆ phi2:{phi0} k-> phi3):{phi1} -> phi3
+reduce_in_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), phi3), phi3)
+
+# TODO: Requires a proof
+# (k⊤:{phi0} k-> phi1):{phi0}
+reduce_top_axiom = Implies(kore_implies(phi0, kore_top(phi0), phi1), phi1)
+
 
 # TODO: Add kore-transitivity
 class KoreLemmas(ProofExp):
     def __init__(self) -> None:
-        super().__init__(axioms=[keq_substitution_axiom], notations=list(KORE_NOTATIONS))
+        super().__init__(
+            axioms=[
+                keq_substitution_axiom,
+                right_top_in_eq_axiom,
+                reduce_equational_as_axiom,
+                reduce_in_axiom,
+                left_top_in_imp_axiom,
+                remove_top_imp_right_axiom,
+                reduce_top_axiom,
+            ],
+            notations=list(KORE_NOTATIONS),
+        )
         self.definedness = self.import_module(Definedness())
 
     def equality_with_subst(self, phi: Pattern, equality: ProofThunk):
@@ -230,6 +258,101 @@ class KoreLemmas(ProofExp):
                 self.load_axiom(keq_substitution_axiom), {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi}
             ),
             equality,
+        )
+
+    def reduce_equational_as(self, phi: ProofThunk):
+        """
+                (phi2 k⊆ (phi2 k⋀ phi2)) k-> phi3
+        ---------------------------------------------------------
+                phi3
+        """
+        _, requirement, conclusion = kore_implies.assert_matches(phi.conc)
+        inner_sort, outer_sort, _, expression, _ = kore_equational_as.assert_matches(requirement)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(reduce_equational_as_axiom),
+                {0: inner_sort, 1: outer_sort, 2: expression, 3: conclusion},
+            ),
+            phi,
+        )
+
+    def reduce_equational_in(self, phi: ProofThunk):
+        """
+                (phi2 k⊆ phi2) k-> phi3
+        ---------------------------------------------------------
+                phi3
+        """
+        _, requirement, conclusion = kore_implies.assert_matches(phi.conc)
+        inner_sort, outer_sort, evar_plug, _ = kore_in.assert_matches(requirement)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(reduce_in_axiom),
+                {0: inner_sort, 1: outer_sort, 2: evar_plug, 3: conclusion},
+            ),
+            phi,
+        )
+
+    def reduce_right_top_in_eq(self, phi: ProofThunk):
+        """
+                phi0 k= phi1 k⋀ k⊤
+        ---------------------------
+                phi0 k= phi1
+        """
+        inner_sort, outer_sort, left, right_conj = kore_equals.assert_matches(phi.conc)
+        right, _ = kore_and.assert_matches(right_conj)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(right_top_in_eq_axiom),
+                {0: inner_sort, 1: outer_sort, 2: left, 3: right},
+            ),
+            phi,
+        )
+
+    def reduce_right_top_in_imp(self, phi: ProofThunk):
+        """
+                phi1 k⋀ k⊤ k-> phi2
+        ---------------------------
+                phi1 k-> phi2
+        """
+        sort, left_conj, conclusion = kore_implies.assert_matches(phi.conc)
+        left, _ = kore_and.assert_matches(left_conj)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(remove_top_imp_right_axiom),
+                {0: sort, 1: left, 2: conclusion},
+            ),
+            phi,
+        )
+
+    def reduce_left_top_in_imp(self, phi: ProofThunk):
+        """
+                k⊤ k⋀ phi1 k-> phi2
+        ---------------------------
+                phi1 k-> phi2
+        """
+        sort, left_conj, conclusion = kore_implies.assert_matches(phi.conc)
+        _, right = kore_and.assert_matches(left_conj)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(left_top_in_imp_axiom),
+                {0: sort, 1: right, 2: conclusion},
+            ),
+            phi,
+        )
+
+    def reduce_top_in_imp(self, phi: ProofThunk):
+        """
+                k⊤ k-> phi1
+        ---------------------------
+                phi1
+        """
+        sort, _, conclusion = kore_implies.assert_matches(phi.conc)
+        return self.modus_ponens(
+            self.dynamic_inst(
+                self.load_axiom(reduce_top_axiom),
+                {0: sort, 1: conclusion},
+            ),
+            phi,
         )
 
 

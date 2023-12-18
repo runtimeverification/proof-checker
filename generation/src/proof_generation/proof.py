@@ -5,21 +5,23 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, TypeVar
 
+from proof_generation.aml import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
 from proof_generation.claim import Claim
-from proof_generation.counting_interpreter import CountingInterpreter
-from proof_generation.interpreter import ExecutionPhase
-from proof_generation.optimizing_interpreters import InstantiationOptimizer, MemoizingInterpreter
-from proof_generation.pattern import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
-from proof_generation.pretty_printing_interpreter import PrettyPrintingInterpreter
+from proof_generation.interpreter import (
+    CountingInterpreter,
+    ExecutionPhase,
+    InstantiationOptimizer,
+    MemoizingInterpreter,
+    PrettyPrintingInterpreter,
+    SerializingInterpreter,
+)
 from proof_generation.proved import Proved
-from proof_generation.serializing_interpreter import SerializingInterpreter
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.interpreter import Interpreter
-    from proof_generation.pattern import Notation, Pattern
-    from proof_generation.serializing_interpreter import IOInterpreter
+    from proof_generation.aml import Notation, Pattern
+    from proof_generation.interpreter import Interpreter, IOInterpreter
 
 
 class OutputFormat(str, Enum):
@@ -235,6 +237,9 @@ class ProofExp:
 
     def pretty_options(self) -> PrettyOptions:
         return PrettyOptions(notations={n.definition: n for n in self._notations})
+
+    def pretty(self, p: Pattern) -> str:
+        return p.pretty(self.pretty_options())
 
     def get_serializing_interpreter(
         self,

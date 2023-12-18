@@ -5,16 +5,15 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from proof_generation.aml import Implies, MetaVar
 from proof_generation.claim import Claim
-from proof_generation.interpreter import ExecutionPhase
+from proof_generation.interpreter import ExecutionPhase, StatefulInterpreter
 from proof_generation.metamath.converter.converter import MetamathConverter
 from proof_generation.metamath.converter.representation import AxiomWithAntecedents
 from proof_generation.metamath.parser import load_database
 from proof_generation.metamath.translate import convert_to_implication, exec_proof
-from proof_generation.pattern import Implies, MetaVar
 from proof_generation.proof import ProofExp
 from proof_generation.proved import Proved
-from proof_generation.stateful_interpreter import StatefulInterpreter
 
 if TYPE_CHECKING:
     from pytest import FixtureRequest
