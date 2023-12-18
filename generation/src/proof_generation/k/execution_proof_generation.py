@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.aml import Symbol
+from proof_generation.aml import EVar, Pattern, Symbol
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
     ConvertedAxiom,
@@ -15,7 +15,6 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSortVar,
     KSymbol,
 )
-from proof_generation.aml import EVar, Pattern, Symbol
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
