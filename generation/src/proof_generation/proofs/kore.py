@@ -264,6 +264,14 @@ keq_implication_axiom = Implies(
         kore_implies(phi1, phi4, phi3),
     ),
 )
+# (phi2:{phi0} k= phi2:{phi0}):{phi1}
+eq_id_axiom = kore_equals(phi0, phi1, phi2, phi2)
+
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> ((phi3:{phi0} k= phi4:{phi0}):{phi1} -> (phi2:{phi0} k= phi4:{phi0}):{phi1})
+eq_trans_axiom = Implies(
+    kore_equals(phi0, phi1, phi2, phi3),
+    Implies(kore_equals(phi0, phi1, phi3, phi4), kore_equals(phi0, phi1, phi2, phi4)),
+)
 
 
 # TODO: Add kore-transitivity
@@ -280,6 +288,8 @@ class KoreLemmas(ProofExp):
                 reduce_top_axiom,
                 keq_next_substitution_axiom,
                 keq_implication_axiom,
+                eq_id_axiom,
+                eq_trans_axiom,
             ],
             notations=list(KORE_NOTATIONS),
         )
@@ -451,6 +461,37 @@ class KoreLemmas(ProofExp):
         # MP on "phi0_imp_imp: ((phi0 k-> (next(phi1[p1/x])) -> (phi0 k-> next(phi1[p2/x]))))" and "Premise: phi0  k-> next(phi1[p1/x])", with identity subst
         # conclude: phi0 k-> next(phi1[p2/x]))
         return self.modus_ponens(phi0_imp_imp, imp)
+
+    def sorted_eq_id(self, sort: Pattern, phi: Pattern):
+        """
+        ---------------------------
+                phi k= phi
+        """
+        return self.dynamic_inst(
+            self.load_axiom(eq_id_axiom),
+            {0: sort, 1: sort, 2: phi},
+        )
+
+    def sorted_eq_trans(self, eq_phi0_phi1: ProofThunk, eq_phi1_phi2: ProofThunk):
+        """
+        phi0 k= phi1   phi1 k= phi2
+        ---------------------------
+                phi0 k= phi2
+        """
+        sort1, sort2, phi0, phi1 = kore_equals.assert_matches(eq_phi0_phi1.conc)
+        sort1, sort2, phi1_p, phi2 = kore_equals.assert_matches(eq_phi1_phi2.conc)
+        assert phi1 == phi1_p
+
+        return self.modus_ponens(
+            self.modus_ponens(
+                self.dynamic_inst(
+                    self.load_axiom(eq_trans_axiom),
+                    {0: sort1, 1: sort2, 2: phi0, 3: phi1, 4: phi2},
+                ),
+                eq_phi0_phi1,
+            ),
+            eq_phi1_phi2,
+        )
 
 
 if __name__ == '__main__':

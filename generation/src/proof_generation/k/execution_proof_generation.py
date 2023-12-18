@@ -5,21 +5,22 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.aml import Symbol
+from proof_generation.aml import EVar, Pattern, Symbol
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
     ConvertedAxiom,
     KEquationalRule,
     KRewritingRule,
+    KSort,
+    KSortVar,
+    KSymbol,
 )
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import Substitution
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from types import TracebackType
 
-    from proof_generation.aml import Pattern
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
     from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 
@@ -33,17 +34,120 @@ class SimplificationInfo:
     initial_pattern: Pattern  # Relative to previous in stack
     simplification_result: Pattern
     simplifications_remaining: int
+    proof: proof.ProofThunk
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, SimplificationInfo)
+            and self.location == __value.location
+            and self.initial_pattern == __value.initial_pattern
+            and self.simplification_result == __value.simplification_result
+            and self.simplifications_remaining == __value.simplifications_remaining
+            and self.proof.conc == __value.proof.conc
+        )
+
+
+class SimplificationProver(proof.ProofExp):
+    def __init__(self, language_semantics: LanguageSemantics):
+        self.language_semantics = language_semantics
+        super().__init__(notations=list(language_semantics.notations))
+        self.subst_proofexp = self.import_module(Substitution())
+        self.kore_lemmas = self.import_module(kl.KoreLemmas())
+
+    def apply_framing_lemma(self, equality_proof: proof.ProofThunk, context: Pattern) -> proof.ProofThunk:
+        return self.kore_lemmas.equality_with_subst(context, equality_proof)
+
+    def equality_proof(
+        self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
+    ) -> proof.ProofThunk:
+        self.add_axiom(rule)
+        return self.prove_substitutions(
+            self.prove_equality_from_rule(self.prove_substitutions(self.load_axiom(rule), base_substitutions)),
+            substitutions,
+        )
+
+    def equality_transitivity(self, last_proof: proof.ProofThunk, new_proof: proof.ProofThunk) -> proof.ProofThunk:
+        return self.kore_lemmas.sorted_eq_trans(last_proof, new_proof)
+
+    def prove_substitutions(self, pattern: proof.ProofThunk, substitutions: dict[int, Pattern]) -> proof.ProofThunk:
+        # TODO: Get functional axioms (check out the proof expr below)
+        # TODO: Apply the substitution lemma
+        # TODO: Using the hacky temporary implementation until we don't have the substitutions
+        substituted = pattern.conc.apply_esubsts(substitutions)
+        return proof.ProofThunk((lambda interpreter: proof.Proved(substituted)), substituted)
+
+    def trivial_proof(self, pattern: Pattern) -> proof.ProofThunk:
+        symbol, *rest = kl.deconstruct_nary_application(pattern)
+        assert isinstance(symbol, Symbol), f'Pattern {pattern.pretty(self.pretty_options())} is not an application'
+        ksymbol = self.language_semantics.resolve_to_ksymbol(symbol)
+        assert isinstance(
+            ksymbol, KSymbol
+        ), f'Pattern {symbol.pretty(self.pretty_options())} is unknown to the semantics'
+        ksort = ksymbol.output_sort
+
+        sort: Pattern
+        if isinstance(ksort, KSortVar):
+            param_index = ksymbol.sort_params.index(ksort)
+            sort_parameter = rest[param_index]
+            assert isinstance(sort_parameter, Pattern)
+            sort = sort_parameter
+        elif isinstance(ksort, KSort):
+            sort = ksort.aml_symbol
+        else:
+            raise NotImplementedError()
+
+        assert isinstance(sort, Pattern), f'Cannot find sort for {pattern.pretty(self.pretty_options())}'
+        return self.kore_lemmas.sorted_eq_id(sort, pattern)
+
+    def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:
+        def reduce_requirement_rec(exp: proof.ProofThunk, cached_requires: Pattern) -> tuple[proof.ProofThunk, Pattern]:
+            # Try to match the whole requirement
+            if kl.kore_equational_as.matches(cached_requires):
+                proof = self.kore_lemmas.reduce_equational_as(exp)
+                return proof, cached_requires
+            elif kl.kore_in.matches(cached_requires):
+                proof = self.kore_lemmas.reduce_equational_in(exp)
+                return proof, cached_requires
+            elif kl.kore_top.matches(cached_requires):
+                proof = self.kore_lemmas.reduce_top_in_imp(exp)
+                return proof, cached_requires
+            elif match := kl.kore_and.matches(cached_requires):
+                # If we cannot match the whole requirement, then try to remove conjunctions with tops
+                left, right = match
+                if match := kl.kore_top.matches(left):
+                    proof = self.kore_lemmas.reduce_left_top_in_imp(exp)
+                    rest_requires = right
+                    return reduce_requirement_rec(proof, rest_requires)
+                elif match := kl.kore_top.matches(right):
+                    proof = self.kore_lemmas.reduce_right_top_in_imp(exp)
+                    rest_requires = left
+                    return reduce_requirement_rec(proof, rest_requires)
+                else:
+                    return exp, cached_requires
+            return exp, cached_requires
+
+        # Get the requires to guide the proof
+        _, requires, _ = kl.kore_implies.assert_matches(rule.conc)
+
+        # Reduce the requires clause
+        proof, _ = reduce_requirement_rec(rule, requires)
+
+        # Remove the ensures from the equation
+        return self.kore_lemmas.reduce_right_top_in_eq(proof)
 
 
 class SimplificationPerformer:
-    def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+    def __init__(self, language_semantics: LanguageSemantics, prover: SimplificationProver, init_config: Pattern):
         self._language_semantics = language_semantics
-        self._curr_config = init_config
         self._simplification_stack: list[SimplificationInfo] = []
+        self.prover = prover
+        self.proof: proof.ProofThunk | None = None  # If None, the batch has not been proved yet
+        self._current_config = init_config
+        self._curr_subterm = init_config
 
     @property
     def simplified_configuration(self) -> Pattern:
-        return self._curr_config
+        return self._current_config
 
     @property
     def in_simplification(self) -> bool:
@@ -51,61 +155,84 @@ class SimplificationPerformer:
 
     def update_configuration(self, new_current_configuration: Pattern) -> None:
         assert not self.in_simplification, 'Simplification is in progress'
-        self._curr_config = new_current_configuration
+        self._current_config = new_current_configuration
 
-    def apply_simplification(
-        self, ordinal: int, substitution: dict[int, Pattern], location: Location
-    ) -> SimplificationInfo:
+    def enter_context(self, location):
+        # Reset the proof
+        self.proof = None
+
         # Check that whether it is the first simplification or not
         if not self._simplification_stack:
-            sub_pattern = self.get_subterm(location, self._curr_config)
+            config_with_hole, sub_pattern, location_remained = self._subpattern_search_rec(
+                location, self._current_config, EVar(0)
+            )
+            assert not location_remained, f'Location {location} is invalid for pattern {str(self._current_config)}'
+            self._curr_subterm = sub_pattern
+            self._current_config = config_with_hole
         else:
             sub_pattern = self.get_subterm(location, self._simplification_stack[-1].simplification_result)
-
-        # Get the rule and remove extra variables added by K in addition to the ones in the K file
-        rule = self._language_semantics.get_axiom(ordinal)
-        assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
-        base_substitutions = rule.substitutions_from_requires
-        simplified_rhs = rule.right.apply_esubsts(base_substitutions)
-
-        # Now apply the substitutions from the hint
-        simplified_rhs = simplified_rhs.apply_esubsts(substitution)
-
-        # Count the number of substitutions left
-        simplifications_ramaining = self._language_semantics.count_simplifications(simplified_rhs)
+            self._curr_subterm = sub_pattern
 
         # Create the new info object and put it on top of the stack
-        new_info = SimplificationInfo(location, sub_pattern, simplified_rhs, simplifications_ramaining)
+        new_info = SimplificationInfo(location, sub_pattern, sub_pattern, 0, self.prover.trivial_proof(sub_pattern))
         self._simplification_stack.append(new_info)
 
-        return new_info
+    def apply_simplification(self, ordinal: int, substitution: dict[int, Pattern]) -> None:
+        assert self.in_simplification, 'Simplification is not in progress'
 
-    def __enter__(self) -> SimplificationPerformer:
-        return self
+        # Get the rule and assert the lhs equals current config that we are simplifying
+        rule = self._language_semantics.get_axiom(ordinal)
+        assert isinstance(rule, KEquationalRule), 'Simplification rule is not equational'
 
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None:
+        # Remove extra variables added by K in addition to the ones in the K file
+        base_substitutions = rule.substitutions_from_requires
+        simplified_rule = rule.pattern.apply_esubsts(base_substitutions)
+
+        # Now apply the substitutions from the hint
+        simplified_rule = simplified_rule.apply_esubsts(substitution)
+
+        # Deconstruct the rule
+        _, simplified_lhs, _, simplified_rhs, _ = kl.deconstruct_equality_rule(simplified_rule)
+
+        # Check that the simplification is applicable
+        assert self._curr_subterm == simplified_lhs
+
+        # Count the number of substitutions left
+        simplifications_remaining = self._language_semantics.count_simplifications(simplified_rhs)
+
+        # Create the new info object and put it on top of the stack
+        self._simplification_stack[-1].simplification_result = simplified_rhs
+        self._simplification_stack[-1].simplifications_remaining = simplifications_remaining
+        self._simplification_stack[-1].proof = self.prover.equality_transitivity(
+            self._simplification_stack[-1].proof,
+            self.prover.equality_proof(rule.pattern, base_substitutions, substitution),
+        )
+
+        # Update current config
+        self._curr_subterm = simplified_rhs
+
+    def exit_context(self) -> None:
         while self._simplification_stack and self._simplification_stack[-1].simplifications_remaining == 0:
-            exhausted_info = self._simplification_stack.pop()
+            child_info = self._simplification_stack.pop()
             if self._simplification_stack:
                 # If the stack is non-empty, then we need to update the simplification on top of the stack
-                last_info = self._simplification_stack[-1]
-                last_info.simplifications_remaining -= 1
-                last_info.simplification_result = self.update_subterm(
-                    exhausted_info.location, last_info.simplification_result, exhausted_info.simplification_result
+                parent_info = self._simplification_stack[-1]
+
+                parent_config_with_hole = self.make_ctx_pattern(parent_info, child_info.location)
+                parent_info.simplifications_remaining -= 1
+                parent_info.simplification_result = parent_config_with_hole.apply_esubst(
+                    0, child_info.simplification_result
+                )
+                parent_info.proof = self.prover.equality_transitivity(
+                    parent_info.proof,
+                    self.prover.apply_framing_lemma(child_info.proof, parent_config_with_hole),
                 )
             else:
                 # If the stack is empty, then we need to update the current configuration as we processed the batch
-                self._curr_config = self.update_subterm(
-                    exhausted_info.location, self._curr_config, exhausted_info.simplification_result
-                )
+                self._current_config = self._current_config.apply_esubst(0, child_info.simplification_result)
+                self.proof = child_info.proof
 
     def get_subterm(self, location: Location, pattern: Pattern) -> Pattern:
-        # subpattern, left = self._get_subpattern_rec(list(location), pattern)
         _, found, location_remaining = self._subpattern_search_rec(list(location), pattern, None)
         assert not location_remaining, f'Location {location} is invalid for pattern {str(pattern)}'
         return found
@@ -114,6 +241,9 @@ class SimplificationPerformer:
         updated, _, location_remaining = self._subpattern_search_rec(list(location), pattern, plug)
         assert not location_remaining, f'Location {location} is invalid for pattern {str(pattern)}'
         return updated
+
+    def make_ctx_pattern(self, info: SimplificationInfo, location: Location) -> Pattern:
+        return self.update_subterm(location, info.simplification_result, EVar(0))
 
     def _subpattern_search_rec(
         self, loc: list[int], pattern: Pattern, plug: Pattern | None = None
@@ -152,7 +282,9 @@ class ExecutionProofExp(proof.ProofExp):
         super().__init__(notations=list(language_semantics.notations))
         self.subst_proofexp = self.import_module(Substitution())
         self.kore_lemmas = self.import_module(kl.KoreLemmas())
-        self._simplification_performer = SimplificationPerformer(self.language_semantics, self.current_configuration)
+        self._simplification_performer = SimplificationPerformer(
+            self.language_semantics, SimplificationProver(language_semantics), self.current_configuration
+        )
 
     @property
     def initial_configuration(self) -> Pattern:
@@ -217,12 +349,22 @@ class ExecutionProofExp(proof.ProofExp):
         return proof
 
     def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
-        with self._simplification_performer as performer:
-            performer.apply_simplification(ordinal, substitution, location)
-            # TODO: Do some proving here ...
+        self._simplification_performer.enter_context(location)
+        self._simplification_performer.apply_simplification(ordinal, substitution)
+        self._simplification_performer.exit_context()
 
         # Update the current configuration
-        self._curr_config = self._simplification_performer.simplified_configuration
+        # This completes rewrite step 1 after all simplifications
+        if self._simplification_performer.proof is not None:  # This means that we finished the batch and proof is ready
+            self._curr_config = self._simplification_performer.simplified_configuration
+            self._proof_expressions[-1] = self.prove_lift_through_rewrite(
+                self._simplification_performer.proof, self._proof_expressions[-1]
+            )
+            # TODO: Reset self.performer
+
+    def prove_lift_through_rewrite(self, proof: proof.ProofThunk, rewrite_proof: proof.ProofThunk) -> proof.ProofThunk:
+        """Proves the lemma that allows to lift a proof through a rewrite step."""
+        raise NotImplementedError()
 
     def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:
         def reduce_requirement_rec(exp: proof.ProofThunk, cached_requires: Pattern) -> tuple[proof.ProofThunk, Pattern]:

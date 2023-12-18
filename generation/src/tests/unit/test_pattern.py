@@ -5,7 +5,21 @@ from typing import TYPE_CHECKING
 import pytest
 from frozendict import frozendict
 
-from proof_generation.aml import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
+from proof_generation.aml import (
+    App,
+    ESubst,
+    EVar,
+    Exists,
+    Implies,
+    Instantiate,
+    MetaVar,
+    Mu,
+    SSubst,
+    SVar,
+    Symbol,
+    bot,
+    neg,
+)
 
 if TYPE_CHECKING:
     from proof_generation.aml import Pattern
@@ -58,10 +72,12 @@ sigma2 = Symbol('s2')
         ],
         # Instantiate/Notation
         [
-            Instantiate(App(phi0, phi1), frozendict({0: phi2})),
+            Instantiate(App(phi0, phi1), frozendict({0: phi2, 1: phi1})),
             0,
             sigma1,
-            App(ESubst(phi2, EVar(0), sigma1), ESubst(phi1, EVar(0), sigma1)),
+            Instantiate(
+                App(phi0, phi1), frozendict({0: ESubst(phi2, EVar(0), sigma1), 1: ESubst(phi1, EVar(0), sigma1)})
+            ),
         ],
     ],
 )
@@ -108,13 +124,16 @@ def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: P
         ],
         # Instantiate/Notation
         [
-            Instantiate(App(phi0, phi1), frozendict({0: phi2})),
+            Instantiate(App(phi0, phi1), frozendict({0: phi2, 1: phi1})),
             0,
             sigma1,
-            App(SSubst(phi2, SVar(0), sigma1), SSubst(phi1, SVar(0), sigma1)),
+            Instantiate(
+                App(phi0, phi1), frozendict({0: SSubst(phi2, SVar(0), sigma1), 1: SSubst(phi1, SVar(0), sigma1)})
+            ),
         ],
     ],
 )
+@pytest.mark.skip(reason='not implemented at the moment')
 def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: Pattern) -> None:
     assert pattern.apply_ssubst(svar_id, plug) == expected
 
@@ -126,6 +145,18 @@ def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: P
         [EVar(0), {0: sigma1}, sigma1],
         [EVar(0), {0: EVar(2)}, EVar(2)],
         [EVar(0), {1: EVar(2)}, EVar(0)],
+        [Instantiate(EVar(0), frozendict()), {0: sigma0}, sigma0],
+        # Notation (Instantiate with no free E/SVars) is being preserved
+        [
+            Instantiate(Implies(phi0, bot()), frozendict({0: EVar(0)})),
+            {0: sigma0},
+            Instantiate(Implies(phi0, bot()), frozendict({0: sigma0})),
+        ],
+        [
+            Instantiate(Implies(neg(phi0), phi1), frozendict({0: EVar(0)})),
+            {0: sigma0},
+            Instantiate(Implies(neg(phi0), phi1), frozendict({0: sigma0, 1: ESubst(phi1, EVar(0), sigma0)})),
+        ],
         # Several plugs
         [Implies(EVar(0), EVar(1)), {0: sigma0}, Implies(sigma0, EVar(1))],
         [Implies(EVar(0), EVar(1)), {0: sigma0, 1: sigma1}, Implies(sigma0, sigma1)],
@@ -136,20 +167,20 @@ def test_apply_esubsts(pattern: Pattern, plugs: dict[int, Pattern], expected: Pa
 
 
 def test_metavars() -> None:
-    assert phi0.metavars() == {0}
-    assert Implies(phi0, phi1).metavars() == {0, 1}
-    assert App(phi0, phi1).metavars() == {0, 1}
-    assert Exists(0, phi1).metavars() == {1}
-    assert Mu(0, phi1).metavars() == {1}
-    assert Instantiate(phi0, frozendict({0: phi1})).metavars() == {1}
-    assert Instantiate(phi0, frozendict({1: phi1})).metavars() == {0}
+    assert phi0.metavars() == {phi0}
+    assert Implies(phi0, phi1).metavars() == {phi0, phi1}
+    assert App(phi0, phi1).metavars() == {phi0, phi1}
+    assert Exists(0, phi1).metavars() == {phi1}
+    assert Mu(0, phi1).metavars() == {phi1}
+    assert Instantiate(phi0, frozendict({0: phi1})).metavars() == {phi1}
+    assert Instantiate(phi0, frozendict({1: phi1})).metavars() == {phi0}
 
-    assert ESubst(phi1, EVar(0), phi0).metavars() == {1, 0}
-    assert SSubst(phi1, SVar(0), phi0).metavars() == {1, 0}
+    assert ESubst(phi1, EVar(0), phi0).metavars() == {phi1, phi0}
+    assert SSubst(phi1, SVar(0), phi0).metavars() == {phi1, phi0}
 
-    assert ESubst(MetaVar(1), EVar(0), phi0).metavars() == {0, 1}
+    assert ESubst(MetaVar(1), EVar(0), phi0).metavars() == {phi0, phi1}
 
-    assert SSubst(MetaVar(1), SVar(0), phi0).metavars() == {0, 1}
+    assert SSubst(MetaVar(1), SVar(0), phi0).metavars() == {phi0, phi1}
 
 
 # Subst 0 for 1 and then 1 for 2

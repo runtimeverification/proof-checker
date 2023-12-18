@@ -180,3 +180,29 @@ def test_subst_in_rewrite_target() -> None:
     # Expected conclusion: phi0 -> next(phi1[p2/x])
     expected = kore_implies(outer_sort, phi0, kore_next(phi1.apply_esubst(0, p2)))
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_sorted_eq_id() -> None:
+    theory = KoreLemmas()
+
+    sort1 = Symbol('sort')
+    value_a = Symbol('value_a')
+
+    proof = theory.sorted_eq_id(sort1, value_a)
+    expected = kore_equals(sort1, sort1, value_a, value_a)
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
+
+
+def test_sorted_eq_trans() -> None:
+    theory = KoreLemmas()
+
+    sort1 = Symbol('sort')
+    value_a = Symbol('value_a')
+    value_b = Symbol('value_b')
+    value_c = Symbol('value_c')
+
+    eq_a_b = make_pt(kore_equals(sort1, sort1, value_a, value_b))
+    eq_b_c = make_pt(kore_equals(sort1, sort1, value_b, value_c))
+    proof = theory.sorted_eq_trans(eq_a_b, eq_b_c)
+    expected = kore_equals(sort1, sort1, value_a, value_c)
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
