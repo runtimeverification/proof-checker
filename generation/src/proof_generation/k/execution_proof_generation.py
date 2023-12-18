@@ -57,7 +57,6 @@ class SimplificationProver(proof.ProofExp):
         )
 
     def equality_transitivity(self, last_proof: proof.ProofThunk, new_proof: proof.ProofThunk) -> proof.ProofThunk:
-        # Apply transitivity for configurations
         return self.kore_lemmas.sorted_eq_trans(last_proof, new_proof)
 
     def prove_substitutions(self, pattern: proof.ProofThunk, substitutions: dict[int, Pattern]) -> proof.ProofThunk:
