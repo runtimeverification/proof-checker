@@ -230,7 +230,7 @@ reduce_in_axiom = Implies(kore_implies(phi1, kore_in(phi0, phi1, phi2, phi2), ph
 reduce_top_axiom = Implies(kore_implies(phi0, kore_top(phi0), phi1), phi1)
 
 # TODO: Prove the axiom
-# (phi2:{phi0} k= phi3:{phi0}):{phi1} k-> ( ♦(phi4[phi2/x]):{phi0} k= ♦(phi4[phi3/x]):{phi0} ):{phi1}
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> ( ♦(phi4[phi2/x]):{phi0} k= ♦(phi4[phi3/x]):{phi0} ):{phi1}
 keq_next_substitution_axiom = Implies(
     kore_equals(phi0, phi1, phi2, phi3),
     kore_equals(
@@ -242,11 +242,10 @@ keq_next_substitution_axiom = Implies(
 )
 
 # TODO: Prove the axiom
-# (phi2:{phi0} k= phi3:{phi0}):{phi1} k-> ((phi5 k-> phi2):{phi4} k-> (phi5 k-> phi3):{phi4}):{phi6}
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> ((phi5 k-> phi2):{phi4} -> (phi5 k-> phi3):{phi4})
 keq_implication_axiom = Implies(
     kore_equals(phi0, phi1, phi2, phi3),
-    kore_implies(
-        phi6,
+    Implies(
         kore_implies(phi4, phi5, phi2),
         kore_implies(phi4, phi5, phi3),
     ),
@@ -407,7 +406,6 @@ class KoreLemmas(ProofExp):
         #     ==(f)=>> phi0 -> next(phi1[p2/x]))
 
         inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(equality.conc)
-        imp_sort, imp_left, imp_right = kore_implies.assert_matches(imp.conc) # Not needed?
 
         # MP on "Axiom p1 k= p2 -> (next(phi0[p1/x])  k= next(phi0[p2/x]))" and "p1 k= p2", with p1 |-> p1, p2 |-> p2, phi0 |-> phi1
         # conclude: next(phi1[p1/x])  k= next(phi1[p2/x])
@@ -419,12 +417,12 @@ class KoreLemmas(ProofExp):
         )
 
         # MP on "Axiom: p1 k= p2 -> ((psi k-> p1) -> (psi k-> p2))" and "eq_next: next(phi1[p1/x])  k= next(phi1[p2/x])", with subst p1 |-> next(phi1[p1/x]), p2 |-> next(phi1[p2/x]), psi |-> phi0
-        # conclude: ((phi0 -> (next(phi1[p1/x])) k-> (phi0 -> next(phi1[p2/x]))))
+        # conclude: ((phi0 k-> (next(phi1[p1/x])) -> (phi0 k-> next(phi1[p2/x]))))
         inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(eq_next.conc)
         phi0_imp_imp = self.modus_ponens(
             self.dynamic_inst(
                 self.load_axiom(keq_implication_axiom),
-                {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi0, 5: outer_sort},  # Not sure what sort for 5!!
+                {0: inner_sort, 1: outer_sort, 2: p1, 3: p2, 4: phi0},
             ),
             eq_next,
         )
