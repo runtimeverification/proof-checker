@@ -4,7 +4,21 @@ import sys
 from functools import cache
 from typing import TYPE_CHECKING
 
-from proof_generation.aml import App, EVar, Exists, Implies, Instantiate, MetaVar, Notation, Symbol, _and, _or, bot, neg
+from proof_generation.aml import (
+    App,
+    ESubst,
+    EVar,
+    Exists,
+    Implies,
+    Instantiate,
+    MetaVar,
+    Notation,
+    Symbol,
+    _and,
+    _or,
+    bot,
+    neg,
+)
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import Definedness, ceil, subset
 
@@ -242,12 +256,12 @@ keq_next_substitution_axiom = Implies(
 )
 
 # TODO: Prove the axiom
-# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> ((phi5 k-> phi2):{phi4} -> (phi5 k-> phi3):{phi4})
+# (phi2:{phi0} k= phi3:{phi0}):{phi1} -> ((phi4 k-> phi2):{phi1} -> (phi4 k-> phi3):{phi1})
 keq_implication_axiom = Implies(
     kore_equals(phi0, phi1, phi2, phi3),
     Implies(
-        kore_implies(phi4, phi5, phi2),
-        kore_implies(phi4, phi5, phi3),
+        kore_implies(phi1, phi4, phi2),
+        kore_implies(phi1, phi4, phi3),
     ),
 )
 
@@ -381,11 +395,11 @@ class KoreLemmas(ProofExp):
             phi,
         )
 
-    def subst_in_rewrite_target(self, phi0: Pattern, phi1: Pattern, equality: ProofThunk, imp: ProofThunk):
+    def subst_in_rewrite_target(self, equality: ProofThunk, imp: ProofThunk):
         """
         p1 k= p2        phi0  k-> next(phi1[p1/x])
         ------------------------------------------
-                phi0  k-> next(phi1[p2/x])
+                phi0 k-> next(phi1[p2/x])
         """
 
         # Proof Outline:
@@ -406,6 +420,12 @@ class KoreLemmas(ProofExp):
         #     ==(f)=>> phi0 -> next(phi1[p2/x]))
 
         inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(equality.conc)
+        imp_sort, phi0, imp_right = kore_implies.assert_matches(imp.conc)
+        phi1_subst = kore_next.assert_matches(imp_right)[
+            0
+        ]  # assert_matched in this case returns a tuple, rather than an ESubst
+        assert isinstance(phi1_subst, ESubst), f'{phi1_subst.__class__} patterns are not supported!'
+        phi1 = phi1_subst.pattern
 
         # MP on "Axiom p1 k= p2 -> (next(phi0[p1/x])  k= next(phi0[p2/x]))" and "p1 k= p2", with p1 |-> p1, p2 |-> p2, phi0 |-> phi1
         # conclude: next(phi1[p1/x])  k= next(phi1[p2/x])
@@ -416,7 +436,8 @@ class KoreLemmas(ProofExp):
             equality,
         )
 
-        # MP on "Axiom: p1 k= p2 -> ((psi k-> p1) -> (psi k-> p2))" and "eq_next: next(phi1[p1/x])  k= next(phi1[p2/x])", with subst p1 |-> next(phi1[p1/x]), p2 |-> next(phi1[p2/x]), psi |-> phi0
+        # MP on "Axiom: p1 k= p2 -> ((psi k-> p1) -> (psi k-> p2))" and "eq_next: next(phi1[p1/x])  k= next(phi1[p2/x])",
+        #   with subst p1 |-> next(phi1[p1/x]), p2 |-> next(phi1[p2/x]), psi |-> phi0
         # conclude: ((phi0 k-> (next(phi1[p1/x])) -> (phi0 k-> next(phi1[p2/x]))))
         inner_sort, outer_sort, p1, p2 = kore_equals.assert_matches(eq_next.conc)
         phi0_imp_imp = self.modus_ponens(
@@ -427,8 +448,8 @@ class KoreLemmas(ProofExp):
             eq_next,
         )
 
-        # MP on "phi0_imp_imp: ((phi0 -> (next(phi1[p1/x])) k-> (phi0 -> next(phi1[p2/x]))))" and "Premise: phi0  k-> next(phi1[p1/x])", with identity subst
-        # conclude: phi0 -> next(phi1[p2/x]))
+        # MP on "phi0_imp_imp: ((phi0 k-> (next(phi1[p1/x])) -> (phi0 k-> next(phi1[p2/x]))))" and "Premise: phi0  k-> next(phi1[p1/x])", with identity subst
+        # conclude: phi0 k-> next(phi1[p2/x]))
         return self.modus_ponens(phi0_imp_imp, imp)
 
 
