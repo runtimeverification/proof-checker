@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from proof_generation.pattern import App, EVar, Exists, Implies, Mu, Notation, SVar, match, match_single
+from proof_generation.aml import App, EVar, Exists, Implies, Mu, Notation, SVar, match, match_single
 from proof_generation.proofs.propositional import _and, _or, bot, phi0, phi1, phi2
 
 

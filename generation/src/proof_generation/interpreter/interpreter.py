@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from .proved import Proved
-    from proof_generation.pattern import Pattern
+    from ..proved import Proved
+    from ..aml import Pattern
 
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
+from ..aml import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, SSubst, SVar, Symbol
 
 
 class ExecutionPhase(Enum):

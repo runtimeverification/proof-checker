@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from mypy_extensions import VarArg
 
+from proof_generation.aml import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 from proof_generation.metamath.ast import (
     Application,
     AxiomaticStatement,
@@ -29,7 +30,6 @@ from proof_generation.metamath.converter.representation import (
 )
 from proof_generation.metamath.converter.scope import GlobalScope, Scope, to_notation_scope
 from proof_generation.metamath.converter.vardict import VarDict
-from proof_generation.pattern import App, ESubst, EVar, Exists, Implies, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
