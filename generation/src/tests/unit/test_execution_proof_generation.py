@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.aml import EVar, Instantiate, Symbol, top
+from proof_generation.aml import EVar, Instantiate, top
 from proof_generation.interpreter.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.k.execution_proof_generation import (
     ExecutionProofExp,
@@ -57,11 +57,11 @@ class DummyProver(SimplificationProver):
         return make_pt(kore_equals(sort1, sort2, phi0, phi2))
 
 
-def rewrite_hints() -> list[RewriteStepExpression]:
+def rewrite_hints() -> list[tuple[RewriteStepExpression, Pattern, Pattern]]:
     semantics = double_rewrite()
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    semantics.get_symbol('c')
+    c_symbol = semantics.get_symbol('c')
     rewrite_rule1 = semantics.get_axiom(0)
     rewrite_rule2 = semantics.get_axiom(1)
 
@@ -76,14 +76,14 @@ def rewrite_hints() -> list[RewriteStepExpression]:
         rewrite_rule2,
         {},
     )
-    return [step_one, step_two]
+    return [(step_one, a_symbol.app(), b_symbol.app()), (step_two, b_symbol.app(), c_symbol.app())]
 
 
-def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
+def rewrite_hints_with_cell() -> list[tuple[RewriteStepExpression, Pattern, Pattern]]:
     semantics = rewrite_with_cell()
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    semantics.get_symbol('c')
+    c_symbol = semantics.get_symbol('c')
     dot_k_symbol = semantics.get_symbol('dotk')
     rewrite_rule1 = semantics.get_axiom(0)
     rewrite_rule2 = semantics.get_axiom(1)
@@ -99,7 +99,18 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
         rewrite_rule2,
         {0: dot_k_symbol.app()},
     )
-    return [step_one, step_two]
+    return [
+        (
+            step_one,
+            rewrite_with_cells_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
+            rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+        ),
+        (
+            step_two,
+            rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+            rewrite_with_cells_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
+        ),
+    ]
 
 
 def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
@@ -107,56 +118,57 @@ def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
 
 
 @pytest.mark.parametrize(
-    'semantics_builder, hints_builder, last_config',
+    'semantics_builder, hints_builder',
     [
-        [double_rewrite, rewrite_hints, Symbol('ksym_c')],
-        [
-            rewrite_with_cell,
-            rewrite_hints_with_cell,
-            rewrite_with_cells_config_pattern(rewrite_with_cell(), Symbol('ksym_c'), Symbol('ksym_dotk')),
-        ],
+        [double_rewrite, rewrite_hints],
+        [rewrite_with_cell, rewrite_hints_with_cell],
     ],
 )
-def test_double_rewrite_semantics(semantics_builder: Callable, hints_builder: Callable, last_config: Pattern) -> None:
-    hints: list[RewriteStepExpression] = hints_builder()
+def test_double_rewrite_semantics(semantics_builder: Callable, hints_builder: Callable) -> None:
+    hints: list[tuple[RewriteStepExpression, Pattern, Pattern]] = hints_builder()
     semantics: LanguageSemantics = semantics_builder()
-    assert isinstance(hints[0].axiom.pattern, Instantiate)
-    sort_symbol = hints[0].axiom.pattern.inst[0]
-    claim1 = kore_rewrites(sort_symbol, hints[0].configuration_before, hints[1].configuration_before)
-    claim2 = kore_rewrites(sort_symbol, hints[1].configuration_before, last_config)
+
+    hint1, conf_before1, conf_after1 = hints[0]
+    hint2, conf_before2, conf_after2 = hints[1]
+    assert conf_after1 == conf_before2
+
+    assert isinstance(hint1.axiom.pattern, Instantiate)
+    sort_symbol = hint1.axiom.pattern.inst[0]
+    claim1 = kore_rewrites(sort_symbol, conf_before1, conf_after1)
+    claim2 = kore_rewrites(sort_symbol, conf_before2, conf_after2)
 
     # Create an instance of the class
-    proof_expr = ExecutionProofExp(semantics, init_config=hints[0].configuration_before)
-    assert proof_expr.initial_configuration == hints[0].configuration_before
-    assert proof_expr.current_configuration == hints[0].configuration_before
-    assert isinstance(hints[0].axiom, KRewritingRule)
+    proof_expr = ExecutionProofExp(semantics, init_config=conf_before1)
+    assert proof_expr.initial_configuration == conf_before1
+    assert proof_expr.current_configuration == conf_before1
+    assert isinstance(hint1.axiom, KRewritingRule)
 
     # Make the first rewrite step
-    assert isinstance(hints[0].axiom, KRewritingRule)
-    proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
-    assert proof_expr.current_configuration == hints[1].configuration_before
-    assert proof_expr.initial_configuration == hints[0].configuration_before
-    assert hints[0].axiom.pattern in proof_expr._axioms
+    assert isinstance(hint1.axiom, KRewritingRule)
+    proof_expr.rewrite_event(hint1.axiom, hint1.substitutions)
+    assert proof_expr.initial_configuration == conf_before1
+    assert proof_expr.current_configuration == conf_after1
+    assert hint1.axiom.pattern in proof_expr._axioms
     assert proof_expr._claims == [claim1]
     assert len(proof_expr._proof_expressions) == 1
     assert proof_expr._proof_expressions[0].conc == claim1
 
     # Test the second rewrite step
-    assert isinstance(hints[1].axiom, KRewritingRule)
-    proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
-    assert proof_expr.current_configuration == last_config
-    assert proof_expr.initial_configuration == hints[0].configuration_before
+    assert isinstance(hint2.axiom, KRewritingRule)
+    proof_expr.rewrite_event(hint2.axiom, hint2.substitutions)
+    assert proof_expr.initial_configuration == conf_before1
+    assert proof_expr.current_configuration == conf_after2
     # TODO: Test other assumptions after the functional substitution is fully implemented
-    assert set(proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
+    assert set(proof_expr._axioms).issuperset({hint2.axiom.pattern, hint2.axiom.pattern})
     assert proof_expr._claims == [claim1, claim2]
     assert len(proof_expr._proof_expressions) == 2
     assert proof_expr._proof_expressions[1].conc == claim2
 
     # Test generating proofs function
-    generated_proof_expr = ExecutionProofExp.from_proof_hints(hints[0].configuration_before, iter(hints), semantics)
+    generated_proof_expr = ExecutionProofExp.from_proof_hints(conf_before1, iter((hint1, hint2)), semantics)
     assert isinstance(generated_proof_expr, ExecutionProofExp)
     # TODO: Test other assumptions after the functional substitution is fully implemented
-    assert set(generated_proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
+    assert set(generated_proof_expr._axioms).issuperset({hint1.axiom.pattern, hint2.axiom.pattern})
     assert generated_proof_expr._claims == [claim1, claim2]
     assert [p.conc for p in generated_proof_expr._proof_expressions] == [claim1, claim2]
 
@@ -203,7 +215,7 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
 ) -> None:
     semantics_builder, hints_builder, axioms, configurations, claims = rewrite_pat
     semantics: LanguageSemantics = semantics_builder()
-    hints: list[RewriteStepExpression] = hints_builder()
+    hints: list[RewriteStepExpression] = [hint[0] for hint in hints_builder()]
 
     # Create an instance of the class
     proof_expr = ExecutionProofExp(semantics, init_config=hints[0].configuration_before)
