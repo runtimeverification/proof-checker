@@ -39,23 +39,16 @@ class RewriteStepExpression:
     def __init__(
         self,
         conf_before: Pattern,
-        conf_after: Pattern,
         axiom: KRewritingRule | KEquationalRule,
         substitutions: dict[int, Pattern],
     ) -> None:
-        # TODO: Change interface according to the real hint format
         self._pre_configuration: Pattern = conf_before
-        self._post_configuration: Pattern = conf_after
         self._axiom: KRewritingRule | KEquationalRule = axiom
         self._substitutions: dict[int, Pattern] = substitutions
 
     @property
     def configuration_before(self) -> Pattern:
         return self._pre_configuration
-
-    @property
-    def configuration_after(self) -> Pattern:
-        return self._post_configuration
 
     @property
     def axiom(self) -> KRewritingRule | KEquationalRule:
@@ -67,28 +60,37 @@ class RewriteStepExpression:
 
 
 def get_proof_hints(
-    llvm_proof_hint: LLVMRewriteTrace,
+    llvm_proof_hints: LLVMRewriteTrace,
     language_semantics: LanguageSemantics,
-) -> Iterator[RewriteStepExpression]:
+) -> tuple[Pattern, Iterator[RewriteStepExpression]]:
     """
     Emits proof hints corresponding to the given LLVM rewrite trace.
     Note that no hints will be generated if the trace is empty.
     """
 
     # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
-    pre_config = language_semantics.convert_pattern(llvm_proof_hint.initial_config)
+    current_config = language_semantics.convert_pattern(llvm_proof_hints.initial_config)
+    iterator = _iterate_over_hints(current_config, llvm_proof_hints, language_semantics)
+    return current_config, iterator
 
-    post_config = pre_config
-    if len(llvm_proof_hint.trace) > 0:
-        for e1, e2 in zip(llvm_proof_hint.trace, llvm_proof_hint.trace[1:], strict=False):
-            # TODO: process function/hook events in llvm_proof_hint.strace
-            if isinstance(e1, LLVMRuleEvent) and isinstance(e2, kore.Pattern):
-                # generate the hint using the new format
-                pre_config = post_config
-                post_config = language_semantics.convert_pattern(e2)
 
-                axiom = language_semantics.get_axiom(e1.rule_ordinal)
-                substitutions = language_semantics.convert_substitutions(dict(e1.substitution), e1.rule_ordinal)
-
-                hint = RewriteStepExpression(pre_config, post_config, axiom, substitutions)
-                yield hint
+def _iterate_over_hints(
+    initial_config: Pattern,
+    llvm_proof_hints: LLVMRewriteTrace,
+    language_semantics: LanguageSemantics,
+) -> Iterator[RewriteStepExpression]:
+    """
+    Emits proof hints corresponding to the given LLVM rewrite trace.
+    Note that no hints will be generated if the trace is empty.
+    """
+    # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
+    current_config = initial_config
+    for event in llvm_proof_hints.trace:
+        # TODO: process function/hook events in llvm_proof_hint.strace
+        if isinstance(event, LLVMRuleEvent):
+            axiom = language_semantics.get_axiom(event.rule_ordinal)
+            substitutions = language_semantics.convert_substitutions(dict(event.substitution), event.rule_ordinal)
+            hint = RewriteStepExpression(current_config, axiom, substitutions)
+            yield hint
+        elif isinstance(event, kore.Pattern):
+            current_config = language_semantics.convert_pattern(event)

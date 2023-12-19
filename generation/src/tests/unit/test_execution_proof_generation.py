@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.aml import EVar, Instantiate, top
+from proof_generation.aml import Symbol, EVar, Instantiate, top
 from proof_generation.interpreter.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.k.execution_proof_generation import (
     ExecutionProofExp,
@@ -68,13 +68,11 @@ def rewrite_hints() -> list[RewriteStepExpression]:
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
         a_symbol.app(),
-        b_symbol.app(),
         rewrite_rule1,
         {},
     )
     step_two = RewriteStepExpression(
         b_symbol.app(),
-        c_symbol.app(),
         rewrite_rule2,
         {},
     )
@@ -93,13 +91,11 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
         rewrite_with_cells_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
-        rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
         rewrite_rule1,
         {0: dot_k_symbol.app()},
     )
     step_two = RewriteStepExpression(
         rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
-        rewrite_with_cells_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
         rewrite_rule2,
         {0: dot_k_symbol.app()},
     )
@@ -110,18 +106,20 @@ def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
     return f'<ksym_generated_top> <ksym_k> (ksym_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </ksym_k> </ksym_generated_top>'
 
 
-rewrite_test_parameters = [(double_rewrite, rewrite_hints), (rewrite_with_cell, rewrite_hints_with_cell)]
-
-
-@pytest.mark.parametrize('rewrite_pat', rewrite_test_parameters)
-def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> None:
-    semantics_builder, hints_builder = rewrite_pat
+@pytest.mark.parametrize(
+    'semantics_builder, hints_builder, last_config',
+    [
+        [double_rewrite, rewrite_hints, Symbol('ksym_c')],
+        [rewrite_with_cell, rewrite_hints_with_cell, rewrite_with_cells_config_pattern(rewrite_with_cell(), Symbol('ksym_c'), Symbol('ksym_dotk'))],
+    ],
+)
+def test_double_rewrite_semantics(semantics_builder: Callable, hints_builder: Callable, last_config: Pattern) -> None:
     hints: list[RewriteStepExpression] = hints_builder()
     semantics: LanguageSemantics = semantics_builder()
     assert isinstance(hints[0].axiom.pattern, Instantiate)
     sort_symbol = hints[0].axiom.pattern.inst[0]
-    claim1 = kore_rewrites(sort_symbol, hints[0].configuration_before, hints[0].configuration_after)
-    claim2 = kore_rewrites(sort_symbol, hints[1].configuration_before, hints[1].configuration_after)
+    claim1 = kore_rewrites(sort_symbol, hints[0].configuration_before, hints[1].configuration_before)
+    claim2 = kore_rewrites(sort_symbol, hints[1].configuration_before, last_config)
 
     # Create an instance of the class
     proof_expr = ExecutionProofExp(semantics, init_config=hints[0].configuration_before)
@@ -132,8 +130,8 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     # Make the first rewrite step
     assert isinstance(hints[0].axiom, KRewritingRule)
     proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
+    assert proof_expr.current_configuration == hints[1].configuration_before
     assert proof_expr.initial_configuration == hints[0].configuration_before
-    assert proof_expr.current_configuration == hints[0].configuration_after
     assert hints[0].axiom.pattern in proof_expr._axioms
     assert proof_expr._claims == [claim1]
     assert len(proof_expr._proof_expressions) == 1
@@ -142,8 +140,8 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     # Test the second rewrite step
     assert isinstance(hints[1].axiom, KRewritingRule)
     proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
+    assert proof_expr.current_configuration == last_config
     assert proof_expr.initial_configuration == hints[0].configuration_before
-    assert proof_expr.current_configuration == hints[1].configuration_after
     # TODO: Test other assumptions after the functional substitution is fully implemented
     assert set(proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
     assert proof_expr._claims == [claim1, claim2]
@@ -151,7 +149,7 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     assert proof_expr._proof_expressions[1].conc == claim2
 
     # Test generating proofs function
-    generated_proof_expr = ExecutionProofExp.from_proof_hints(iter(hints), semantics)
+    generated_proof_expr = ExecutionProofExp.from_proof_hints(hints[0].configuration_before, iter(hints), semantics)
     assert isinstance(generated_proof_expr, ExecutionProofExp)
     # TODO: Test other assumptions after the functional substitution is fully implemented
     assert set(generated_proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})

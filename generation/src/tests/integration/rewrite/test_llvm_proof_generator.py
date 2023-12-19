@@ -53,7 +53,7 @@ def generate_proof_trace(
     k_file: Path,
     hints_file: Path,
     kompiled_dir: Path,
-) -> Iterator[RewriteStepExpression]:
+) -> tuple[Pattern, Iterator[RewriteStepExpression]]:
     # Kompile sources if needed
     if not kompiled_dir.exists():
         output = subprocess.run(
@@ -70,9 +70,9 @@ def generate_proof_trace(
     language_definition = LanguageSemantics.from_kore_definition(kore_definition)
 
     # print('Intialize hint stream ... ')
-    hints_iterator = get_proof_hints(read_proof_hint(str(hints_file)), language_definition)
+    initial_config, hints_iterator = get_proof_hints(read_proof_hint(str(hints_file)), language_definition)
 
-    return hints_iterator
+    return initial_config, hints_iterator
 
 
 def test_proof_trace_single_rewrite() -> None:
@@ -80,24 +80,23 @@ def test_proof_trace_single_rewrite() -> None:
     hints_file = Path(HINTS_DIR + '/single-rewrite/foo-a.single-rewrite.hints')
     kompiled_dir = Path(KOMPILED_DIR + '/single-rewrite-kompiled/')
 
-    iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
+    initial_config, iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
+    assert initial_config
     assert iterator
 
     # First rewrite
     hint = next(iterator, None)
     assert hint
+    assert initial_config == hint.configuration_before
 
     assert hint.axiom.ordinal == 92
     assert len(hint.substitutions) == 2
 
     pre_symbol = get_k_cell_top_symbol(hint.configuration_before)
-    post_symbol = get_k_cell_top_symbol(hint.configuration_after)
 
     assert isinstance(pre_symbol, Symbol)
-    assert isinstance(post_symbol, Symbol)
 
     assert pre_symbol.name == "ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
-    assert post_symbol.name == "ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
 
     # No more rewrites rewrite
     assert next(iterator, None) == None
@@ -108,24 +107,21 @@ def test_proof_trace_double_rewrite() -> None:
     hints_file = Path(HINTS_DIR + '/double-rewrite/foo-a.double-rewrite.hints')
     kompiled_dir = Path(KOMPILED_DIR + '/double-rewrite-kompiled/')
 
-    iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
+    initial_config, iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
+    assert initial_config
     assert iterator
 
     # First rewrite
     hint = next(iterator, None)
     assert hint
+    assert initial_config == hint.configuration_before
 
     assert hint.axiom.ordinal == 95
     assert len(hint.substitutions) == 2
 
     pre_symbol = get_k_cell_top_symbol(hint.configuration_before)
-    post_symbol = get_k_cell_top_symbol(hint.configuration_after)
-
     assert isinstance(pre_symbol, Symbol)
-    assert isinstance(post_symbol, Symbol)
-
     assert pre_symbol.name == "ksym_LblFooA'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
-    assert post_symbol.name == "ksym_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
 
     # Second rewrite
     hint = next(iterator, None)
@@ -135,13 +131,8 @@ def test_proof_trace_double_rewrite() -> None:
     assert len(hint.substitutions) == 2
 
     pre_symbol = get_k_cell_top_symbol(hint.configuration_before)
-    post_symbol = get_k_cell_top_symbol(hint.configuration_after)
-
     assert isinstance(pre_symbol, Symbol)
-    assert isinstance(post_symbol, Symbol)
-
     assert pre_symbol.name == "ksym_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
-    assert post_symbol.name == "ksym_LblFooC'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
 
     # No more rewrites rewrite
     assert next(iterator, None) == None

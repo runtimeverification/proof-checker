@@ -80,10 +80,10 @@ def main(
     language_semantics = LanguageSemantics.from_kore_definition(kore_definition)
 
     # print('Intialize hint stream ... ')
-    hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_semantics)
+    initial_config, hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_semantics)
 
     print('Begin generating proofs ... ')
-    kore_def = ExecutionProofExp.from_proof_hints(hints_iterator, language_semantics)
+    kore_def = ExecutionProofExp.from_proof_hints(initial_config, hints_iterator, language_semantics)
     slice_name = Path(hints_file).stem + '.' + module
     generate_proof_file(kore_def, Path(proof_dir), slice_name, pretty)
     print('Done!')
