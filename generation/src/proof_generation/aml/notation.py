@@ -24,10 +24,9 @@ class Notation:
             assert (
                 max({x.name for x in self.definition.metavars()}) < self.arity
             ), f'Notation {self.label}: Number of variables used is greater than Arity.'
-
         assert self.definition.occurring_vars() == set()
 
-    def __call__(self, *args: Pattern) -> Pattern:
+    def __call__(self, *args: Pattern) -> Instantiate:
         assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
         return Instantiate(self.definition, frozendict(enumerate(args)))
 
