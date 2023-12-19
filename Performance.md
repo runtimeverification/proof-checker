@@ -132,13 +132,13 @@ binary input format, and therefore, all implementations will share these same
 inputs and have only one main implementation.
 
 #### zkLLVM
-|       Examples      |CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
-|:-------------------:|:-------------------:|:---------------------:|:--------:|
-| impreflex           |               5.798 |                372.76 |          |
-| transfer-goal       |              91.160 |              7188.792 |          |
-| batch-transfer-goal |                   ∞ |                     ∞ |          |
-| perceptron-goal     |             359.743 |                     ∞ |          |
-| svm-goal            |             359.371 |                     ∞ |          |
+|       Examples      |CPU Circuit Gen Time | CPU Prove+Verify Time |
+|:-------------------:|:-------------------:|:---------------------:|
+| impreflex           |               5.798 |                372.76 |
+| transfer-goal       |              91.160 |              7188.792 |
+| batch-transfer-goal |                   ∞ |                     ∞ |
+| perceptron-goal     |             359.743 |                     ∞ |
+| svm-goal            |             359.371 |                     ∞ |
 
 \* For the zkLLVM $PI^2$ implementation, we have the main implementation defined
 [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/src)
