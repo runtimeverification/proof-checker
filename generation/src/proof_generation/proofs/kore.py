@@ -433,7 +433,7 @@ class KoreLemmas(ProofExp):
         phi1_subst = kore_next.assert_matches(imp_right)[
             0
         ]  # assert_matched in this case returns a tuple, rather than an ESubst
-        assert phi1.apply_esubst(0, p1) == phi1_subst
+        assert phi1.apply_esubst(HOLE.name, p1) == phi1_subst
 
         # MP on "Axiom p1 k= p2 -> (next(phi0[p1/x])  k= next(phi0[p2/x]))" and "p1 k= p2", with p1 |-> p1, p2 |-> p2, phi0 |-> phi1
         # conclude: next(phi1[p1/x])  k= next(phi1[p2/x])
@@ -458,7 +458,7 @@ class KoreLemmas(ProofExp):
 
         # MP on "phi0_imp_imp: ((phi0 k-> (next(phi1[p1/x])) -> (phi0 k-> next(phi1[p2/x]))))" and "Premise: phi0  k-> next(phi1[p1/x])", with identity subst
         # conclude: phi0 k-> next(phi1[p2/x]))
-        assert False, self.pretty(phi0_imp_imp.conc) + " \n " + self.pretty(imp.conc) + " \n \n " + self.pretty(phi0)
+        assert False, self.pretty(phi0_imp_imp.conc) + " \n \n " + self.pretty(imp.conc) + " \n \n " + self.pretty(phi0)
         return self.modus_ponens(phi0_imp_imp, imp)
 
     def sorted_eq_id(self, sort: Pattern, phi: Pattern):

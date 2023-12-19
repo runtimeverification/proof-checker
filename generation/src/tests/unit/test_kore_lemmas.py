@@ -59,12 +59,12 @@ def test_equality_with_subst() -> None:
     value_a = Symbol('value_a')
     value_b = Symbol('value_b')
     value_c = Symbol('value_c')
-    phi = App(value_c, EVar(0))
+    phi = App(value_c, HOLE)
 
     # Test simple case
     thunk = make_pt(kore_equals(sort1, sort2, value_a, value_b))
     proof = theory.equality_with_subst(phi, thunk)
-    expected = kore_equals(sort1, sort2, phi.apply_esubst(0, value_a), phi.apply_esubst(0, value_b))
+    expected = kore_equals(sort1, sort2, phi.apply_esubst(HOLE.name, value_a), phi.apply_esubst(HOLE.name, value_b))
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
 
@@ -170,7 +170,7 @@ def test_subst_in_rewrite_target() -> None:
 
     # Premise 2: phi0  k-> next(phi1[p1/x])
     phi0 = Symbol('phi0')
-    phi1 = MetaVar(0, app_ctx_holes=(EVar(0),))
+    phi1 = MetaVar(0, app_ctx_holes=(HOLE,))
     premise2 = kore_implies(outer_sort, phi0, kore_next(phi1.apply_esubst(0, p1)))
 
     thunk1 = make_pt(premise1)
