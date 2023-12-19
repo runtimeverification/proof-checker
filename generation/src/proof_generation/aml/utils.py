@@ -1,11 +1,19 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from .syntax import App, EVar, Exists, Implies, MetaVar, Mu, SVar, Symbol
+from frozendict import frozendict
+
+from .syntax import App, EVar, Exists, Implies, Instantiate, MetaVar, Mu, Pattern, SVar, Symbol
 
 if TYPE_CHECKING:
-    from .syntax import Pattern
+    from .syntax import InstantiationDict, PrettyOptions
+
+"""
+Matching
+========
+"""
 
 
 def match_single(
@@ -74,3 +82,81 @@ def match(equations: list[tuple[Pattern, Pattern]]) -> dict[int, Pattern] | None
             return None
         ret = submatch
     return ret
+
+
+"""
+Pretty diffing
+==============
+"""
+
+
+@dataclass(frozen=True)
+class _Diff(Pattern):
+    """
+    To avoid re-implementing the pretty printing for diffs,
+    we define a dummy subclass of Pattern.
+    """
+
+    """ Pattern to be printed with pluses in the diff. """
+    expected: Pattern
+
+    """ Pattern to be printed with minuses in the diff. """
+    actual: Pattern
+
+    def pretty(self, opts: PrettyOptions) -> str:
+        return f'\n--- {self.expected.pretty(opts)}\n+++ {self.actual.pretty(opts)}\n'
+
+
+def diff_inst(inst1: InstantiationDict, inst2: InstantiationDict) -> InstantiationDict:
+    ret = {}
+    for k, v1 in inst1.items():
+        if k in inst2:
+            ret[k] = insert_diff(v1, inst2[k])
+        else:
+            # TODO: We've lost the metavar's constraints here.
+            # Since we're only using this for pretty printing this is OK?
+            ret[k] = insert_diff(v1, MetaVar(k))
+    for k, v2 in inst2.items():
+        if k in inst1:
+            continue
+        else:
+            # TODO: We've lost the metavar's constraints here.
+            ret[k] = insert_diff(MetaVar(k), v2)
+    return frozendict(ret)
+
+
+def insert_diff(p1: Pattern, p2: Pattern) -> Pattern:
+    match (p1, p2):
+        case (p1, p2) if p1 == p2:
+            return p1
+        case (App(l1, r1), App(l2, r2)):
+            return App(insert_diff(l1, l2), insert_diff(r1, r2))
+        case (Implies(l1, r1), Implies(l2, r2)):
+            return Implies(insert_diff(l1, l2), insert_diff(r1, r2))
+        case (Exists(var1, sp1), Exists(var2, sp2)) if var1 == var2:
+            return Exists(var1, insert_diff(sp1, sp2))
+        case (Mu(var1, sp1), Mu(var2, sp2)) if var1 == var2:
+            return Mu(var1, insert_diff(sp1, sp2))
+        case (Instantiate(sp1, inst1), Instantiate(sp2, inst2)) if sp1 == sp2:
+            return Instantiate(sp1, diff_inst(inst1, inst2))
+        case (Instantiate(sp1, inst1), _):
+            if inst2_ := match_single(sp1, p2):
+                return insert_diff(Instantiate(sp1, inst1), Instantiate(sp1, frozendict(inst2_)))
+            else:
+                # Don't try matching in this case, because we lose readability.
+                # In any case, the diff must occur pretty soon since the instantiate does not match.
+                return _Diff(p1, p2)
+        case (_, Instantiate(sp2, inst2)):
+            if inst1_ := match_single(sp2, p1):
+                return insert_diff(Instantiate(sp2, frozendict(inst1_)), Instantiate(sp2, inst2))
+            else:
+                # Don't try matching in this case, because we lose readability.
+                # In any case, the diff must occur pretty soon since the instantiate does not match.
+                return _Diff(p1, p2)
+        case (p1, p2):
+            return _Diff(p1, p2)
+    raise AssertionError
+
+
+def pretty_diff(p1: Pattern, p2: Pattern, opts: PrettyOptions) -> str:
+    return insert_diff(p1, p2).pretty(opts)
