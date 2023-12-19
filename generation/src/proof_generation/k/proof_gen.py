@@ -66,14 +66,14 @@ def get_axiom_label(attrs: tuple[kore.App, ...]) -> str:
 
 
 def main(
-    k_file: str,
+    module: str,
     hints_file: str,
-    output_dir: str,
+    kompiled: str,
     proof_dir: str,
     pretty: bool = False,
 ) -> None:
     # Kompile sources
-    kompiled_dir: Path = get_kompiled_dir(output_dir)
+    kompiled_dir: Path = get_kompiled_dir(kompiled)
     kore_definition = get_kompiled_definition(kompiled_dir)
 
     print('Begin converting ... ')
@@ -84,16 +84,16 @@ def main(
 
     print('Begin generating proofs ... ')
     kore_def = ExecutionProofExp.from_proof_hints(hints_iterator, language_semantics)
-    slice_name = Path(hints_file).stem + '.' + Path(k_file).stem
+    slice_name = Path(hints_file).stem + '.' + module
     generate_proof_file(kore_def, Path(proof_dir), slice_name, pretty)
     print('Done!')
 
 
 if __name__ == '__main__':
     argparser = ArgumentParser()
-    argparser.add_argument('kfile', type=str, help='Path to the K definition file')
+    argparser.add_argument('module', type=str, help='The module name')
     argparser.add_argument('hints', type=str, help='Path to the binary hints file')
-    argparser.add_argument('output_dir', type=str, help='Path to the output directory')
+    argparser.add_argument('kompiled', type=str, help='Path to the kompiled directory')
     argparser.add_argument('--proof-dir', type=str, default=str(Path.cwd()), help='Output directory for saving proofs')
     argparser.add_argument(
         '--pretty',
@@ -103,4 +103,4 @@ if __name__ == '__main__':
     )
 
     args = argparser.parse_args()
-    main(args.kfile, args.hints, args.output_dir, args.proof_dir, args.pretty)
+    main(args.module, args.hints, args.kompiled, args.proof_dir, args.pretty)

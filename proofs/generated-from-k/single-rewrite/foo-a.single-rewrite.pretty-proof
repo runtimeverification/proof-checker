@@ -1,63 +1,27 @@
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -70,76 +34,138 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 Symbol ksym_dotk
 Instantiate 
 Load Axiom ((∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '(⌈_⌉ · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'phi0', 1: 'x0'}]) -> ((phi0 -> (μ X0 . X0)[{}])[{0: "(∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}])"}][{0: 'phi1'}] -> phi1[phi0/x0]))=1
 Instantiate 0
-Load Axiom (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '(⌈_⌉ · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'phi0', 1: 'x0'}])[{0: 'ksym_dotk[{}]'}]=6
+Load Axiom (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '(⌈_⌉ · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'phi0', 1: 'x0'}])[{0: 'ksym_dotk[{}]'}]=16
 ModusPonens
 Instantiate 1
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -152,69 +178,35 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
-App
-App
-Implies
 Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
-Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
+Instantiate 
 Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
-Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+MetaVar 1
 App
+MetaVar 2
 App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -227,8 +219,41 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Implies
 MetaVar 0
 SVar 0
@@ -236,66 +261,48 @@ Mu 0
 Instantiate 
 Implies
 Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
 Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+Instantiate 0, 1
+MetaVar 2
 MetaVar 0
-App
-Instantiate 0
-App
+MetaVar 1
+MetaVar 0
+MetaVar 0
 SVar 0
 Mu 0
+Instantiate 
 Implies
-Symbol inhabitant
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -308,70 +315,35 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
-App
-App
-Implies
-Implies
 Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
-Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
+Instantiate 
 Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
-Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+MetaVar 1
 App
+MetaVar 2
 App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -384,9 +356,347 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Symbol ksort_SortGeneratedTopCell
+Symbol ksort_SortFoo
+Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+Implies
+Symbol ksort_SortGeneratedTopCell
+Symbol ksort_SortFoo
+Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 MetaVar 0
 SVar 0
 Mu 0
@@ -399,66 +709,30 @@ Instantiate
 Implies
 Prop2
 Instantiate 0, 1, 2
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -471,8 +745,82 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Implies
 MetaVar 0
 SVar 0
@@ -480,66 +828,54 @@ Mu 0
 Instantiate 
 Implies
 Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
 Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+Instantiate 0, 1
+MetaVar 2
 MetaVar 0
-App
-Instantiate 0
-App
+MetaVar 1
+MetaVar 0
+MetaVar 0
 SVar 0
 Mu 0
+Instantiate 
 Implies
-Symbol inhabitant
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -552,70 +888,35 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
-App
-App
-Implies
-Implies
 Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
-Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
+Instantiate 
 Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
-Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+MetaVar 1
 App
+MetaVar 2
 App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -628,9 +929,204 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+Implies
+Symbol ksort_SortGeneratedTopCell
+Symbol ksort_SortFoo
+Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 MetaVar 0
 SVar 0
 Mu 0
@@ -642,66 +1138,30 @@ Mu 0
 Instantiate 
 Implies
 Implies
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -714,71 +1174,133 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 Prop1
 Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -791,8 +1313,82 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Implies
 MetaVar 0
 SVar 0
@@ -800,66 +1396,54 @@ Mu 0
 Instantiate 
 Implies
 Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
 Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+Instantiate 0, 1
+MetaVar 2
 MetaVar 0
-App
-Instantiate 0
-App
+MetaVar 1
+MetaVar 0
+MetaVar 0
 SVar 0
 Mu 0
+Instantiate 
 Implies
-Symbol inhabitant
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -872,74 +1456,136 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 SVar 0
 Mu 0
 Instantiate 
 Prop2
 Instantiate 0, 1, 2
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -952,171 +1598,76 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
-Implies
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
 MetaVar 0
 SVar 0
 Mu 0
 Instantiate 
 Implies
 Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
 MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
 Symbol inhabitant
-Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
 MetaVar 0
 App
+Instantiate 0
+MetaVar 0
 MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-App
-Implies
-MetaVar 0
-SVar 0
-Mu 0
-Instantiate 
-Implies
-Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
-Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-App
-Implies
 MetaVar 0
 SVar 0
 Mu 0
@@ -1124,66 +1675,60 @@ Instantiate
 Implies
 Instantiate 0
 Implies
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
 MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
 SVar 0
 Mu 0
+Instantiate 
 Implies
-Symbol inhabitant
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1196,9 +1741,394 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Symbol ksort_SortGeneratedTopCell
+Symbol ksort_SortFoo
+Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+Symbol ksort_SortGeneratedTopCell
+Symbol ksort_SortFoo
+Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 MetaVar 0
 SVar 0
 Mu 0
@@ -1207,66 +2137,30 @@ Implies
 Instantiate 0
 Prop2
 Instantiate 0, 1, 2
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1279,8 +2173,82 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Implies
 MetaVar 0
 SVar 0
@@ -1288,66 +2256,54 @@ Mu 0
 Instantiate 
 Implies
 Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
 Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+Instantiate 0, 1
+MetaVar 2
 MetaVar 0
-App
-Instantiate 0
-App
+MetaVar 1
+MetaVar 0
+MetaVar 0
 SVar 0
 Mu 0
+Instantiate 
 Implies
-Symbol inhabitant
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1360,8 +2316,82 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Implies
 MetaVar 0
 SVar 0
@@ -1369,66 +2399,54 @@ Mu 0
 Instantiate 
 Implies
 Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
 Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+Instantiate 0, 1
+MetaVar 2
 MetaVar 0
-App
-Instantiate 0
-App
+MetaVar 1
+MetaVar 0
+MetaVar 0
 SVar 0
 Mu 0
+Instantiate 
 Implies
-Symbol inhabitant
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1441,9 +2459,107 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 MetaVar 0
 SVar 0
 Mu 0
@@ -1454,66 +2570,30 @@ Implies
 Prop1
 Instantiate 0, 1
 ModusPonens
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1526,8 +2606,82 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Implies
 MetaVar 0
 SVar 0
@@ -1535,66 +2689,54 @@ Mu 0
 Instantiate 
 Implies
 Instantiate 0
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
 Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+Instantiate 0, 1
+MetaVar 2
 MetaVar 0
-App
-Instantiate 0
-App
+MetaVar 1
+MetaVar 0
+MetaVar 0
 SVar 0
 Mu 0
+Instantiate 
 Implies
-Symbol inhabitant
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1607,9 +2749,107 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 MetaVar 0
 SVar 0
 Mu 0
@@ -1622,66 +2862,30 @@ ModusPonens
 ModusPonens
 ModusPonens
 ModusPonens
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
-Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
 Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
+MetaVar 1
 App
+MetaVar 2
+App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1694,69 +2898,35 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
-App
-App
-Implies
 Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
 Symbol ksort_SortFoo
-App
-Symbol ksort_SortKItem
-App
 Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
-App
-App
-EVar 0
-App
-App
-App
-Symbol ksort_SortInt
-Symbol 0
-Symbol kore_dv
-MetaVar 0
-App
-MetaVar 1
-App
-Instantiate 0, 1
-Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
-MetaVar 0
-App
-Instantiate 0
-App
-SVar 0
-Mu 0
-Implies
-Symbol inhabitant
-Symbol ksort_SortGeneratedTopCell
-App
-SVar 0
-Mu 0
-Implies
-Implies
-SVar 0
-Mu 0
-Implies
-SVar 0
-Mu 0
-Implies
-Symbol kore_next
-Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
-Symbol ksym_Lbl'-LT-'k'-GT-'
-Symbol kore_kseq
-Symbol ksym_inj
-Symbol ksort_SortFoo
-App
+Instantiate 
 Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
 App
-Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+MetaVar 1
 App
+MetaVar 2
 App
+Instantiate 0, 2, 1
 EVar 0
+Symbol kore_kseq
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
 App
+Instantiate 0
 Symbol ksort_SortInt
 Symbol 0
 Symbol kore_dv
@@ -1769,9 +2939,203 @@ Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
 MetaVar 0
 App
 Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
 App
+MetaVar 1
 App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
 Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
+Symbol ksort_SortGeneratedTopCell
+Symbol ksort_SortFoo
+Symbol ksym_LblFooB'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksort_SortFoo
+Symbol ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo
+Instantiate 
+Symbol ksort_SortKItem
+Symbol ksym_inj
+MetaVar 0
+App
+MetaVar 1
+App
+MetaVar 2
+App
+Instantiate 0, 2, 1
+EVar 0
+Symbol kore_kseq
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'k'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+MetaVar 0
+MetaVar 1
+MetaVar 2
+Symbol kore_next
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 0
+Symbol inhabitant
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 2
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+MetaVar 1
+Implies
+Instantiate 0, 1
+Instantiate 0, 1
+Instantiate 0, 1, 2
+Instantiate 0, 2, 1
 MetaVar 0
 SVar 0
 Mu 0
@@ -1844,13 +3208,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -1883,8 +3245,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -1895,7 +3257,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 Symbol ksort_SortInt
@@ -1912,7 +3274,7 @@ App
 Instantiate 0
 Load Axiom ((∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '(⌈_⌉ · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'phi0', 1: 'x0'}]) -> ((phi0 -> (μ X0 . X0)[{}])[{0: "(∃ x1 . (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}])"}][{0: 'phi1'}] -> phi1[phi0/x1]))=0
 Instantiate 0
-Load Axiom (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '(⌈_⌉ · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'phi0', 1: 'x0'}])[{0: '(ksym_Lbl\'-LT-\'generatedCounter\'-GT-\' · phi0)[{0: "((kore_dv · phi0) · phi1)[{0: \'ksort_SortInt\', 1: \'0\'}]"}]'}]=5
+Load Axiom (∃ x0 . (phi0 -> (μ X0 . X0)[{}])[{0: '(⌈_⌉ · phi0)[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi0\'}]"}]'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: \'(phi0 -> phi1)\', 1: \'(phi1 -> phi0)\'}][{0: \'phi0\', 1: \'phi1\'}]'}][{0: 'phi0', 1: 'x0'}])[{0: '(ksym_Lbl\'-LT-\'generatedCounter\'-GT-\' · phi0)[{0: "((kore_dv · phi0) · phi1)[{0: \'ksort_SortInt\', 1: \'0\'}]"}]'}]=15
 ModusPonens
 Instantiate 1
 Symbol ksort_SortGeneratedTopCell
@@ -1978,13 +3340,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2017,8 +3377,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2029,7 +3389,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 Symbol ksort_SortGeneratedTopCell
@@ -2095,13 +3455,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2134,8 +3492,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2146,7 +3504,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -2218,13 +3576,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2257,8 +3613,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2269,7 +3625,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 Implies
@@ -2336,13 +3692,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2375,8 +3729,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2387,7 +3741,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -2465,13 +3819,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2504,8 +3856,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2516,7 +3868,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -2588,13 +3940,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2627,8 +3977,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2639,7 +3989,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 Implies
@@ -2706,13 +4056,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2745,8 +4093,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2757,7 +4105,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -2834,13 +4182,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2873,8 +4219,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -2885,7 +4231,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 Prop1
@@ -2953,13 +4299,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -2992,8 +4336,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3004,7 +4348,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -3076,13 +4420,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3115,8 +4457,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3127,7 +4469,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 SVar 0
@@ -3198,13 +4540,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3237,8 +4577,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3249,7 +4589,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -3321,13 +4661,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3360,8 +4698,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3372,7 +4710,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -3444,13 +4782,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3483,8 +4819,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3495,7 +4831,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -3568,13 +4904,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3607,8 +4941,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3619,7 +4953,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -3693,13 +5027,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3732,8 +5064,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3744,7 +5076,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -3816,13 +5148,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3855,8 +5185,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3867,7 +5197,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -3939,13 +5269,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -3978,8 +5306,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -3990,7 +5318,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -4066,13 +5394,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -4105,8 +5431,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -4117,7 +5443,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -4189,13 +5515,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -4228,8 +5552,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -4240,7 +5564,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -4318,13 +5642,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -4357,8 +5679,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -4369,7 +5691,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 Symbol ksort_SortGeneratedTopCell
@@ -4435,13 +5757,11 @@ App
 Instantiate 0, 1
 MetaVar 0
 MetaVar 1
-MetaVar 0
 MetaVar 2
 Symbol kore_next
-MetaVar 1
-App
-Instantiate 0, 1
 MetaVar 0
+App
+Instantiate 0
 MetaVar 0
 MetaVar 1
 MetaVar 1
@@ -4474,8 +5794,8 @@ Instantiate 0
 Instantiate 0, 1
 Instantiate 0, 1
 MetaVar 2
+MetaVar 0
 MetaVar 1
-MetaVar 2
 MetaVar 0
 MetaVar 0
 SVar 0
@@ -4486,7 +5806,7 @@ Instantiate 0
 MetaVar 1
 Implies
 Instantiate 0, 1
-Instantiate 0, 1, 2
+Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
 MetaVar 0
@@ -4498,7 +5818,7 @@ Instantiate 0
 Prop1
 Instantiate 0, 1
 ModusPonens
-Load Axiom ((phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}] -> phi1)[{0: 'phi1', 1: 'phi2'}][{0: 'phi0', 1: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}]", 1: "(inhabitant · phi0)[{0: \'phi0\'}]"}][{0: \'phi0\', 1: \'phi1\'}]', 2: 'phi2'}][{0: 'phi0', 1: 'phi1', 2: "(kore_next · phi1)[{0: 'phi0', 1: 'phi2'}]"}][{0: 'ksort_SortGeneratedTopCell', 1: '((ksym_Lbl\'-LT-\'generatedTop\'-GT-\' · phi0) · phi1)[{0: \'(ksym_Lbl\\\'-LT-\\\'k\\\'-GT-\\\' · phi0)[{0: \\\'((kore_kseq · phi0) · phi1)[{0: \\\\\\\'(((ksym_inj · phi0) · phi1) · phi2)[{0: \\\\\\\\\\\\\\\'ksort_SortFoo\\\\\\\\\\\\\\\', 1: \\\\\\\\\\\\\\\'ksort_SortKItem\\\\\\\\\\\\\\\', 2: "ksym_LblFooA\\\\\\\\\\\\\\\'LParRParUnds\\\\\\\\\\\\\\\'SINGLE-REWRITE-SYNTAX\\\\\\\\\\\\\\\'Unds\\\\\\\\\\\\\\\'Foo[{}]"}]\\\\\\\', 1: \\\\\\\'x0\\\\\\\'}]\\\'}]\', 1: \'x1\'}]', 2: '((ksym_Lbl\'-LT-\'generatedTop\'-GT-\' · phi0) · phi1)[{0: \'(ksym_Lbl\\\'-LT-\\\'k\\\'-GT-\\\' · phi0)[{0: \\\'((kore_kseq · phi0) · phi1)[{0: \\\\\\\'(((ksym_inj · phi0) · phi1) · phi2)[{0: \\\\\\\\\\\\\\\'ksort_SortFoo\\\\\\\\\\\\\\\', 1: \\\\\\\\\\\\\\\'ksort_SortKItem\\\\\\\\\\\\\\\', 2: "ksym_LblFooB\\\\\\\\\\\\\\\'LParRParUnds\\\\\\\\\\\\\\\'SINGLE-REWRITE-SYNTAX\\\\\\\\\\\\\\\'Unds\\\\\\\\\\\\\\\'Foo[{}]"}]\\\\\\\', 1: \\\\\\\'x0\\\\\\\'}]\\\'}]\', 1: \'x1\'}]'}]=4
+Load Axiom ((phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}] -> phi1)[{0: 'phi0', 1: 'phi1'}][{0: '(phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}])"}][{0: "(phi0 -> (μ X0 . X0)[{}])[{0: \'phi1\'}]", 1: "(inhabitant · phi0)[{0: \'phi0\'}]"}][{0: \'phi0\', 1: \'phi1\'}]', 1: 'phi2'}][{0: 'phi0', 1: 'phi1', 2: "(kore_next · phi0)[{0: 'phi2'}]"}][{0: 'ksort_SortGeneratedTopCell', 1: '((ksym_Lbl\'-LT-\'generatedTop\'-GT-\' · phi0) · phi1)[{0: \'(ksym_Lbl\\\'-LT-\\\'k\\\'-GT-\\\' · phi0)[{0: \\\'((kore_kseq · phi0) · phi1)[{0: \\\\\\\'(((ksym_inj · phi0) · phi1) · phi2)[{0: \\\\\\\\\\\\\\\'ksort_SortFoo\\\\\\\\\\\\\\\', 1: \\\\\\\\\\\\\\\'ksort_SortKItem\\\\\\\\\\\\\\\', 2: "ksym_LblFooA\\\\\\\\\\\\\\\'LParRParUnds\\\\\\\\\\\\\\\'SINGLE-REWRITE-SYNTAX\\\\\\\\\\\\\\\'Unds\\\\\\\\\\\\\\\'Foo[{}]"}]\\\\\\\', 1: \\\\\\\'x0\\\\\\\'}]\\\'}]\', 1: \'x1\'}]', 2: '((ksym_Lbl\'-LT-\'generatedTop\'-GT-\' · phi0) · phi1)[{0: \'(ksym_Lbl\\\'-LT-\\\'k\\\'-GT-\\\' · phi0)[{0: \\\'((kore_kseq · phi0) · phi1)[{0: \\\\\\\'(((ksym_inj · phi0) · phi1) · phi2)[{0: \\\\\\\\\\\\\\\'ksort_SortFoo\\\\\\\\\\\\\\\', 1: \\\\\\\\\\\\\\\'ksort_SortKItem\\\\\\\\\\\\\\\', 2: "ksym_LblFooB\\\\\\\\\\\\\\\'LParRParUnds\\\\\\\\\\\\\\\'SINGLE-REWRITE-SYNTAX\\\\\\\\\\\\\\\'Unds\\\\\\\\\\\\\\\'Foo[{}]"}]\\\\\\\', 1: \\\\\\\'x0\\\\\\\'}]\\\'}]\', 1: \'x1\'}]'}]=14
 ModusPonens
 Generalization 1
 ModusPonens

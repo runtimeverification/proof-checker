@@ -8,7 +8,7 @@ from mypy_extensions import VarArg
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
 
 
 @dataclass(frozen=True)

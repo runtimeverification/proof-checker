@@ -4,10 +4,17 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.k.execution_proof_generation import ExecutionProofExp, SimplificationInfo, SimplificationPerformer
+from proof_generation.aml import EVar, Instantiate, top
+from proof_generation.interpreter.basic_interpreter import BasicInterpreter, ExecutionPhase
+from proof_generation.k.execution_proof_generation import (
+    ExecutionProofExp,
+    SimplificationInfo,
+    SimplificationPerformer,
+    SimplificationProver,
+)
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
-from proof_generation.pattern import Instantiate, top
+from proof_generation.proof import ProofThunk
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_kseq, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
@@ -17,12 +24,37 @@ from tests.unit.test_kore_language_semantics import (
     simple_semantics,
     tree_semantics_config_pattern,
 )
+from tests.unit.test_propositional import make_pt
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from proof_generation.aml import Pattern
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
-    from proof_generation.pattern import Pattern
+
+
+class DummyProver(SimplificationProver):
+    def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> ProofThunk:
+        sort0, sort1, left, right = kore_equals.assert_matches(equality_proof.conc)
+        return make_pt(kore_equals(sort0, sort1, context.apply_esubst(0, left), context.apply_esubst(0, right)))
+
+    def equality_proof(
+        self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
+    ) -> ProofThunk:
+        rule_with_substitution = rule.apply_esubsts(base_substitutions)
+        rule_proof_thunk = make_pt(rule_with_substitution)
+        # TODO: Remove this prove_equality,
+        # This should "know" the result by comparing the "rule" in a simple if statement
+        equation_proof = self.prove_equality_from_rule(rule_proof_thunk)
+        return make_pt(equation_proof.conc.apply_esubsts(substitutions))
+
+    def equality_transitivity(self, last_proof: ProofThunk, new_proof: ProofThunk) -> ProofThunk:
+        sort1, sort2, phi0, phi1 = kore_equals.assert_matches(last_proof.conc)
+        sort1_p, sort2_p, phi1_p, phi2 = kore_equals.assert_matches(new_proof.conc)
+        assert sort1 == sort1_p
+        assert sort2 == sort2_p
+        assert phi1 == phi1_p
+        return make_pt(kore_equals(sort1, sort2, phi0, phi2))
 
 
 def rewrite_hints() -> list[RewriteStepExpression]:
@@ -220,7 +252,7 @@ def test_performer_get_subterm():
     subpattern3 = a_symbol.app()
     subpattern4 = b_symbol.app()
 
-    performer = SimplificationPerformer(semantics, intermidiate_config)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config)
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
     assert performer.get_subterm((0, 0, 0), intermidiate_config) == subpattern1
     # ksym_reverse -> node(a, b)
@@ -248,7 +280,7 @@ def test_performer_update_subterm():
     )
 
     # Create the performer
-    performer = SimplificationPerformer(semantics, intermidiate_config)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config)
 
     # Test from the get_subpattern function
     # generated_top (ignored) -> k -> inj -> ksym_reverse(node(a, b))
@@ -315,7 +347,7 @@ def test_performer_update_config():
     intermidiate_config1 = tree_semantics_config_pattern(
         semantics,
         'SortTree',
-        node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
+        reverse_symbol.app(a_symbol.app()),
     )
     intermidiate_config2 = tree_semantics_config_pattern(
         semantics,
@@ -323,7 +355,7 @@ def test_performer_update_config():
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
 
-    performer = SimplificationPerformer(semantics, intermidiate_config1)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config1)
     assert performer.simplified_configuration == intermidiate_config1
 
     # Update the configuration
@@ -331,48 +363,106 @@ def test_performer_update_config():
     assert performer.simplified_configuration == intermidiate_config2
 
     # Reset the state
-    performer = SimplificationPerformer(semantics, intermidiate_config1)
-    performer.update_configuration(intermidiate_config2)
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), intermidiate_config1)
+    performer.enter_context((0, 0, 0))
+    performer.apply_simplification(2, {})
     with pytest.raises(AssertionError):
-        with performer:
-            performer.apply_simplification(2, {}, (0, 0))
-            performer.update_configuration(intermidiate_config1)
+        performer.update_configuration(intermidiate_config1)
+    performer.exit_context()
 
     # But it is possible to update the configuration after the simplification
     simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
     simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
-    performer = SimplificationPerformer(semantics, simple_config_before)
-    with performer:
-        performer.apply_simplification(2, {}, (0, 0, 0))  # reverse(a) -> a
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), simple_config_before)
+    performer.enter_context((0, 0, 0))
+    performer.apply_simplification(2, {})  # reverse(a) -> a
+    performer.exit_context()
     assert performer._simplification_stack == []
     assert performer.simplified_configuration == simple_config_after
+
+    # Update the config after simplification
     performer.update_configuration(intermidiate_config1)
     assert performer.simplified_configuration == intermidiate_config1
 
 
-def test_subpattern_batch():
+def test_trivial_proof() -> None:
     semantics = node_tree()
+    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+    reverse_symbol = semantics.get_symbol('reverse')
+    a_symbol = semantics.get_symbol('a')
+
+    config = tree_semantics_config_pattern(
+        semantics,
+        'SortTree',
+        reverse_symbol.app(a_symbol.app()),
+    )
+
+    prover = SimplificationProver(semantics)
+    proof = prover.trivial_proof(config)
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
+        top_sort, top_sort, config, config
+    )
+
+    expression = reverse_symbol.app(a_symbol.app())
+    proof = prover.trivial_proof(expression)
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
+        tree_sort, tree_sort, expression, expression
+    )
+
+
+@pytest.mark.parametrize(
+    'prover',
+    [
+        DummyProver,
+        SimplificationProver,
+    ],
+)
+def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
+    semantics = node_tree()
+    simpl_prover = prover(semantics)
+    isinstance(simpl_prover, SimplificationProver)
+
+    def eq_stackinfo(received_info: SimplificationInfo, expected_info: SimplificationInfo) -> bool:
+        popts = simpl_prover.pretty_options()
+        # Simplifies debugging
+        assert received_info.proof.conc == expected_info.proof.conc, (
+            'Received: '
+            + received_info.proof.conc.pretty(popts)
+            + ' \n Expected: '
+            + expected_info.proof.conc.pretty(popts)
+        )
+        return received_info == expected_info
+
     reverse_symbol = semantics.get_symbol('reverse')
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
+    # top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
 
     # Rules
-    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
     rec_case = semantics.get_axiom(4)
     assert isinstance(rec_case, KEquationalRule)
-    # reverse(b) <-> b
+    # reverse(b) = b
     base_case_b = semantics.get_axiom(3)
     assert isinstance(base_case_b, KEquationalRule)
-    # reverse(a) <-> a
+    # reverse(a) = a
     base_case_a = semantics.get_axiom(2)
     assert isinstance(base_case_a, KEquationalRule)
 
     initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
     initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
-    proof_obj = ExecutionProofExp(semantics, initial_config)
+
+    def kequals(phi0, phi1):
+        return kore_equals(tree_sort, tree_sort, phi0, phi1)
+
+    performer = SimplificationPerformer(semantics, DummyProver(semantics), initial_config)
     location = (0, 0, 0)
-    proof_obj.simplification_event(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()}, location)
+    performer.enter_context(location)
+    performer.apply_simplification(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()})
+    performer.exit_context()
     expected_stack = [
         SimplificationInfo(
             location,
@@ -382,11 +472,44 @@ def test_subpattern_batch():
                 reverse_symbol.app(a_symbol.app()),
             ),
             2,
+            make_pt(
+                kequals(
+                    initial_subterm,
+                    node_symbol.app(
+                        reverse_symbol.app(b_symbol.app()),
+                        reverse_symbol.app(a_symbol.app()),
+                    ),
+                )
+            ),
         )
     ]
-    assert proof_obj._simplification_performer._simplification_stack == expected_stack
+    # Direct comparison doesn't work anymore because of added proof thunks
+    assert len(performer._simplification_stack) == len(expected_stack)
+    assert eq_stackinfo(performer._simplification_stack[-1], expected_stack[-1])
 
-    proof_obj.simplification_event(base_case_b.ordinal, {}, (0,))
+    performer.enter_context((0,))
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (0,),
+            reverse_symbol.app(b_symbol.app()),
+            reverse_symbol.app(b_symbol.app()),
+            0,
+            make_pt(kequals(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(b_symbol.app()))),
+        )
+    ]
+    performer.apply_simplification(base_case_b.ordinal, {})
+    expected_stack.pop()
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (0,),
+            reverse_symbol.app(b_symbol.app()),
+            b_symbol.app(),
+            0,
+            make_pt(kequals(reverse_symbol.app(b_symbol.app()), b_symbol.app())),
+        )
+    ]
+    assert eq_stackinfo(performer._simplification_stack[-1], expected_stack[-1])
+    performer.exit_context()
     expected_stack = [
         SimplificationInfo(
             location,
@@ -396,17 +519,222 @@ def test_subpattern_batch():
                 reverse_symbol.app(a_symbol.app()),
             ),
             1,
+            make_pt(
+                kequals(
+                    initial_subterm,
+                    node_symbol.app(
+                        b_symbol.app(),
+                        reverse_symbol.app(a_symbol.app()),
+                    ),
+                )
+            ),
         )
     ]
-    assert proof_obj._simplification_performer._simplification_stack == expected_stack
+    assert len(performer._simplification_stack) == len(expected_stack)
+    assert eq_stackinfo(performer._simplification_stack[-1], expected_stack[-1])
 
-    proof_obj.simplification_event(base_case_a.ordinal, {}, (1,))
-    assert proof_obj._simplification_performer._simplification_stack == []
+    performer.enter_context((1,))
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (1,),
+            reverse_symbol.app(a_symbol.app()),
+            reverse_symbol.app(a_symbol.app()),
+            0,
+            make_pt(kequals(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(a_symbol.app()))),
+        )
+    ]
+    performer.apply_simplification(base_case_a.ordinal, {})
+    expected_stack.pop()
+    expected_stack = expected_stack + [
+        SimplificationInfo(
+            (1,),
+            reverse_symbol.app(a_symbol.app()),
+            a_symbol.app(),
+            0,
+            make_pt(kequals(reverse_symbol.app(a_symbol.app()), a_symbol.app())),
+        )
+    ]
+    performer.exit_context()
+    assert performer._simplification_stack == []
 
     # Check the final update of the configuration
-    assert proof_obj.current_configuration == tree_semantics_config_pattern(
-        semantics, 'SortTree', node_symbol.app(b_symbol.app(), a_symbol.app())
+    simplified_subterm = node_symbol.app(b_symbol.app(), a_symbol.app())
+    assert performer.simplified_configuration == tree_semantics_config_pattern(
+        semantics, 'SortTree', simplified_subterm
     )
+
+    # Check proof
+    assert isinstance(performer.proof, ProofThunk)
+    assert performer.proof.conc
+    _, _, left, right = kore_equals.assert_matches(performer.proof.conc)
+    assert left == initial_subterm
+    assert right == simplified_subterm
+
+
+def test_prove_equality_from_rule() -> None:
+    semantics = node_tree()
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    node_symbol = semantics.get_symbol('node')
+    reverse_symbol = semantics.get_symbol('reverse')
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+
+    # Create a new proof expression
+    proof_expr = SimplificationProver(semantics)
+
+    # reverse(a) <-> a
+    base_case_a = semantics.get_axiom(2)
+    assert isinstance(base_case_a, KEquationalRule)
+    rule_with_substitution = base_case_a.pattern.apply_esubsts({0: a_symbol.app(), 1: a_symbol.app()})
+
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+    # reverse(b) <-> b
+    base_case_b = semantics.get_axiom(3)
+    assert isinstance(base_case_b, KEquationalRule)
+    rule_with_substitution = base_case_b.pattern.apply_esubsts({0: b_symbol.app(), 1: b_symbol.app()})
+
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(b_symbol.app()), b_symbol.app())
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    rec_case = semantics.get_axiom(4)
+    assert isinstance(rec_case, KEquationalRule)
+    node_a_b_subterm = node_symbol.app(a_symbol.app(), b_symbol.app())
+    rule_with_substitution = rec_case.pattern.apply_esubsts({0: node_a_b_subterm, 1: a_symbol.app(), 2: b_symbol.app()})
+
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(
+        tree_sort,
+        tree_sort,
+        reverse_symbol.app(node_a_b_subterm),
+        node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
+    )
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+    # Same but with a rule with partial substitution
+    node_subterm = node_symbol.app(EVar(1), EVar(2))
+    rule_with_substitution = rec_case.pattern.apply_esubsts({0: node_subterm})
+
+    rule_proof_thunk = make_pt(rule_with_substitution)
+    expected_equation = kore_equals(
+        tree_sort,
+        tree_sort,
+        reverse_symbol.app(node_subterm),
+        node_symbol.app(reverse_symbol.app(EVar(2)), reverse_symbol.app(EVar(1))),
+    )
+    equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
+    assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+
+def test_apply_framing_lemma() -> None:
+    semantics = node_tree()
+    semantics = node_tree()
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    expression1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    expression2 = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
+    configuration_hole = tree_semantics_config_pattern(semantics, 'SortTree', EVar(0))
+
+    config1 = tree_semantics_config_pattern(semantics, 'SortTree', expression1)
+    config2 = tree_semantics_config_pattern(semantics, 'SortTree', expression2)
+
+    equality_pt = make_pt(kore_equals(tree_sort, tree_sort, expression1, expression2))
+    exprected_result = make_pt(kore_equals(tree_sort, tree_sort, config1, config2))
+
+    prover = SimplificationProver(semantics)
+    proof = prover.apply_framing_lemma(equality_pt, configuration_hole)
+
+    # Check the logic of the prover and the dummy prover
+    dummy_proof = DummyProver(semantics).apply_framing_lemma(equality_pt, configuration_hole)
+    assert dummy_proof.conc == exprected_result.conc
+    assert dummy_proof.conc == proof.conc
+
+    # Check the proof with the basic interpreter
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == exprected_result.conc
+
+
+def test_equality_proof() -> None:
+    semantics = node_tree()
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    node_symbol = semantics.get_symbol('node')
+    reverse_symbol = semantics.get_symbol('reverse')
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+
+    # Create a new proof expression
+    proof_expr = SimplificationProver(semantics)
+
+    # reverse(a) <-> a
+    base_case_a = semantics.get_axiom(2)
+    base_substitutions: dict[int, Pattern] = {0: a_symbol.app(), 1: a_symbol.app()}
+    main_substitutions: dict[int, Pattern] = {}
+    assert isinstance(base_case_a, KEquationalRule)
+
+    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    proof = proof_expr.equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
+    dummy_proof = DummyProver(semantics).equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
+    assert dummy_proof.conc == expected_equation
+    assert dummy_proof.conc == proof.conc
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    rec_case = semantics.get_axiom(4)
+    assert isinstance(rec_case, KEquationalRule)
+    node_subterm = node_symbol.app(EVar(1), EVar(2))
+    base_substitutions = {0: node_subterm}
+    main_substitutions = {1: a_symbol.app(), 2: b_symbol.app()}
+
+    expected_equation = kore_equals(
+        tree_sort,
+        tree_sort,
+        reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
+        node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
+    )
+    proof = proof_expr.equality_proof(rec_case.pattern, base_substitutions, main_substitutions)
+    dummy_proof = DummyProver(semantics).equality_proof(rec_case.pattern, base_substitutions, main_substitutions)
+    assert dummy_proof.conc == expected_equation
+    assert dummy_proof.conc == proof.conc
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
+
+
+def test_equality_transitivity() -> None:
+    semantics = node_tree()
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+
+    expression1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
+    expression3 = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
+    expression2 = node_symbol.app(b_symbol.app(), a_symbol.app())
+
+    prover = SimplificationProver(semantics)
+
+    proof1 = make_pt(kore_equals(tree_sort, tree_sort, expression1, expression2))
+    proof2 = make_pt(kore_equals(tree_sort, tree_sort, expression2, expression3))
+    exprected_result = make_pt(kore_equals(tree_sort, tree_sort, expression1, expression3))
+
+    proof = prover.equality_transitivity(proof1, proof2)
+
+    # Check the logic of the prover and the dummy prover
+    dummy_proof = DummyProver(semantics).equality_transitivity(proof1, proof2)
+    assert dummy_proof.conc == exprected_result.conc
+    assert dummy_proof.conc == proof.conc
+
+    # Check the proof with the basic interpreter
+    assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == exprected_result.conc
 
 
 def test_simple_rules_pretty_printing() -> None:
@@ -427,7 +755,7 @@ def test_simple_rules_pretty_printing() -> None:
     left1 = sym1.app()
     right1 = sym3.app()
     ensures1 = kore_top(sort1.aml_symbol)
-    rhs_with_ensures1 = kore_and(sort1.aml_symbol, right1, ensures1)
+    rhs_with_ensures1 = kore_and(right1, ensures1)
     equation_pattern1 = kore_implies(
         sort1.aml_symbol, requires1, kore_equals(sort1.aml_symbol, sort1.aml_symbol, left1, rhs_with_ensures1)
     )
@@ -436,7 +764,7 @@ def test_simple_rules_pretty_printing() -> None:
     left2 = sym4.app()
     right2 = sym2.app(sym1.aml_symbol)
     ensures2 = kore_top(sort2.aml_symbol)
-    rhs_with_ensures2 = kore_and(sort2.aml_symbol, right2, ensures2)
+    rhs_with_ensures2 = kore_and(right2, ensures2)
     equation_pattern2 = kore_implies(
         sort2.aml_symbol,
         requires2,

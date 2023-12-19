@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
-from proof_generation.pattern import App, EVar, Instantiate, MetaVar, Pattern, SVar, Symbol
+from proof_generation.aml import App, EVar, Instantiate, MetaVar, Pattern, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.pattern import Notation
+    from proof_generation.aml import Notation
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -599,22 +599,20 @@ class LanguageSemantics(BuilderScope):
                 right_rw_pattern = self._convert_pattern(scope, right)
 
                 return kl.kore_rewrites(rewrite_sort_pattern, left_rw_pattern, right_rw_pattern)
-            case kore.And(sort, ops):
+            case kore.And(_, ops):
                 # TODO: generalize to more than two operands, if needed
                 assert len(ops) == 2, f'Expected a kore "And" term with two operands, found one with {len(ops)}!'
-                and_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 left_and_pattern: Pattern = self._convert_pattern(scope, ops[0])
                 right_and_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
-                return kl.kore_and(and_sort_pattern, left_and_pattern, right_and_pattern)
-            case kore.Or(sort, ops):
+                return kl.kore_and(left_and_pattern, right_and_pattern)
+            case kore.Or(_, ops):
                 # TODO: generalize to more than two operands, if needed
                 assert len(ops) == 2, f'Expected a kore "Or" term with two operands, found one with {len(ops)}!'
-                or_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 left_or_pattern: Pattern = self._convert_pattern(scope, ops[0])
                 right_or_pattern: Pattern = self._convert_pattern(scope, ops[1])
 
-                return kl.kore_or(or_sort_pattern, left_or_pattern, right_or_pattern)
+                return kl.kore_or(left_or_pattern, right_or_pattern)
             case kore.In(input_sort, output_sort, left, right):
                 in_input_sort_pattern = self._convert_sort(scope, input_sort)
                 in_output_sort_pattern = self._convert_sort(scope, output_sort)
@@ -627,11 +625,10 @@ class LanguageSemantics(BuilderScope):
                 not_op_pattern: Pattern = self._convert_pattern(scope, op)
 
                 return kl.kore_not(not_sort_pattern, not_op_pattern)
-            case kore.Next(sort, op):
-                next_sort_pattern: Pattern = self._convert_sort(scope, sort)
+            case kore.Next(_, op):
                 next_op_pattern: Pattern = self._convert_pattern(scope, op)
 
-                return kl.kore_next(next_sort_pattern, next_op_pattern)
+                return kl.kore_next(next_op_pattern)
             case kore.Implies(sort, left, right):
                 implies_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 implies_left: Pattern = self._convert_pattern(scope, left)
@@ -676,9 +673,8 @@ class LanguageSemantics(BuilderScope):
             case kore.Top(sort):
                 top_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 return kl.kore_top(top_sort_pattern)
-            case kore.Bottom(sort):
-                bottom_sort_pattern = self._convert_sort(scope, sort)
-                return kl.kore_bottom(bottom_sort_pattern)
+            case kore.Bottom(_):
+                return kl.kore_bottom()
             case kore.DV(sort, value):
                 dv_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 value_symbol: Pattern = Symbol(str(value.value))
