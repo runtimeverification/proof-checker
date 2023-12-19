@@ -458,7 +458,6 @@ class KoreLemmas(ProofExp):
 
         # MP on "phi0_imp_imp: ((phi0 k-> (next(phi1[p1/x])) -> (phi0 k-> next(phi1[p2/x]))))" and "Premise: phi0  k-> next(phi1[p1/x])", with identity subst
         # conclude: phi0 k-> next(phi1[p2/x]))
-        assert False, self.pretty(phi0_imp_imp.conc) + " \n \n " + self.pretty(imp.conc) + " \n \n " + self.pretty(phi0)
         return self.modus_ponens(phi0_imp_imp, imp)
 
     def sorted_eq_id(self, sort: Pattern, phi: Pattern):
