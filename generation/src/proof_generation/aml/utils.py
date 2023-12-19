@@ -153,7 +153,7 @@ def insert_diff(p1: Pattern, p2: Pattern) -> Pattern:
                 # Don't try matching in this case, because we lose readability.
                 # In any case, the diff must occur pretty soon since the instantiate does not match.
                 return _Diff(p1, p2)
-        case (p1, p2):
+        case (p1, p2): # if p1 != p2
             return _Diff(p1, p2)
     raise AssertionError
 
