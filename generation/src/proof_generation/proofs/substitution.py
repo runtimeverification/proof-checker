@@ -21,6 +21,7 @@ func_subst_axiom = Implies(
     Implies(forall(1)(phi1), phi1.apply_esubst(1, MetaVar(0, e_fresh=(EVar(0),)))),
 )
 
+HOLE = EVar(0)
 
 class Substitution(ProofExp):
     def __init__(self) -> None:

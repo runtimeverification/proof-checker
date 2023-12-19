@@ -15,6 +15,7 @@ from proof_generation.k.execution_proof_generation import (
 from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.proof import ProofThunk
+from proof_generation.proofs.substitution import HOLE
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
@@ -36,7 +37,7 @@ if TYPE_CHECKING:
 class DummyProver(SimplificationProver):
     def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> ProofThunk:
         sort0, sort1, left, right = kore_equals.assert_matches(equality_proof.conc)
-        return make_pt(kore_equals(sort0, sort1, context.apply_esubst(0, left), context.apply_esubst(0, right)))
+        return make_pt(kore_equals(sort0, sort1, context.apply_esubst(HOLE.name, left), context.apply_esubst(HOLE.name, right)))
 
     def equality_proof(
         self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
@@ -158,6 +159,55 @@ def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> Non
     assert generated_proof_expr._claims == [claim1, claim2]
     assert [p.conc for p in generated_proof_expr._proof_expressions] == [claim1, claim2]
 
+def test_rewrite_with_simplification() -> None:
+    semantics = node_tree()
+
+    reverse_symbol = semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    next_symbol = semantics.get_symbol('next')
+    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    tree_sort = semantics.get_sort('SortTree').aml_symbol
+
+    # Rewrite rule
+    # #next => reverse(node(b, a))
+    next_to_reverse = semantics.get_axiom(1)
+    assert isinstance(next_to_reverse, KRewritingRule)
+
+    # Function rules
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
+    rec_case = semantics.get_axiom(4)
+    assert isinstance(rec_case, KEquationalRule)
+    # reverse(b) = b
+    base_case_b = semantics.get_axiom(3)
+    assert isinstance(base_case_b, KEquationalRule)
+    # reverse(a) = a
+    base_case_a = semantics.get_axiom(2)
+    assert isinstance(base_case_a, KEquationalRule)
+
+    initial_subterm = next_symbol.app()
+    initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
+
+    final_subterm = node_symbol.app(b_symbol.app(), a_symbol.app())
+    final_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
+
+    claim = kore_rewrites(top_sort, initial_config, final_config)
+
+    # Create an instance of the class
+    proof_expr = ExecutionProofExp(semantics, init_config=initial_config)
+
+    # Make the first rewrite step
+    proof_expr.rewrite_event(next_to_reverse, {})
+
+    # Make the simplifications
+    proof_expr.simplification_event(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()}, (0,0,0))
+    proof_expr.simplification_event(base_case_b.ordinal, {}, (0,))
+    proof_expr.simplification_event(base_case_a.ordinal, {}, (1,))
+
+    # Test generating proofs function
+    assert proof_expr._claims == [claim]
+    assert [p.conc for p in proof_expr._proof_expressions] == [claim]
 
 pretty_print_testing = [
     (
@@ -632,7 +682,7 @@ def test_apply_framing_lemma() -> None:
 
     expression1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
     expression2 = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
-    configuration_hole = tree_semantics_config_pattern(semantics, 'SortTree', EVar(0))
+    configuration_hole = tree_semantics_config_pattern(semantics, 'SortTree', HOLE)
 
     config1 = tree_semantics_config_pattern(semantics, 'SortTree', expression1)
     config2 = tree_semantics_config_pattern(semantics, 'SortTree', expression2)
