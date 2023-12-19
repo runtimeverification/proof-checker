@@ -7,7 +7,7 @@ from __future__ import annotations
 from itertools import combinations
 from typing import TYPE_CHECKING
 
-from proof_generation.pattern import (
+from proof_generation.aml import (
     Implies,
     Instantiate,
     MetaVar,
@@ -27,7 +27,7 @@ from proof_generation.proofs.propositional import Propositional, _build_subst
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from proof_generation.pattern import Pattern
+    from proof_generation.aml import Pattern
     from proof_generation.proof import ProofThunk
 
 ### Helper types ###

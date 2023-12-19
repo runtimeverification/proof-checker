@@ -11,9 +11,9 @@ from proof_generation.llvm_proof_hint import LLVMRuleEvent
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from proof_generation.aml import Pattern
     from proof_generation.k.kore_convertion.language_semantics import KEquationalRule, KRewritingRule, LanguageSemantics
     from proof_generation.llvm_proof_hint import LLVMRewriteTrace
-    from proof_generation.pattern import Pattern
 
 
 # An abstract super class for user-defined and hook function events
