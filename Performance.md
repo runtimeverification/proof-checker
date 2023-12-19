@@ -72,6 +72,7 @@ We consider the following ZK backends:
 
 
 #### Lurk
+Last Update: Dec 19th, 2023
 |                                                       Examples                                                        |  Cycles | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:---------------------------------------------------------------------------------------------------------------------:|:-------:|:--------------:|:---------------:|:--------------:|:--------------:|:---------------:|:--------------:|
 | [transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer.lurk)            |      34 |          2.393 |           0.554 |          2.947 |          2.313 |           0.618 |          2.931 |
@@ -102,6 +103,7 @@ We consider the following ZK backends:
 ### Proofs of Proofs
 
 #### Lurk
+Last Update: Dec 19th, 2023
 |                                                            Examples                                                            | Cycles | GPU Prove Time | GPU Verify Time | GPU Total Time | GPU Prove Time | GPU Verify Time | GPU Total Time |
 |:------------------------------------------------------------------------------------------------------------------------------:|:------:|:--------------:|:---------------:|:--------------:|:--------------:|:---------------:|:--------------:|
 | [impreflex](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_impreflex_compressed_goal.lurk)*          |   55651|        217.268 |           5.800 |        223.068 |        107.558 |           3.967 |        111.525 |
