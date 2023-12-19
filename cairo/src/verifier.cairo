@@ -277,7 +277,7 @@ fn apply_ssubst(pattern: @Pattern, svar_id: Id, plug: @Pattern) -> Pattern {
     let wrap_subst = ssubst(pattern.clone(), svar_id, plug.clone());
 
     match pattern {
-        Pattern::SVar(e) => { if *e == svar_id {
+        Pattern::SVar(s) => { if *s == svar_id {
             plug.clone()
         } else {
             pattern.clone()
