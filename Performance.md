@@ -160,13 +160,15 @@ memory, we still couldn't execute most of $PI^2$ examples in Lurk, that what
 the `∞` means on the performance tables.
 
 The Lurk's examples were executed within the following version:
-```
+
+```bash
 commit: 2023-12-18 0c0e1849884c8016d1f001cf17e8d692dbe98dbd
 lurk 0.2.0
 ```
 
 To execute the examples using GPU this setup was used to compile the Lurk binary:
-```
+
+```bash
 export EC_GPU_CUDA_NVCC_ARGS='--fatbin --gpu-architecture=sm_89 --generate-code=arch=compute_89,code=sm_89'
 export CUDA_ARCH=89
 export NVIDIA_VISIBLE_DEVICES=all
@@ -177,9 +179,18 @@ cargo install --path . --features=cuda
 
 To execute the examples using only CPU this setup was used to compile the Lurk
 binary:
-```
+
+```bash
 export CUDA_PATH=
 export NVCC=off
 export EC_GPU_FRAMEWORK=none
 cargo install --path . --force
 ```
+
+## zkLLVM Implementation Details
+
+Unfortunately, zkLLVM doesn't support GPU acceleration in any phase, so we only
+have CPU results for zkLLVM.
+
+The proof and verification on zkLLVM were genereted using
+`transpiler -m gen-test-proof`.
