@@ -29,7 +29,7 @@ do
         echo "Proving $f in" $(("$TOTAL_PROVE_TIME" / 1000)).$(("$TOTAL_PROVE_TIME" % 1000)) "s";
         echo "Verifying $f" "in" $(("$TOTAL_VERIFY_TIME" / 1000)).$(("$TOTAL_VERIFY_TIME" % 1000)) "s";
         TOTAL=$(("$TOTAL_PROVE_TIME" + "$TOTAL_VERIFY_TIME"))
-        exho "Total time" $(("$TOTAL" / 1000)).$(("$TOTAL" % 1000)) "s";
+        echo "Total time" $(("$TOTAL" / 1000)).$(("$TOTAL" % 1000)) "s";
         echo ""
         echo "$verify_output";
         echo "---------------------------------------------------------------------------------------------------"
