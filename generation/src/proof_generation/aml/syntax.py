@@ -560,10 +560,10 @@ class Instantiate(Pattern):
             n = opts.notations[self.pattern]
             if n.correctly_instantiates(self):
                 return n.print_instantiation(self, opts)
-        pretty_inst = {}
-        for key, val in self.inst.items():
-            pretty_inst[key] = val.pretty(opts)
-        return f'{str(self.pattern)}[{str(pretty_inst)}]'
+        pretty_inst = []
+        for key, val in sorted(self.inst.items()):
+            pretty_inst += [str(key) + ': ' + val.pretty(opts)]
+        return f'{str(self.pattern)}[{", ".join(pretty_inst)}]'
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
