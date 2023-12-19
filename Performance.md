@@ -1,45 +1,45 @@
 # Experiments and Evaluation of ZK Backends
 
-We present our experiments and evaluation of several ZK backends.  
+We present our experiments and evaluation of several ZK backends.
 
 ## Benchmark Set Description
 
 We use two benchmark sets for our evaluation:
-Direct Implementation and Proofs of Proofs. 
+Direct Implementation and Proofs of Proofs.
 
 ### Direct Implementation
 
 In this category, we consider four simple programs in the areas of blockchain and AI
-and use several ZK backends to directly generate their ZK proofs. 
+and use several ZK backends to directly generate their ZK proofs.
 These programs are:
 - `transfer`: a simplified version of the ERC20 transfer function;
-- `batch-transfer`: a while loop that executes `transfer` for 5000 times; 
+- `batch-transfer`: a while loop that executes `transfer` for 5000 times;
 - `perceptron`: a single-layer [perceptron](https://en.wikipedia.org/wiki/Perceptron).
 - `svm`: a [support vector machine (SVM)](https://en.wikipedia.org/wiki/Support_vector_machine)
-  model. 
+  model.
 
-The reference pseudocode of these examples are available at the end 
-of this document. 
+The reference pseudocode of these examples are available at the end
+of this document.
 
 Given a ZK backend, we directly implement these programs in the
 programming language to the backend and generate ZK proof
-of their execution traces. 
+of their execution traces.
 
 ### Proofs of Proofs
 
-In this category, we combine ZK proofs and logical/mathematical proofs. 
+In this category, we combine ZK proofs and logical/mathematical proofs.
 For a program `Pgm` in a programming language `PL`, we use the
 [K framework](https://kframework.org) to generate
 a logical proof `PI(Pgm, PL)` that shows the correctness of an execution
-trace of `Pgm` using directly a formal semantics of `PL`. 
+trace of `Pgm` using directly a formal semantics of `PL`.
 Such a logical proof can be automatically checked by a logical proof checker
-`proof_check(PI(Pgm, PL))`. 
+`proof_check(PI(Pgm, PL))`.
 Then, we generate a ZK proof that shows the correctness of
-an execution trace of `proof_check`. 
+an execution trace of `proof_check`.
 In other words, we generate a ZK proof that shows the correctness
-of a logical proof that shows the correctness of `Pgm` written in language `PL`. 
+of a logical proof that shows the correctness of `Pgm` written in language `PL`.
 Thus, we call this benchmark set Proofs of Proofs, as we generate
-(ZK) proofs of (logical) proofs. 
+(ZK) proofs of (logical) proofs.
 
 ### ZK Backends
 
@@ -52,10 +52,11 @@ We consider the following ZK backends:
 ## Performance Tables
 
 - machine spec: AMD Ryzen 9 7950X(16 cores/32 threads/128GB), 4090RTX
+- memory swap: 108GB
 - performance time measured in seconds
 - "CPU" prefix = without GPU acceleration
 - "GPU" prefix = with GPU acceleration
-- last update date: Dec 6th, 2023. 
+- last update date: Dec 6th, 2023.
 
 ### Direct Implementation
 
@@ -69,12 +70,12 @@ We consider the following ZK backends:
 
 
 #### Lurk
-|                                                       Examples                                                        |  Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
-|:---------------------------------------------------------------------------------------------------------------------:|:-------:|:----------:|:--------------:|:---------------:|:--------------:|
-| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer.lurk)            |    34   |            |          2.205 |           0.595 |          2.800 |
-| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer5000.lurk)* |  505037 |            |              ∞ |               ∞ |              ∞ |
-| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/perceptron.lurk)        |    11   |            |          0.840 |           0.597 |          1.437 |
-| [svm](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/svm5.lurk)                     |    9    |            |          0.820 |           0.607 |          1.427 |
+|                                                       Examples                                                        |  Cycles | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Prove Time | GPU Verify Time | GPU Total Time |
+|:---------------------------------------------------------------------------------------------------------------------:|:-------:|:--------------:|:---------------:|:--------------:|:--------------:|:---------------:|:--------------:|
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer.lurk)            |      34 |          2.393 |           0.554 |          2.947 |          2.313 |           0.618 |          2.931 |
+| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer5000.lurk)* |  505037 |       3681.819 |           9.845 |       3691.664 |       1193.355 |           6.571 |       1199.926 |
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/perceptron.lurk)        |      11 |          3.501 |           0.541 |          4.042 |          0.830 |           0.579 |          1.409 |
+| [svm](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/svm5.lurk)                     |       9 |          1.832 |           0.538 |          2.370 |          0.820 |           0.598 |          1.418 |
 
 \* Using `lurk --rc 400 transfer5000.lurk`, other tests doesn't use `--rc`
 
@@ -89,29 +90,26 @@ We consider the following ZK backends:
 
 
 #### zkLLVM
-|                                                  Examples                                                       | CPU Circuit Gen Time | CPU Prove+Verify Time | GPU Time |
-|:---------------------------------------------------------------------------------------------------------------:|:--------------------:|:---------------------:|:--------:|
-| [transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer)           |                0.440 |                 0.630 |          |
-| [batch-transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer5000) |                0.823 |                38.842 |          |
-| [perceptron](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/perceptron)       |                0.450 |                 0.650 |          |
-| [svm](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/svm5)                    |                0.450 |                 0.630 |          |
+|                                                  Examples                                                       | CPU Circuit Gen Time | CPU Prove+Verify Time |
+|:---------------------------------------------------------------------------------------------------------------:|:--------------------:|:---------------------:|
+| [transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer)           |                0.440 |                 0.630 |
+| [batch-transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer5000) |                0.823 |                38.842 |
+| [perceptron](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/perceptron)       |                0.450 |                 0.650 |
+| [svm](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/svm5)                    |                0.450 |                 0.630 |
 
 ### Proofs of Proofs
 
 #### Lurk
-|                                                            Examples                                                            | Cycles | CPU Time** | GPU Prove Time | GPU Verify Time | GPU Total Time |
-|:------------------------------------------------------------------------------------------------------------------------------:|:------:|:----------:|:--------------:|:---------------:|:--------------:|
-| [impreflex](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_impreflex_compressed_goal.lurk)*          | 55651  |            |        108.962 |           4.209 |        113.171 |
-| [transfer-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_simple_compressed_goal.lurk) | 3202986|            |              ∞ |               ∞ |        ∞       |
-| [batch-transfer-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_batch_1k_goal.lurk)    |30122047|            |              ∞ |               ∞ |        ∞       |
-| [perceptron-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_perceptron_goal.lurk)               | 6404208|            |              ∞ |               ∞ |        ∞       |
-| [svm-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_svm5_goal.lurk)                            | 6404208|            |              ∞ |               ∞ |        ∞       |
+|                                                            Examples                                                            | Cycles | GPU Prove Time | GPU Verify Time | GPU Total Time | GPU Prove Time | GPU Verify Time | GPU Total Time |
+|:------------------------------------------------------------------------------------------------------------------------------:|:------:|:--------------:|:---------------:|:--------------:|:--------------:|:---------------:|:--------------:|
+| [impreflex](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_impreflex_compressed_goal.lurk)*          |   55651|        217.268 |           5.800 |        223.068 |        107.558 |           3.967 |        111.525 |
+| [transfer-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_simple_compressed_goal.lurk) | 3202986|             ∞  |              ∞  |             ∞  |              ∞ |               ∞ |              ∞ |
+| [batch-transfer-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_transfer_batch_1k_goal.lurk)    |30122047|             ∞  |              ∞  |             ∞  |              ∞ |               ∞ |              ∞ |
+| [perceptron-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_perceptron_goal.lurk)               | 6404208|             ∞  |              ∞  |             ∞  |              ∞ |               ∞ |              ∞ |
+| [svm-goal](https://github.com/runtimeverification/proof-checker/blob/main/lurk/test_svm5_goal.lurk)                            | 6404208|             ∞  |              ∞  |             ∞  |              ∞ |               ∞ |              ∞ |
 
 
 \* Using `lurk --rc 400 ...`
-
-\** CPU time is outdated as we can't get only CPU execution due to a bug on Lurk's
-own implementation
 
 
 #### RISC Zero (v0.16.1)
@@ -126,9 +124,9 @@ own implementation
 \* For the RISC Zero $PI^2$ implementation, we have the main implementation defined
 [here](https://github.com/runtimeverification/proof-checker/tree/main/risc0/pi2)
 and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/proofs/translated).
-The inputs are split into three files: `*-gamma`, `*-claim`, and `*-proof`. 
-Ultimately, we expect that all $PI^2$ implementations will support an unique 
-binary input format, and therefore, all implementations will share these same 
+The inputs are split into three files: `*-gamma`, `*-claim`, and `*-proof`.
+Ultimately, we expect that all $PI^2$ implementations will support an unique
+binary input format, and therefore, all implementations will share these same
 inputs and have only one main implementation.
 
 #### zkLLVM
@@ -136,7 +134,7 @@ inputs and have only one main implementation.
 |:-------------------:|:-------------------:|:---------------------:|:--------:|
 | impreflex           |               5.798 |                372.76 |          |
 | transfer-goal       |              91.160 |              7188.792 |          |
-| batch-transfer-goal |                ∞    |                     ∞ |          |
+| batch-transfer-goal |                   ∞ |                     ∞ |          |
 | perceptron-goal     |             359.743 |                     ∞ |          |
 | svm-goal            |             359.371 |                     ∞ |          |
 
@@ -144,12 +142,44 @@ inputs and have only one main implementation.
 [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/src)
 and the inputs defined [here](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/inputs).
 The inputs are split and encoded into three arrays on a file for each file to
-match the input requirements of the zkLLVM implementation. 
+match the input requirements of the zkLLVM implementation.
 
 ## Lurk Implementation Details
-Lurk is a interpreted programming language, that said, when we execute an 
-example in Lurk, we are actually executing the interpreter that will execute the 
+Lurk is a interpreted programming language, that said, when we execute an
+example in Lurk, we are actually executing the interpreter that will execute the
 program. This means that the execution time required for the interpreter to load
 (interpret) every function and definition is also counted in the execution time
-of the program, and therefore, we can't measure the computation time of the
+of the program, and therefore, we can't measure the compilation time of the
 program itself.
+
+To execute large Lurk examples requires an increased swap memory, resulting in
+slower execution times compared to other implementations. Due to this limitation,
+it is difficult to accurately measure and compare execution times between Lurk
+and other implementations. Even though we have 128GB of RAM + 108Gb of swap
+memory, we still couldn't execute most of $PI^2$ examples in Lurk, that what
+the `∞` means on the performance tables.
+
+The Lurk's examples were executed within the following version:
+```
+commit: 2023-12-18 0c0e1849884c8016d1f001cf17e8d692dbe98dbd
+lurk 0.2.0
+```
+
+To execute the examples using GPU this setup was used to compile the Lurk binary:
+```
+export EC_GPU_CUDA_NVCC_ARGS='--fatbin --gpu-architecture=sm_89 --generate-code=arch=compute_89,code=sm_89'
+export CUDA_ARCH=89
+export NVIDIA_VISIBLE_DEVICES=all
+export NVIDIA_DRIVER_CAPABILITITES=compute,utility
+export EC_GPU_FRAMEWORK=cuda
+cargo install --path . --features=cuda
+```
+
+To execute the examples using only CPU this setup was used to compile the Lurk
+binary:
+```
+export CUDA_PATH=
+export NVCC=off
+export EC_GPU_FRAMEWORK=none
+cargo install --path . --force
+```
