@@ -67,12 +67,10 @@ def rewrite_hints() -> list[tuple[RewriteStepExpression, Pattern, Pattern]]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        a_symbol.app(),
         rewrite_rule1,
         {},
     )
     step_two = RewriteStepExpression(
-        b_symbol.app(),
         rewrite_rule2,
         {},
     )
@@ -90,12 +88,10 @@ def rewrite_hints_with_cell() -> list[tuple[RewriteStepExpression, Pattern, Patt
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        rewrite_with_cells_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
         rewrite_rule1,
         {0: dot_k_symbol.app()},
     )
     step_two = RewriteStepExpression(
-        rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
         rewrite_rule2,
         {0: dot_k_symbol.app()},
     )
@@ -215,10 +211,12 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
 ) -> None:
     semantics_builder, hints_builder, axioms, configurations, claims = rewrite_pat
     semantics: LanguageSemantics = semantics_builder()
-    hints: list[RewriteStepExpression] = [hint[0] for hint in hints_builder()]
+    complete_hints = hints_builder()
+    hints: list[RewriteStepExpression] = [hint[0] for hint in complete_hints]
+    initial_config = complete_hints[0][1]
 
     # Create an instance of the class
-    proof_expr = ExecutionProofExp(semantics, init_config=hints[0].configuration_before)
+    proof_expr = ExecutionProofExp(semantics, init_config=initial_config)
     assert proof_expr.initial_configuration.pretty(proof_expr.pretty_options()) == configurations[0]
 
     # First rewrite step

@@ -4,8 +4,6 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import pyk.kore.syntax as kore
-
 from proof_generation.llvm_proof_hint import LLVMRuleEvent
 
 if TYPE_CHECKING:
@@ -38,17 +36,11 @@ class HookEvent(HintEvent):
 class RewriteStepExpression:
     def __init__(
         self,
-        conf_before: Pattern,
         axiom: KRewritingRule | KEquationalRule,
         substitutions: dict[int, Pattern],
     ) -> None:
-        self._pre_configuration: Pattern = conf_before
         self._axiom: KRewritingRule | KEquationalRule = axiom
         self._substitutions: dict[int, Pattern] = substitutions
-
-    @property
-    def configuration_before(self) -> Pattern:
-        return self._pre_configuration
 
     @property
     def axiom(self) -> KRewritingRule | KEquationalRule:
@@ -70,12 +62,11 @@ def get_proof_hints(
 
     # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
     current_config = language_semantics.convert_pattern(llvm_proof_hints.initial_config)
-    iterator = _iterate_over_hints(current_config, llvm_proof_hints, language_semantics)
+    iterator = _iterate_over_hints(llvm_proof_hints, language_semantics)
     return current_config, iterator
 
 
 def _iterate_over_hints(
-    initial_config: Pattern,
     llvm_proof_hints: LLVMRewriteTrace,
     language_semantics: LanguageSemantics,
 ) -> Iterator[RewriteStepExpression]:
@@ -84,13 +75,10 @@ def _iterate_over_hints(
     Note that no hints will be generated if the trace is empty.
     """
     # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
-    current_config = initial_config
     for event in llvm_proof_hints.trace:
         # TODO: process function/hook events in llvm_proof_hint.strace
         if isinstance(event, LLVMRuleEvent):
             axiom = language_semantics.get_axiom(event.rule_ordinal)
             substitutions = language_semantics.convert_substitutions(dict(event.substitution), event.rule_ordinal)
-            hint = RewriteStepExpression(current_config, axiom, substitutions)
+            hint = RewriteStepExpression(axiom, substitutions)
             yield hint
-        elif isinstance(event, kore.Pattern):
-            current_config = language_semantics.convert_pattern(event)

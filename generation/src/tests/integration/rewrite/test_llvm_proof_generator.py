@@ -84,19 +84,16 @@ def test_proof_trace_single_rewrite() -> None:
     assert initial_config
     assert iterator
 
+    # Test the initial configuration
+    pre_symbol = get_k_cell_top_symbol(initial_config)
+    assert isinstance(pre_symbol, Symbol)
+    assert pre_symbol.name == "ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
+
     # First rewrite
     hint = next(iterator, None)
     assert hint
-    assert initial_config == hint.configuration_before
-
     assert hint.axiom.ordinal == 92
     assert len(hint.substitutions) == 2
-
-    pre_symbol = get_k_cell_top_symbol(hint.configuration_before)
-
-    assert isinstance(pre_symbol, Symbol)
-
-    assert pre_symbol.name == "ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
 
     # No more rewrites rewrite
     assert next(iterator, None) == None
@@ -111,17 +108,16 @@ def test_proof_trace_double_rewrite() -> None:
     assert initial_config
     assert iterator
 
+    # Test the initial configuration
+    pre_symbol = get_k_cell_top_symbol(initial_config)
+    assert isinstance(pre_symbol, Symbol)
+    assert pre_symbol.name == "ksym_LblFooA'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
+
     # First rewrite
     hint = next(iterator, None)
     assert hint
-    assert initial_config == hint.configuration_before
-
     assert hint.axiom.ordinal == 95
     assert len(hint.substitutions) == 2
-
-    pre_symbol = get_k_cell_top_symbol(hint.configuration_before)
-    assert isinstance(pre_symbol, Symbol)
-    assert pre_symbol.name == "ksym_LblFooA'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
 
     # Second rewrite
     hint = next(iterator, None)
@@ -129,10 +125,6 @@ def test_proof_trace_double_rewrite() -> None:
 
     assert hint.axiom.ordinal == 96
     assert len(hint.substitutions) == 2
-
-    pre_symbol = get_k_cell_top_symbol(hint.configuration_before)
-    assert isinstance(pre_symbol, Symbol)
-    assert pre_symbol.name == "ksym_LblFooB'LParRParUnds'DOUBLE-REWRITE-SYNTAX'Unds'Foo"
 
     # No more rewrites rewrite
     assert next(iterator, None) == None
