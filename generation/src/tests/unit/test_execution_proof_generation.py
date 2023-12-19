@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.aml import Symbol, EVar, Instantiate, top
+from proof_generation.aml import EVar, Instantiate, Symbol, top
 from proof_generation.interpreter.basic_interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.k.execution_proof_generation import (
     ExecutionProofExp,
@@ -61,7 +61,7 @@ def rewrite_hints() -> list[RewriteStepExpression]:
     semantics = double_rewrite()
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    c_symbol = semantics.get_symbol('c')
+    semantics.get_symbol('c')
     rewrite_rule1 = semantics.get_axiom(0)
     rewrite_rule2 = semantics.get_axiom(1)
 
@@ -83,7 +83,7 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
     semantics = rewrite_with_cell()
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    c_symbol = semantics.get_symbol('c')
+    semantics.get_symbol('c')
     dot_k_symbol = semantics.get_symbol('dotk')
     rewrite_rule1 = semantics.get_axiom(0)
     rewrite_rule2 = semantics.get_axiom(1)
@@ -110,7 +110,11 @@ def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
     'semantics_builder, hints_builder, last_config',
     [
         [double_rewrite, rewrite_hints, Symbol('ksym_c')],
-        [rewrite_with_cell, rewrite_hints_with_cell, rewrite_with_cells_config_pattern(rewrite_with_cell(), Symbol('ksym_c'), Symbol('ksym_dotk'))],
+        [
+            rewrite_with_cell,
+            rewrite_hints_with_cell,
+            rewrite_with_cells_config_pattern(rewrite_with_cell(), Symbol('ksym_c'), Symbol('ksym_dotk')),
+        ],
     ],
 )
 def test_double_rewrite_semantics(semantics_builder: Callable, hints_builder: Callable, last_config: Pattern) -> None:
