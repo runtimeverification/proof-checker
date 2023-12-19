@@ -54,9 +54,11 @@ We consider the following ZK backends:
 - machine spec: AMD Ryzen 9 7950X(16 cores/32 threads/128GB), 4090RTX
 - memory swap: 108GB
 - performance time measured in seconds
+- besides RISC Zero, all other implementations were executed using the diff between
+  the timestamps of the start and end of each possible execution phase.
 - "CPU" prefix = without GPU acceleration
 - "GPU" prefix = with GPU acceleration
-- last update date: Dec 6th, 2023.
+- last update date: Dec 19th, 2023.
 
 ### Direct Implementation
 
