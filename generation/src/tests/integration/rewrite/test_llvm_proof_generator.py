@@ -69,7 +69,7 @@ def generate_proof_trace(
     print('Begin converting ... ')
     language_definition = LanguageSemantics.from_kore_definition(kore_definition)
 
-    # print('Intialize hint stream ... ')
+    # print('Intialize hint stream ... ') generate_proof_trace
     initial_config, hints_iterator = get_proof_hints(read_proof_hint(str(hints_file)), language_definition)
 
     return initial_config, hints_iterator
@@ -80,9 +80,8 @@ def test_proof_trace_single_rewrite() -> None:
     hints_file = Path(HINTS_DIR + '/single-rewrite/foo-a.single-rewrite.hints')
     kompiled_dir = Path(KOMPILED_DIR + '/single-rewrite-kompiled/')
 
+    # Get the initial configuration and the trace
     initial_config, iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
-    assert initial_config
-    assert iterator
 
     # Test the initial configuration
     pre_symbol = get_k_cell_top_symbol(initial_config)
@@ -104,9 +103,8 @@ def test_proof_trace_double_rewrite() -> None:
     hints_file = Path(HINTS_DIR + '/double-rewrite/foo-a.double-rewrite.hints')
     kompiled_dir = Path(KOMPILED_DIR + '/double-rewrite-kompiled/')
 
+    # Get the initial configuration and the trace
     initial_config, iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
-    assert initial_config
-    assert iterator
 
     # Test the initial configuration
     pre_symbol = get_k_cell_top_symbol(initial_config)
