@@ -23,6 +23,7 @@ func_subst_axiom = Implies(
 
 HOLE = EVar(0)
 
+
 class Substitution(ProofExp):
     def __init__(self) -> None:
         super().__init__(

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.aml import EVar, Pattern, Symbol
+from proof_generation.aml import Pattern, Symbol
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
     ConvertedAxiom,
@@ -16,7 +16,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSymbol,
 )
 from proof_generation.proofs.definedness import functional
-from proof_generation.proofs.substitution import Substitution, HOLE
+from proof_generation.proofs.substitution import HOLE, Substitution
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -236,6 +236,7 @@ class SimplificationPerformer:
                 )
             else:
                 # If the stack is empty, then we need to update the current configuration as we processed the batch
+                assert self._current_ctx
                 self._current_config = self._current_ctx.apply_esubst(HOLE.name, child_info.simplification_result)
                 self.proof = child_info.proof
 
@@ -366,12 +367,13 @@ class ExecutionProofExp(proof.ProofExp):
         if self._simplification_performer.proof is not None:  # This means that we finished the batch and proof is ready
             self._curr_config = self._simplification_performer.simplified_configuration
             self._proof_expressions[-1] = self.kore_lemmas.subst_in_rewrite_target(
-                self._simplification_performer.proof, self._proof_expressions[-1],
-                self._simplification_performer.simplification_ctx
+                self._simplification_performer.proof,
+                self._proof_expressions[-1],
+                self._simplification_performer.simplification_ctx,
             )
             # TODO: Add SimplificationPerformer.reset() ?
             self._simplification_performer = SimplificationPerformer(
-                self.language_semantics, SimplificationProver(language_semantics), self.current_configuration
+                self.language_semantics, SimplificationProver(self.language_semantics), self.current_configuration
             )
 
     def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:

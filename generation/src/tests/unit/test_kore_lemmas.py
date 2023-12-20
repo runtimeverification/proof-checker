@@ -1,6 +1,6 @@
 from frozendict import frozendict
 
-from proof_generation.aml import App, EVar, Instantiate, MetaVar, Notation, PrettyOptions, Symbol
+from proof_generation.aml import App, Instantiate, MetaVar, Notation, PrettyOptions, Symbol
 from proof_generation.interpreter import BasicInterpreter, ExecutionPhase
 from proof_generation.proofs.kore import (
     KoreLemmas,
@@ -14,6 +14,7 @@ from proof_generation.proofs.kore import (
     kore_top,
     nary_app,
 )
+from proof_generation.proofs.substitution import HOLE
 from tests.unit.test_propositional import make_pt
 
 phi0 = MetaVar(0)
