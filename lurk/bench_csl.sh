@@ -1,5 +1,16 @@
 #!/bin/bash
-# Usage ./bench_csl.sh <output_file>
+# Usage ./bench_csl.sh <output_file> cpu|gpu
+
+if [[ "$#" -lt 2 ]]; then
+  echo "Usage ./bench_csl.sh <output_file> cpu|gpu"
+  exit 1
+fi
+
+if [[ "$2" == "cpu" ]]; then
+    export CUDA_PATH=
+    export NVCC=off
+    export EC_GPU_FRAMEWORK=none
+fi 
 
 cd csl-examples || exit;
 
