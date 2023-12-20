@@ -56,6 +56,7 @@ We consider the following ZK backends:
 - performance time measured in seconds
 - besides RISC Zero, all other implementations were executed using the diff between
   the timestamps of the start and end of each possible execution phase.
+- RISC Zero has its own performance counter, so we use it to measure the execution time and cycles.
 - "CPU" prefix = without GPU acceleration
 - "GPU" prefix = with GPU acceleration
 - last update date: Dec 19th, 2023.
