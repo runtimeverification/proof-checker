@@ -370,6 +370,8 @@ class ExecutionProofExp(proof.ProofExp):
                 self._proof_expressions[-1],
                 self._simplification_performer.simplification_ctx,
             )
+            # TODO: Use self._simplification_performer.simplified_configuration instead to update the claim
+            self._claims[-1] = self._proof_expressions[-1].conc
             # TODO: Add SimplificationPerformer.reset() ?
             self._simplification_performer = SimplificationPerformer(
                 self.language_semantics, SimplificationProver(self.language_semantics), self.current_configuration
