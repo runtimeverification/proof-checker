@@ -488,7 +488,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    # top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
     tree_sort = semantics.get_sort('SortTree').aml_symbol
 
     # Rules
@@ -506,9 +506,9 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
 
     def kequals(phi0, phi1):
-        return kore_equals(tree_sort, tree_sort, phi0, phi1)
+        return kore_equals(tree_sort, top_sort, phi0, phi1)
 
-    performer = SimplificationPerformer(semantics, DummyProver(semantics), initial_config)
+    performer = SimplificationPerformer(semantics, simpl_prover, initial_config)
     location = (0, 0, 0)
     performer.enter_context(location)
     performer.apply_simplification(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()})
