@@ -632,7 +632,7 @@ def test_prove_equality_from_rule() -> None:
     # Create a new proof expression
     proof_expr = SimplificationProver(semantics)
 
-    # reverse(a) <-> a
+    # reverse(a) = a
     base_case_a = semantics.get_axiom(2)
     assert isinstance(base_case_a, KEquationalRule)
     rule_with_substitution = base_case_a.pattern.apply_esubsts({0: a_symbol.app(), 1: a_symbol.app()})
@@ -642,7 +642,7 @@ def test_prove_equality_from_rule() -> None:
     equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
     assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
-    # reverse(b) <-> b
+    # reverse(b) = b
     base_case_b = semantics.get_axiom(3)
     assert isinstance(base_case_b, KEquationalRule)
     rule_with_substitution = base_case_b.pattern.apply_esubsts({0: b_symbol.app(), 1: b_symbol.app()})
@@ -652,7 +652,7 @@ def test_prove_equality_from_rule() -> None:
     equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
     assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
-    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
     rec_case = semantics.get_axiom(4)
     assert isinstance(rec_case, KEquationalRule)
     node_a_b_subterm = node_symbol.app(a_symbol.app(), b_symbol.app())
@@ -726,7 +726,7 @@ def test_equality_proof() -> None:
     # Create a new proof expression
     proof_expr = SimplificationProver(semantics)
 
-    # reverse(a) <-> a
+    # reverse(a) = a
     base_case_a = semantics.get_axiom(2)
     base_substitutions: dict[int, Pattern] = {0: a_symbol.app(), 1: a_symbol.app()}
     main_substitutions: dict[int, Pattern] = {}
@@ -739,7 +739,7 @@ def test_equality_proof() -> None:
     assert dummy_proof.conc == proof.conc
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
-    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
     rec_case = semantics.get_axiom(4)
     assert isinstance(rec_case, KEquationalRule)
     node_subterm = node_symbol.app(EVar(1), EVar(2))
