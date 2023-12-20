@@ -1,15 +1,18 @@
-module REVERSE
-  imports INT
+module REVERSE-SYNTAX
 
-  syntax Tree ::= Int | node(Tree, Tree)
+  syntax Tree ::= "a" | "b" | "c" | node(Tree, Tree)
   syntax Tree ::= reverse(Tree) [function, total]
 
-  rule [base-case]: reverse(I:Int) => I
-  rule [rec-case]:  reverse(node(T1, T2)) => node(reverse(T2), reverse(T1))
+endmodule
 
-  syntax KItem ::= "#init"
-  syntax KItem ::= "#next"
+module REVERSE
 
-  rule [init]: <k> #init => #next </k>
-  rule [next]: <k> #next => reverse(node(1, 2)) </k>
+  imports REVERSE-SYNTAX
+
+  rule [base-case-a]: reverse(a) => a
+  rule [base-case-b]: reverse(b) => b
+  rule [base-case-b]: reverse(c) => c
+
+  rule [rec-case]: reverse(node(T1, T2)) => node(reverse(T2), reverse(T1))
+
 endmodule
