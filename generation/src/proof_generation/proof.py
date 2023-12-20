@@ -158,7 +158,7 @@ class ProofExp:
         p, q = Implies.extract(left.conc)
         assert (
             p == right.conc
-        ), f'left: {self.pretty(p)}\nright: {self.pretty(q)}\ndiff: {self.pretty_diff(p, right.conc)}'
+        ), f'left: {self.pretty(p)}\nright: {self.pretty(right.conc)}\ndiff: {self.pretty_diff(p, right.conc)}'
         return ProofThunk((lambda interpreter: interpreter.modus_ponens(left(interpreter), right(interpreter))), q)
 
     def exists_quantifier(self) -> ProofThunk:
