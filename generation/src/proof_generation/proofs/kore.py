@@ -18,6 +18,9 @@ from proof_generation.aml import (
     _or,
     bot,
     neg,
+    phi0,
+    phi1,
+    phi2,
 )
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import Definedness, ceil, subset
@@ -26,9 +29,6 @@ if TYPE_CHECKING:
     from proof_generation.aml import Pattern
     from proof_generation.proof import ProofThunk
 
-phi0 = MetaVar(0)
-phi1 = MetaVar(1)
-phi2 = MetaVar(2)
 phi3 = MetaVar(3)
 phi4 = MetaVar(4)
 
