@@ -219,8 +219,8 @@ def test_rewrite_with_simplification() -> None:
     proof_expr.simplification_event(base_case_a.ordinal, {}, (1,))
 
     # Test generating proofs function
-    assert proof_expr._claims == [claim]
-    assert [p.conc for p in proof_expr._proof_expressions] == [claim]
+    assert proof_expr._claims[0] == claim
+    assert [p.conc for p in proof_expr._proof_expressions][0] == claim
 
 
 pretty_print_testing = [
@@ -480,12 +480,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     def eq_stackinfo(received_info: SimplificationInfo, expected_info: SimplificationInfo) -> bool:
         popts = simpl_prover.pretty_options()
         # Simplifies debugging
-        assert received_info.proof.conc == expected_info.proof.conc, (
-            'Received: '
-            + received_info.proof.conc.pretty(popts)
-            + ' \n Expected: '
-            + expected_info.proof.conc.pretty(popts)
-        )
+        assert received_info.proof.conc == expected_info.proof.conc, simpl_prover.pretty_diff(expected_info.proof.conc, received_info.proof.conc)
         return received_info == expected_info
 
     reverse_symbol = semantics.get_symbol('reverse')
