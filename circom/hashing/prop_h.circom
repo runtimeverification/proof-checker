@@ -246,7 +246,30 @@ template CheckProof (C, M, N) {
         //len[i] <== Validate(M)(commitments[i]);
     }
 
-    for (var i = 0; i < C; i++) {
+    signal oblig_eval[C + 1];
+    signal proof_eval[C + 1];
 
+    oblig_eval[0] <== 1;
+    proof_eval[0] <== 1;
+
+    for (var i = 0; i < C; i++) {       
+        signal oblig_coef <== 1;
+        signal proof_coef <== 1;
+
+        signal modus_ponens_res = ModusPonens()(
+            proof[i][0],
+            proof[i][1],
+            proof[i][2],
+            proof[i][3],
+            proof[i][4],
+            proof[i][5],
+            proof[i][6],
+            r,
+            r, // mock
+            r, // mock
+        )
+
+        oblig_eval[i] <== oblig_eval[i - 1] * oblig_coef;
+        proof_eval[i] <== proof_eval[i - 1] * proof_coef;
     }
 }
