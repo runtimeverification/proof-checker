@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from proof_generation.aml import App, EVar, Exists, Implies, Mu, Notation, SVar, match, match_single
-from proof_generation.proofs.propositional import _and, _or, bot, phi0, phi1, phi2
+from frozendict import frozendict
+
+from proof_generation.aml import App, EVar, Exists, Implies, Instantiate, Mu, Notation, SVar, match, match_single
+from proof_generation.proofs.propositional import Propositional, _and, _or, bot, neg, phi0, phi1, phi2, top
 
 
 def test_match() -> None:
@@ -68,3 +70,88 @@ def test_match() -> None:
         2: phi0,
     }
     assert match([(Implies(phi0, phi1), Implies(phi0, SVar(0))), (Implies(phi1, phi2), Implies(phi0, phi0))]) == None
+
+
+def test_pretty_diff() -> None:
+    exp = Propositional()
+    assert exp.pretty_diff(_or(phi0, phi1), _or(phi0, phi1)) == '(phi0 ⋁ phi1)'
+    assert exp.pretty_diff(_or(phi0, phi1), _or(phi0, phi1).simplify()) == '(phi0 ⋁ phi1)'
+    # fmt: off
+
+    # App
+    assert exp.pretty_diff(App(phi0, phi1), App(phi0, phi1)) == '(phi0 · phi1)'
+    assert exp.pretty_diff(App(phi0, phi1), App(phi1, phi2)) == \
+        ('(\n'
+        '--- phi0\n'
+        '+++ phi1\n'
+        ' · \n'
+        '--- phi1\n'
+        '+++ phi2\n'
+        ')')
+
+    # Implies
+    assert exp.pretty_diff(Implies(phi0, phi1), Implies(phi0, phi1)) == '(phi0 -> phi1)'
+    assert exp.pretty_diff(Implies(phi0, phi1), Implies(phi1, phi2)) == \
+        ('(\n'
+        '--- phi0\n'
+        '+++ phi1\n'
+        ' -> \n'
+        '--- phi1\n'
+        '+++ phi2\n'
+        ')')
+
+    # Exists
+    assert exp.pretty_diff(Exists(0, phi1), Exists(0, phi1)) == '(∃ x0 . phi1)'
+    assert exp.pretty_diff(Exists(0, phi1), Exists(1, phi1)) == '\n--- (∃ x0 . phi1)\n+++ (∃ x1 . phi1)\n'
+    assert exp.pretty_diff(Exists(0, phi1), Exists(0, phi2)) == \
+        ('(∃ x0 . \n'
+        '--- phi1\n'
+        '+++ phi2\n'
+        ')')
+
+    # Diff preserves notation
+    assert exp.pretty_diff(_or(phi0, phi1), _or(phi1, phi2)) == \
+        ('(\n'
+        '--- phi0\n'
+        '+++ phi1\n'
+        ' ⋁ \n'
+        '--- phi1\n'
+        '+++ phi2\n'
+        ')')
+
+    # Diff preserves notation left only
+    assert exp.pretty_diff(_or(phi0, phi1), _or(phi1, phi2).simplify()) == \
+        ('(\n'
+        '--- phi0\n'
+        '+++ phi1\n'
+        ' ⋁ \n'
+        '--- phi1\n'
+        '+++ phi2\n'
+        ')')
+    # Diff preserves notation right only
+    assert exp.pretty_diff(_or(phi0, phi1).simplify(), _or(phi1, phi2)) == \
+        ('(\n'
+        '--- phi0\n'
+        '+++ phi1\n'
+        ' ⋁ \n'
+        '--- phi1\n'
+        '+++ phi2\n'
+        ')')
+
+    # Different notations. Depends on the order.
+    assert exp.pretty_diff(top(), neg(bot())) == '⊤'
+    assert exp.pretty_diff(neg(bot()), top()) == '¬⊥'
+
+    # Incomplete instantiations
+    assert exp.pretty_diff(Instantiate(_or.definition, frozendict({0: phi2})),
+                           Instantiate(_or.definition, frozendict({2: phi0}))
+                          ) == \
+        ('((phi0 -> (μ X0 . X0)[])[0: phi0] -> phi1)[0: \n'
+        '--- phi2\n'
+        '+++ phi0\n'
+        ', 2: \n'
+        '--- phi2\n'
+        '+++ phi0\n'
+        ']')
+
+    # fmt: on

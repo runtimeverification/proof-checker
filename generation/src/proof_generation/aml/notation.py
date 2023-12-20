@@ -24,10 +24,9 @@ class Notation:
             assert (
                 max({x.name for x in self.definition.metavars()}) < self.arity
             ), f'Notation {self.label}: Number of variables used is greater than Arity.'
-
         assert self.definition.occurring_vars() == set()
 
-    def __call__(self, *args: Pattern) -> Pattern:
+    def __call__(self, *args: Pattern) -> Instantiate:
         assert len(args) == self.arity, f'Notation {self.label}: expected {self.arity} arguements, got {len(args)}.'
         return Instantiate(self.definition, frozendict(enumerate(args)))
 
@@ -42,8 +41,11 @@ class Notation:
             return match
         raise AssertionError(f'Does not match notation {self.label}: {str(pattern)}')
 
+    def correctly_instantiates(self, applied: Instantiate) -> bool:
+        return applied.pattern == self.definition and set(range(0, self.arity)) == set(applied.inst.keys())
+
     def print_instantiation(self, applied: Instantiate, opts: PrettyOptions) -> str:
-        assert applied.pattern == self.definition
+        assert self.correctly_instantiates(applied)
         pretty_opts = [p.pretty(opts) for _, p in sorted(applied.inst.items())]
         try:
             return self.format_str.format(*pretty_opts)
