@@ -462,15 +462,17 @@ class KoreLemmas(ProofExp):
         ---------------------------
                 phi0 k= phi2
         """
-        sort1, sort2, phi0, phi1 = kore_equals.assert_matches(eq_phi0_phi1.conc)
-        sort1, sort2, phi1_p, phi2 = kore_equals.assert_matches(eq_phi1_phi2.conc)
+        sort_inner_l, sort_outer_l, phi0, phi1 = kore_equals.assert_matches(eq_phi0_phi1.conc)
+        sort_inner_r, sort_outer_r, phi1_p, phi2 = kore_equals.assert_matches(eq_phi1_phi2.conc)
+        assert sort_inner_l == sort_inner_r, self.pretty_diff(sort_inner_l, sort_inner_r)
+        assert sort_outer_l == sort_outer_r, self.pretty_diff(sort_outer_l, sort_outer_r)
         assert phi1 == phi1_p
 
         return self.modus_ponens(
             self.modus_ponens(
                 self.dynamic_inst(
                     self.load_axiom(eq_trans_axiom),
-                    {0: sort1, 1: sort2, 2: phi0, 3: phi1, 4: phi2},
+                    {0: sort_inner_r, 1: sort_outer_r, 2: phi0, 3: phi1, 4: phi2},
                 ),
                 eq_phi0_phi1,
             ),
