@@ -8,14 +8,12 @@ import pyk.kllvm.load  # noqa: F401
 
 from proof_generation.aml import App, Instantiate, Symbol
 from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
-from proof_generation.k.kore_convertion.rewrite_steps import get_proof_hints
+from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression, get_proof_hints
 from proof_generation.k.proof_gen import get_kompiled_definition, read_proof_hint
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from proof_generation.aml import Pattern
-    from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
+    from proof_generation.k.kore_convertion.rewrite_steps import EventTrace
 
 
 HINTS_DIR = '.build/proof-hints'
@@ -53,7 +51,7 @@ def generate_proof_trace(
     k_file: Path,
     hints_file: Path,
     kompiled_dir: Path,
-) -> tuple[Pattern, Iterator[RewriteStepExpression]]:
+) -> tuple[Pattern, EventTrace]:
     # Kompile sources if needed
     if not kompiled_dir.exists():
         output = subprocess.run(
@@ -90,7 +88,7 @@ def test_proof_trace_single_rewrite() -> None:
 
     # First rewrite
     hint = next(iterator, None)
-    assert hint
+    assert isinstance(hint, RewriteStepExpression)
     assert hint.axiom.ordinal == 92
     assert len(hint.substitutions) == 2
 
@@ -113,13 +111,13 @@ def test_proof_trace_double_rewrite() -> None:
 
     # First rewrite
     hint = next(iterator, None)
-    assert hint
+    assert isinstance(hint, RewriteStepExpression)
     assert hint.axiom.ordinal == 95
     assert len(hint.substitutions) == 2
 
     # Second rewrite
     hint = next(iterator, None)
-    assert hint
+    assert isinstance(hint, RewriteStepExpression)
 
     assert hint.axiom.ordinal == 96
     assert len(hint.substitutions) == 2

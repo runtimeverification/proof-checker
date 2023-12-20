@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from frozendict import frozendict
 
 from proof_generation.aml import EVar, Instantiate, top
 from proof_generation.interpreter.basic_interpreter import BasicInterpreter, ExecutionPhase
@@ -68,11 +69,11 @@ def rewrite_hints() -> list[tuple[RewriteStepExpression, Pattern, Pattern]]:
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
         rewrite_rule1,
-        {},
+        frozendict(),
     )
     step_two = RewriteStepExpression(
         rewrite_rule2,
-        {},
+        frozendict(),
     )
     return [(step_one, a_symbol.app(), b_symbol.app()), (step_two, b_symbol.app(), c_symbol.app())]
 
@@ -89,11 +90,11 @@ def rewrite_hints_with_cell() -> list[tuple[RewriteStepExpression, Pattern, Patt
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
         rewrite_rule1,
-        {0: dot_k_symbol.app()},
+        frozendict({0: dot_k_symbol.app()}),
     )
     step_two = RewriteStepExpression(
         rewrite_rule2,
-        {0: dot_k_symbol.app()},
+        frozendict({0: dot_k_symbol.app()}),
     )
     return [
         (
@@ -141,7 +142,7 @@ def test_double_rewrite_semantics(semantics_builder: Callable, hints_builder: Ca
 
     # Make the first rewrite step
     assert isinstance(hint1.axiom, KRewritingRule)
-    proof_expr.rewrite_event(hint1.axiom, hint1.substitutions)
+    proof_expr.rewrite_event(hint1.axiom, dict(hint1.substitutions))
     assert proof_expr.initial_configuration == conf_before1
     assert proof_expr.current_configuration == conf_after1
     assert hint1.axiom.pattern in proof_expr._axioms
@@ -151,7 +152,7 @@ def test_double_rewrite_semantics(semantics_builder: Callable, hints_builder: Ca
 
     # Test the second rewrite step
     assert isinstance(hint2.axiom, KRewritingRule)
-    proof_expr.rewrite_event(hint2.axiom, hint2.substitutions)
+    proof_expr.rewrite_event(hint2.axiom, dict(hint2.substitutions))
     assert proof_expr.initial_configuration == conf_before1
     assert proof_expr.current_configuration == conf_after2
     # TODO: Test other assumptions after the functional substitution is fully implemented
@@ -221,14 +222,14 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
 
     # First rewrite step
     assert isinstance(hints[0].axiom, KRewritingRule)
-    proved = proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
+    proved = proof_expr.rewrite_event(hints[0].axiom, dict(hints[0].substitutions))
     assert hints[0].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[0]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[1]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[0]
 
     # Second rewrite step
     assert isinstance(hints[1].axiom, KRewritingRule)
-    proved = proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
+    proved = proof_expr.rewrite_event(hints[1].axiom, dict(hints[1].substitutions))
     assert hints[1].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[1]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[2]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
