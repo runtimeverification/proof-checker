@@ -461,7 +461,7 @@ def test_trivial_proof() -> None:
     expression = reverse_symbol.app(a_symbol.app())
     proof = prover.trivial_proof(expression)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
-        tree_sort, tree_sort, expression, expression
+        tree_sort, top_sort, expression, expression
     )
 
 
@@ -632,6 +632,7 @@ def test_prove_equality_from_rule() -> None:
     node_symbol = semantics.get_symbol('node')
     reverse_symbol = semantics.get_symbol('reverse')
     tree_sort = semantics.get_sort('SortTree').aml_symbol
+    outer_sort = semantics.configuration_sort.aml_symbol
 
     # Create a new proof expression
     proof_expr = SimplificationProver(semantics)
@@ -642,7 +643,7 @@ def test_prove_equality_from_rule() -> None:
     rule_with_substitution = base_case_a.pattern.apply_esubsts({0: a_symbol.app(), 1: a_symbol.app()})
 
     rule_proof_thunk = make_pt(rule_with_substitution)
-    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    expected_equation = kore_equals(tree_sort, outer_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
     equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
     assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
@@ -652,7 +653,7 @@ def test_prove_equality_from_rule() -> None:
     rule_with_substitution = base_case_b.pattern.apply_esubsts({0: b_symbol.app(), 1: b_symbol.app()})
 
     rule_proof_thunk = make_pt(rule_with_substitution)
-    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(b_symbol.app()), b_symbol.app())
+    expected_equation = kore_equals(tree_sort, outer_sort, reverse_symbol.app(b_symbol.app()), b_symbol.app())
     equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
     assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
@@ -665,7 +666,7 @@ def test_prove_equality_from_rule() -> None:
     rule_proof_thunk = make_pt(rule_with_substitution)
     expected_equation = kore_equals(
         tree_sort,
-        tree_sort,
+        outer_sort,
         reverse_symbol.app(node_a_b_subterm),
         node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
     )
@@ -679,7 +680,7 @@ def test_prove_equality_from_rule() -> None:
     rule_proof_thunk = make_pt(rule_with_substitution)
     expected_equation = kore_equals(
         tree_sort,
-        tree_sort,
+        outer_sort,
         reverse_symbol.app(node_subterm),
         node_symbol.app(reverse_symbol.app(EVar(2)), reverse_symbol.app(EVar(1))),
     )
@@ -725,6 +726,7 @@ def test_equality_proof() -> None:
     node_symbol = semantics.get_symbol('node')
     reverse_symbol = semantics.get_symbol('reverse')
     tree_sort = semantics.get_sort('SortTree').aml_symbol
+    outer_sort = semantics.configuration_sort.aml_symbol
 
     # Create a new proof expression
     proof_expr = SimplificationProver(semantics)
@@ -735,7 +737,7 @@ def test_equality_proof() -> None:
     main_substitutions: dict[int, Pattern] = {}
     assert isinstance(base_case_a, KEquationalRule)
 
-    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    expected_equation = kore_equals(tree_sort, outer_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
     proof = proof_expr.equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
     dummy_proof = DummyProver(semantics).equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
     assert dummy_proof.conc == expected_equation
@@ -751,7 +753,7 @@ def test_equality_proof() -> None:
 
     expected_equation = kore_equals(
         tree_sort,
-        tree_sort,
+        outer_sort,
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
         node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
     )
