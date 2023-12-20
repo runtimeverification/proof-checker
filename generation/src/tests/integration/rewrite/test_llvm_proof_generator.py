@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyk.kllvm.load  # noqa: F401
+from pytest import raises
 
 from proof_generation.aml import App, Instantiate, Symbol
 from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
@@ -189,3 +190,6 @@ def test_proof_trace_tree_reverse_without_int() -> None:
     assert isinstance(hint, RewriteStepExpression)
     assert hint.axiom.ordinal == 154
     assert len(hint.substitutions) == 1
+
+    with raises(StopIteration):
+        next(iterator, None)
