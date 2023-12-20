@@ -446,14 +446,14 @@ class KoreLemmas(ProofExp):
         # conclude: phi0 k-> next(phi1[p2/x]))
         return self.modus_ponens(phi0_imp_imp, imp)
 
-    def sorted_eq_id(self, sort: Pattern, phi: Pattern):
+    def sorted_eq_id(self, inner_sort: Pattern, outer_sort: Pattern, phi: Pattern):
         """
         ---------------------------
                 phi k= phi
         """
         return self.dynamic_inst(
             self.load_axiom(eq_id_axiom),
-            {0: sort, 1: sort, 2: phi},
+            {0: inner_sort, 1: outer_sort, 2: phi},
         )
 
     def sorted_eq_trans(self, eq_phi0_phi1: ProofThunk, eq_phi1_phi2: ProofThunk):

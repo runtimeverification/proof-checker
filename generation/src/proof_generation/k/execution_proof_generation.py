@@ -96,7 +96,7 @@ class SimplificationProver(proof.ProofExp):
         else:
             raise NotImplementedError()
 
-        return self.kore_lemmas.sorted_eq_id(inner_sort, pattern)
+        return self.kore_lemmas.sorted_eq_id(inner_sort, self.language_semantics.configuration_sort.aml_symbol, pattern)
 
     def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:
         def reduce_requirement_rec(exp: proof.ProofThunk, cached_requires: Pattern) -> tuple[proof.ProofThunk, Pattern]:

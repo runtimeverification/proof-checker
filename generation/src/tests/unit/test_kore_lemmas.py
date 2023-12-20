@@ -189,7 +189,7 @@ def test_sorted_eq_id() -> None:
     sort1 = Symbol('sort')
     value_a = Symbol('value_a')
 
-    proof = theory.sorted_eq_id(sort1, value_a)
+    proof = theory.sorted_eq_id(sort1, sort1, value_a)
     expected = kore_equals(sort1, sort1, value_a, value_a)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected
 
