@@ -633,13 +633,21 @@ fn execute_instructions(
                 match from(inst_felt252) {
                     Instruction::EVar => { panic!("EVar not implemented!"); },
                     Instruction::SVar => { panic!("SVar not implemented!"); },
-                    Instruction::Symbol => { panic!("Symbol not implemented!"); },
+                    Instruction::Symbol => {
+                        let id = buffer.pop_front().expect('Expected id for the Symbol');
+
+                        stack.push(Term::Pattern(symbol(id)));
+                    },
                     Instruction::Implies => {
                         let left = pop_stack_pattern(ref stack);
                         let right = pop_stack_pattern(ref stack);
                         stack.push(Term::Pattern(implies(left, right)));
                     },
-                    Instruction::App => { panic!("App not implemented!"); },
+                    Instruction::App => {
+                        let left = pop_stack_pattern(ref stack);
+                        let right = pop_stack_pattern(ref stack);
+                        stack.push(Term::Pattern(app(left, right)));
+                    },
                     Instruction::Exists => { panic!("Exists not implemented!"); },
                     Instruction::Mu => { panic!("Mu not implemented!"); },
                     Instruction::MetaVar => { panic!("MetaVar not implemented!"); },
