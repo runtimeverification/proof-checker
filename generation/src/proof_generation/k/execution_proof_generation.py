@@ -85,19 +85,18 @@ class SimplificationProver(proof.ProofExp):
         ), f'Pattern {symbol.pretty(self.pretty_options())} is unknown to the semantics'
         ksort = ksymbol.output_sort
 
-        sort: Pattern
+        inner_sort: Pattern
         if isinstance(ksort, KSortVar):
             param_index = ksymbol.sort_params.index(ksort)
             sort_parameter = rest[param_index]
             assert isinstance(sort_parameter, Pattern)
-            sort = sort_parameter
+            inner_sort = sort_parameter
         elif isinstance(ksort, KSort):
-            sort = ksort.aml_symbol
+            inner_sort = ksort.aml_symbol
         else:
             raise NotImplementedError()
 
-        assert isinstance(sort, Pattern), f'Cannot find sort for {pattern.pretty(self.pretty_options())}'
-        return self.kore_lemmas.sorted_eq_id(sort, pattern)
+        return self.kore_lemmas.sorted_eq_id(inner_sort, pattern)
 
     def prove_equality_from_rule(self, rule: proof.ProofThunk) -> proof.ProofThunk:
         def reduce_requirement_rec(exp: proof.ProofThunk, cached_requires: Pattern) -> tuple[proof.ProofThunk, Pattern]:
