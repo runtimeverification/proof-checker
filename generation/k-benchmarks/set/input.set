@@ -1,0 +1,1 @@
+#hasKey( "b", SetItem("a") SetItem("b") SetItem("c") )
