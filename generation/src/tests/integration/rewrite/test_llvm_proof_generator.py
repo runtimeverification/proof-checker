@@ -8,7 +8,7 @@ import pyk.kllvm.load  # noqa: F401
 
 from proof_generation.aml import App, Instantiate, Symbol
 from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
-from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression, get_proof_hints
+from proof_generation.k.kore_convertion.rewrite_steps import FunEvent, RewriteStepExpression, get_proof_hints
 from proof_generation.k.proof_gen import get_kompiled_definition, read_proof_hint
 
 if TYPE_CHECKING:
@@ -40,11 +40,15 @@ def get_k_cell_top_symbol(term: Pattern) -> Pattern:
     term = term.right
     if isinstance(term, Instantiate):
         term = term.simplify()
-    assert isinstance(term, App)
-    term = term.right
-    if isinstance(term, Instantiate):
-        term = term.simplify()
-    return term
+    if isinstance(term, App):
+        term = term.right
+        if isinstance(term, Instantiate):
+            term = term.simplify()
+        return term
+    elif isinstance(term, Symbol):
+        return term
+    else:
+        raise ValueError(f'Unexpected term: {term}')
 
 
 def generate_proof_trace(
@@ -124,3 +128,64 @@ def test_proof_trace_double_rewrite() -> None:
 
     # No more rewrites rewrite
     assert next(iterator, None) == None
+
+
+def test_proof_trace_tree_reverse_without_int() -> None:
+    k_file = Path(K_BENCHMARKS_DIR + '/tree-reverse-without-integers/tree-reverse-without-integers.k')
+    hints_file = Path(HINTS_DIR + '/tree-reverse-without-integers/simplify.tree-reverse-without-integers.hints')
+    kompiled_dir = Path(KOMPILED_DIR + '/tree-reverse-without-integers-kompiled/')
+
+    initial_config, iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
+
+    # Test the initial configuration
+    pre_symbol = get_k_cell_top_symbol(initial_config)
+    assert isinstance(pre_symbol, Symbol)
+    assert pre_symbol.name == "ksym_Lbl'Hash'Init'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'KItem"
+
+    # First rewrite
+    hint = next(iterator, None)
+    assert isinstance(hint, RewriteStepExpression)
+    assert hint.axiom.ordinal == 104
+    assert len(hint.substitutions) == 1
+
+    # Second rewrite
+    hint = next(iterator, None)
+    assert isinstance(hint, RewriteStepExpression)
+    assert hint.axiom.ordinal == 105
+    assert len(hint.substitutions) == 1
+
+    # Function event
+    hint = next(iterator, None)
+    assert isinstance(hint, FunEvent)
+    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert hint.position == (0, 0, 0, 0, 0)
+
+    # Simplification rule
+    hint = next(iterator, None)
+    assert isinstance(hint, RewriteStepExpression)
+    assert hint.axiom.ordinal == 157
+    assert len(hint.substitutions) == 2
+
+    # Function event
+    hint = next(iterator, None)
+    assert isinstance(hint, FunEvent)
+    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert hint.position == (0, 0)
+
+    # Simplification rule
+    hint = next(iterator, None)
+    assert isinstance(hint, RewriteStepExpression)
+    assert hint.axiom.ordinal == 155
+    assert len(hint.substitutions) == 1
+
+    # Function event
+    hint = next(iterator, None)
+    assert isinstance(hint, FunEvent)
+    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert hint.position == (0, 1)
+
+    # Simplification rule
+    hint = next(iterator, None)
+    assert isinstance(hint, RewriteStepExpression)
+    assert hint.axiom.ordinal == 154
+    assert len(hint.substitutions) == 1
