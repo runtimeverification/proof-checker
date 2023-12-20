@@ -52,7 +52,7 @@ class RewriteStepExpression:
 
 
 def get_proof_hints(
-    llvm_proof_hints: LLVMRewriteTrace,
+    rewrite_trace: LLVMRewriteTrace,
     language_semantics: LanguageSemantics,
 ) -> tuple[Pattern, Iterator[RewriteStepExpression]]:
     """
@@ -61,13 +61,13 @@ def get_proof_hints(
     """
 
     # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
-    current_config = language_semantics.convert_pattern(llvm_proof_hints.initial_config)
-    iterator = _iterate_over_hints(llvm_proof_hints, language_semantics)
+    current_config = language_semantics.convert_pattern(rewrite_trace.initial_config)
+    iterator = _iterate_over_hints(rewrite_trace, language_semantics)
     return current_config, iterator
 
 
 def _iterate_over_hints(
-    llvm_proof_hints: LLVMRewriteTrace,
+    rewrite_trace: LLVMRewriteTrace,
     language_semantics: LanguageSemantics,
 ) -> Iterator[RewriteStepExpression]:
     """
@@ -75,10 +75,13 @@ def _iterate_over_hints(
     Note that no hints will be generated if the trace is empty.
     """
     # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
-    for event in llvm_proof_hints.trace:
+    for event in rewrite_trace.trace:
         # TODO: process function/hook events in llvm_proof_hint.strace
-        if isinstance(event, LLVMRuleEvent):
-            axiom = language_semantics.get_axiom(event.rule_ordinal)
-            substitutions = language_semantics.convert_substitutions(dict(event.substitution), event.rule_ordinal)
-            hint = RewriteStepExpression(axiom, substitutions)
-            yield hint
+        match event:
+            case LLVMRuleEvent(rule_ordinal, substitutions):
+                axiom = language_semantics.get_axiom(rule_ordinal)
+                converted_substitutions = language_semantics.convert_substitutions(dict(substitutions), rule_ordinal)
+                hint = RewriteStepExpression(axiom, converted_substitutions)
+                yield hint
+            case _:
+                continue
