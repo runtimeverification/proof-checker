@@ -67,16 +67,24 @@ def _iterate_over_hints(
     Note that no hints will be generated if the trace is empty.
     """
     # TODO: process function/hook/rule events in llvm_proof_hint.pre_trace
+    hints_processed = 0
+    objects_yielded = 0
     for event in rewrite_trace.trace:
         # TODO: process function/hook events in llvm_proof_hint.strace
+        hints_processed += 1
         match event:
             case LLVMRuleEvent(rule_ordinal, substitutions):
                 axiom = language_semantics.get_axiom(rule_ordinal)
                 converted_substitutions = language_semantics.convert_substitutions(dict(substitutions), rule_ordinal)
                 hint = RewriteStepExpression(axiom, frozendict(converted_substitutions))
+                objects_yielded += 1
                 yield hint
             case LLVMFunctionEvent(name, location_str, _):
                 location: tuple[int, ...] = tuple(map(int, location_str.split(':')))
+                objects_yielded += 1
                 yield FunEvent(name, location)
             case _:
                 continue
+    else:
+        if objects_yielded == 0:
+            print(f'WARNING: No hints generated for a trace with {hints_processed} events')

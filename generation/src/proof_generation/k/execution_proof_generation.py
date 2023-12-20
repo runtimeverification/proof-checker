@@ -427,9 +427,4 @@ class ExecutionProofExp(proof.ProofExp):
                     proof_expr.function_simplification_event(position)
                 case _:
                     raise NotImplementedError(f'Unsupported event: {str(hint)}')
-
-        if proof_expr is None:
-            print('WARNING: The proof expression is empty, no hints were provided.')
-            return proof.ProofExp(notations=list(language_semantics.notations))
-        else:
-            return proof_expr
+        return proof_expr
