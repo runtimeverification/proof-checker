@@ -283,10 +283,11 @@ class SimplificationPerformer:
 
 class ExecutionProofExp(proof.ProofExp):
     def __init__(self, language_semantics: LanguageSemantics, init_config: Pattern):
+        super().__init__(notations=list(language_semantics.notations))
+
         self._init_config = init_config
         self._curr_config = init_config
         self.language_semantics = language_semantics
-        super().__init__(notations=list(language_semantics.notations))
         self.subst_proofexp = self.import_module(Substitution())
         self.kore_lemmas = self.import_module(kl.KoreLemmas())
         self._simplification_performer = SimplificationPerformer(
