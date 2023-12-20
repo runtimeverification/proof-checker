@@ -82,7 +82,7 @@ def rewrite_with_cell() -> LanguageSemantics:
     return semantics
 
 
-def node_tree(outer_sort: KSort | None = None) -> LanguageSemantics:
+def node_tree(outer_sort: Symbol | None = None) -> LanguageSemantics:
     semantics = LanguageSemantics()
     with semantics as sem:
         module = sem.module('node-tree')
