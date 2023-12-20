@@ -570,3 +570,4 @@ class Instantiate(Pattern):
 class PrettyOptions:
     simplify_instantiations: bool = False
     notations: Mapping[Pattern, Notation] = frozendict({})
+    print_stack: bool = True
