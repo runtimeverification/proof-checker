@@ -192,4 +192,4 @@ def test_proof_trace_tree_reverse_without_int() -> None:
     assert len(hint.substitutions) == 1
 
     with raises(StopIteration):
-        next(iterator, None)
+        next(iterator)
