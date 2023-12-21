@@ -12,24 +12,6 @@ r = ((P // 17) + 19) % P
 def fingerprint_str(a: str) -> int:
     return sum([r ** i * ord(a[i]) for i in range(len(a))]) % P
 
-# Map multiset A to the polynomial P for which A is the exact multiset of roots.
-# E.g, map {1, 2, 2} to P = (X - 1)(X - 2)(X - 2)
-# Evaluate P at point r.
-def fingerprint_set(s: list[int]) -> int:
-    res = 1
-    for elem in s:
-        res = (res * (r - elem)) % P
-    return res
-
-class ExplicitPattern():
-    def __init__(self, content: str): 
-        self.content = content
-
-    def implicit(self):
-        return ImplicitPattern(
-            hash=fingerprint_str(self.content),
-            length=len(self.content)
-        )
 
 class ImplicitPattern():
     def __init__(self, hash: int, length: int):
@@ -39,6 +21,20 @@ class ImplicitPattern():
     def concat(self, other: 'ImplicitPattern') -> 'ImplicitPattern':
         self.length = (self.length + other.length) % P
         self.hash = (self.hash + other.hash * (r ** self.length)) % P
+
+class ExplicitPattern():
+    def __init__(self, content: str): 
+        self.content = content
+
+    def implicit(self) -> ImplicitPattern:
+        return ImplicitPattern(
+            hash=fingerprint_str(self.content),
+            length=len(self.content)
+        )
+
+    def wellformed(self) -> bool:
+        # Placeholder
+        return True
 
 class Artefact():
     def __init__(
@@ -57,19 +53,23 @@ class ProofStep():
     # Multiset of artefacts PRODUCED by this proof step
     def proofs(self) -> list[Artefact]:
         raise NotImplementedError
-    
 
 class ExplicitCommitment(ProofStep):
     def __init__(
-            self,
-            pattern: ExplicitPattern
+        self,
+        pattern: ExplicitPattern
     ):
         self.pattern = pattern
 
     def obligations(self) -> list[Artefact]:
         return []
 
+    # Note that these are not actually proofs, but rather
+    # patterns that are validated for use in instantiations
+    # However, we can distinguish between these and proof artefacts
+    # by using unique hints
     def proofs(self) -> list[Artefact]:
+        assert self.pattern.well_formed()
         return Artefact(
             ipat=self.pattern.implicit(),
             # 0 as a hint is ONLY used for ExplicitCommitments
@@ -199,8 +199,8 @@ def check_proof(
     ) -> bool:
 
     # Expect the last step of the proof to produce an artefact of the claim
-    obligations: {Artefact(claim.implicit(), hint=len(proof_steps))}
-    proofs:  = set()
+    obligations: set[Artefact] = {Artefact(claim.implicit(), hint=len(proof_steps))}
+    proofs: set[Artefact] = set()
 
     for ecom in ecoms:
         for p in ecom.proofs():
@@ -213,3 +213,37 @@ def check_proof(
             proofs.add(p)
 
     assert obligations == proofs
+
+imp_refl_claim = "->pp"
+ecoms = [
+    ExplicitCommitment("p"), 
+    ExplicitCommitment("->pp"), 
+    ExplicitCommitment("p"),
+    ExplicitCommitment("p"),
+    ExplicitCommitment("p"),
+]
+
+ip = ExplicitPattern("p").implicit()
+ipp = ExplicitPattern("->pp").implicit()
+
+steps = [None] * 6
+
+steps[1] = Prop2(ipat_a=ip, ipat_b=ipp, ipat_c=ip, index=1)
+steps[2] = Prop1(ipat_a=ip, ipat_b=ipp, index=2)
+steps[3] = ModusPonens(
+    artefact_a=steps[2].proofs()[0],
+    ipat_b= ExplicitPattern("->"),
+    hint_ab= 1,
+    index= 3
+)
+steps[4] = Prop1(ipat_a=ip, ipat_b=ip, index=4)
+steps[5] = ModusPonens()
+
+# Map multiset A to the polynomial P for which A is the exact multiset of roots.
+# E.g, map {1, 2, 2} to P = (X - 1)(X - 2)(X - 2)
+# Evaluate P at point r.
+def fingerprint_mset(s: list[int]) -> int:
+    res = 1
+    for elem in s:
+        res = (res * (r - elem)) % P
+    return res
