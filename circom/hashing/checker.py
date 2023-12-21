@@ -1,4 +1,5 @@
 from typing import list
+from copy import deepcopy
 
 circom_P = 21888242871839275222246405745257275088548364400416034343698204186575808495617 
 P = circom_P
@@ -36,7 +37,7 @@ class ImplicitPattern():
         self.hash = hash
         self.length = length
 
-    def concat(self, other: 'ImplicitPattern'):
+    def concat(self, other: 'ImplicitPattern') -> 'ImplicitPattern':
         self.length = (self.length + other.length) % P
         self.hash = (self.hash + other.hash * (r ** self.length)) % P
 
@@ -80,11 +81,93 @@ class Prop1(ProofStep):
 
     # Construct "->a->ba" from "a" and "b"
     def proofs(self) -> list[Artefact]:
-        h_res: int = 1
-        len_res: int = 2 * len_a + len_b + 2
+        prop1_inst: ImplicitPattern = ExplicitPattern("->") \
+            .implicit() \
+            .concat(self.a) \
+            .concat(ExplicitPattern("->").implicit()) \
+            .concat(self.b) \
+            .concat(self.a)
 
         return [
             Artefact(ipat= prop1_inst,hint=self.index)
         ]
+    
+class Prop1(ProofStep):
+    def __init__(
+        self,
+        ipat_a: ImplicitPattern,
+        ipat_b: ImplicitPattern,
+        index: int
+    ): 
+        self.a = ipat_a
+        self.b = ipat_b
+        self.index = index
+
+    def obligations(self) -> list[Artefact]:
+        return [
+            Artefact(ipat=self.a, hint= 0),
+            Artefact(ipat=self.b, hint= 0)
+        ]
+
+    # Construct "->a->ba" from "a" and "b"
+    def proofs(self) -> list[Artefact]:
+        prop1_inst: ImplicitPattern = ExplicitPattern("->") \
+            .implicit() \
+            .concat(self.a) \
+            .concat(ExplicitPattern("->").implicit()) \
+            .concat(self.b) \
+            .concat(self.a)
+
+        return [
+            Artefact(ipat= prop1_inst,hint=self.index)
+        ]
+    
+class ModusPonens(ProofStep):
+    # Premise1: a
+    # Premise2: -> a b
+    # Conclusion: b
+
+    def __init__(
+        self,
+        artefact_a: Artefact,
+        ipat_b: ImplicitPattern,
+        hint_ab: int,
+        index: int
+    ): 
+        self.artefact_a = artefact_a
+        self.ipat_b = ipat_b
+        self.hint_ab = hint_ab
+        self.index = index
+
+        # We will produce an artefact for b, timestamped with curr index
+        self.artefact_b = Artefact(
+            ipat=ipat_b,
+            hint=self.index
+        )
+
+        # Implicit pattern for the implication premise obtained
+        # via concatenation
+        self.ipat_ab = ExplicitPattern("->").implicit() \
+            .concat(artefact_a.ipat) \
+            .concat(ipat_b)
+        
+        # Artefact for impl. premise assembled with user-given hint
+        self.artefact_ab = Artefact(
+            ipat=self.ipat_ab,
+            hint=hint_ab
+        )
+    
+    def obligations(self) -> list[Artefact]:
+        return [
+            self.artefact_a,
+            self.artefact_ab
+        ]
+    
+    def proof(self) -> list[Artefact]:
+        return [
+            self.artefact_b
+        ]
+
+
 
 def check_proof(C: int, M: int, N: int) -> bool:
