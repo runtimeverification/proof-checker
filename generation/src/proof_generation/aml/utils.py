@@ -72,12 +72,14 @@ def match_single(
         if pat_mu[0] != inst_mu[0]:
             return None
         return match_single(pat_mu[1], inst_mu[1], ret)
+
     if (
         isinstance(pattern, ESubst)
         or isinstance(pattern, SSubst)
         or isinstance(instance, ESubst)
         or isinstance(instance, SSubst)
     ):
+        # TODO: Implement me.
         raise NotImplementedError
 
     return None
