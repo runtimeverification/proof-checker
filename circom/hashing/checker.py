@@ -198,8 +198,6 @@ class ModusPonens(ProofStep):
             self.artefact_b
         ]
 
-
-
 def check_proof(
         explicit_patterns: list[ExplicitPattern], 
         proof_steps: list[Prop1 | Prop2 | ModusPonens]
