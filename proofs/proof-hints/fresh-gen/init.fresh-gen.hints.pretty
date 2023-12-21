@@ -1,0 +1,126 @@
+Hook: MAP.element @ 0
+  Function: Lbl'UndsPipe'-'-GT-Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: MAP.unit @ 0
+  Function: Lbl'Stop'Map{} @ 0
+  Result: [kore]
+Hook: MAP.concat @ 0
+  Function: Lbl'Unds'Map'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Function: LblinitGeneratedTopCell{} @ 0
+  Term: [kore]
+Rule 197 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: LblinitKCell{} @ 0:0
+  Term: [kore]
+Rule 198 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: Lblproject'Coln'KItem{} @ 0:0:0
+  Hook: MAP.lookup @ 0:0:0:0:0
+    Function: LblMap'Coln'lookup{} @ 0:0:0:0:0
+      Term: [kore]
+      Term: [kore]
+    Result: [kore]
+  Term: [kore]
+Rule 247 [label: N/A] [loc: N/A] [substs: 1]
+  VarK = [kore]
+Function: LblinitGCell{} @ 0:1
+Rule 195 [label: N/A] [loc: N/A] [substs: 0]
+Hook: LIST.unit @ 0:0
+  Function: Lbl'Stop'List{} @ 0:0
+  Result: [kore]
+Function: LblinitGeneratedCounterCell{} @ 0:2
+Rule 196 [label: N/A] [loc: N/A] [substs: 0]
+Init config: [kore]
+Rule 149 [label: FRESH-GEN.init-rl] [loc: 22,5] [substs: 2]
+  Var'Unds'Gen0 = [kore]
+  Var'Unds'Gen1 = [kore]
+Config: [kore]
+Rule 148 [label: FRESH-GEN.fresh-rl] [loc: 25,5] [substs: 3]
+  Var'Unds'DotVar1 = [kore]
+  Var'Hash'Fresh = [kore]
+  Var'Unds'Gen0 = [kore]
+Hook: LIST.concat @ 0:1:0
+  Function: Lbl'Unds'List'Unds'{} @ 0:1:0
+    Term: [kore]
+    Hook: LIST.element @ 0:1:0:1
+      Function: LblListItem{} @ 0:1:0:1
+        Function: LblfreshInt'LParUndsRParUnds'INT'Unds'Int'Unds'Int{} @ 0:1:0:1:0:0
+          Hook: INT.add @ 0:1:0:1:0:0:0
+            Function: Lbl'UndsPlus'Int'Unds'{} @ 0:1:0:1:0:0:0
+              Term: [kore]
+              Term: [kore]
+            Result: [kore]
+          Term: [kore]
+        Rule 193 [label: N/A] [loc: 1433,8] [substs: 1]
+          VarI = [kore]
+        Term: [kore]
+      Result: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:2:0
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:2:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Rule 148 [label: FRESH-GEN.fresh-rl] [loc: 25,5] [substs: 3]
+  Var'Unds'DotVar1 = [kore]
+  Var'Hash'Fresh = [kore]
+  Var'Unds'Gen0 = [kore]
+Hook: LIST.concat @ 0:1:0
+  Function: Lbl'Unds'List'Unds'{} @ 0:1:0
+    Term: [kore]
+    Hook: LIST.element @ 0:1:0:1
+      Function: LblListItem{} @ 0:1:0:1
+        Function: LblfreshInt'LParUndsRParUnds'INT'Unds'Int'Unds'Int{} @ 0:1:0:1:0:0
+          Hook: INT.add @ 0:1:0:1:0:0:0
+            Function: Lbl'UndsPlus'Int'Unds'{} @ 0:1:0:1:0:0:0
+              Term: [kore]
+              Term: [kore]
+            Result: [kore]
+          Term: [kore]
+        Rule 193 [label: N/A] [loc: 1433,8] [substs: 1]
+          VarI = [kore]
+        Term: [kore]
+      Result: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:2:0
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:2:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Rule 148 [label: FRESH-GEN.fresh-rl] [loc: 25,5] [substs: 3]
+  Var'Unds'DotVar1 = [kore]
+  Var'Hash'Fresh = [kore]
+  Var'Unds'Gen0 = [kore]
+Hook: LIST.concat @ 0:1:0
+  Function: Lbl'Unds'List'Unds'{} @ 0:1:0
+    Term: [kore]
+    Hook: LIST.element @ 0:1:0:1
+      Function: LblListItem{} @ 0:1:0:1
+        Function: LblfreshInt'LParUndsRParUnds'INT'Unds'Int'Unds'Int{} @ 0:1:0:1:0:0
+          Hook: INT.add @ 0:1:0:1:0:0:0
+            Function: Lbl'UndsPlus'Int'Unds'{} @ 0:1:0:1:0:0:0
+              Term: [kore]
+              Term: [kore]
+            Result: [kore]
+          Term: [kore]
+        Rule 193 [label: N/A] [loc: 1433,8] [substs: 1]
+          VarI = [kore]
+        Term: [kore]
+      Result: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:2:0
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:2:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]

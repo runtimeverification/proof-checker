@@ -31,7 +31,7 @@ Rule 137 [label: N/A] [loc: N/A] [substs: 1]
 Function: LblinitGeneratedCounterCell{} @ 0:1
 Rule 95 [label: N/A] [loc: N/A] [substs: 0]
 Init config: [kore]
-Rule 92 [label: N/A] [loc: 11,8] [substs: 2]
+Rule 92 [label: SINGLE-REWRITE.a-to-b] [loc: 11,18] [substs: 2]
   Var'Unds'DotVar0 = [kore]
   Var'Unds'DotVar1 = [kore]
 Config: [kore]

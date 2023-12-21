@@ -1,0 +1,49 @@
+Function: Lblbar1'LParUndsRParUnds'CUSTOM-KLABEL-FUN-SYNTAX'Unds'Foo'Unds'Foo{} @ 0
+  Term: [kore]
+Rule 91 [label: CUSTOM-KLABEL-FUN.bar1-rule] [loc: 15,22] [substs: 1]
+  VarX = [kore]
+Function: Lblbar2'Unds'fun{} @ 0
+  Term: [kore]
+Rule 92 [label: CUSTOM-KLABEL-FUN.bar2-rule] [loc: 16,22] [substs: 1]
+  VarX = [kore]
+Function: Lblbaz1'LParUndsRParUnds'CUSTOM-KLABEL-FUN-SYNTAX'Unds'Foo'Unds'Foo{} @ 0
+  Term: [kore]
+Rule 93 [label: CUSTOM-KLABEL-FUN.baz1-rule] [loc: 17,22] [substs: 1]
+  VarX = [kore]
+Function: Lblbaz2'LParUndsRParUnds'CUSTOM-KLABEL-FUN-SYNTAX'Unds'Foo'Unds'Foo{} @ 0
+  Term: [kore]
+Rule 94 [label: CUSTOM-KLABEL-FUN.baz2-rule] [loc: 18,22] [substs: 1]
+  VarX = [kore]
+Hook: MAP.element @ 0
+  Function: Lbl'UndsPipe'-'-GT-Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: MAP.unit @ 0
+  Function: Lbl'Stop'Map{} @ 0
+  Result: [kore]
+Hook: MAP.concat @ 0
+  Function: Lbl'Unds'Map'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Function: LblinitGeneratedTopCell{} @ 0
+  Term: [kore]
+Rule 97 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: LblinitKCell{} @ 0:0
+  Term: [kore]
+Rule 98 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: Lblproject'Coln'KItem{} @ 0:0:0
+  Hook: MAP.lookup @ 0:0:0:0:0
+    Function: LblMap'Coln'lookup{} @ 0:0:0:0:0
+      Term: [kore]
+      Term: [kore]
+    Result: [kore]
+  Term: [kore]
+Rule 138 [label: N/A] [loc: N/A] [substs: 1]
+  VarK = [kore]
+Function: LblinitGeneratedCounterCell{} @ 0:1
+Rule 96 [label: N/A] [loc: N/A] [substs: 0]
+Init config: [kore]

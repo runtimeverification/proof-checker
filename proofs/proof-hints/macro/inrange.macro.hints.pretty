@@ -1,0 +1,51 @@
+Function: LblinRange'LParUndsRParUnds'MACRO-SYNTAX'Unds'Bool'Unds'Int{} @ 0
+  Term: [kore]
+Rule 152 [label: MACRO.inrange] [loc: 21,20] [substs: 1]
+  VarX = [kore]
+Hook: BOOL.and @ 0
+  Hook: INT.le @ 0:0
+    Function: Lbl'Unds-LT-Eqls'Int'Unds'{} @ 0:0
+      Term: [kore]
+      Term: [kore]
+    Result: [kore]
+  Term: [kore]
+  Hook: INT.le @ 0:1
+    Function: Lbl'Unds-LT-Eqls'Int'Unds'{} @ 0:1
+      Term: [kore]
+      Term: [kore]
+    Result: [kore]
+  Term: [kore]
+  Result: [kore]
+Hook: MAP.element @ 0
+  Function: Lbl'UndsPipe'-'-GT-Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: MAP.unit @ 0
+  Function: Lbl'Stop'Map{} @ 0
+  Result: [kore]
+Hook: MAP.concat @ 0
+  Function: Lbl'Unds'Map'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Function: LblinitGeneratedTopCell{} @ 0
+  Term: [kore]
+Rule 154 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: LblinitKCell{} @ 0:0
+  Term: [kore]
+Rule 155 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: Lblproject'Coln'KItem{} @ 0:0:0
+  Hook: MAP.lookup @ 0:0:0:0:0
+    Function: LblMap'Coln'lookup{} @ 0:0:0:0:0
+      Term: [kore]
+      Term: [kore]
+    Result: [kore]
+  Term: [kore]
+Rule 196 [label: N/A] [loc: N/A] [substs: 1]
+  VarK = [kore]
+Function: LblinitGeneratedCounterCell{} @ 0:1
+Rule 153 [label: N/A] [loc: N/A] [substs: 0]
+Init config: [kore]

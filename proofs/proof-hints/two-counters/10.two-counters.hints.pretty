@@ -1,0 +1,270 @@
+Hook: MAP.element @ 0
+  Function: Lbl'UndsPipe'-'-GT-Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: MAP.unit @ 0
+  Function: Lbl'Stop'Map{} @ 0
+  Result: [kore]
+Hook: MAP.concat @ 0
+  Function: Lbl'Unds'Map'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Function: LblinitGeneratedTopCell{} @ 0
+  Term: [kore]
+Rule 157 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: LblinitKCell{} @ 0:0
+  Term: [kore]
+Rule 158 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: Lblproject'Coln'KItem{} @ 0:0:0
+  Hook: MAP.lookup @ 0:0:0:0:0
+    Function: LblMap'Coln'lookup{} @ 0:0:0:0:0
+      Term: [kore]
+      Term: [kore]
+    Result: [kore]
+  Term: [kore]
+Rule 201 [label: N/A] [loc: N/A] [substs: 1]
+  VarK = [kore]
+Function: LblinitGeneratedCounterCell{} @ 0:1
+Rule 156 [label: N/A] [loc: N/A] [substs: 0]
+Init config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Rule 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 4]
+  Var'Unds'DotVar0 = [kore]
+  Var'Unds'DotVar1 = [kore]
+  VarM = [kore]
+  VarN = [kore]
+Hook: INT.sub @ 0:0:0:0:0:0
+  Function: Lbl'Unds'-Int'Unds'{} @ 0:0:0:0:0:0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: INT.add @ 0:0:0:0:0:1
+  Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0:0:0:0:1
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Config: [kore]
+Side Condition 122 [label: TWO-COUNTERS.count-step] [loc: 14,23] [substs: 1]
+  VarM = [kore]
+Hook: INT.ge @ 0
+  Function: Lbl'Unds-GT-Eqls'Int'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]

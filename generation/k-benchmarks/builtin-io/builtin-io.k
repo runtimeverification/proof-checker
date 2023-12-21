@@ -1,5 +1,8 @@
 module BUILTIN-IO-SYNTAX
 
+  imports INT-SYNTAX
+  imports STRING-SYNTAX
+
 endmodule
 
 module BUILTIN-IO

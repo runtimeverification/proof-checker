@@ -1,0 +1,45 @@
+Function: Lblid'LParUndsRParUnds'BUILTIN-JSON-SYNTAX'Unds'JSON'Unds'JSON{} @ 0
+  Term: [kore]
+Rule 214 [label: BUILTIN-JSON.id-rule] [loc: 18,20] [substs: 1]
+  VarJ = [kore]
+Hook: JSON.string2json @ 0
+  Function: LblString2JSON'LParUndsRParUnds'JSON'Unds'JSON'Unds'String{} @ 0
+    Hook: JSON.json2string @ 0:0
+      Function: LblJSON2String'LParUndsRParUnds'JSON'Unds'String'Unds'JSON{} @ 0:0
+        Term: [kore]
+      Result: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: MAP.element @ 0
+  Function: Lbl'UndsPipe'-'-GT-Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Hook: MAP.unit @ 0
+  Function: Lbl'Stop'Map{} @ 0
+  Result: [kore]
+Hook: MAP.concat @ 0
+  Function: Lbl'Unds'Map'Unds'{} @ 0
+    Term: [kore]
+    Term: [kore]
+  Result: [kore]
+Function: LblinitGeneratedTopCell{} @ 0
+  Term: [kore]
+Rule 216 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: LblinitKCell{} @ 0:0
+  Term: [kore]
+Rule 217 [label: N/A] [loc: N/A] [substs: 1]
+  VarInit = [kore]
+Function: Lblproject'Coln'KItem{} @ 0:0:0
+  Hook: MAP.lookup @ 0:0:0:0:0
+    Function: LblMap'Coln'lookup{} @ 0:0:0:0:0
+      Term: [kore]
+      Term: [kore]
+    Result: [kore]
+  Term: [kore]
+Rule 272 [label: N/A] [loc: N/A] [substs: 1]
+  VarK = [kore]
+Function: LblinitGeneratedCounterCell{} @ 0:1
+Rule 215 [label: N/A] [loc: N/A] [substs: 0]
+Init config: [kore]

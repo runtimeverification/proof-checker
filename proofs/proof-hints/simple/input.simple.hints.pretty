@@ -1,6 +1,6 @@
 Function: Lblf'LParUndsRParUnds'SIMPLE'Unds'Expr'Unds'Int{} @ 0
   Term: [kore]
-Rule 2726 [label: SIMPLE.f1] [loc: 10,14] [substs: 1]
+Rule 2726 [label: SIMPLE.f1] [loc: 10,15] [substs: 1]
   Var'Unds'Gen0 = [kore]
 Hook: MAP.element @ 0
   Function: Lbl'UndsPipe'-'-GT-Unds'{} @ 0
@@ -35,12 +35,12 @@ Rule 2789 [label: N/A] [loc: N/A] [substs: 1]
 Function: LblinitGeneratedCounterCell{} @ 0:1
 Rule 2733 [label: N/A] [loc: N/A] [substs: 0]
 Init config: [kore]
-Rule 2684 [label: SIMPLE.r1] [loc: 9,14] [substs: 2]
+Rule 2684 [label: SIMPLE.r1] [loc: 9,15] [substs: 2]
   Var'Unds'DotVar0 = [kore]
   Var'Unds'Gen2 = [kore]
 Function: Lblg'LParUndsRParUnds'SIMPLE'Unds'Expr'Unds'Int{} @ 0:0:0
   Term: [kore]
-Rule 2731 [label: SIMPLE.f2] [loc: 11,14] [substs: 1]
+Rule 2731 [label: SIMPLE.f2] [loc: 11,15] [substs: 1]
   VarI = [kore]
 Hook: INT.add @ 0:0
   Function: Lbl'UndsPlus'Int'Unds'{} @ 0:0
