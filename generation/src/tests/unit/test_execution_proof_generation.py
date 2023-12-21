@@ -623,6 +623,23 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     assert right == simplified_subterm
 
 
+def test_dv_simplification_batch() -> None:
+    # TODO: Implement the test
+    # Initial configuration: #"<ksym_Lbl'-LT-'generatedTop'-GT-'> <ksym_Lbl'-LT-'k'-GT-'> (ksym_inj(ksort_SortFoo, ksort_SortKItem, ksym_Lblsucc'LParUndsRParUnds'DV'Unds'Foo'Unds'Foo(ksym_Lblfoo'LParUndsRParUnds'DV'Unds'Foo'Unds'Int(dv(5):ksort_SortInt))) ~> ksym_dotk()) </ksym_Lbl'-LT-'k'-GT-'> <ksym_Lbl'-LT-'generatedCounter'-GT-'> dv(0):ksort_SortInt </ksym_Lbl'-LT-'generatedCounter'-GT-'> </ksym_Lbl'-LT-'generatedTop'-GT-'>"
+    # 1. Rule event (there is a single rule)
+    # 2. Hook Event
+    # Name: INT.add
+    # Location: 0 0 0 0 0 0
+    # Args: Function Event:
+        # Name: "Lbl'UndsPlus'Int'Unds'{}"
+        # "Lbl'UndsPlus'Int'Unds'{}"
+        # Location: 0 0 0 0 0 0
+        # Args: {0: DV(sort=SortApp(name='SortInt', sorts=()), value=String(value='5'))
+        #        1: DV(sort=SortApp(name='SortInt', sorts=()), value=String(value='6'))}
+    # Result: '\\dv{SortInt{}}("6")'
+    # Final configuration: "<ksym_Lbl'-LT-'generatedTop'-GT-'> <ksym_Lbl'-LT-'k'-GT-'> (ksym_inj(ksort_SortFoo, ksort_SortKItem, ksym_Lblfoo'LParUndsRParUnds'DV'Unds'Foo'Unds'Int(dv(6):ksort_SortInt)) ~> ksym_dotk()) </ksym_Lbl'-LT-'k'-GT-'> <ksym_Lbl'-LT-'generatedCounter'-GT-'> dv(0):ksort_SortInt </ksym_Lbl'-LT-'generatedCounter'-GT-'> </ksym_Lbl'-LT-'generatedTop'-GT-'>"
+    pass
+
 def test_prove_equality_from_rule() -> None:
     semantics = node_tree()
     a_symbol = semantics.get_symbol('a')
