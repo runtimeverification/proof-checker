@@ -15,14 +15,13 @@ from proof_generation.k.kore_convertion.language_semantics import (
     KSortVar,
     KSymbol,
 )
+from proof_generation.k.kore_convertion.rewrite_steps import FunEvent, RewriteStepExpression
 from proof_generation.proofs.definedness import functional
 from proof_generation.proofs.substitution import HOLE, Substitution
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
-    from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
+    from proof_generation.k.kore_convertion.rewrite_steps import EventTrace
 
 
 Location = tuple[int, ...]
@@ -356,9 +355,11 @@ class ExecutionProofExp(proof.ProofExp):
 
         return proof
 
-    def simplification_event(self, ordinal: int, substitution: dict[int, Pattern], location: Location) -> None:
+    def function_simplification_event(self, location: Location) -> None:
         self._simplification_performer.enter_context(location)
-        self._simplification_performer.apply_simplification(ordinal, substitution)
+
+    def rule_simplification_event(self, rule: KEquationalRule, substitution: dict[int, Pattern]) -> None:
+        self._simplification_performer.apply_simplification(rule.ordinal, substitution)
         self._simplification_performer.exit_context()
 
         # Update the current configuration
@@ -420,19 +421,21 @@ class ExecutionProofExp(proof.ProofExp):
 
     @staticmethod
     def from_proof_hints(
-        initial_config: Pattern, hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
+        initial_config: Pattern, hints: EventTrace, language_semantics: LanguageSemantics
     ) -> proof.ProofExp:
         """Constructs a proof expression from a list of rewrite hints."""
         proof_expr = ExecutionProofExp(language_semantics, initial_config)
         for hint in hints:
-            if isinstance(hint.axiom, KRewritingRule):
-                proof_expr.rewrite_event(hint.axiom, hint.substitutions)
-            else:
-                # TODO: Remove the stub
-                raise NotImplementedError('TODO: Add support for equational rules')
-
-        if proof_expr is None:
-            print('WARNING: The proof expression is empty, no hints were provided.')
-            return proof.ProofExp(notations=list(language_semantics.notations))
-        else:
-            return proof_expr
+            match hint:
+                case RewriteStepExpression(axiom, substitutions):
+                    if isinstance(axiom, KRewritingRule):
+                        proof_expr.rewrite_event(axiom, dict(substitutions))
+                    elif isinstance(axiom, KEquationalRule):
+                        proof_expr.rule_simplification_event(axiom, dict(substitutions))
+                    else:
+                        raise NotImplementedError(f'Unsupported axiom type: {str(axiom)}')
+                case FunEvent(_, position):
+                    proof_expr.function_simplification_event(position)
+                case _:
+                    raise NotImplementedError(f'Unsupported event: {str(hint)}')
+        return proof_expr
