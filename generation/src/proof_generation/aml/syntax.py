@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -12,7 +12,8 @@ if TYPE_CHECKING:
     from .notation import Notation
 
 
-class Pattern:
+
+class Pattern(ABC):
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         raise NotImplementedError
 
