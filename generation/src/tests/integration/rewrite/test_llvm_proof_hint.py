@@ -43,9 +43,9 @@ def test_parse_proof_hint_single_rewrite() -> None:
     assert k_cell['args'][1]['name'] == 'dotk'
 
 
-def test_parse_proof_hint_trivial() -> None:
-    names = ['0_rewrites.trivial', '1_rewrite.trivial', '2_rewrites.trivial']
-    hints = [read_proof_hint('trivial/' + name + '.hints') for name in names]
+def test_parse_proof_hint_decrement() -> None:
+    names = ['0_rewrites.decrement', '1_rewrite.decrement', '2_rewrites.decrement']
+    hints = [read_proof_hint('decrement/' + name + '.hints') for name in names]
 
     # 11 initialization events
     for i in range(len(hints)):
@@ -77,10 +77,10 @@ def test_parse_proof_hint_imp5() -> None:
 
 
 def test_parse_proof_hint_reverse() -> None:
-    hint = read_proof_hint('reverse/init.reverse.hints')
+    hint = read_proof_hint('reverse/ab.reverse.hints')
 
     # 11 initialization events
-    assert len(hint.pre_trace) == 11
+    assert len(hint.pre_trace) == 17
 
     # 10 post-initial-configuration events
-    assert len(hint.trace) == 10
+    assert len(hint.trace) == 0
