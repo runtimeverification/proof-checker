@@ -134,7 +134,7 @@ def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: P
             Instantiate(
                 App(phi0, phi1), frozendict({0: SSubst(phi2, SVar(0), sigma1), 1: SSubst(phi1, SVar(0), sigma1)})
             ),
-            marks=[pytest.mark.xfail]
+            marks=[pytest.mark.xfail],
         ),
     ],
 )

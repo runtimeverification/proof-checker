@@ -8,8 +8,9 @@ from frozendict import frozendict
 from .syntax import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
-    from .syntax import InstantiationDict, PrettyOptions
     from typing import Mapping
+
+    from .syntax import InstantiationDict, PrettyOptions
 
 """
 Matching
