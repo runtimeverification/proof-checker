@@ -228,16 +228,40 @@ ipp = ExplicitPattern("->pp").implicit()
 
 steps = [None] * 6
 
-steps[1] = Prop2(ipat_a=ip, ipat_b=ipp, ipat_c=ip, index=1)
-steps[2] = Prop1(ipat_a=ip, ipat_b=ipp, index=2)
+steps[1] = Prop2(
+    ipat_a=ExplicitPattern("p").implicit(), 
+    ipat_b=ExplicitPattern("->pp").implicit(), 
+    ipat_c=ExplicitPattern("p").implicit(), 
+    index=1
+)
+steps[2] = Prop1(
+    ipat_a=ExplicitPattern("p").implicit(), 
+    ipat_b=ExplicitPattern("->pp").implicit(), 
+    index=2
+)
 steps[3] = ModusPonens(
-    artefact_a=steps[2].proofs()[0],
-    ipat_b= ExplicitPattern("->"),
+    artefact_a=Artefact(
+        ipat=ExplicitPattern("->p->->ppp").implicit(),
+        hint=2
+    ),
+    ipat_b= ExplicitPattern("->->p->pp->pp").implicit(),
     hint_ab= 1,
     index= 3
 )
-steps[4] = Prop1(ipat_a=ip, ipat_b=ip, index=4)
-steps[5] = ModusPonens()
+steps[4] = Prop1(
+    ipat_a=ExplicitPattern("p").implicit(), 
+    ipat_b=ExplicitPattern("p").implicit(),
+    index=4
+)
+steps[5] = ModusPonens(
+    artefact_a=Artefact(
+        ipat=ExplicitPattern("->p->pp").implicit(),
+        hint=4
+    ),
+    ipat_b=ExplicitPattern("->pp"),
+    hint_ab=3,
+    index=5
+)
 
 # Map multiset A to the polynomial P for which A is the exact multiset of roots.
 # E.g, map {1, 2, 2} to P = (X - 1)(X - 2)(X - 2)
