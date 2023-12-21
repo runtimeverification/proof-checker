@@ -20,6 +20,7 @@ from proof_generation.proofs.kore import (
     KoreLemmas,
     ceil,
     kore_and,
+    kore_dv,
     kore_equals,
     kore_implies,
     kore_in,
@@ -121,13 +122,13 @@ def node_tree() -> LanguageSemantics:
             cfg_sort_top = kore_top(cfg_sort)
 
             # init{}() => next{}()
-            init_conf = tree_semantics_config_pattern(semantics, 'SortTree', init_symbol.app())
-            next_conf = tree_semantics_config_pattern(semantics, 'SortTree', next_symbol.app())
+            init_conf = simpl_semantics_config_pattern(semantics, 'SortTree', init_symbol.app())
+            next_conf = simpl_semantics_config_pattern(semantics, 'SortTree', next_symbol.app())
             mod.rewrite_rule(kore_rewrites(cfg_sort, init_conf, next_conf))
 
             # next => reverse(node(a, b))
             reverse_expression = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
-            reverse_conf = tree_semantics_config_pattern(semantics, 'SortTree', reverse_expression)
+            reverse_conf = simpl_semantics_config_pattern(semantics, 'SortTree', reverse_expression)
             mod.rewrite_rule(kore_rewrites(cfg_sort, next_conf, reverse_conf))
 
             # reverse(a) = a
@@ -184,6 +185,47 @@ def node_tree() -> LanguageSemantics:
     return semantics
 
 
+def dv() -> LanguageSemantics:
+    semantics = LanguageSemantics()
+
+    with semantics as sem:
+        module = sem.module('dv')
+        with module as mod:
+            # TODO: Extract this part and make it common for several examples
+            top_cell_sort_obj = mod.sort('SortGeneratedTopCell')
+            kcell_sort_obj = mod.sort('SortKCell')
+            k_sort_obj = mod.sort('SortK')
+            foo_sort_obj = mod.sort('SortFoo')
+            int_sort_obj = mod.hooked_sort('SortInt')
+
+            mod.symbol(
+                'generated_top',
+                top_cell_sort_obj,
+                input_sorts=(kcell_sort_obj,),
+                is_functional=True,
+                is_ctor=True,
+                is_cell=True,
+            )
+            mod.symbol('k', kcell_sort_obj, input_sorts=(k_sort_obj,), is_functional=True, is_ctor=True, is_cell=True)
+            from_sort, to_sort = KSortVar('From'), KSortVar('To')
+            mod.symbol('inj', to_sort, sort_params=(from_sort, to_sort), input_sorts=(from_sort,))
+            foo_symb = mod.symbol('foo', foo_sort_obj, input_sorts=(int_sort_obj,), is_functional=True, is_ctor=True)
+            succ_symb = mod.symbol('succ', foo_sort_obj, input_sorts=(foo_sort_obj,), is_functional=True, is_ctor=True)
+            # TODO: Should we add hooked attribute?
+            plus_symb = mod.symbol('plus', int_sort_obj, is_functional=True)
+
+            cfg_sort = semantics.configuration_sort.aml_symbol
+            expression_before = succ_symb.app(foo_symb.app(kore_dv(int_sort_obj.aml_symbol, EVar(0))))
+            expression_after = foo_symb.app(
+                plus_symb.app(kore_dv(int_sort_obj.aml_symbol, EVar(0)), kore_dv(int_sort_obj.aml_symbol, Symbol('1')))
+            )
+            conf_before = simpl_semantics_config_pattern(semantics, 'SortFoo', expression_before)
+            conf_after = simpl_semantics_config_pattern(semantics, 'SortFoo', expression_after)
+            mod.rewrite_rule(kore_rewrites(cfg_sort, conf_before, conf_after))
+
+    return semantics
+
+
 # TODO: Add side conditions!
 def rewrite_with_cells_config_pattern(semantics: LanguageSemantics, kitem1: Pattern, kitem2: Pattern) -> Pattern:
     top_cell_symbol = semantics.get_symbol('generated_top')
@@ -196,7 +238,8 @@ def rewrite_with_cells_config_pattern(semantics: LanguageSemantics, kitem1: Patt
     )
 
 
-def tree_semantics_config_pattern(semantics: LanguageSemantics, input_sort_name: str, kitem: Pattern) -> Pattern:
+# TODO: Merge with the previous function by adding kore_seq and taking care of it in tests
+def simpl_semantics_config_pattern(semantics: LanguageSemantics, input_sort_name: str, kitem: Pattern) -> Pattern:
     top_cell_symbol = semantics.get_symbol('generated_top')
     k_cell_sort = semantics.get_sort('SortKCell')
     internal_sort = semantics.get_sort(input_sort_name)
@@ -686,17 +729,17 @@ def test_locate_simplifications() -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    intermediate_config1 = tree_semantics_config_pattern(
+    intermediate_config1 = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
     )
-    intermediate_config2 = tree_semantics_config_pattern(
+    intermediate_config2 = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
     )
-    unknown_symbol_conf = tree_semantics_config_pattern(
+    unknown_symbol_conf = simpl_semantics_config_pattern(
         semantics, 'SortTree', App(Symbol('unknown_symbol_1'), Symbol('unknown_symbol_2'))
     )
 

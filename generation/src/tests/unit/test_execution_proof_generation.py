@@ -22,8 +22,8 @@ from tests.unit.test_kore_language_semantics import (
     node_tree,
     rewrite_with_cell,
     rewrite_with_cells_config_pattern,
+    simpl_semantics_config_pattern,
     simple_semantics,
-    tree_semantics_config_pattern,
 )
 from tests.unit.test_propositional import make_pt
 
@@ -200,10 +200,10 @@ def test_rewrite_with_simplification() -> None:
     assert isinstance(base_case_a, KEquationalRule)
 
     initial_subterm = next_symbol.app()
-    initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
+    initial_config = simpl_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
 
     final_subterm = node_symbol.app(b_symbol.app(), a_symbol.app())
-    final_config = tree_semantics_config_pattern(semantics, 'SortTree', final_subterm)
+    final_config = simpl_semantics_config_pattern(semantics, 'SortTree', final_subterm)
 
     claim = kore_rewrites(cfg_sort, initial_config, final_config)
 
@@ -297,7 +297,7 @@ def test_performer_get_subterm():
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
 
-    intermidiate_config = tree_semantics_config_pattern(
+    intermidiate_config = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
@@ -329,7 +329,7 @@ def test_performer_update_subterm():
 
     # Build the initial state
     initial_kcell_value = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
-    intermidiate_config = tree_semantics_config_pattern(
+    intermidiate_config = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         initial_kcell_value,
@@ -343,19 +343,19 @@ def test_performer_update_subterm():
     location = (0, 0, 0)
     pattern = intermidiate_config
     plug = a_symbol.app()
-    expected_result = tree_semantics_config_pattern(semantics, 'SortTree', plug)
+    expected_result = simpl_semantics_config_pattern(semantics, 'SortTree', plug)
     assert performer.update_subterm(location, pattern, plug) == expected_result
 
     # Update tge subpattern for the whole configuration
     # ksym_generated_top -> ksym_k -> ksym_inj -> ksym_node -> ksym_reverse -> ksym_b
     location = (0, 0, 0, 1)
     plug = a_symbol.app()
-    pattern = tree_semantics_config_pattern(
+    pattern = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), reverse_symbol.app(b_symbol.app())),
     )
-    result = tree_semantics_config_pattern(
+    result = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         node_symbol.app(reverse_symbol.app(a_symbol.app()), a_symbol.app()),
@@ -400,12 +400,12 @@ def test_performer_update_config():
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
 
-    intermidiate_config1 = tree_semantics_config_pattern(
+    intermidiate_config1 = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(a_symbol.app()),
     )
-    intermidiate_config2 = tree_semantics_config_pattern(
+    intermidiate_config2 = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
@@ -427,8 +427,8 @@ def test_performer_update_config():
     performer.exit_context()
 
     # But it is possible to update the configuration after the simplification
-    simple_config_before = tree_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
-    simple_config_after = tree_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
+    simple_config_before = simpl_semantics_config_pattern(semantics, 'SortTree', reverse_symbol.app(a_symbol.app()))
+    simple_config_after = simpl_semantics_config_pattern(semantics, 'SortTree', a_symbol.app())
     performer = SimplificationPerformer(semantics, DummyProver(semantics), simple_config_before)
     performer.enter_context((0, 0, 0))
     performer.apply_simplification(2, {})  # reverse(a) -> a
@@ -448,7 +448,7 @@ def test_trivial_proof() -> None:
     reverse_symbol = semantics.get_symbol('reverse')
     a_symbol = semantics.get_symbol('a')
 
-    config = tree_semantics_config_pattern(
+    config = simpl_semantics_config_pattern(
         semantics,
         'SortTree',
         reverse_symbol.app(a_symbol.app()),
@@ -505,7 +505,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     assert isinstance(base_case_a, KEquationalRule)
 
     initial_subterm = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
-    initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
+    initial_config = simpl_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
 
     def kequals(phi0, phi1):
         return kore_equals(tree_sort, cfg_sort, phi0, phi1)
@@ -611,7 +611,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
 
     # Check the final update of the configuration
     simplified_subterm = node_symbol.app(b_symbol.app(), a_symbol.app())
-    assert performer.simplified_configuration == tree_semantics_config_pattern(
+    assert performer.simplified_configuration == simpl_semantics_config_pattern(
         semantics, 'SortTree', simplified_subterm
     )
 
@@ -631,14 +631,15 @@ def test_dv_simplification_batch() -> None:
     # Name: INT.add
     # Location: 0 0 0 0 0 0
     # Args: Function Event:
-        # Name: "Lbl'UndsPlus'Int'Unds'{}"
-        # "Lbl'UndsPlus'Int'Unds'{}"
-        # Location: 0 0 0 0 0 0
-        # Args: {0: DV(sort=SortApp(name='SortInt', sorts=()), value=String(value='5'))
-        #        1: DV(sort=SortApp(name='SortInt', sorts=()), value=String(value='6'))}
+    # Name: "Lbl'UndsPlus'Int'Unds'{}"
+    # "Lbl'UndsPlus'Int'Unds'{}"
+    # Location: 0 0 0 0 0 0
+    # Args: {0: DV(sort=SortApp(name='SortInt', sorts=()), value=String(value='5'))
+    #        1: DV(sort=SortApp(name='SortInt', sorts=()), value=String(value='6'))}
     # Result: '\\dv{SortInt{}}("6")'
     # Final configuration: "<ksym_Lbl'-LT-'generatedTop'-GT-'> <ksym_Lbl'-LT-'k'-GT-'> (ksym_inj(ksort_SortFoo, ksort_SortKItem, ksym_Lblfoo'LParUndsRParUnds'DV'Unds'Foo'Unds'Int(dv(6):ksort_SortInt)) ~> ksym_dotk()) </ksym_Lbl'-LT-'k'-GT-'> <ksym_Lbl'-LT-'generatedCounter'-GT-'> dv(0):ksort_SortInt </ksym_Lbl'-LT-'generatedCounter'-GT-'> </ksym_Lbl'-LT-'generatedTop'-GT-'>"
     pass
+
 
 def test_prove_equality_from_rule() -> None:
     semantics = node_tree()
@@ -714,10 +715,10 @@ def test_apply_framing_lemma() -> None:
 
     expression1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
     expression2 = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
-    configuration_hole = tree_semantics_config_pattern(semantics, 'SortTree', HOLE)
+    configuration_hole = simpl_semantics_config_pattern(semantics, 'SortTree', HOLE)
 
-    config1 = tree_semantics_config_pattern(semantics, 'SortTree', expression1)
-    config2 = tree_semantics_config_pattern(semantics, 'SortTree', expression2)
+    config1 = simpl_semantics_config_pattern(semantics, 'SortTree', expression1)
+    config2 = simpl_semantics_config_pattern(semantics, 'SortTree', expression2)
 
     equality_pt = make_pt(kore_equals(tree_sort, tree_sort, expression1, expression2))
     exprected_result = make_pt(kore_equals(tree_sort, tree_sort, config1, config2))
