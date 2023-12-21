@@ -5,13 +5,14 @@ circom_P = 218882428718392752222464057452572750885483644004160343436982041865758
 P = circom_P
 
 # Randomly chosen :)
+# In practice we want to "Fiat-Shamir" this and derive it from
+# a hash of the proof.
 r = ((P // 17) + 19) % P
 
 # Map string A to polynomial P which has A as its coefficients.
 # Evaluate P at point r
-def fingerprint_str(a: str) -> int:
+def fingerprint(a: str) -> int:
     return sum([r ** i * ord(a[i]) for i in range(len(a))]) % P
-
 
 class ImplicitPattern():
     def __init__(self, hash: int, length: int):
@@ -21,6 +22,7 @@ class ImplicitPattern():
     def concat(self, other: 'ImplicitPattern') -> 'ImplicitPattern':
         self.length = (self.length + other.length) % P
         self.hash = (self.hash + other.hash * (r ** self.length)) % P
+        return self
 
 class ExplicitPattern():
     def __init__(self, content: str): 
@@ -28,11 +30,11 @@ class ExplicitPattern():
 
     def implicit(self) -> ImplicitPattern:
         return ImplicitPattern(
-            hash=fingerprint_str(self.content),
+            hash=fingerprint(self.content),
             length=len(self.content)
         )
 
-    def wellformed(self) -> bool:
+    def well_formed(self) -> bool:
         # Placeholder
         return True
 
@@ -150,14 +152,14 @@ class Prop2(ProofStep):
     
 class ModusPonens(ProofStep):
     # Premise1: a
-    # Premise2: -> a b
+    # Premise2: ->ab
     # Conclusion: b
 
     def __init__(
         self,
         artefact_a: Artefact,
-        ipat_b: ImplicitPattern,
         hint_ab: int,
+        ipat_b: ImplicitPattern,
         index: int
     ): 
         self.artefact_a = artefact_a
@@ -166,6 +168,10 @@ class ModusPonens(ProofStep):
         self.index = index
 
     def obligations(self) -> list[Artefact]:
+        # Check that hints/timestamps for premises are strictly in the past
+        # Necessary to avoid cycles in proofs
+        assert self.hint_ab < self.index and self.artefact_a.hint < self.index 
+
         # Implicit pattern for the implication premise obtained
         # via concatenation
         self.ipat_ab = ExplicitPattern("->").implicit() \
@@ -183,13 +189,11 @@ class ModusPonens(ProofStep):
         ]
     
     def proof(self) -> list[Artefact]:
-        # We will produce an artefact for b, timestamped with curr index
-        artefact_b = Artefact(
-            ipat=self.ipat_b,
-            hint=self.index
-        )
         return [
-            artefact_b
+            Artefact(
+                ipat=self.ipat_b,
+                hint=self.index
+            )
         ]
 
 def check_proof(
@@ -214,7 +218,7 @@ def check_proof(
 
     assert obligations == proofs
 
-imp_refl_claim = "->pp"
+imp_refl_claim = ExplicitPattern("->pp")
 ecoms = [
     ExplicitCommitment("p"), 
     ExplicitCommitment("->pp"), 
@@ -222,9 +226,6 @@ ecoms = [
     ExplicitCommitment("p"),
     ExplicitCommitment("p"),
 ]
-
-ip = ExplicitPattern("p").implicit()
-ipp = ExplicitPattern("->pp").implicit()
 
 steps = [None] * 6
 
@@ -244,7 +245,7 @@ steps[3] = ModusPonens(
         ipat=ExplicitPattern("->p->->ppp").implicit(),
         hint=2
     ),
-    ipat_b= ExplicitPattern("->->p->pp->pp").implicit(),
+    ipat_b=ExplicitPattern("->->p->pp->pp").implicit(),
     hint_ab= 1,
     index= 3
 )
