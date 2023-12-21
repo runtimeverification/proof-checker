@@ -482,15 +482,13 @@ class Propositional(ProofExp):
         a, b = Implies.extract(h.conc)
         subst = match_single(a, p, {})
         assert subst is not None
-        actual_subst: dict[int, Pattern] = subst
-        return self.dynamic_inst(h, actual_subst)
+        return self.dynamic_inst(h, subst)
 
     def imp_match_r(self, h: ProofThunk, p: Pattern) -> ProofThunk:
         a, b = Implies.extract(h.conc)
         subst = match_single(b, p, {})
         assert subst is not None
-        actual_subst: dict[int, Pattern] = subst
-        return self.dynamic_inst(h, actual_subst)
+        return self.dynamic_inst(h, subst)
 
     def imp_to_and(self, pqr_pf: ProofThunk) -> ProofThunk:
         """
