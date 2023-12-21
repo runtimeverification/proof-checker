@@ -389,6 +389,10 @@ class LanguageSemantics(BuilderScope):
         return self._imported_modules[-1]
 
     @property
+    def configuration_sort(self) -> KSort:
+        return self.get_sort('SortGeneratedTopCell')
+
+    @property
     def notations(self) -> tuple[Notation, ...]:
         symbols = self.symbols
         notations = [sym.app for sym in symbols]

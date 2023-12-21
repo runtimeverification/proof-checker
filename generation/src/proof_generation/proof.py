@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 class OutputFormat(str, Enum):
     Binary = 'binary'
     Pretty = 'pretty'
+    PrettyNoStack = 'pretty-no-stack'
 
 
 # Proof Expressions
@@ -156,7 +157,9 @@ class ProofExp:
 
     def modus_ponens(self, left: ProofThunk, right: ProofThunk) -> ProofThunk:
         p, q = Implies.extract(left.conc)
-        assert p == right.conc
+        assert (
+            p == right.conc
+        ), f'left: {self.pretty(p)}\nright: {self.pretty(right.conc)}\ndiff: {self.pretty_diff(p, right.conc)}'
         return ProofThunk((lambda interpreter: interpreter.modus_ponens(left(interpreter), right(interpreter))), q)
 
     def exists_quantifier(self) -> ProofThunk:
@@ -235,8 +238,8 @@ class ProofExp:
             for warning in interpreter.interpreting_warnings:
                 print(warning)
 
-    def pretty_options(self) -> PrettyOptions:
-        return PrettyOptions(notations={n.definition: n for n in self._notations})
+    def pretty_options(self, print_stack: bool = True) -> PrettyOptions:
+        return PrettyOptions(notations={n.definition: n for n in self._notations}, print_stack=print_stack)
 
     def pretty(self, p: Pattern) -> str:
         return p.pretty(self.pretty_options())
@@ -261,14 +264,14 @@ class ProofExp:
                     claim_out=open(file_path.with_suffix('.ml-claim'), 'wb'),
                     proof_out=open(file_path.with_suffix('.ml-proof'), 'wb'),
                 )
-            case OutputFormat.Pretty:
+            case OutputFormat.Pretty | OutputFormat.PrettyNoStack:
                 serializer = PrettyPrintingInterpreter(
                     phase=phase,
                     claims=claims,
                     out=open(file_path.with_suffix('.pretty-gamma'), 'w'),
                     claim_out=open(file_path.with_suffix('.pretty-claim'), 'w'),
                     proof_out=open(file_path.with_suffix('.pretty-proof'), 'w'),
-                    pretty_options=self.pretty_options(),
+                    pretty_options=self.pretty_options(print_stack=(output_format != OutputFormat.PrettyNoStack)),
                 )
         return serializer
 
@@ -297,7 +300,7 @@ class ProofExp:
         argparser.add_argument(
             'output_format',
             type=OutputFormat,
-            help='The proof output format: "binary" or "pretty"',
+            help='The proof output format: "binary", "pretty" or "pretty-no-stack"',
         )
         argparser.add_argument('output_dir', type=str, help='The path to the output directory')
         argparser.add_argument('slice_name', type=str, help='The input slice name')
