@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
-from .syntax import App, EVar, Exists, Implies, Instantiate, MetaVar, Mu, Pattern, SVar, Symbol
+from .syntax import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from .syntax import InstantiationDict, PrettyOptions
 
 """
@@ -70,7 +72,16 @@ def match_single(
         if pat_mu[0] != inst_mu[0]:
             return None
         return match_single(pat_mu[1], inst_mu[1], ret)
-    # TODO Consider adding cases for ESubst/SSubst
+
+    if (
+        isinstance(pattern, ESubst)
+        or isinstance(pattern, SSubst)
+        or isinstance(instance, ESubst)
+        or isinstance(instance, SSubst)
+    ):
+        # TODO: Implement me.
+        raise NotImplementedError
+
     return None
 
 
@@ -97,14 +108,26 @@ class _Diff(Pattern):
     we define a dummy subclass of Pattern.
     """
 
-    """ Pattern to be printed with pluses in the diff. """
+    """ Pattern to be printed with minuses in the diff. """
     expected: Pattern
 
-    """ Pattern to be printed with minuses in the diff. """
+    """ Pattern to be printed with pluses in the diff. """
     actual: Pattern
+
+    def occurring_vars(self) -> set[EVar | SVar]:
+        raise NotImplementedError
 
     def pretty(self, opts: PrettyOptions) -> str:
         return f'\n--- {self.expected.pretty(opts)}\n+++ {self.actual.pretty(opts)}\n'
+
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
+        raise NotImplementedError
+
+    def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
+        raise NotImplementedError
+
+    def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        raise NotImplementedError
 
 
 def diff_inst(inst1: InstantiationDict, inst2: InstantiationDict) -> InstantiationDict:

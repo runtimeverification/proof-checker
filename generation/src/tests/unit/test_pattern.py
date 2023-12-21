@@ -82,7 +82,11 @@ sigma2 = Symbol('s2')
     ],
 )
 def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: Pattern) -> None:
-    assert pattern.apply_esubst(evar_id, plug) == expected
+    actual = pattern.apply_esubst(evar_id, plug)
+    assert actual == expected
+    # TODO: Equality checks are modulo instantiation.
+    # I feel this is a bit dangerous. We should instead have a separate `Pattern.equals_modulo` operation.
+    assert type(actual) == type(expected)
 
 
 @pytest.mark.parametrize(
@@ -123,19 +127,21 @@ def test_apply_esubst(pattern: Pattern, evar_id: int, plug: Pattern, expected: P
             SSubst(SSubst(phi0, SVar(0), sigma1), SVar(0), sigma1),
         ],
         # Instantiate/Notation
-        [
+        pytest.param(
             Instantiate(App(phi0, phi1), frozendict({0: phi2, 1: phi1})),
             0,
             sigma1,
             Instantiate(
                 App(phi0, phi1), frozendict({0: SSubst(phi2, SVar(0), sigma1), 1: SSubst(phi1, SVar(0), sigma1)})
             ),
-        ],
+            marks=[pytest.mark.xfail],
+        ),
     ],
 )
-@pytest.mark.skip(reason='not implemented at the moment')
 def test_apply_ssubst(pattern: Pattern, svar_id: int, plug: Pattern, expected: Pattern) -> None:
-    assert pattern.apply_ssubst(svar_id, plug) == expected
+    actual = pattern.apply_ssubst(svar_id, plug)
+    assert actual == expected
+    assert type(actual) == type(expected)
 
 
 @pytest.mark.parametrize(
