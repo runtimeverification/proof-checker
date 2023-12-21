@@ -37,11 +37,11 @@ def get_kompiled_dir(output_dir: str) -> Path:
         raise AssertionError(f'Kompiled directory {path} does not exist.')
 
 
-def generate_proof_file(proof_gen: ProofExp, output_dir: Path, slice_name: str, pretty: bool = False) -> None:
+def generate_proof_file(proof_gen: ProofExp, output_dir: Path, slice_name: str, pretty_no_stack: bool = False) -> None:
     """Generate the proof files."""
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    mode = 'pretty' if pretty else 'binary'
+    mode = 'pretty-no-stack' if pretty_no_stack else 'binary'
     proof_gen.main(['', mode, str(output_dir), slice_name])
 
 
@@ -70,7 +70,7 @@ def main(
     hints_file: str,
     kompiled: str,
     proof_dir: str,
-    pretty: bool = False,
+    pretty_no_stack: bool = False,
 ) -> None:
     # Kompile sources
     kompiled_dir: Path = get_kompiled_dir(kompiled)
@@ -80,12 +80,12 @@ def main(
     language_semantics = LanguageSemantics.from_kore_definition(kore_definition)
 
     # print('Intialize hint stream ... ')
-    hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_semantics)
+    initial_config, hints_iterator = get_proof_hints(read_proof_hint(hints_file), language_semantics)
 
     print('Begin generating proofs ... ')
-    kore_def = ExecutionProofExp.from_proof_hints(hints_iterator, language_semantics)
+    kore_def = ExecutionProofExp.from_proof_hints(initial_config, hints_iterator, language_semantics)
     slice_name = Path(hints_file).stem + '.' + module
-    generate_proof_file(kore_def, Path(proof_dir), slice_name, pretty)
+    generate_proof_file(kore_def, Path(proof_dir), slice_name, pretty_no_stack)
     print('Done!')
 
 

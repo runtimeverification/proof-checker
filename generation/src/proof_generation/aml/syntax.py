@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from .notation import Notation
 
 
-class Pattern:
+class Pattern(ABC):
     def evar_is_fresh_ignoring_metavars(self, name: int, ignored_metavars: frozenset[int]) -> bool:
         raise NotImplementedError
 
@@ -21,6 +22,7 @@ class Pattern:
     def metavars(self) -> set[MetaVar]:
         raise NotImplementedError
 
+    @abstractmethod
     def occurring_vars(self) -> set[EVar | SVar]:
         """
         Returns the set of all free variables occurring in the pattern
@@ -29,15 +31,19 @@ class Pattern:
 
         raise NotImplementedError
 
+    @abstractmethod
     def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
         raise NotImplementedError
 
+    @abstractmethod
     def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
         raise NotImplementedError
 
+    @abstractmethod
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
         raise NotImplementedError
 
+    @abstractmethod
     def pretty(self, opts: PrettyOptions) -> str:
         raise NotImplementedError
 
@@ -511,7 +517,8 @@ class Instantiate(Pattern):
     inst: InstantiationDict
 
     def simplify(self) -> Pattern:
-        """Instantiate pattern with plug.
+        """
+        Instantiate pattern with plug.
         Note that this doesn't fully reduce all notation, just one level.
         """
         return self.pattern.instantiate(self.inst)
@@ -550,17 +557,19 @@ class Instantiate(Pattern):
         return Instantiate(self.pattern, new_inst)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        raise NotImplementedError
+        return self.simplify().apply_ssubst(svar_id, plug)
 
     def pretty(self, opts: PrettyOptions) -> str:
         if opts.simplify_instantiations:
             return self.simplify().pretty(opts)
         if self.pattern in opts.notations:
-            return opts.notations[self.pattern].print_instantiation(self, opts)
-        pretty_inst = {}
-        for key, val in self.inst.items():
-            pretty_inst[key] = val.pretty(opts)
-        return f'{str(self.pattern)}[{str(pretty_inst)}]'
+            n = opts.notations[self.pattern]
+            if n.correctly_instantiates(self):
+                return n.print_instantiation(self, opts)
+        pretty_inst = []
+        for key, val in sorted(self.inst.items()):
+            pretty_inst += [str(key) + ': ' + val.pretty(opts)]
+        return f'{str(self.pattern)}[{", ".join(pretty_inst)}]'
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())
@@ -570,3 +579,4 @@ class Instantiate(Pattern):
 class PrettyOptions:
     simplify_instantiations: bool = False
     notations: Mapping[Pattern, Notation] = frozendict({})
+    print_stack: bool = True

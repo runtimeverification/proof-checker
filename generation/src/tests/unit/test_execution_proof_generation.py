@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from frozendict import frozendict
 
 from proof_generation.aml import EVar, Instantiate, top
 from proof_generation.interpreter.basic_interpreter import BasicInterpreter, ExecutionPhase
@@ -16,6 +17,7 @@ from proof_generation.k.kore_convertion.language_semantics import KEquationalRul
 from proof_generation.k.kore_convertion.rewrite_steps import RewriteStepExpression
 from proof_generation.proof import ProofThunk
 from proof_generation.proofs.kore import kore_and, kore_equals, kore_implies, kore_rewrites, kore_top
+from proof_generation.proofs.substitution import HOLE
 from tests.unit.test_kore_language_semantics import (
     double_rewrite,
     node_tree,
@@ -36,7 +38,9 @@ if TYPE_CHECKING:
 class DummyProver(SimplificationProver):
     def apply_framing_lemma(self, equality_proof: ProofThunk, context: Pattern) -> ProofThunk:
         sort0, sort1, left, right = kore_equals.assert_matches(equality_proof.conc)
-        return make_pt(kore_equals(sort0, sort1, context.apply_esubst(0, left), context.apply_esubst(0, right)))
+        return make_pt(
+            kore_equals(sort0, sort1, context.apply_esubst(HOLE.name, left), context.apply_esubst(HOLE.name, right))
+        )
 
     def equality_proof(
         self, rule: Pattern, base_substitutions: dict[int, Pattern], substitutions: dict[int, Pattern]
@@ -57,7 +61,7 @@ class DummyProver(SimplificationProver):
         return make_pt(kore_equals(sort1, sort2, phi0, phi2))
 
 
-def rewrite_hints() -> list[RewriteStepExpression]:
+def rewrite_hints() -> list[tuple[RewriteStepExpression, Pattern, Pattern]]:
     semantics = double_rewrite()
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
@@ -67,21 +71,17 @@ def rewrite_hints() -> list[RewriteStepExpression]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        a_symbol.app(),
-        b_symbol.app(),
         rewrite_rule1,
-        {},
+        frozendict(),
     )
     step_two = RewriteStepExpression(
-        b_symbol.app(),
-        c_symbol.app(),
         rewrite_rule2,
-        {},
+        frozendict(),
     )
-    return [step_one, step_two]
+    return [(step_one, a_symbol.app(), b_symbol.app()), (step_two, b_symbol.app(), c_symbol.app())]
 
 
-def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
+def rewrite_hints_with_cell() -> list[tuple[RewriteStepExpression, Pattern, Pattern]]:
     semantics = rewrite_with_cell()
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
@@ -92,71 +92,141 @@ def rewrite_hints_with_cell() -> list[RewriteStepExpression]:
 
     # Construct RewriteStepExpression
     step_one = RewriteStepExpression(
-        rewrite_with_cells_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
-        rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
         rewrite_rule1,
-        {0: dot_k_symbol.app()},
+        frozendict({0: dot_k_symbol.app()}),
     )
     step_two = RewriteStepExpression(
-        rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
-        rewrite_with_cells_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
         rewrite_rule2,
-        {0: dot_k_symbol.app()},
+        frozendict({0: dot_k_symbol.app()}),
     )
-    return [step_one, step_two]
+    return [
+        (
+            step_one,
+            rewrite_with_cells_config_pattern(semantics, a_symbol.app(), dot_k_symbol.app()),
+            rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+        ),
+        (
+            step_two,
+            rewrite_with_cells_config_pattern(semantics, b_symbol.app(), dot_k_symbol.app()),
+            rewrite_with_cells_config_pattern(semantics, c_symbol.app(), dot_k_symbol.app()),
+        ),
+    ]
 
 
 def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
     return f'<ksym_generated_top> <ksym_k> (ksym_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </ksym_k> </ksym_generated_top>'
 
 
-rewrite_test_parameters = [(double_rewrite, rewrite_hints), (rewrite_with_cell, rewrite_hints_with_cell)]
-
-
-@pytest.mark.parametrize('rewrite_pat', rewrite_test_parameters)
-def test_double_rewrite_semantics(rewrite_pat: tuple[Callable, Callable]) -> None:
-    semantics_builder, hints_builder = rewrite_pat
-    hints: list[RewriteStepExpression] = hints_builder()
+@pytest.mark.parametrize(
+    'semantics_builder, hints_builder',
+    [
+        [double_rewrite, rewrite_hints],
+        [rewrite_with_cell, rewrite_hints_with_cell],
+    ],
+)
+def test_double_rewrite_semantics(semantics_builder: Callable, hints_builder: Callable) -> None:
+    hints: list[tuple[RewriteStepExpression, Pattern, Pattern]] = hints_builder()
     semantics: LanguageSemantics = semantics_builder()
-    assert isinstance(hints[0].axiom.pattern, Instantiate)
-    sort_symbol = hints[0].axiom.pattern.inst[0]
-    claim1 = kore_rewrites(sort_symbol, hints[0].configuration_before, hints[0].configuration_after)
-    claim2 = kore_rewrites(sort_symbol, hints[1].configuration_before, hints[1].configuration_after)
+
+    hint1, conf_before1, conf_after1 = hints[0]
+    hint2, conf_before2, conf_after2 = hints[1]
+    assert conf_after1 == conf_before2
+
+    assert isinstance(hint1.axiom.pattern, Instantiate)
+    sort_symbol = hint1.axiom.pattern.inst[0]
+    claim1 = kore_rewrites(sort_symbol, conf_before1, conf_after1)
+    claim2 = kore_rewrites(sort_symbol, conf_before2, conf_after2)
 
     # Create an instance of the class
-    proof_expr = ExecutionProofExp(semantics, init_config=hints[0].configuration_before)
-    assert proof_expr.initial_configuration == hints[0].configuration_before
-    assert proof_expr.current_configuration == hints[0].configuration_before
-    assert isinstance(hints[0].axiom, KRewritingRule)
+    proof_expr = ExecutionProofExp(semantics, init_config=conf_before1)
+    assert proof_expr.initial_configuration == conf_before1
+    assert proof_expr.current_configuration == conf_before1
+    assert isinstance(hint1.axiom, KRewritingRule)
 
     # Make the first rewrite step
-    assert isinstance(hints[0].axiom, KRewritingRule)
-    proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
-    assert proof_expr.initial_configuration == hints[0].configuration_before
-    assert proof_expr.current_configuration == hints[0].configuration_after
-    assert hints[0].axiom.pattern in proof_expr._axioms
+    assert isinstance(hint1.axiom, KRewritingRule)
+    proof_expr.rewrite_event(hint1.axiom, dict(hint1.substitutions))
+    assert proof_expr.initial_configuration == conf_before1
+    assert proof_expr.current_configuration == conf_after1
+    assert hint1.axiom.pattern in proof_expr._axioms
     assert proof_expr._claims == [claim1]
     assert len(proof_expr._proof_expressions) == 1
     assert proof_expr._proof_expressions[0].conc == claim1
 
     # Test the second rewrite step
-    assert isinstance(hints[1].axiom, KRewritingRule)
-    proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
-    assert proof_expr.initial_configuration == hints[0].configuration_before
-    assert proof_expr.current_configuration == hints[1].configuration_after
+    assert isinstance(hint2.axiom, KRewritingRule)
+    proof_expr.rewrite_event(hint2.axiom, dict(hint2.substitutions))
+    assert proof_expr.initial_configuration == conf_before1
+    assert proof_expr.current_configuration == conf_after2
     # TODO: Test other assumptions after the functional substitution is fully implemented
-    assert set(proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
+    assert set(proof_expr._axioms).issuperset({hint2.axiom.pattern, hint2.axiom.pattern})
     assert proof_expr._claims == [claim1, claim2]
     assert len(proof_expr._proof_expressions) == 2
     assert proof_expr._proof_expressions[1].conc == claim2
 
     # Test generating proofs function
-    generated_proof_expr = ExecutionProofExp.from_proof_hints(iter(hints), semantics)
+    generated_proof_expr = ExecutionProofExp.from_proof_hints(conf_before1, iter((hint1, hint2)), semantics)
     assert isinstance(generated_proof_expr, ExecutionProofExp)
     # TODO: Test other assumptions after the functional substitution is fully implemented
-    assert set(generated_proof_expr._axioms).issuperset({hints[0].axiom.pattern, hints[1].axiom.pattern})
+    assert set(generated_proof_expr._axioms).issuperset({hint1.axiom.pattern, hint2.axiom.pattern})
     assert generated_proof_expr._claims == [claim1, claim2]
     assert [p.conc for p in generated_proof_expr._proof_expressions] == [claim1, claim2]
+
+
+def test_rewrite_with_simplification() -> None:
+    semantics = node_tree()
+
+    semantics.get_symbol('reverse')
+    node_symbol = semantics.get_symbol('node')
+    a_symbol = semantics.get_symbol('a')
+    b_symbol = semantics.get_symbol('b')
+    next_symbol = semantics.get_symbol('next')
+    cfg_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    semantics.get_sort('SortTree').aml_symbol
+
+    # Rewrite rule
+    # #next => reverse(node(b, a))
+    next_to_reverse = semantics.get_axiom(1)
+    assert isinstance(next_to_reverse, KRewritingRule)
+
+    # Function rules
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
+    rec_case = semantics.get_axiom(4)
+    assert isinstance(rec_case, KEquationalRule)
+    # reverse(b) = b
+    base_case_b = semantics.get_axiom(3)
+    assert isinstance(base_case_b, KEquationalRule)
+    # reverse(a) = a
+    base_case_a = semantics.get_axiom(2)
+    assert isinstance(base_case_a, KEquationalRule)
+
+    initial_subterm = next_symbol.app()
+    initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
+
+    final_subterm = node_symbol.app(b_symbol.app(), a_symbol.app())
+    final_config = tree_semantics_config_pattern(semantics, 'SortTree', final_subterm)
+
+    claim = kore_rewrites(cfg_sort, initial_config, final_config)
+
+    # Create an instance of the class
+    proof_expr = ExecutionProofExp(semantics, init_config=initial_config)
+
+    # Make the first rewrite step
+    proof_expr.rewrite_event(next_to_reverse, {})
+
+    # Make the simplifications
+    proof_expr.function_simplification_event((0, 0, 0))
+    proof_expr.rule_simplification_event(rec_case, {1: a_symbol.app(), 2: b_symbol.app()})
+    proof_expr.function_simplification_event((0,))
+    proof_expr.rule_simplification_event(base_case_b, {})
+    proof_expr.function_simplification_event((1,))
+    proof_expr.rule_simplification_event(base_case_a, {})
+
+    # Test generating proofs function
+    assert proof_expr._claims[0] == claim, proof_expr.pretty_diff(claim, proof_expr._claims[0])
+    assert [p.conc for p in proof_expr._proof_expressions][0] == claim, proof_expr.pretty_diff(
+        claim, [p.conc for p in proof_expr._proof_expressions][0]
+    )
 
 
 pretty_print_testing = [
@@ -201,22 +271,24 @@ def test_pretty_printing(  # Detailed type annotations for Callable are given be
 ) -> None:
     semantics_builder, hints_builder, axioms, configurations, claims = rewrite_pat
     semantics: LanguageSemantics = semantics_builder()
-    hints: list[RewriteStepExpression] = hints_builder()
+    complete_hints = hints_builder()
+    hints: list[RewriteStepExpression] = [hint[0] for hint in complete_hints]
+    initial_config = complete_hints[0][1]
 
     # Create an instance of the class
-    proof_expr = ExecutionProofExp(semantics, init_config=hints[0].configuration_before)
+    proof_expr = ExecutionProofExp(semantics, init_config=initial_config)
     assert proof_expr.initial_configuration.pretty(proof_expr.pretty_options()) == configurations[0]
 
     # First rewrite step
     assert isinstance(hints[0].axiom, KRewritingRule)
-    proved = proof_expr.rewrite_event(hints[0].axiom, hints[0].substitutions)
+    proved = proof_expr.rewrite_event(hints[0].axiom, dict(hints[0].substitutions))
     assert hints[0].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[0]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[1]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[0]
 
     # Second rewrite step
     assert isinstance(hints[1].axiom, KRewritingRule)
-    proved = proof_expr.rewrite_event(hints[1].axiom, hints[1].substitutions)
+    proved = proof_expr.rewrite_event(hints[1].axiom, dict(hints[1].substitutions))
     assert hints[1].axiom.pattern.pretty(proof_expr.pretty_options()) == axioms[1]
     assert proof_expr.current_configuration.pretty(proof_expr.pretty_options()) == configurations[2]
     assert proved.conc.pretty(proof_expr.pretty_options()) == claims[1]
@@ -312,7 +384,7 @@ def test_performer_apply_substitution():
 
     rule = semantics.get_axiom(4)
     assert isinstance(rule, KEquationalRule)
-    substitution = {1: a_symbol.app(), 2: b_symbol.app()}
+    substitution: dict[int, Pattern] = {1: a_symbol.app(), 2: b_symbol.app()}
     expected = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
     substtuted = rule.right.apply_esubsts(substitution)
     assert substtuted == expected
@@ -375,7 +447,7 @@ def test_performer_update_config():
 
 def test_trivial_proof() -> None:
     semantics = node_tree()
-    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    cfg_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
     tree_sort = semantics.get_sort('SortTree').aml_symbol
     reverse_symbol = semantics.get_symbol('reverse')
     a_symbol = semantics.get_symbol('a')
@@ -389,13 +461,13 @@ def test_trivial_proof() -> None:
     prover = SimplificationProver(semantics)
     proof = prover.trivial_proof(config)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
-        top_sort, top_sort, config, config
+        cfg_sort, cfg_sort, config, config
     )
 
     expression = reverse_symbol.app(a_symbol.app())
     proof = prover.trivial_proof(expression)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
-        tree_sort, tree_sort, expression, expression
+        tree_sort, cfg_sort, expression, expression
     )
 
 
@@ -412,13 +484,9 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     isinstance(simpl_prover, SimplificationProver)
 
     def eq_stackinfo(received_info: SimplificationInfo, expected_info: SimplificationInfo) -> bool:
-        popts = simpl_prover.pretty_options()
         # Simplifies debugging
-        assert received_info.proof.conc == expected_info.proof.conc, (
-            'Received: '
-            + received_info.proof.conc.pretty(popts)
-            + ' \n Expected: '
-            + expected_info.proof.conc.pretty(popts)
+        assert received_info.proof.conc == expected_info.proof.conc, simpl_prover.pretty_diff(
+            expected_info.proof.conc, received_info.proof.conc
         )
         return received_info == expected_info
 
@@ -426,7 +494,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    # top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    cfg_sort = semantics.configuration_sort.aml_symbol
     tree_sort = semantics.get_sort('SortTree').aml_symbol
 
     # Rules
@@ -444,9 +512,9 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
 
     def kequals(phi0, phi1):
-        return kore_equals(tree_sort, tree_sort, phi0, phi1)
+        return kore_equals(tree_sort, cfg_sort, phi0, phi1)
 
-    performer = SimplificationPerformer(semantics, DummyProver(semantics), initial_config)
+    performer = SimplificationPerformer(semantics, simpl_prover, initial_config)
     location = (0, 0, 0)
     performer.enter_context(location)
     performer.apply_simplification(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()})
@@ -566,31 +634,32 @@ def test_prove_equality_from_rule() -> None:
     node_symbol = semantics.get_symbol('node')
     reverse_symbol = semantics.get_symbol('reverse')
     tree_sort = semantics.get_sort('SortTree').aml_symbol
+    outer_sort = semantics.configuration_sort.aml_symbol
 
     # Create a new proof expression
     proof_expr = SimplificationProver(semantics)
 
-    # reverse(a) <-> a
+    # reverse(a) = a
     base_case_a = semantics.get_axiom(2)
     assert isinstance(base_case_a, KEquationalRule)
     rule_with_substitution = base_case_a.pattern.apply_esubsts({0: a_symbol.app(), 1: a_symbol.app()})
 
     rule_proof_thunk = make_pt(rule_with_substitution)
-    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    expected_equation = kore_equals(tree_sort, outer_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
     equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
     assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
-    # reverse(b) <-> b
+    # reverse(b) = b
     base_case_b = semantics.get_axiom(3)
     assert isinstance(base_case_b, KEquationalRule)
     rule_with_substitution = base_case_b.pattern.apply_esubsts({0: b_symbol.app(), 1: b_symbol.app()})
 
     rule_proof_thunk = make_pt(rule_with_substitution)
-    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(b_symbol.app()), b_symbol.app())
+    expected_equation = kore_equals(tree_sort, outer_sort, reverse_symbol.app(b_symbol.app()), b_symbol.app())
     equation_proof = proof_expr.prove_equality_from_rule(rule_proof_thunk)
     assert equation_proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
-    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
     rec_case = semantics.get_axiom(4)
     assert isinstance(rec_case, KEquationalRule)
     node_a_b_subterm = node_symbol.app(a_symbol.app(), b_symbol.app())
@@ -599,7 +668,7 @@ def test_prove_equality_from_rule() -> None:
     rule_proof_thunk = make_pt(rule_with_substitution)
     expected_equation = kore_equals(
         tree_sort,
-        tree_sort,
+        outer_sort,
         reverse_symbol.app(node_a_b_subterm),
         node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
     )
@@ -613,7 +682,7 @@ def test_prove_equality_from_rule() -> None:
     rule_proof_thunk = make_pt(rule_with_substitution)
     expected_equation = kore_equals(
         tree_sort,
-        tree_sort,
+        outer_sort,
         reverse_symbol.app(node_subterm),
         node_symbol.app(reverse_symbol.app(EVar(2)), reverse_symbol.app(EVar(1))),
     )
@@ -632,7 +701,7 @@ def test_apply_framing_lemma() -> None:
 
     expression1 = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
     expression2 = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
-    configuration_hole = tree_semantics_config_pattern(semantics, 'SortTree', EVar(0))
+    configuration_hole = tree_semantics_config_pattern(semantics, 'SortTree', HOLE)
 
     config1 = tree_semantics_config_pattern(semantics, 'SortTree', expression1)
     config2 = tree_semantics_config_pattern(semantics, 'SortTree', expression2)
@@ -659,24 +728,25 @@ def test_equality_proof() -> None:
     node_symbol = semantics.get_symbol('node')
     reverse_symbol = semantics.get_symbol('reverse')
     tree_sort = semantics.get_sort('SortTree').aml_symbol
+    outer_sort = semantics.configuration_sort.aml_symbol
 
     # Create a new proof expression
     proof_expr = SimplificationProver(semantics)
 
-    # reverse(a) <-> a
+    # reverse(a) = a
     base_case_a = semantics.get_axiom(2)
     base_substitutions: dict[int, Pattern] = {0: a_symbol.app(), 1: a_symbol.app()}
     main_substitutions: dict[int, Pattern] = {}
     assert isinstance(base_case_a, KEquationalRule)
 
-    expected_equation = kore_equals(tree_sort, tree_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
+    expected_equation = kore_equals(tree_sort, outer_sort, reverse_symbol.app(a_symbol.app()), a_symbol.app())
     proof = proof_expr.equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
     dummy_proof = DummyProver(semantics).equality_proof(base_case_a.pattern, base_substitutions, main_substitutions)
     assert dummy_proof.conc == expected_equation
     assert dummy_proof.conc == proof.conc
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == expected_equation
 
-    # reverse(node(T1, T2)) <-> node(reverse(T2), reverse(T1))
+    # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
     rec_case = semantics.get_axiom(4)
     assert isinstance(rec_case, KEquationalRule)
     node_subterm = node_symbol.app(EVar(1), EVar(2))
@@ -685,7 +755,7 @@ def test_equality_proof() -> None:
 
     expected_equation = kore_equals(
         tree_sort,
-        tree_sort,
+        outer_sort,
         reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app())),
         node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app())),
     )
