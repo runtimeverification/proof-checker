@@ -677,7 +677,9 @@ fn execute_instructions(
                         let negative = read_u8_vec(ref buffer);
                         let app_ctx_holes = read_u8_vec(ref buffer);
 
-                        let metavar_pat = metavar(id, e_fresh, s_fresh, positive, negative, app_ctx_holes);
+                        let metavar_pat = metavar(
+                            id, e_fresh, s_fresh, positive, negative, app_ctx_holes
+                        );
                         if !metavar_pat.well_formed() {
                             panic!("Constructed meta-var {:?} is ill-formed.", metavar_pat);
                         }
@@ -685,7 +687,10 @@ fn execute_instructions(
                         stack.push(Term::Pattern(metavar_pat));
                     },
                     Instruction::ESubst => {
-                        let evar_id = buffer.pop_front().expect('Insufficient params for ESubst').into();
+                        let evar_id = buffer
+                            .pop_front()
+                            .expect('Insufficient params for ESubst')
+                            .into();
                         let pattern = pop_stack_pattern(ref stack);
                         let plug = pop_stack_pattern(ref stack);
 
@@ -697,7 +702,10 @@ fn execute_instructions(
                         stack.push(Term::Pattern(esubst_pat));
                     },
                     Instruction::SSubst => {
-                        let svar_id = buffer.pop_front().expect('Insufficient params for SSubst').into();
+                        let svar_id = buffer
+                            .pop_front()
+                            .expect('Insufficient params for SSubst')
+                            .into();
                         let pattern = pop_stack_pattern(ref stack);
                         let plug = pop_stack_pattern(ref stack);
 
@@ -717,7 +725,7 @@ fn execute_instructions(
                         panic!("PropagationExists not implemented!");
                     },
                     Instruction::PreFixpoint => { panic!("PreFixpoint not implemented!"); },
-                    Instruction::Existence =>  stack.push(Term::Proved(existence.clone())),
+                    Instruction::Existence => stack.push(Term::Proved(existence.clone())),
                     Instruction::Singleton => { panic!("Singleton not implemented!"); },
                     Instruction::ModusPonens => {
                         let premise2 = pop_stack_proved(ref stack);
@@ -735,15 +743,17 @@ fn execute_instructions(
                                 }
                                 stack.push(Term::Proved(right.unwrap().unbox().clone()))
                             },
-                            _ => {
-                                panic!("Expected an implication as a first parameter.");
-                            }
+                            _ => { panic!("Expected an implication as a first parameter."); }
                         };
                     },
                     Instruction::Generalization => {
                         match pop_stack_proved(ref stack) {
-                            Pattern::Implies(ImpliesType{left, right}) => {
-                                let evar_id = buffer.pop_front().expect('Insufficient params General').into();
+                            Pattern::Implies(ImpliesType{left,
+                            right }) => {
+                                let evar_id = buffer
+                                    .pop_front()
+                                    .expect('Insufficient params General')
+                                    .into();
 
                                 let left = left.unwrap().unbox();
                                 let right = right.unwrap().unbox();
@@ -751,11 +761,14 @@ fn execute_instructions(
                                     panic!("The binding variable has to be fresh.");
                                 }
 
-                                stack.push(Term::Proved(implies(exists(evar_id, left.clone()), right.clone())));
+                                stack
+                                    .push(
+                                        Term::Proved(
+                                            implies(exists(evar_id, left.clone()), right.clone())
+                                        )
+                                    );
                             },
-                            _ => {
-                                panic!("Expected an implication as a first parameter.");
-                            }
+                            _ => { panic!("Expected an implication as a first parameter."); }
                         };
                     },
                     Instruction::Frame => { panic!("Frame not implemented!"); },
