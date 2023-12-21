@@ -49,9 +49,6 @@ class Artefact():
     ): 
         self.ipat = ipat
         self.hint = hint
-    
-    def hashed(self):
-        return hash(self)
 
 class ProofStep():
     # Multiset of artefacts REQUIRED by this proof step
@@ -169,33 +166,31 @@ class ModusPonens(ProofStep):
         self.hint_ab = hint_ab
         self.index = index
 
-        # We will produce an artefact for b, timestamped with curr index
-        self.artefact_b = Artefact(
-            ipat=ipat_b,
-            hint=self.index
-        )
-
+    def obligations(self) -> list[Artefact]:
         # Implicit pattern for the implication premise obtained
         # via concatenation
         self.ipat_ab = ExplicitPattern("->").implicit() \
-            .concat(artefact_a.ipat) \
-            .concat(ipat_b)
+            .concat(self.artefact_a.ipat) \
+            .concat(self.ipat_b)
         
         # Artefact for impl. premise assembled with user-given hint
-        self.artefact_ab = Artefact(
+        artefact_ab = Artefact(
             ipat=self.ipat_ab,
-            hint=hint_ab
+            hint=self.hint_ab
         )
-    
-    def obligations(self) -> list[Artefact]:
         return [
             self.artefact_a,
-            self.artefact_ab
+            artefact_ab
         ]
     
     def proof(self) -> list[Artefact]:
+        # We will produce an artefact for b, timestamped with curr index
+        artefact_b = Artefact(
+            ipat=self.ipat_b,
+            hint=self.index
+        )
         return [
-            self.artefact_b
+            artefact_b
         ]
 
 def check_proof(
