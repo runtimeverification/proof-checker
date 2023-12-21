@@ -1,5 +1,5 @@
-from typing import list
-from copy import deepcopy
+#from typing import list
+#from copy import deepcopy
 
 circom_P = 21888242871839275222246405745257275088548364400416034343698204186575808495617 
 P = circom_P
@@ -44,7 +44,7 @@ class ImplicitPattern():
 class Artefact():
     def __init__(
         self,
-        ipat: ImplicitPattern(),
+        ipat: ImplicitPattern,
         hint: int
     ): 
         self.ipat = ipat
@@ -61,6 +61,24 @@ class ProofStep():
     # Multiset of artefacts PRODUCED by this proof step
     def proofs(self) -> list[Artefact]:
         raise NotImplementedError
+    
+
+class ExplicitCommitment(ProofStep):
+    def __init__(
+            self,
+            pattern: ExplicitPattern
+    ):
+        self.pattern = pattern
+
+    def obligations(self) -> list[Artefact]:
+        return []
+
+    def proofs(self) -> list[Artefact]:
+        return Artefact(
+            ipat=self.pattern.implicit(),
+            # 0 as a hint is ONLY used for ExplicitCommitments
+            hint=0
+        )
 
 class Prop1(ProofStep):
     def __init__(
@@ -134,8 +152,6 @@ class Prop2(ProofStep):
             Artefact(ipat= prop2_inst,hint=self.index)
         ]
     
-
-    
 class ModusPonens(ProofStep):
     # Premise1: a
     # Premise2: -> a b
@@ -184,4 +200,21 @@ class ModusPonens(ProofStep):
 
 
 
-def check_proof(C: int, M: int, N: int) -> bool:
+def check_proof(
+        explicit_patterns: list[ExplicitPattern], 
+        proof_steps: list[Prop1 | Prop2 | ModusPonens]
+    ) -> bool:
+
+    obligation_set = set()
+    proof_set = set()
+
+    for pattern in explicit_patterns:
+        ecom = ExplicitCommitment(pattern)
+        obligation_set.add(ecom.obligations())
+        proof_set.add(ecom.proofs())
+
+    for step in proof_steps:
+        obligation_set.add(step.obligations())
+        proof_set.add(step.proofs())
+
+    assert proof_set == obligation_set
