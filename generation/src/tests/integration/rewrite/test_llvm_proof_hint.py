@@ -178,4 +178,3 @@ def test_parse_proof_hint_imp5() -> None:
 
     # 2 post-initial-configuration events
     assert len(hint.trace) == 2
-
