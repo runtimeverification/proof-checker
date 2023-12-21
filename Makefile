@@ -191,10 +191,10 @@ K_BENCHMARKS=$(filter-out generation/k-benchmarks/builtin-io/#input_file, ${PRE_
 # Filter out currently unsupported examples
 UNSUPPORTED_K_BENCHMARKS=$(wildcard generation/k-benchmarks/imp/*) \
                          generation/k-benchmarks/imp5/transfer.imp5 \
-						 generation/k-benchmarks/builtin-io/read.builtin-io \
-						 generation/k-benchmarks/list-factory/input.list-factory \
-						 generation/k-benchmarks/reg/exec.reg \
-						 generation/k-benchmarks/simplification/input.simplification
+                         generation/k-benchmarks/builtin-io/read.builtin-io \
+                         generation/k-benchmarks/list-factory/input.list-factory \
+                         generation/k-benchmarks/reg/exec.reg \
+                         generation/k-benchmarks/simplification/input.simplification
 SUPPORTED_K_BENCHMARKS=$(filter-out ${UNSUPPORTED_K_BENCHMARKS}, ${K_BENCHMARKS})
 
 # Proof Hint Generation from LLVM

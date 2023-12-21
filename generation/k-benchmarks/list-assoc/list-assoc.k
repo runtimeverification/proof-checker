@@ -6,6 +6,7 @@ module LIST-ASSOC-SYNTAX
 
   syntax OpCodes ::= #revOps    ( OpCodes )           [function]
                    | #revOpsAux ( OpCodes , OpCodes ) [function]
+
 endmodule
 
 module LIST-ASSOC
