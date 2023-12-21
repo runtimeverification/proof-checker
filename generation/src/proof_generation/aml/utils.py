@@ -9,6 +9,7 @@ from .syntax import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu
 
 if TYPE_CHECKING:
     from .syntax import InstantiationDict, PrettyOptions
+    from typing import Mapping
 
 """
 Matching
@@ -110,8 +111,20 @@ class _Diff(Pattern):
     """ Pattern to be printed with minuses in the diff. """
     actual: Pattern
 
+    def occurring_vars(self) -> set[EVar | SVar]:
+        raise NotImplementedError
+
     def pretty(self, opts: PrettyOptions) -> str:
         return f'\n--- {self.expected.pretty(opts)}\n+++ {self.actual.pretty(opts)}\n'
+
+    def instantiate(self, delta: Mapping[int, Pattern]) -> Pattern:
+        raise NotImplementedError
+
+    def apply_esubst(self, evar_id: int, plug: Pattern) -> Pattern:
+        raise NotImplementedError
+
+    def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
+        raise NotImplementedError
 
 
 def diff_inst(inst1: InstantiationDict, inst2: InstantiationDict) -> InstantiationDict:
