@@ -180,7 +180,7 @@ def test_rewrite_with_simplification() -> None:
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
     next_symbol = semantics.get_symbol('next')
-    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    cfg_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
     semantics.get_sort('SortTree').aml_symbol
 
     # Rewrite rule
@@ -205,7 +205,7 @@ def test_rewrite_with_simplification() -> None:
     final_subterm = node_symbol.app(b_symbol.app(), a_symbol.app())
     final_config = tree_semantics_config_pattern(semantics, 'SortTree', final_subterm)
 
-    claim = kore_rewrites(top_sort, initial_config, final_config)
+    claim = kore_rewrites(cfg_sort, initial_config, final_config)
 
     # Create an instance of the class
     proof_expr = ExecutionProofExp(semantics, init_config=initial_config)
@@ -443,7 +443,7 @@ def test_performer_update_config():
 
 def test_trivial_proof() -> None:
     semantics = node_tree()
-    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    cfg_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
     tree_sort = semantics.get_sort('SortTree').aml_symbol
     reverse_symbol = semantics.get_symbol('reverse')
     a_symbol = semantics.get_symbol('a')
@@ -457,13 +457,13 @@ def test_trivial_proof() -> None:
     prover = SimplificationProver(semantics)
     proof = prover.trivial_proof(config)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
-        top_sort, top_sort, config, config
+        cfg_sort, cfg_sort, config, config
     )
 
     expression = reverse_symbol.app(a_symbol.app())
     proof = prover.trivial_proof(expression)
     assert proof(BasicInterpreter(phase=ExecutionPhase.Proof)).conclusion == kore_equals(
-        tree_sort, top_sort, expression, expression
+        tree_sort, cfg_sort, expression, expression
     )
 
 
@@ -490,7 +490,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    top_sort = semantics.configuration_sort
+    cfg_sort = semantics.configuration_sort.aml_symbol
     tree_sort = semantics.get_sort('SortTree').aml_symbol
 
     # Rules
@@ -508,7 +508,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     initial_config = tree_semantics_config_pattern(semantics, 'SortTree', initial_subterm)
 
     def kequals(phi0, phi1):
-        return kore_equals(tree_sort, top_sort, phi0, phi1)
+        return kore_equals(tree_sort, cfg_sort, phi0, phi1)
 
     performer = SimplificationPerformer(semantics, simpl_prover, initial_config)
     location = (0, 0, 0)
