@@ -16,10 +16,10 @@ module PEANO
 
     syntax KResult ::= Nat
 
-    rule add(0, M:Nat) => M
-    rule add(s(N:Nat), M:Nat) => s(add(N, M))
+    rule [add-0] : add(0, M:Nat) => M
+    rule [add-1] : add(s(N:Nat), M:Nat) => s(add(N, M))
 
-    rule mul(0, _:Nat) => 0
-    rule mul(s(N:Nat), M:Nat) => add(M, mul(N, M))
+    rule [mul-0] : mul(0, _:Nat) => 0
+    rule [mul-1] : mul(s(N:Nat), M:Nat) => add(M, mul(N, M))
 
 endmodule

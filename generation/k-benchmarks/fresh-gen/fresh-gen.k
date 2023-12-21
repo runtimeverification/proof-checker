@@ -8,6 +8,7 @@ module FRESH-GEN-SYNTAX
 endmodule
 
 module FRESH-GEN
+
   imports INT
   imports STRING
   imports COLLECTIONS
@@ -17,10 +18,10 @@ module FRESH-GEN
     <k> $PGM:KItem </k>
     <g> .List </g>
 
-  rule [init-rl]:
+  rule [init-rl] :
     <k> #init => #fresh ~> #fresh ~> #fresh </k>
 
-  rule [fresh-rl]:
+  rule [fresh-rl] :
     <k> #fresh => . ... </k>
     <g> _ ( .List => ListItem(!_ID:Int) ) </g>
 

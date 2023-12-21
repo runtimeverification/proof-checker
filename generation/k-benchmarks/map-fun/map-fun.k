@@ -9,11 +9,12 @@ module MAP-FUN-SYNTAX
 endmodule
 
 module MAP-FUN
+
   imports MAP-FUN-SYNTAX
 
   // Select by key
-  rule [select-rule]: select(Key |-> Val _:Map, Key) => Val
+  rule [select-rule] : select(Key |-> Val _:Map, Key) => Val
 
-  rule [merge-rule]: merge(M1, M2) => M1 M2
+  rule [merge-rule] : merge(M1, M2) => M1 M2
 
 endmodule

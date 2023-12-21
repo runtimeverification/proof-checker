@@ -1,6 +1,7 @@
 requires "json.md"
 
 module BUILTIN-JSON-SYNTAX
+
   imports STRING-SYNTAX
   imports JSON-SYNTAX
 

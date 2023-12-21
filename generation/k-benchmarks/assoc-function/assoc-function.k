@@ -7,6 +7,7 @@ module ASSOC-FUNCTION-SYNTAX
 endmodule
 
 module ASSOC-FUNCTION
+
   imports ASSOC-FUNCTION-SYNTAX
 
   rule [left]  : _:Foo +left  _:Foo => a

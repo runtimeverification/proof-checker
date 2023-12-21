@@ -6,6 +6,7 @@ module MEMO-FUNCTION-SYNTAX
 endmodule
 
 module MEMO-FUNCTION
+
   imports MEMO-FUNCTION-SYNTAX
 
   rule [next-a] : next(a) => b

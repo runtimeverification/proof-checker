@@ -11,9 +11,9 @@ module LIST-CONS
 
   imports LIST-CONS-SYNTAX
 
-  rule [rev-rule]: #revOps(OPS) => #revOpsAux(OPS, .OpCodes)
+  rule [rev-rule] : #revOps(OPS) => #revOpsAux(OPS, .OpCodes)
 
-  rule [rev-aux-base]: #revOpsAux( .OpCodes , OPS' ) => OPS'
-  rule [rev-aux-rec]:  #revOpsAux( OP ; OPS , OPS' ) => #revOpsAux( OPS , OP ; OPS' )
+  rule [rev-aux-base] : #revOpsAux( .OpCodes , OPS' ) => OPS'
+  rule [rev-aux-rec] :  #revOpsAux( OP ; OPS , OPS' ) => #revOpsAux( OPS , OP ; OPS' )
 
 endmodule

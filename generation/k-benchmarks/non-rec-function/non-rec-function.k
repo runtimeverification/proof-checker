@@ -8,6 +8,7 @@ module NON-REC-FUNCTION-SYNTAX
 endmodule
 
 module NON-REC-FUNCTION
+
   imports NON-REC-FUNCTION-SYNTAX
 
   rule [id-rule]: id(X:Foo) => X

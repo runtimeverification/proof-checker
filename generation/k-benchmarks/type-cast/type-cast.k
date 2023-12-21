@@ -15,7 +15,7 @@ module TYPE-CAST
 
   imports TYPE-CAST-SYNTAX
 
-  rule [f-rl]: f(X:Foo) => g({X}:>Oof)
-  rule [g-rl]: g(_:Oof) => h()
+  rule [f-rl] : f(X:Foo) => g({X}:>Oof)
+  rule [g-rl] : g(_:Oof) => h()
 
 endmodule

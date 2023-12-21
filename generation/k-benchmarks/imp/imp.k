@@ -1,4 +1,5 @@
 module IMP-SYNTAX
+
   imports DOMAINS-SYNTAX
   syntax AExp  ::= Int | Id
                  | "-" Int                    [format(%1%2)]
@@ -32,6 +33,7 @@ module IMP-SYNTAX
 endmodule
 
 module IMP
+
   imports IMP-SYNTAX
   imports DOMAINS
 
@@ -78,4 +80,5 @@ module IMP
   // a non-deterministic Boolean
   // rule nondet => false
   // rule nondet => true
+
 endmodule

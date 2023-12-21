@@ -16,9 +16,9 @@ module FUN-CONTEXT
     <k> $PGM:KItem </k>
     <bar> 100 </bar>
 
-  rule [start]: <k> #exec => foo(0) </k>
+  rule [start] : <k> #exec => foo(0) </k>
 
-  rule [foo-rl]: [[ foo(0) => I ]]
+  rule [foo-rl] : [[ foo(0) => I ]]
                  <bar> I </bar>
 
 endmodule

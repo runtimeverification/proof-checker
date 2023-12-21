@@ -8,6 +8,7 @@ module CELL-COLLECTION-SYNTAX
 endmodule
 
 module CELL-COLLECTION
+
   imports INT
   imports STRING
   imports CELL-COLLECTION-SYNTAX

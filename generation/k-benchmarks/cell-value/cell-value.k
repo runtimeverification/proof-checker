@@ -11,9 +11,9 @@ module CELL-VALUE-SYNTAX
 endmodule
 
 module CELL-VALUE
+
   imports DOMAINS
   imports CELL-VALUE-SYNTAX
-
 
   configuration
     <k> $PGM:KItem </k>
@@ -89,4 +89,5 @@ module CELL-VALUE
   rule [find-rl]:
     <k> #inMessages(ID) => findMsg(ID, <messages> MSGS </messages>) ... </k>
     <messages> MSGS </messages>
+
 endmodule

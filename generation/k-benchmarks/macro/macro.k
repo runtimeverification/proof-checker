@@ -18,6 +18,6 @@ module MACRO
   imports INT
   imports MACRO-SYNTAX
 
-  rule inRange(X:Int) => LOWER <=Int X andBool X <=Int UPPER
+  rule [inrange] : inRange(X:Int) => LOWER <=Int X andBool X <=Int UPPER
 
 endmodule

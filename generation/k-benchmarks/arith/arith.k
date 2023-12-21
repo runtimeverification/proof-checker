@@ -15,13 +15,13 @@ module ARITH
 
   syntax KResult ::= Int | Bool
 
-  rule [add-rule]: add(A:Int, B:Int) => A +Int B
-  rule [minus-rule]: minus(A:Int, B:Int) => A -Int B
+  rule [add-rule] : add(A:Int, B:Int) => A +Int B
+  rule [minus-rule] : minus(A:Int, B:Int) => A -Int B
 
   context well(HOLE:Exp, _:Exp, _:Exp)
   context well(_:Int, _:Exp, HOLE:Exp)
   context well(_:Int, HOLE:Exp, _:Int)
 
-  rule [well-rule]: well(X:Int, Y:Int, Z:Int) => X +Int Y -Int Z
+  rule [well-rule] : well(X:Int, Y:Int, Z:Int) => X +Int Y -Int Z
 
 endmodule

@@ -21,7 +21,7 @@ module INJECTIONS
   imports BOOL
   imports INJECTIONS-SYNTAX
 
-  rule f(_:Bar) => g(oof(1))
-  rule g(_:Bar) => g(foo(1))
+  rule [f-rl] : f(_:Bar) => g(oof(1))
+  rule [g-rl] : g(_:Bar) => g(foo(1))
 
 endmodule

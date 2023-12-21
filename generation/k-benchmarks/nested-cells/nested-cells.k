@@ -8,6 +8,7 @@ module NESTED-CELLS-SYNTAX
 endmodule
 
 module NESTED-CELLS
+
   imports INT
   imports STRING
   imports NESTED-CELLS-SYNTAX

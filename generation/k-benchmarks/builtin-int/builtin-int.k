@@ -1,4 +1,5 @@
 module BUILTIN-INT-SYNTAX
+
   imports INT-SYNTAX
 
   syntax Foo ::= foo(Int)

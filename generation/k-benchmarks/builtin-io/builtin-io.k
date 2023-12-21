@@ -20,32 +20,39 @@ module BUILTIN-IO
     <buffer> "" </buffer>              // internal read buffer
 
   // Open the input file for reading
-  rule <k> readFromFile(FILE) => open(#open(FILE)) </k>
+  rule [start-rl] : <k> readFromFile(FILE) => open(#open(FILE)) </k>
 
   // successfully opened the file, begin reading
-  rule <k> open(FD:Int) => buffer(#read(FD, 500)) </k>
+  rule [open-rl] :
+       <k> open(FD:Int) => buffer(#read(FD, 500)) </k>
        <fd> _ => FD </fd>
 
   // error openning file for reading, report an error
-  rule <k> open(E:IOError) => E </k>
+  rule [open-err-rl] :
+       <k> open(E:IOError) => E </k>
        <fd> _ => -2 </fd>
 
   // a chunk of file was read successfully, close the file
-  rule <k> buffer(S:String) => closing(#close(FD)) </k>
+  rule [buffer-rl] :
+       <k> buffer(S:String) => closing(#close(FD)) </k>
        <fd> FD </fd>
        <buffer> IN => IN +String S </buffer>
 
   // error while reading from file, report the error
-  rule <k> buffer(E:IOError) => E </k>
+  rule [buffer-err-rl] :
+       <k> buffer(E:IOError) => E </k>
        <fd> _ => -3 </fd>
 
   // successfully closed the file, return the read buffer
-  rule <k> closing(.K) => IN </k>
+  rule [close-rl] :
+       <k> closing(.K) => IN </k>
        <fd> _ => -1 </fd>
        <buffer> IN => "" </buffer>
 
   // error closing the file, report the error
-  rule <k> closing(E:IOError) => E </k>
+  rule [close-err-rl] :
+       <k> closing(E:IOError) => E </k>
        <fd> _ => -4 </fd>
+
 endmodule
 
