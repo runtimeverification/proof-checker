@@ -621,9 +621,9 @@ fn execute_instructions(
         implies(implies(phi0.clone(), phi1), implies(phi0.clone(), phi2))
     );
     let prop3 = implies(not(not(phi0.clone())), phi0.clone());
-    let _quantifier = implies(esubst(phi0.clone(), 0, evar(1)), exists(0, phi0));
+    let quantifier = implies(esubst(phi0.clone(), 0, evar(1)), exists(0, phi0));
 
-    let _existence = exists(0, evar(0));
+    let existence = exists(0, evar(0));
 
     // For enums we must implement all cases to make match works
     loop {
@@ -711,13 +711,13 @@ fn execute_instructions(
                     Instruction::Prop1 => stack.push(Term::Proved(prop1.clone())),
                     Instruction::Prop2 => stack.push(Term::Proved(prop2.clone())),
                     Instruction::Prop3 => stack.push(Term::Proved(prop3.clone())),
-                    Instruction::Quantifier => { panic!("Quantifier not implemented!"); },
+                    Instruction::Quantifier => stack.push(Term::Proved(quantifier.clone())),
                     Instruction::PropagationOr => { panic!("PropagationOr not implemented!"); },
                     Instruction::PropagationExists => {
                         panic!("PropagationExists not implemented!");
                     },
                     Instruction::PreFixpoint => { panic!("PreFixpoint not implemented!"); },
-                    Instruction::Existence => { panic!("Existence not implemented!"); },
+                    Instruction::Existence =>  stack.push(Term::Proved(existence.clone())),
                     Instruction::Singleton => { panic!("Singleton not implemented!"); },
                     Instruction::ModusPonens => {
                         let premise2 = pop_stack_proved(ref stack);
@@ -735,38 +735,37 @@ fn execute_instructions(
                                 }
                                 stack.push(Term::Proved(right.unwrap().unbox().clone()))
                             },
-                            Pattern::EVar(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::SVar(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::Symbol(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::App(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::Exists(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::Mu(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::MetaVar(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::ESubst(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
-                            Pattern::SSubst(_) => panic!(
-                                "Expected an implication as a first parameter."
-                            ),
+                            _ => {
+                                panic!("Expected an implication as a first parameter.");
+                            }
                         };
                     },
-                    Instruction::Generalization => { panic!("Generalization not implemented!"); },
+                    Instruction::Generalization => {
+                        match pop_stack_proved(ref stack) {
+                            Pattern::Implies(ImpliesType{left, right}) => {
+                                let evar_id = buffer.pop_front().expect('Insufficient params General').into();
+
+                                let left = left.unwrap().unbox();
+                                let right = right.unwrap().unbox();
+                                if !right.e_fresh(evar_id) {
+                                    panic!("The binding variable has to be fresh.");
+                                }
+
+                                stack.push(Term::Proved(implies(exists(evar_id, left.clone()), right.clone())));
+                            },
+                            _ => {
+                                panic!("Expected an implication as a first parameter.");
+                            }
+                        };
+                    },
                     Instruction::Frame => { panic!("Frame not implemented!"); },
-                    Instruction::Substitution => { panic!("Substitution not implemented!"); },
+                    Instruction::Substitution => {
+                        let svar_id = buffer.pop_front().expect('Insufficient params Subst').into();
+                        let pattern = pop_stack_proved(ref stack);
+                        let plug = pop_stack_pattern(ref stack);
+
+                        stack.push(Term::Proved(apply_ssubst(@pattern, svar_id, @plug)));
+                    },
                     Instruction::KnasterTarski => { panic!("KnasterTarski not implemented!"); },
                     Instruction::Instantiate => {
                         let n: u8 = buffer.pop_front().expect('Insufficient parms Instantiate');
@@ -837,7 +836,7 @@ fn execute_instructions(
                         },
                     },
                     Instruction::CleanMetaVar => {
-                        let id: Id = buffer.pop_front().expect('Expected id for MetaVar').into();
+                        let id = buffer.pop_front().expect('Expected id for MetaVar').into();
 
                         let metavar_pat = metavar_unconstrained(id);
 
