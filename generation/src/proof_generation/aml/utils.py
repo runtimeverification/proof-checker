@@ -105,10 +105,10 @@ class _Diff(Pattern):
     we define a dummy subclass of Pattern.
     """
 
-    """ Pattern to be printed with pluses in the diff. """
+    """ Pattern to be printed with minuses in the diff. """
     expected: Pattern
 
-    """ Pattern to be printed with minuses in the diff. """
+    """ Pattern to be printed with pluses in the diff. """
     actual: Pattern
 
     def occurring_vars(self) -> set[EVar | SVar]:
