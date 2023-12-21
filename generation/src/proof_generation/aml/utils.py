@@ -8,7 +8,7 @@ from frozendict import frozendict
 from .syntax import App, ESubst, EVar, Exists, Implies, Instantiate, MetaVar, Mu, Pattern, SSubst, SVar, Symbol
 
 if TYPE_CHECKING:
-    from typing import Mapping
+    from collections.abc import Mapping
 
     from .syntax import InstantiationDict, PrettyOptions
 
