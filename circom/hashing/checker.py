@@ -9,7 +9,6 @@ r = ((P // 17) + 19) % P
 
 # Map string A to polynomial P which has A as its coefficients.
 # Evaluate P at point r
-
 def fingerprint_str(a: str) -> int:
     return sum([r ** i * ord(a[i]) for i in range(len(a))]) % P
 
@@ -194,20 +193,23 @@ class ModusPonens(ProofStep):
         ]
 
 def check_proof(
-        explicit_patterns: list[ExplicitPattern], 
+        claim: ExplicitPattern,
+        ecoms: list[ExplicitCommitment], 
         proof_steps: list[Prop1 | Prop2 | ModusPonens]
     ) -> bool:
 
-    obligation_set = set()
-    proof_set = set()
+    # Expect the last step of the proof to produce an artefact of the claim
+    obligations: {Artefact(claim.implicit(), hint=len(proof_steps))}
+    proofs:  = set()
 
-    for pattern in explicit_patterns:
-        ecom = ExplicitCommitment(pattern)
-        obligation_set.add(ecom.obligations())
-        proof_set.add(ecom.proofs())
+    for ecom in ecoms:
+        for p in ecom.proofs():
+            proofs.add(p)
 
     for step in proof_steps:
-        obligation_set.add(step.obligations())
-        proof_set.add(step.proofs())
+        for o in step.obligations():
+            obligations.add(o)
+        for p in step.proofs():
+            proofs.add(p)
 
-    assert proof_set == obligation_set
+    assert obligations == proofs
