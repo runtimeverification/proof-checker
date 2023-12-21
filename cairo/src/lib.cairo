@@ -43,6 +43,10 @@ fn main() {
     'Checking proofs ... '.print();
     verify(gamma, claims, proofs);
 
+    let (gamma, claims, proofs) = batch_transfer_goal();
+    'Checking proofs ... '.print();
+    verify(gamma, claims, proofs);
+
     let (gamma, claims, proofs) = perceptron_goal();
     'Checking proofs ... '.print();
     verify(gamma, claims, proofs);
