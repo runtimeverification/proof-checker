@@ -87,9 +87,9 @@ def test_proof_trace_single_rewrite() -> None:
     initial_config, iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
 
     # Test the initial configuration
-    kcell_content_symbol = get_k_cell_top_symbol(initial_config)
-    assert isinstance(kcell_content_symbol, Symbol)
-    assert kcell_content_symbol.name == "ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
+    kcell_top_symbol = get_k_cell_top_symbol(initial_config)
+    assert isinstance(kcell_top_symbol, Symbol)
+    assert kcell_top_symbol.name == "ksym_LblFooA'LParRParUnds'SINGLE-REWRITE-SYNTAX'Unds'Foo"
 
     # First rewrite
     hint = next(iterator, None)
