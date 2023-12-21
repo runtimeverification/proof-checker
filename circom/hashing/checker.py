@@ -91,36 +91,50 @@ class Prop1(ProofStep):
         return [
             Artefact(ipat= prop1_inst,hint=self.index)
         ]
-    
-class Prop1(ProofStep):
+
+class Prop2(ProofStep):
     def __init__(
         self,
         ipat_a: ImplicitPattern,
         ipat_b: ImplicitPattern,
+        ipat_c: ImplicitPattern,
         index: int
     ): 
         self.a = ipat_a
         self.b = ipat_b
+        self.c = ipat_c
         self.index = index
 
     def obligations(self) -> list[Artefact]:
         return [
-            Artefact(ipat=self.a, hint= 0),
-            Artefact(ipat=self.b, hint= 0)
+            Artefact(ipat=self.a, hint=0),
+            Artefact(ipat=self.b, hint=0),
+            Artefact(ipat=self.c, hint=0),
         ]
 
-    # Construct "->a->ba" from "a" and "b"
+    # Construct "->->a->bc->->ab->ac" from "a" and "b"
     def proofs(self) -> list[Artefact]:
-        prop1_inst: ImplicitPattern = ExplicitPattern("->") \
+        prop2_inst: ImplicitPattern = ExplicitPattern("->") \
             .implicit() \
+            .concat(ExplicitPattern("->").implicit()) \
+            .concat(ExplicitPattern("->").implicit()) \
             .concat(self.a) \
             .concat(ExplicitPattern("->").implicit()) \
             .concat(self.b) \
-            .concat(self.a)
+            .concat(self.c) \
+            .concat(ExplicitPattern("->").implicit()) \
+            .concat(ExplicitPattern("->").implicit()) \
+            .concat(self.a) \
+            .concat(self.b) \
+            .concat(ExplicitPattern("->").implicit()) \
+            .concat(self.a) \
+            .concat(self.c)
 
         return [
-            Artefact(ipat= prop1_inst,hint=self.index)
+            Artefact(ipat= prop2_inst,hint=self.index)
         ]
+    
+
     
 class ModusPonens(ProofStep):
     # Premise1: a
