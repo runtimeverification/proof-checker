@@ -215,9 +215,12 @@ def test_rewrite_with_simplification() -> None:
     proof_expr.rewrite_event(next_to_reverse, {})
 
     # Make the simplifications
-    proof_expr.simplification_event(rec_case.ordinal, {1: a_symbol.app(), 2: b_symbol.app()}, (0, 0, 0))
-    proof_expr.simplification_event(base_case_b.ordinal, {}, (0,))
-    proof_expr.simplification_event(base_case_a.ordinal, {}, (1,))
+    proof_expr.function_simplification_event((0, 0, 0))
+    proof_expr.rule_simplification_event(rec_case, {1: a_symbol.app(), 2: b_symbol.app()})
+    proof_expr.function_simplification_event((0,))
+    proof_expr.rule_simplification_event(base_case_b, {})
+    proof_expr.function_simplification_event((1,))
+    proof_expr.rule_simplification_event(base_case_a, {})
 
     # Test generating proofs function
     assert proof_expr._claims[0] == claim, proof_expr.pretty_diff(claim, proof_expr._claims[0])
@@ -381,7 +384,7 @@ def test_performer_apply_substitution():
 
     rule = semantics.get_axiom(4)
     assert isinstance(rule, KEquationalRule)
-    substitution = {1: a_symbol.app(), 2: b_symbol.app()}
+    substitution: dict[int, Pattern] = {1: a_symbol.app(), 2: b_symbol.app()}
     expected = node_symbol.app(reverse_symbol.app(b_symbol.app()), reverse_symbol.app(a_symbol.app()))
     substtuted = rule.right.apply_esubsts(substitution)
     assert substtuted == expected
