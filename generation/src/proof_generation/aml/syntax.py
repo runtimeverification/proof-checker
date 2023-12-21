@@ -557,7 +557,7 @@ class Instantiate(Pattern):
         return Instantiate(self.pattern, new_inst)
 
     def apply_ssubst(self, svar_id: int, plug: Pattern) -> Pattern:
-        raise NotImplementedError
+        return self.simplify().apply_ssubst(svar_id, plug)
 
     def pretty(self, opts: PrettyOptions) -> str:
         if opts.simplify_instantiations:
