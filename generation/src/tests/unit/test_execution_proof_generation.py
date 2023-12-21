@@ -490,7 +490,7 @@ def test_subpattern_batch(prover: type[SimplificationProver]) -> None:
     node_symbol = semantics.get_symbol('node')
     a_symbol = semantics.get_symbol('a')
     b_symbol = semantics.get_symbol('b')
-    top_sort = semantics.get_sort('SortGeneratedTopCell').aml_symbol
+    top_sort = semantics.configuration_sort
     tree_sort = semantics.get_sort('SortTree').aml_symbol
 
     # Rules
