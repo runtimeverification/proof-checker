@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from proof_generation.aml import (
     App,
-    ESubst,
     EVar,
     Exists,
     Implies,
