@@ -26,6 +26,7 @@ from proof_generation.aml import (
 )
 from proof_generation.proof import ProofExp
 from proof_generation.proofs.definedness import Definedness, ceil, subset
+from proof_generation.proofs.substitution import HOLE
 
 if TYPE_CHECKING:
     from proof_generation.aml import Pattern
@@ -205,8 +206,8 @@ keq_substitution_axiom = Implies(
     kore_equals(
         phi0,
         phi1,
-        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi2),
-        MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi3),
+        MetaVar(4, app_ctx_holes=(HOLE,)).apply_esubst(HOLE.name, phi2),
+        MetaVar(4, app_ctx_holes=(HOLE,)).apply_esubst(HOLE.name, phi3),
     ),
 )
 
@@ -247,8 +248,8 @@ keq_next_substitution_axiom = Implies(
     kore_equals(
         phi0,
         phi1,
-        kore_next(MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi2)),
-        kore_next(MetaVar(4, app_ctx_holes=(EVar(0),)).apply_esubst(0, phi3)),
+        kore_next(MetaVar(4, app_ctx_holes=(HOLE,)).apply_esubst(HOLE.name, phi2)),
+        kore_next(MetaVar(4, app_ctx_holes=(HOLE,)).apply_esubst(HOLE.name, phi3)),
     ),
 )
 
@@ -402,7 +403,7 @@ class KoreLemmas(ProofExp):
             phi,
         )
 
-    def subst_in_rewrite_target(self, equality: ProofThunk, imp: ProofThunk):
+    def subst_in_rewrite_target(self, equality: ProofThunk, imp: ProofThunk, phi1: Pattern):
         """
         p1 k= p2        phi0  k-> next(phi1[p1/x])
         ------------------------------------------
@@ -431,8 +432,7 @@ class KoreLemmas(ProofExp):
         phi1_subst = kore_next.assert_matches(imp_right)[
             0
         ]  # assert_matched in this case returns a tuple, rather than an ESubst
-        assert isinstance(phi1_subst, ESubst), f'{phi1_subst.__class__} patterns are not supported!'
-        phi1 = phi1_subst.pattern
+        assert phi1.apply_esubst(HOLE.name, p1) == phi1_subst
 
         # MP on "Axiom p1 k= p2 -> (next(phi0[p1/x])  k= next(phi0[p2/x]))" and "p1 k= p2", with p1 |-> p1, p2 |-> p2, phi0 |-> phi1
         # conclude: next(phi1[p1/x])  k= next(phi1[p2/x])
@@ -459,14 +459,14 @@ class KoreLemmas(ProofExp):
         # conclude: phi0 k-> next(phi1[p2/x]))
         return self.modus_ponens(phi0_imp_imp, imp)
 
-    def sorted_eq_id(self, sort: Pattern, phi: Pattern):
+    def sorted_eq_id(self, inner_sort: Pattern, outer_sort: Pattern, phi: Pattern):
         """
         ---------------------------
                 phi k= phi
         """
         return self.dynamic_inst(
             self.load_axiom(eq_id_axiom),
-            {0: sort, 1: sort, 2: phi},
+            {0: inner_sort, 1: outer_sort, 2: phi},
         )
 
     def sorted_eq_trans(self, eq_phi0_phi1: ProofThunk, eq_phi1_phi2: ProofThunk):
@@ -475,15 +475,17 @@ class KoreLemmas(ProofExp):
         ---------------------------
                 phi0 k= phi2
         """
-        sort1, sort2, phi0, phi1 = kore_equals.assert_matches(eq_phi0_phi1.conc)
-        sort1, sort2, phi1_p, phi2 = kore_equals.assert_matches(eq_phi1_phi2.conc)
+        sort_inner_l, sort_outer_l, phi0, phi1 = kore_equals.assert_matches(eq_phi0_phi1.conc)
+        sort_inner_r, sort_outer_r, phi1_p, phi2 = kore_equals.assert_matches(eq_phi1_phi2.conc)
+        assert sort_inner_l == sort_inner_r, self.pretty_diff(sort_inner_l, sort_inner_r)
+        assert sort_outer_l == sort_outer_r, self.pretty_diff(sort_outer_l, sort_outer_r)
         assert phi1 == phi1_p
 
         return self.modus_ponens(
             self.modus_ponens(
                 self.dynamic_inst(
                     self.load_axiom(eq_trans_axiom),
-                    {0: sort1, 1: sort2, 2: phi0, 3: phi1, 4: phi2},
+                    {0: sort_inner_r, 1: sort_outer_r, 2: phi0, 3: phi1, 4: phi2},
                 ),
                 eq_phi0_phi1,
             ),
