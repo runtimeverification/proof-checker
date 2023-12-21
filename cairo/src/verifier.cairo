@@ -640,13 +640,13 @@ fn execute_instructions(
                         stack.push(Term::Pattern(symbol(id)));
                     },
                     Instruction::Implies => {
-                        let left = pop_stack_pattern(ref stack);
                         let right = pop_stack_pattern(ref stack);
+                        let left = pop_stack_pattern(ref stack);
                         stack.push(Term::Pattern(implies(left, right)));
                     },
                     Instruction::App => {
-                        let left = pop_stack_pattern(ref stack);
                         let right = pop_stack_pattern(ref stack);
+                        let left = pop_stack_pattern(ref stack);
                         stack.push(Term::Pattern(app(left, right)));
                     },
                     Instruction::Exists => { panic!("Exists not implemented!"); },
