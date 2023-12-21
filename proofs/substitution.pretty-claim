@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 SVar 0
 Mu 0
 Save
@@ -9,6 +10,14 @@ Instantiate 0
 Load (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}]=1
 Exists 0
 Load (phi0 -> (μ X0 . X0)[{}])=1
+=======
+Load (μ X0 . X0)[]=1
+Load (phi0 -> (μ X0 . X0)[])=2
+Instantiate 0
+Load (phi0 -> (μ X0 . X0)[])[0: phi0]=2
+Exists 0
+Load (phi0 -> (μ X0 . X0)[])=2
+>>>>>>> main
 Instantiate 0
 Instantiate 0
 Publish

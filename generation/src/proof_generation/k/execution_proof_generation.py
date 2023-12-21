@@ -427,14 +427,11 @@ class ExecutionProofExp(proof.ProofExp):
 
     @staticmethod
     def from_proof_hints(
-        hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
+        initial_config: Pattern, hints: Iterator[RewriteStepExpression], language_semantics: LanguageSemantics
     ) -> proof.ProofExp:
         """Constructs a proof expression from a list of rewrite hints."""
-        proof_expr: ExecutionProofExp | None = None
+        proof_expr = ExecutionProofExp(language_semantics, initial_config)
         for hint in hints:
-            if proof_expr is None:
-                proof_expr = ExecutionProofExp(language_semantics, hint.configuration_before)
-
             if isinstance(hint.axiom, KRewritingRule):
                 proof_expr.rewrite_event(hint.axiom, hint.substitutions)
             else:

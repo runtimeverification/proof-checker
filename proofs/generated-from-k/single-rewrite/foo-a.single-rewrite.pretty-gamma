@@ -68,6 +68,7 @@ MetaVar 1
 ESubst id=1
 Implies
 Implies
+<<<<<<< HEAD
 Publish
 MetaVar 0eFresh, len=1 x0 
 
@@ -139,6 +140,8 @@ MetaVar 1
 ESubst id=0
 Implies
 Implies
+=======
+>>>>>>> main
 Publish
 EVar 0
 Symbol ⌈_⌉
@@ -3435,6 +3438,123 @@ Instantiate 0, 1, 2
 Instantiate 0, 1, 2, 3
 Implies
 Implies
+<<<<<<< HEAD
+=======
+Publish
+Symbol ksort_SortInt
+Symbol 0
+Symbol kore_dv
+MetaVar 0
+App
+MetaVar 1
+App
+Instantiate 0, 1
+Symbol ksym_Lbl'-LT-'generatedCounter'-GT-'
+MetaVar 0
+App
+Instantiate 0
+EVar 0
+MetaVar 0eFresh, len=1 x0 
+
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 1
+Implies
+MetaVar 1
+MetaVar 0
+Implies
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Symbol ⌈_⌉
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0
+Instantiate 0, 1
+Exists 0
+Instantiate 0
+Publish
+Symbol ksym_dotk
+Instantiate 
+EVar 0
+MetaVar 0eFresh, len=1 x0 
+
+MetaVar 0
+MetaVar 1
+MetaVar 0
+MetaVar 1
+Implies
+MetaVar 1
+MetaVar 0
+Implies
+MetaVar 0
+MetaVar 1
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Implies
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0, 1
+Instantiate 0, 1
+MetaVar 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Symbol ⌈_⌉
+MetaVar 0
+App
+Instantiate 0
+MetaVar 0
+SVar 0
+Mu 0
+Instantiate 
+Implies
+Instantiate 0
+Instantiate 0
+Instantiate 0, 1
+Exists 0
+Instantiate 0
+>>>>>>> main
 Publish
 Symbol ksort_SortGeneratedTopCell
 Symbol ksort_SortFoo
@@ -3449,7 +3569,11 @@ App
 MetaVar 2
 App
 Instantiate 0, 1, 2
+<<<<<<< HEAD
 EVar 0
+=======
+MetaVar 0
+>>>>>>> main
 Symbol kore_kseq
 MetaVar 0
 App
@@ -3460,7 +3584,11 @@ Symbol ksym_Lbl'-LT-'k'-GT-'
 MetaVar 0
 App
 Instantiate 0
+<<<<<<< HEAD
 EVar 1
+=======
+MetaVar 1
+>>>>>>> main
 Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
 MetaVar 0
 App
@@ -3479,7 +3607,11 @@ App
 MetaVar 2
 App
 Instantiate 0, 1, 2
+<<<<<<< HEAD
 EVar 0
+=======
+MetaVar 0
+>>>>>>> main
 Symbol kore_kseq
 MetaVar 0
 App
@@ -3490,7 +3622,11 @@ Symbol ksym_Lbl'-LT-'k'-GT-'
 MetaVar 0
 App
 Instantiate 0
+<<<<<<< HEAD
 EVar 1
+=======
+MetaVar 1
+>>>>>>> main
 Symbol ksym_Lbl'-LT-'generatedTop'-GT-'
 MetaVar 0
 App
@@ -3551,6 +3687,7 @@ Instantiate 0, 1
 Instantiate 0, 1
 Instantiate 0, 1, 2
 Instantiate 0, 1, 2
+<<<<<<< HEAD
 Publish
 Symbol ksort_SortInt
 Symbol 0
@@ -3665,4 +3802,6 @@ Instantiate 0
 Instantiate 0, 1
 Exists 0
 Instantiate 0
+=======
+>>>>>>> main
 Publish

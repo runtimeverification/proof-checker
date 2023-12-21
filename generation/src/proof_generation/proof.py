@@ -5,7 +5,7 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, TypeVar
 
-from proof_generation.aml import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2
+from proof_generation.aml import ESubst, EVar, Exists, Implies, PrettyOptions, bot, phi0, phi1, phi2, pretty_diff
 from proof_generation.claim import Claim
 from proof_generation.interpreter import (
     CountingInterpreter,
@@ -242,6 +242,9 @@ class ProofExp:
 
     def pretty(self, p: Pattern) -> str:
         return p.pretty(self.pretty_options())
+
+    def pretty_diff(self, p1: Pattern, p2: Pattern) -> str:
+        return pretty_diff(p1, p2, self.pretty_options())
 
     def get_serializing_interpreter(
         self,
