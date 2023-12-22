@@ -120,13 +120,14 @@ Last Update: Dec 19th, 2023
 
 
 #### RISC Zero (v0.16.1)
+Last Update: Dec 22th, 2023
 |      Examples*      |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
 |:-------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
-| impreflex           |   67460 |     0.031     |     0.031     |       4.705    |      1.097     |      0.001      |      0.002      |       4.737    |      1.130     |
-| transfer-goal       | 1142529 |     0.056     |     0.052     |      48.921    |     10.606     |      0.002      |      0.003      |      48.979    |     10.661     |
-| batch-transfer-goal | 6722986 |     0.112     |     0.129     |     274.692    |     58.901     |      0.011      |      0.011      |     274.815    |     59.041     |
-| perceptron-goal     | 3212385 |     0.071     |     0.066     |     128.392    |     28.829     |      0.006      |      0.006      |     128.469    |     28.901     |
-| svm-goal            | 3212385 |     0.050     |     0.050     |     128.013    |     28.520     |      0.006      |      0.006      |     128.069    |     28.576     |
+| impreflex           |   66366 |     0.031     |     0.031     |       4.754    |      1.097     |      0.001      |      0.002      |       4.786    |      1.130     |
+| transfer-goal       | 1139247 |     0.034     |     0.052     |      48.938    |     10.606     |      0.003      |      0.003      |      48.975    |     10.661     |
+| batch-transfer-goal | 6724805 |     0.114     |     0.129     |     274.237    |     58.901     |      0.011      |      0.011      |     274.362    |     59.041     |
+| perceptron-goal     | 3212346 |     0.049     |     0.066     |     127.911    |     28.829     |      0.006      |      0.006      |     127.966    |     28.901     |
+| svm-goal            | 3212346 |     0.069     |     0.050     |     128.289    |     28.520     |      0.006      |      0.006      |     128.364    |     28.576     |
 
 \* For the RISC Zero $PI^2$ implementation, we have the main implementation defined
 [here](https://github.com/runtimeverification/proof-checker/tree/main/risc0/pi2)
@@ -167,6 +168,16 @@ it is difficult to accurately measure and compare execution times between Lurk
 and other implementations. Even though we have 128GB of RAM + 108Gb of swap
 memory, we still couldn't execute most of $PI^2$ examples in Lurk, that what
 the `∞` means on the performance tables.
+
+The `--rc n` flag is used to improve the performance execution of larger
+programs in Lurk. The `rc` value is the number of iterations that Lurk packs
+together in a single [Nova](https://github.com/microsoft/Nova) folding step.
+In terms of parallelism, Lurk is capable of generating more partial witnesses in
+parallel with higher rc values. However, the higher the rc value, the more
+memory is required to execute the program. The default value of `rc` is 10, and
+we used `rc=400` for the `batch-transfer` example. In small cases, a higher `rc`
+value can decrease the execution time, that is why we use it for programs with
+more than 100K iterations.
 
 The Lurk's examples were executed within the following version:
 
