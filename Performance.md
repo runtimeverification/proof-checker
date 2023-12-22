@@ -63,13 +63,14 @@ We consider the following ZK backends:
 
 ### Direct Implementation
 
-#### CairoZero (v0.12.3)
-|                                                             Examples                                                           | CPU Exec Time | CPU Prove Time | CPU Verify Time | CPU Total Time |
-|:-------------------------------------------------------------------------------------------------------------------------------|:-------------:|:--------------:|:---------------:|:--------------:|
-| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/transfer.cairo)            |         0.441 |          0.185 |           0.008 |          0.634 |
-| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/transfer5000.cairo)* |         6.799 |         26.311 |           0.867 |         33.977 |
-| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/perceptron.cairo)        |         0.438 |          0.149 |           0.007 |          0.594 |
-| [svm](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/svm5.cairo)                     |         0.442 |          0.175 |           0.007 |          0.624 |
+#### Cairo Zero (v0.13.0) with Lambdaworks Cairo Platinum Prover (v0.3.0)
+Last Update: Dec 21th, 2023
+|                                                             Examples                                                             | CPU Exec Time | CPU Prove Time | CPU Verify Time | CPU Total Time |
+|:---------------------------------------------------------------------------------------------------------------------------------|:-------------:|:--------------:|:---------------:|:--------------:|
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/transfer.cairo)              |         0.441 |          0.185 |           0.008 |          0.634 |
+| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/batch_transfer.cairo)* |         6.799 |         26.311 |           0.867 |         33.977 |
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/perceptron.cairo)          |         0.438 |          0.149 |           0.007 |          0.594 |
+| [svm](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/svm.cairo)                        |         0.442 |          0.175 |           0.007 |          0.624 |
 
 
 #### Lurk
