@@ -86,12 +86,13 @@ Last Update: Dec 19th, 2023
 
 
 #### RISC Zero (v0.16.1)
+Last Update: Dec 22th, 2023
 |                                                         Examples                                                              |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
 |:-----------------------------------------------------------------------------------------------------------------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
-| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/transfer.rs)           |  21156  |     0.029     |     0.017     |      2.336     |      0.571     |      0.002      |      0.001      |      2.367     |      0.589     |
-| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/transfer5000.rs) | 754199  |     0.057     |     0.041     |     37.970     |      7.670     |      0.001      |      0.001      |     38.028     |      7.712     |
-| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/perceptron.rs)       |  21156  |     0.029     |     0.017     |      2.316     |      0.639     |      0.001      |      0.001      |      2.346     |      0.657     |
-| [svm](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/svm5.rs)                    |  21156  |     0.028     |     0.028     |      2.323     |      0.599     |      0.002      |      0.001      |      2.353     |      0.628     |
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/transfer.rs)           |  21156  |     0.017     |     0.030     |      2.353     |      0.613     |      0.001      |      0.002      |      2.371     |      0.645     |
+| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/transfer5000.rs) | 754199  |     0.057     |     0.057     |     37.878     |      7.532     |      0.002      |      0.001      |     37.937     |      7.590     |
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/perceptron.rs)       |  21156  |     0.017     |     0.028     |      2.355     |      0.595     |      0.001      |      0.002      |      2.373     |      0.625     |
+| [svm](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/svm5.rs)                    |  21156  |     0.028     |     0.028     |      2.351     |      0.602     |      0.002      |      0.002      |      2.381     |      0.632     |
 
 
 #### zkLLVM (v0.1.11-48)
