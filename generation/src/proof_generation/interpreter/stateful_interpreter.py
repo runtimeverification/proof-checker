@@ -18,7 +18,6 @@ class StatefulInterpreter(BasicInterpreter):
     such as the memory, stack and claims remaining.
     """
 
-    claims: list[Claim]
     stack: list[Pattern | Proved]
     memory: list[Pattern | Proved]
 
@@ -27,10 +26,9 @@ class StatefulInterpreter(BasicInterpreter):
         phase: ExecutionPhase,
         claims: list[Claim] | None = None,
     ) -> None:
-        super().__init__(phase=phase)
+        super().__init__(phase=phase, claims=claims)
         self.stack = []
         self.memory = []
-        self.claims = claims if claims else []
 
     def into_claim_phase(self) -> None:
         self.stack = []
@@ -194,10 +192,6 @@ class StatefulInterpreter(BasicInterpreter):
 
     def publish_proof(self, proved: Proved) -> None:
         super().publish_proof(proved)
-        expected_claim, *self.claims = self.claims
-        assert (
-            proved.conclusion == expected_claim.pattern
-        ), f'{str(proved.conclusion)} != {str(expected_claim.pattern)} \n {str(self.stack)}'
         assert self.stack[-1] == proved, f'{str(self.stack[-1])} != {str(proved)} \n {str(self.stack)}'
 
     def publish_axiom(self, axiom: Pattern) -> None:
