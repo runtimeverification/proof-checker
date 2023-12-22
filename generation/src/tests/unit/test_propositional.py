@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from proof_generation.aml import Implies, Symbol, App
+from proof_generation.aml import App, Implies, Symbol
 from proof_generation.interpreter import BasicInterpreter, ExecutionPhase, StatefulInterpreter
 from proof_generation.proof import ProofThunk
-from proof_generation.proofs.propositional import Propositional, neg, phi0, phi1, phi2, _and, _or
+from proof_generation.proofs.propositional import Propositional, _and, _or, neg, phi0, phi1, phi2
 from proof_generation.proofs.small_theory import SmallTheory
 from proof_generation.proved import Proved
 
@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 prop = Propositional()
 sigma0 = Symbol('s0')
+
 
 def make_pt(p: Pattern) -> ProofThunk:
     return ProofThunk((lambda interpreter: Proved(p)), p)
@@ -43,29 +44,38 @@ def test_prove_absurd() -> None:
         neg(phi0), Implies(phi0, phi1)
     )
 
+
 def dummy_proof(pat: Pattern) -> ProofThunk:
     return ProofThunk(lambda interpreter: Proved(pat), pat)
 
-@pytest.mark.parametrize('pf, pattern, expected', [
-    (prop.imp_refl(), sigma0, Implies(sigma0, sigma0)),
-    (
-        dummy_proof(Implies(_and(App(phi0, phi1), phi2), _or(phi0, _and(phi1, phi2)))),
-        _and(App(sigma0, phi0), Implies(phi1, phi1)),
-        Implies(_and(App(sigma0, phi0), Implies(phi1, phi1)), _or(sigma0, _and(phi0, Implies(phi1, phi1))))
-    )
-])
+
+@pytest.mark.parametrize(
+    'pf, pattern, expected',
+    [
+        (prop.imp_refl(), sigma0, Implies(sigma0, sigma0)),
+        (
+            dummy_proof(Implies(_and(App(phi0, phi1), phi2), _or(phi0, _and(phi1, phi2)))),
+            _and(App(sigma0, phi0), Implies(phi1, phi1)),
+            Implies(_and(App(sigma0, phi0), Implies(phi1, phi1)), _or(sigma0, _and(phi0, Implies(phi1, phi1)))),
+        ),
+    ],
+)
 def test_imp_match_l(pf: ProofThunk, pattern: Pattern, expected: Pattern) -> None:
     interpreter = BasicInterpreter(ExecutionPhase.Proof)
     assert Proved(expected) == prop.imp_match_l(pf, pattern)(interpreter)
 
-@pytest.mark.parametrize('pf, pattern, expected', [
-    (prop.imp_refl(), sigma0, Implies(sigma0, sigma0)),
-    (
-        dummy_proof(Implies(_and(App(phi0, phi1), phi2), _or(phi0, _and(phi1, phi2)))),
-        _or(sigma0, _and(phi0, Implies(phi1, phi1))),
-        Implies(_and(App(sigma0, phi0), Implies(phi1, phi1)), _or(sigma0, _and(phi0, Implies(phi1, phi1))))
-    )
-])
+
+@pytest.mark.parametrize(
+    'pf, pattern, expected',
+    [
+        (prop.imp_refl(), sigma0, Implies(sigma0, sigma0)),
+        (
+            dummy_proof(Implies(_and(App(phi0, phi1), phi2), _or(phi0, _and(phi1, phi2)))),
+            _or(sigma0, _and(phi0, Implies(phi1, phi1))),
+            Implies(_and(App(sigma0, phi0), Implies(phi1, phi1)), _or(sigma0, _and(phi0, Implies(phi1, phi1)))),
+        ),
+    ],
+)
 def test_imp_match_r(pf: ProofThunk, pattern: Pattern, expected: Pattern) -> None:
     interpreter = BasicInterpreter(ExecutionPhase.Proof)
     assert Proved(expected) == prop.imp_match_r(pf, pattern)(interpreter)
