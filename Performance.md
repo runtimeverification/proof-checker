@@ -123,11 +123,11 @@ Last Update: Dec 19th, 2023
 Last Update: Dec 22th, 2023
 |      Examples*      |  Cycles | CPU Exec Time | GPU Exec Time | CPU Prove Time | GPU Prove Time | CPU Verify Time | GPU Verify Time | CPU Total Time | GPU Total Time |
 |:-------------------:|:-------:|:-------------:|:-------------:|:--------------:|:--------------:|:---------------:|:---------------:|:--------------:|:--------------:|
-| impreflex           |   66366 |     0.031     |     0.031     |       4.754    |      1.097     |      0.001      |      0.002      |       4.786    |      1.130     |
-| transfer-goal       | 1139247 |     0.034     |     0.052     |      48.938    |     10.606     |      0.003      |      0.003      |      48.975    |     10.661     |
-| batch-transfer-goal | 6724805 |     0.114     |     0.129     |     274.237    |     58.901     |      0.011      |      0.011      |     274.362    |     59.041     |
-| perceptron-goal     | 3212346 |     0.049     |     0.066     |     127.911    |     28.829     |      0.006      |      0.006      |     127.966    |     28.901     |
-| svm-goal            | 3212346 |     0.069     |     0.050     |     128.289    |     28.520     |      0.006      |      0.006      |     128.364    |     28.576     |
+| impreflex           |   66366 |     0.031     |     0.030     |       4.754    |      1.256     |      0.001      |      0.001      |       4.786    |      1.287     |
+| transfer-goal       | 1139247 |     0.034     |     0.034     |      48.938    |     10.663     |      0.003      |      0.003      |      48.975    |     10.700     |
+| batch-transfer-goal | 6724805 |     0.114     |     0.114     |     274.237    |     59.819     |      0.011      |      0.011      |     274.362    |     59.944     |
+| perceptron-goal     | 3212346 |     0.049     |     0.050     |     127.911    |     28.433     |      0.006      |      0.006      |     127.966    |     28.489     |
+| svm-goal            | 3212346 |     0.069     |     0.050     |     128.289    |     28.695     |      0.006      |      0.006      |     128.364    |     28.751     |
 
 \* For the RISC Zero $PI^2$ implementation, we have the main implementation defined
 [here](https://github.com/runtimeverification/proof-checker/tree/main/risc0/pi2)
