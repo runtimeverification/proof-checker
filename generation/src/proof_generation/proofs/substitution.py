@@ -24,6 +24,9 @@ def func_subst_axiom(forall_evar_name: int) -> Pattern:
     )
 
 
+HOLE = EVar(0)
+
+
 class Substitution(ProofExp):
     def __init__(self) -> None:
         super().__init__(

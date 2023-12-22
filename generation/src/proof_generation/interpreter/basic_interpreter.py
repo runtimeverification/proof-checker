@@ -11,14 +11,18 @@ from .interpreter import ExecutionPhase, Interpreter
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from proof_generation.aml import Pattern
+    from ..aml import Pattern
+    from ..claim import Claim
 
 
 class BasicInterpreter(Interpreter):
     """A stateless proof interpreter. It only checks conclusions."""
 
-    def __init__(self, phase: ExecutionPhase):
+    claims: list[Claim]
+
+    def __init__(self, phase: ExecutionPhase, claims: list[Claim] | None = None):
         super().__init__(phase)
+        self.claims = claims if claims else []
 
     def mark_generation_unsafe(self, warning: str) -> None:
         self._interpreting_warnings.add(warning)
@@ -115,9 +119,10 @@ class BasicInterpreter(Interpreter):
     def load(self, id: str, term: Pattern | Proved) -> None:
         ...
 
-    def publish_proof(self, term: Proved) -> None:
+    def publish_proof(self, proved: Proved) -> None:
         assert self.phase == ExecutionPhase.Proof
-        ...
+        expected_claim, *self.claims = self.claims
+        assert proved.conclusion == expected_claim.pattern, f'{str(proved.conclusion)} != {str(expected_claim.pattern)}'
 
     def publish_axiom(self, term: Pattern) -> None:
         assert self.phase == ExecutionPhase.Gamma

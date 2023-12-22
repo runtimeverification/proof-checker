@@ -87,9 +87,13 @@ def node_tree() -> LanguageSemantics:
         module = sem.module('node-tree')
         with module as mod:
             top_cell_sort_obj = mod.sort('SortGeneratedTopCell')
+
             kcell_sort_obj = mod.sort('SortKCell')
             k_sort_obj = mod.sort('SortK')
+
             tree_sort_obj = mod.sort('SortTree')
+            tree_sort = tree_sort_obj.aml_symbol
+            tree_top = kore_top(tree_sort)
 
             mod.symbol(
                 'generated_top',
@@ -112,67 +116,67 @@ def node_tree() -> LanguageSemantics:
             a_symbol = mod.symbol('a', tree_sort_obj, is_functional=True, is_ctor=True)
             b_symbol = mod.symbol('b', tree_sort_obj, is_functional=True, is_ctor=True)
 
+            cfg_sort = semantics.configuration_sort.aml_symbol
+            cfg_sort_top = kore_top(cfg_sort)
+
             # init{}() => next{}()
             init_conf = tree_semantics_config_pattern(semantics, 'SortTree', init_symbol.app())
             next_conf = tree_semantics_config_pattern(semantics, 'SortTree', next_symbol.app())
-            mod.rewrite_rule(kore_rewrites(top_cell_sort_obj.aml_symbol, init_conf, next_conf))
+            mod.rewrite_rule(kore_rewrites(cfg_sort, init_conf, next_conf))
 
             # next => reverse(node(a, b))
             reverse_expression = reverse_symbol.app(node_symbol.app(a_symbol.app(), b_symbol.app()))
             reverse_conf = tree_semantics_config_pattern(semantics, 'SortTree', reverse_expression)
-            mod.rewrite_rule(kore_rewrites(top_cell_sort_obj.aml_symbol, next_conf, reverse_conf))
+            mod.rewrite_rule(kore_rewrites(cfg_sort, next_conf, reverse_conf))
 
             # reverse(a) = a
-            tree_sort = tree_sort_obj.aml_symbol
-            tree_top = kore_top(tree_sort)
             requires = kore_and(
-                tree_top,
+                cfg_sort_top,
                 kore_and(
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(a_symbol.app(), EVar(1))),
-                    tree_top,
+                    kore_in(tree_sort, cfg_sort, EVar(0), kore_and(a_symbol.app(), EVar(1))),
+                    cfg_sort_top,
                 ),
             )
             left = reverse_symbol.app(EVar(0))
             right = EVar(1)
             ensures = tree_top
             equational_pattern = kore_implies(
-                tree_sort,
+                cfg_sort,
                 requires,
-                kore_equals(tree_sort, tree_sort, left, kore_and(right, ensures)),
+                kore_equals(tree_sort, cfg_sort, left, kore_and(right, ensures)),
             )
             mod.equational_rule(equational_pattern)
 
             # reverse(b) = b
             requires = kore_and(
-                tree_top,
+                cfg_sort_top,
                 kore_and(
-                    kore_in(tree_sort, tree_sort, EVar(0), kore_and(b_symbol.app(), EVar(1))),
-                    tree_top,
+                    kore_in(tree_sort, cfg_sort, EVar(0), kore_and(b_symbol.app(), EVar(1))),
+                    cfg_sort_top,
                 ),
             )
             equational_pattern = kore_implies(
-                tree_sort,
+                cfg_sort,
                 requires,
-                kore_equals(tree_sort, tree_sort, left, kore_and(right, ensures)),
+                kore_equals(tree_sort, cfg_sort, left, kore_and(right, ensures)),
             )
             mod.equational_rule(equational_pattern)
 
             # reverse(node(T1, T2)) = node(reverse(T2), reverse(T1))
             requires = kore_and(
-                tree_top,
+                cfg_sort_top,
                 kore_and(
-                    kore_in(tree_sort, tree_sort, EVar(0), node_symbol.app(EVar(1), EVar(2))),
-                    tree_top,
+                    kore_in(tree_sort, cfg_sort, EVar(0), node_symbol.app(EVar(1), EVar(2))),
+                    cfg_sort_top,
                 ),
             )
             eq3_left = reverse_symbol.app(EVar(0))
             eq3_right = node_symbol.app(reverse_symbol.app(EVar(2)), reverse_symbol.app(EVar(1)))
-            ensures = tree_top
             mod.equational_rule(
                 kore_implies(
-                    tree_sort,
+                    cfg_sort,
                     requires,
-                    kore_equals(tree_sort, tree_sort, eq3_left, kore_and(eq3_right, ensures)),
+                    kore_equals(tree_sort, cfg_sort, eq3_left, kore_and(eq3_right, ensures)),
                 )
             )
 
