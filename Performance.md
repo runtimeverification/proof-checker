@@ -64,23 +64,23 @@ We consider the following ZK backends:
 ### Direct Implementation
 
 #### Cairo Zero (v0.13.0) with Lambdaworks Cairo Platinum Prover (v0.3.0)
-Last Update: Dec 21th, 2023
+Last Update: Dec 22th, 2023
 |                                                             Examples                                                             | CPU Exec Time | CPU Prove Time | CPU Verify Time | CPU Total Time |
 |:---------------------------------------------------------------------------------------------------------------------------------|:-------------:|:--------------:|:---------------:|:--------------:|
-| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/transfer.cairo)              |         0.441 |          0.185 |           0.008 |          0.634 |
-| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/batch_transfer.cairo)* |         6.799 |         26.311 |           0.867 |         33.977 |
-| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/perceptron.cairo)          |         0.438 |          0.149 |           0.007 |          0.594 |
-| [svm](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/svm.cairo)                        |         0.442 |          0.175 |           0.007 |          0.624 |
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/transfer.cairo)              |         0.440 |          0.195 |           0.008 |          0.643 |
+| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/batch_transfer.cairo)* |         6.825 |         30.196 |           0.869 |         37.890 |
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/perceptron.cairo)          |         0.448 |          0.166 |           0.008 |          0.662 |
+| [svm](https://github.com/runtimeverification/proof-checker/blob/main/cairo/csl-examples/cairo0/svm.cairo)                        |         0.443 |          0.176 |           0.008 |          0.627 |
 
 
 #### Lurk
 Last Update: Dec 19th, 2023
-|                                                       Examples                                                          |  Cycles | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Prove Time | GPU Verify Time | GPU Total Time |
-|:-----------------------------------------------------------------------------------------------------------------------:|:-------:|:--------------:|:---------------:|:--------------:|:--------------:|:---------------:|:--------------:|
-| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer.lurk)              |      34 |          2.393 |           0.554 |          2.947 |          2.313 |           0.618 |          2.931 |
-| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/batch_transfer.lurk)* |  505037 |       3681.819 |           9.845 |       3691.664 |       1193.355 |           6.571 |       1199.926 |
-| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/perceptron.lurk)          |      11 |          3.501 |           0.541 |          4.042 |          0.830 |           0.579 |          1.409 |
-| [svm](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/svm5.lurk)                       |       9 |          1.832 |           0.538 |          2.370 |          0.820 |           0.598 |          1.418 |
+|                                                       Examples                                                          | Iterations | CPU Prove Time | CPU Verify Time | CPU Total Time | GPU Prove Time | GPU Verify Time | GPU Total Time |
+|:-----------------------------------------------------------------------------------------------------------------------:|:----------:|:--------------:|:---------------:|:--------------:|:--------------:|:---------------:|:--------------:|
+| [transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/transfer.lurk)              |         34 |          2.393 |           0.554 |          2.947 |          2.313 |           0.618 |          2.931 |
+| [batch-transfer](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/batch_transfer.lurk)* |     505037 |       3681.819 |           9.845 |       3691.664 |       1193.355 |           6.571 |       1199.926 |
+| [perceptron](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/perceptron.lurk)          |         11 |          3.501 |           0.541 |          4.042 |          0.830 |           0.579 |          1.409 |
+| [svm](https://github.com/runtimeverification/proof-checker/blob/main/lurk/csl-examples/svm5.lurk)                       |          9 |          1.832 |           0.538 |          2.370 |          0.820 |           0.598 |          1.418 |
 
 \* Using `lurk --rc 400 batch_transfer.lurk`, other tests doesn't use `--rc`
 
@@ -94,14 +94,14 @@ Last Update: Dec 19th, 2023
 | [svm](https://github.com/runtimeverification/proof-checker/blob/main/risc0/csl-examples/guest/src/svm5.rs)                    |  21156  |     0.028     |     0.028     |      2.323     |      0.599     |      0.002      |      0.001      |      2.353     |      0.628     |
 
 
-#### zkLLVM
-Last Update: Dec 20th, 2023
-|                                                  Examples                                                       | CPU Circuit Gen Time | CPU Prove+Verify Time |
-|:---------------------------------------------------------------------------------------------------------------:|:--------------------:|:---------------------:|
-| [transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer)           |                0.970 |                 0.132 |
-| [batch-transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer5000) |                1.421 |               144.922 |
-| [perceptron](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/perceptron)       |                0.980 |                 0.132 |
-| [svm](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/svm5)                    |                0.980 |                 0.133 |
+#### zkLLVM (v0.1.11-48)
+Last Update: Dec 21th, 2023
+|                                                  Examples                                                         | CPU Circuit Gen Time | CPU Prove+Verify Time |
+|:-----------------------------------------------------------------------------------------------------------------:|:--------------------:|:---------------------:|
+| [transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/transfer)             |                0.780 |                 0.135 |
+| [batch-transfer](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/batch_transfer) |                1.361 |               146.690 |
+| [perceptron](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/perceptron)         |                0.980 |                 0.131 |
+| [svm](https://github.com/runtimeverification/proof-checker/tree/main/zkllvm/csl-zkllvm/svm)                       |                0.950 |                 0.134 |
 
 ### Proofs of Proofs
 
@@ -151,7 +151,9 @@ and the inputs defined [here](https://github.com/runtimeverification/proof-check
 The inputs are split and encoded into three arrays on a file for each file to
 match the input requirements of the zkLLVM implementation.
 
-## Lurk Implementation Details
+## Implementation Details
+
+### Lurk Implementation Details
 Lurk is a interpreted programming language, that said, when we execute an
 example in Lurk, we are actually executing the interpreter that will execute the
 program. This means that the execution time required for the interpreter to load
@@ -194,10 +196,23 @@ export EC_GPU_FRAMEWORK=none
 cargo install --path . --force
 ```
 
-## zkLLVM Implementation Details
+### zkLLVM Implementation Details
 
-Unfortunately, zkLLVM doesn't support GPU acceleration in any phase, so we only
-have CPU results for zkLLVM.
+zkLLVM doesn't support GPU acceleration in any phase, therefore, we don't have
+GPU results for these experiments.
 
 The proof and verification on zkLLVM were genereted using
 `transpiler -m gen-test-proof`.
+
+The version of the individual tools used to execute the examples were:
+
+```bash
+$ clang-17 --version
+clang version 17.0.4 (http://www.github.com/NilFoundation/zkllvm-circifier.git 4c393658e71bed430b996cff8555a548fbe8bbda)
+
+$ assigner --version
+0.1.11-48
+
+$ transpiler --version
+0.1.11-48
+```
