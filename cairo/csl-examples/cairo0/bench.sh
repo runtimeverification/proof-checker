@@ -2,9 +2,9 @@
 # Usage: ./bench.sh <output_file>
 
 declare -a arr=("perceptron.cairo"     \
-                "svm5.cairo"           \
+                "svm.cairo"           \
                 "transfer.cairo"       \
-                "transfer_batch.cairo" \
+                "batch_transfer.cairo" \
                )
 BUILDDIR=./.build
 
