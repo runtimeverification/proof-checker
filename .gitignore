@@ -21,6 +21,8 @@ a.out
 
 # Cairo
 cairo/target
+cairo/csl-examples/*/.build
+cairo/csl-examples/*/corelib
 
 # Python versions used by pyenv
 .python-version
