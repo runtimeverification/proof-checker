@@ -106,7 +106,7 @@ echo $FILENAME "circuit generation .." $(expr $CIRCUIT_TIME / 1000).$(expr $CIRC
 echo "Generate proof and verify"
 TIME3=$(date +%s%3N);
 
-${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -o "${OUTPUTDIR}" > /dev/null
+${TRANSPILER} -m gen-test-proof -i "${INPUT}" -c "${OUTPUT_CIRCUIT}" -t "${OUTPUT_TABLE}" -e pallas -o "${OUTPUTDIR}" > /dev/null
 
 TIME4=$(date +%s%3N);
 PROOF_TIME=$(expr $TIME4 - $TIME3)
