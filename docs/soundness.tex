@@ -1,0 +1,499 @@
+\documentclass{article}
+\usepackage{amsmath, amsthm, amsfonts, amssymb} % ams text
+\usepackage{ifthen}
+\usepackage{acronym}
+\usepackage{cleveref}
+\usepackage{xspace}
+
+%%% Environments
+
+\newcommand{\xqed}[1]{%
+    \leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
+    \quad\hbox{\ensuremath{#1}}}
+\newcommand{\xqedhere}{\xqed{\blacksquare}}
+
+\newtheorem{deff}{Definition}
+\newenvironment{definition}[1]{%
+  \begin{deff}#1}{%
+  \xqedhere\end{deff}%
+}
+\numberwithin{deff}{section}
+\newtheorem{lemma*}{Lemma}
+\newenvironment{lemma}[1]{%
+    \begin{lemma*}#1}{%
+    \xqedhere\end{lemma*}%
+  }
+\numberwithin{lemma*}{section}
+\newtheorem{proposition*}{Proposition}
+\newenvironment{proposition}[1]{%
+    \begin{proposition*}#1}{%
+    \xqedhere\end{proposition*}%
+  }
+\newtheorem{corollary*}{Corollary}
+\newenvironment{corollary}[1]{%
+    \begin{corollary*}#1}{%
+    \xqedhere\end{corollary*}%
+  }
+\newtheorem{theorem*}{Theorem}
+
+%%% Aliases
+
+% Domains
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\Int}{\mathbb{Z}}
+\newcommand{\nats}{\mathbb{N}}
+\newcommand{\ints}{\mathbb{Z}}
+\newcommand{\rats}{\mathbb{Q}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\Pat}{\textsc{Pattern}}
+\newcommand{\pat}{\textsc{Pattern}}
+\newcommand{\patsig}{\textsc{Pattern}_\Sigma}
+\newcommand{\Func}{\textsc{Func}}
+\newcommand{\Pred}{\textsc{Pred}}
+\newcommand{\Var}{\textsc{Var}}
+\newcommand{\EVar}{\textsc{EV}}
+\newcommand{\SVar}{\textsc{SV}}
+\newcommand{\Sort}{\textsc{Sort}}
+\newcommand{\Prop}{\textsc{Prop}}
+
+% Matrices
+\newcommand{\matA}{\mathbf{A}}
+\newcommand{\matB}{\mathbf{B}}
+
+% Vectors
+\newcommand{\vecu}{\mathbf{u}}
+\newcommand{\vecv}{\mathbf{v}}
+
+% Functions
+\newcommand{\s}[1]{\{ #1 \}}
+\newcommand{\dom}{\mathsf{dom}}
+\newcommand{\im}{\mathsf{im}}
+\newcommand{\FV}{\mathsf{FV}}
+\newcommand{\defined}[1]{\lceil #1 \rceil}
+\newcommand{\tot}[1]{\lfloor #1 \rfloor}
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand{\inhabits}[1]{\llbracket #1 \rrbracket}
+\newcommand{\defop}{\lceil \cdot \rceil}
+\newcommand{\totop}{\lfloor \cdot \rfloor}
+\newcommand{\imp}{\rightarrow}
+\newcommand{\dimp}{\leftrightarrow}
+\newcommand{\ldot}{\ldotp}
+\newcommand{\setsymdiff}{\triangle}
+\newcommand{\bmdefined}[1]{\bm{\lceil} #1 \bm{\rceil}}
+\newcommand{\altceil}[1]{\mathord{\upharpoonright} #1 \mathord{\upharpoonleft}}
+\newcommand{\altceilop}{\altceil{\mathord{\cdot}}}
+\newcommand{\tiff}{\text{ iff }}
+
+% Structures
+\newcommand{\mI}{\mathfrak{I}} % interpretation
+\newcommand{\mM}{\mathfrak{M}} % model
+\newcommand{\mW}{\mathfrak{W}} % canonical model
+\newcommand{\mK}{\mathfrak{K}} % canonical model 2
+\newcommand{\mS}{\mathfrak{S}} % signature
+\newcommand{\mA}{\mathfrak{A}} % structure 1
+\newcommand{\mB}{\mathfrak{B}} % structure 2
+\newcommand{\mG}{\mathfrak{G}} % graph structure
+\newcommand{\mC}{\mathfrak{C}} % class of structures
+\newcommand{\Th}{\mathsf{Th}}
+\newcommand{\F}[1]{\mathsf{#1}}
+
+% Valuations
+\newcommand{\orho}{\overline{\rho}}
+\newcommand{\rhobar}[1][]{{\rho\ifthenelse{\equal{#1}{}}{}{[#1]}^\mM}}
+\newcommand{\rhosub}[1]{\overline{\rho[#1]}}
+\newcommand{\otau}{\overline{\tau}}
+\newcommand{\taubar}{\overline{\rho}}
+\newcommand{\val}[3]{
+  |#1|_{#2, #3}
+}
+\newcommand{\valm}[2]{
+  |#1|_{\mM, #2}
+}
+\newcommand{\valf}[2]{
+  |#1|_{\mF, #2}
+}
+\newcommand{\valr}[1]{
+  |#1|_{\mM, \rho}
+}
+
+% Deduction
+\newcommand{\mD}{\mathcal{D}} % deduction system
+\newcommand{\mP}{\mathcal{P}} % proof system for ML with all the symbols
+\newcommand{\mH}{\mathcal{H}} % proof system for ML
+\newcommand{\mHm}{\mathcal{H}_\mu} % proof system for MmL
+\newcommand{\lderives}{\Vdash} % |= locally derives (see def)
+\newcommand{\derives}{\vdash} % |-
+
+% H rules and axioms
+\newcommand{\modpon}{(\textsc{MP})\xspace}
+\newcommand{\univgen}{(\textsc{Gen})\xspace}
+\newcommand{\framing}{(\textsc{Framing})\xspace}
+\newcommand{\prule}[1]{(\textsc{#1})}
+\newcommand{\definedness}{\prule{Definedness}\xspace}
+\newcommand{\modusponens}{\prule{MP}\xspace}
+\newcommand{\ugeneralization}{\prule{$\forall$-Generalization}\xspace}
+\newcommand{\necessitation}{\prule{Necessitation}\xspace}
+\newcommand{\existence}{\prule{Ex}\xspace}
+\newcommand{\singletonvariable}{\prule{Singleton}\xspace}
+\newcommand{\propagationbottom}{\prule{Propagation$_\bot$}\xspace}
+\newcommand{\propagationvee}{\prule{Propagation$_\vee$}\xspace}
+\newcommand{\propagationexists}{\prule{Propagation$_\exists$}\xspace}
+\newcommand{\variablesubstitution}{\prule{Sub}\xspace}
+\newcommand{\propositionaltautology}{\prule{PT}\xspace}
+\newcommand{\forallrule}{\prule{$\forall$}\xspace}
+\newcommand{\membership}{\prule{Membership}\xspace}
+\newcommand{\membershipintroduction}{\prule{Membership Introduction}\xspace}
+\newcommand{\membershipelimination}{\prule{Membership Elimination}\xspace}
+\newcommand{\membershipneg}{\prule{Membership$_\neg$}\xspace}
+\newcommand{\membershipwedge}{\prule{Membership$_\wedge$}\xspace}
+\newcommand{\membershipexists}{\prule{Membership$_\exists$}\xspace}
+\newcommand{\equalityelimination}{\prule{Equality Elimination}\xspace}
+\newcommand{\membershipsymbol}{\prule{Membership Symbol}\xspace}
+\newcommand{\membershipvariable}{\prule{Membership Variable}\xspace}
+\newcommand{\functionalsubstitution}{\prule{Functional Substitution}\xspace}
+\newcommand{\circularity}{\prule{Circularity}\xspace}
+\newcommand{\Lfp}{\prule{Lfp}\xspace}
+\newcommand{\Gfp}{\prule{Gfp}\xspace}
+\newcommand{\Fix}{\prule{Fix}\xspace}
+\newcommand{\Fixmu}{\prule{Fix$_\mu$}\xspace}
+\newcommand{\Fixnu}{\prule{Fix$_\nu$}\xspace}
+\newcommand{\FIX}{\Fix}
+\newcommand{\xif}[1]{\xLeftarrow{\text{#1}}}
+
+% Logical systems
+\newacro{FOL}[FOL]{first-order logic}
+\newacro{ML}[ML]{matching logic}
+\newacro{MmL}[MmL]{matching $mu$-logic}
+\newcommand{\PL}{\textsf{PL}\xspace}
+\newcommand{\FOL}{\textsf{FOL}\xspace}
+\newcommand{\FOLe}{\FOL_=\xspace}
+\newcommand{\ML}{\textsf{ML}\xspace}
+\newcommand{\MmL}{{M$\mu$L}\xspace}
+\newcommand{\K}{\mathbb{K}\xspace}
+
+% Algorithms
+\newcommand{\until}{\textbf{until}}
+\newcommand{\skp}{\textbf{skip}}
+\newcommand{\ctt}{\textbf{true}}
+\newcommand{\rep}[2]{\textbf{repeat}\ #1\ \until\ #2}
+\newcommand{\cdo}{\textbf{do}}
+\newcommand{\while}[2]{\textbf{while}\ #1\ \cdo\ #2}
+
+% Symbol contexts
+\newcommand{\Ctx}{$C_\sigma$}
+\newcommand{\Ctxvec}{$C_\vec{\sigma}$}
+
+% Shortcuts
+\newcommand{\wrt}{w.r.t.~}
+
+% Symbols over symbols
+\newcommand{\oversym}[2]{\stackrel{\mathclap{\normalfont\small\mbox{#2}}}{#1}}
+
+\newcommand{\Metavar}{\textsc{Metavar}}
+\newcommand{\Ef}{\mathsf{ef}}
+\newcommand{\Sf}{\mathsf{sf}}
+\newcommand{\Pos}{\mathsf{pos}}
+\newcommand{\Neg}{\mathsf{neg}}
+\newcommand{\Hol}{\mathsf{hol}}
+
+%%% Document
+
+\title{Soundness of MetaML}
+\author{Runtime Verification Inc.}
+
+\begin{document}
+\maketitle
+
+In the following, we semi-formally analyze the soundness problem for matching logic extended with metavariables and discuss the problem with \emph{void proof schemas}.
+We assume a fixed set of variables $\Var = \EVar \cup \SVar$ and symbols $\Sigma$, given by the data types of our implementation.
+We also assume an implicit ordering on the set of variables (so that we can define some functions conveniently).
+
+\section{Preliminaries}
+
+Let us first go over basic definitions, where we extend basic syntax with metavariables.
+
+\begin{definition}[Constraints]
+  A constraint is a tuple $(\chi, \tau)$ where $\chi \in \Var$ and $\tau \in \s{\Ef, \Sf, \Pos, \Neg, \Hol}$ is a \emph{constraint type}.
+\end{definition}
+
+\begin{definition}[Meta-variable]
+  A pair $M = (\mathsf{id}, R)$ is called a \emph{meta-variable} if $\mathsf{id} \in \Nat$ and $R$ is a finite set of constraints.
+  The set of all metavariables is denoted $\Metavar$.
+\end{definition}
+
+Note that the set of constraints $R$ is finite as any instantiation is meant to represent a concrete pattern, which contains finitely many variables.
+
+\begin{definition}[Patterns]
+  We extend the syntax of patterns with
+  \begin{align*}
+    \varphi ::= &\ M \mid M[\varphi/x] \text{ for every }x \in \EVar \mid M[\varphi/ X]\text{ for every }X \in \SVar \\
+    \mid &\ \varphi \in \Pat
+  \end{align*}
+  for every metavariable $M \in \Metavar$.
+\end{definition}
+
+If we want to explicitly say that a pattern contains a metavariable, we use the following terms:
+\begin{definition}[Meta-patterns]
+  A pattern containing at least one meta-variable is called a \emph{meta-pattern}.
+\end{definition}
+
+\begin{definition}[Concrete patterns]
+  A pattern is called \emph{concrete} if it is not a meta-pattern.
+\end{definition}
+
+We do not make any assumptions about meta-variables with the same ids to have the same constraints.
+On the contrary, this is a special property of patterns that we will be considering:
+\begin{definition}[Metavariable-consistency]
+  We call a pattern $\psi$ \emph{metavariable-consistent}, if for every $M, M'$ in $\psi$ we have that $M.id = M'.id$ implies $M = M'$.
+\end{definition}
+
+% TODO: Might be used for removing the global metavariable-consistency check
+\iffalse
+\begin{definition}[Pattern renaming]
+  Let $\varphi$ a pattern.
+  Then $\psi$ is a renaming of $\varphi$ if there is a variable renaming $s : \Var \to \Var$ such that $\psi s$ is $\alpha$-equivalent to $\varphi$.
+\end{definition}
+\fi
+
+We naturally extend the notion of constraints to all patterns:
+
+\begin{definition}[Pattern constraints]
+  Let $\varphi$ be a pattern.
+  Its set of constraints $R$ is defined such that for every $\chi \in \Var$, we set by definition $(\chi, \tau) \in R$ iff $\varphi.\tau(\chi)$ returns true (as given by the specification of the given attributes).\footnote{TODO: Add those definitions here.}
+
+  For convenience, we also define the sets $\chi \in R.\tau$ iff $(\chi, \tau) \in R$ for each constraint type, i.e., for each $\tau \in \s{\Ef, \Sf, \Pos, \Neg, \Hol}$.
+\end{definition}
+
+Note that constraints are \emph{determined} for every given pattern and can be computed.
+However, we can ``change'' the constraints of contained meta-variables, yielding a structurally equivalent but different pattern:
+\begin{definition}[Structural equivalence]
+  Given two patterns $\varphi, \psi$, we write $\varphi \approx \psi$ iff $\varphi$ and $\psi$ are equal up to metavariable constraints.
+\end{definition}
+
+Put together, constraints are solely determined by contained metavariables and pattern structure.
+The following lemma puts this intuition together and says that if we preserve some kind of constraint in all contained metavariables of structurally equivalent patterns, then the computed constraint of this type also remains the same for every contained subpattern:
+\begin{lemma*}
+  \label{lemma:constraints}
+  Let $\psi \approx \psi'$ and $\tau$ be a constraint type.
+  If for all corresponding metavariables contained in $\psi$ and $\psi'$  we have constraints $R, R'$ with $R.\tau = R'.\tau$, then for every subpattern $\varphi$ of $\psi$ and $\varphi'$ of $\psi'$  we have $\varphi.\tau = \varphi'.\tau$.
+  \begin{proof}
+    By a simple structural induction.\footnote{Add proof.}
+  \end{proof}
+\end{lemma*}
+
+We care heavily whether a pattern under given constraints represents some concrete matching logic pattern, in other words, if it is \emph{instantiable}:
+\begin{definition}
+  \label{def:instant}
+  A pattern $\psi$ is called \emph{instantiable} if there exists a (possibly partial) \emph{instantiation function} $\delta : \Nat \to \Pat$ such that $\psi \delta$ is concrete\footnote{$\psi\delta$ is the pattern resulting from replacing every meta-variable $M$ in $\psi$ with $\delta(M.id)$} and $\delta$ satisfies every constraint of every meta-variable with the given id in $\psi$.
+
+  In this case, we call such $\psi \delta$ an \emph{instantiation} of $\psi$ and $\psi$ \emph{instantiable by} $\delta$.
+
+  If $\delta$ is defined only for metavariables occurring in $\psi$, we say $\delta$ is \emph{tight} for $\psi$.
+\end{definition}
+
+\begin{proposition}
+  \label{prop:inst_distro}
+  $\psi$ is instantiable by $\delta$ iff every metavariable in $\psi$ is instantiable by $\delta$.
+\end{proposition}
+
+This definition makes good sense.
+There are patterns that are not instantiable.
+The simplest example is a metavariable $M$ such that $M.\Ef \cap M.\Hol = \s{x}$.
+An instantiation would need to contain $x$ both free (as a hole variable) and not free (as a fresh variable), which is a contradiction.
+Note that a conflict does not need to occur in a single metavariable.
+Consider $M_1 \lor M_1'$, where $M_1 \approx M_1'$ share the same id ``1''  but constraints are conflicting in the same manner as what we just sketched: $M_1.\Hol = \s{x}$ and $M_1'.\Ef = \s{x}$.
+Then there cannot be a single function $\delta$ instantiating $M_1 \lor M_1'$, as $\delta(1)$ will be in conflict with constraints of $M_1$ or $M_1'$ for the reasons explained above.
+
+Note that the condition ``$\psi\delta$ is concrete'' in \Cref{def:instant} is necessary.
+Otherwise we could call a meta-pattern instantiable even when we could ``instantiate'' it with another uninstantiable meta-pattern, which is very straightforward to do (given how constraints in meta-patterns work).
+On the other hand, concrete patterns are instantiable trivially as expected.
+
+We can extend these concepts to proofs.
+As pattern syntax was extended, proofs can now contain meta-patterns.
+Recall that meta-patterns are patterns representing a set of concrete patterns consisting of all admissible instantiations.
+A \emph{proof schema} is similar to a meta-pattern, in a way that it represents a whole set of proofs in the original matching logic sense that contain the respective instantiations:
+\begin{definition}[Proof schema]
+  A \emph{proof schema} is any proof containing at least one meta-pattern.
+\end{definition}
+
+We do not really care to differentiate proof schemas from ``concrete'' proofs as long as every contained pattern is instantiable.
+If a proof schema contains an uninstantiable pattern, this proof schema does not correspond to any proof in the original matching logic sense and such proof schemas are called void:
+\begin{definition}[Void proof schemas]
+  A proof schema $\varphi_1, \ldots, \varphi_n$ is called \emph{void} if there exists $i$ such that $\varphi_i$ is not instantiable.
+\end{definition}
+
+\section{Problem}
+
+Void proof schemas represent no values in the original \ML syntax, i.e., no \ML proofs in the original sense inhabit them.
+%In this sense, they are analogous to void types for which we have a natural $absurd :: \texttt{Void} \to a$ function that is basically exfalso quod libet.
+The following shows that it is possible to derive an instantiable meta-pattern with a void proof schema, which means there is an illusory \ML  derivation of a concrete theorem, as the proof schema does not yield a \ML proof in the original sense (at least not directly):
+\begin{proposition*}
+  There exists a void proof schema of an instantiable pattern.
+  \begin{proof}
+    Consider the meta-axiom $A_1 := M_1 \to (M_2 \to M_1)$ where $M_1$ is a meta-variable that is not instantiable.
+    Secondly, let $\top := x \lor \neg x$.
+    As we have complete propositional reasoning, $A_1 \to \top$ is derivable with some propositional proof schema $\pi$.\footnote{this would not hold for $\mu$-based top}
+    But then $\ldots\pi\ldots, A_1 \to \top, A_1, \top$ consitutes a void proof schema, where the conclusion $\top$ is instantiable trivially (being concrete).
+  \end{proof}
+\end{proposition*}
+
+This does not show that extending patterns with meta-variables make the proof system  unsound.
+However, we see now that void proof schemas with concrete conclusions are admissible.
+We have to \emph{prove} that this does not open a possibility of a void proof schema ending with a false conclusion.
+
+Let us emphasize first that we only care about \emph{structure}.
+We do not mind replacing structurally equivalent patterns in proof schemas, insofar as the proof schema remains correct.
+We will prove that for any proof schema deriving a pattern $\psi$ (concrete or not), there is a (correct) proof schema deriving $\psi' \approx \psi$ that is not void.
+
+In other words, for every proof schema, there exists a schema with a structurally equivalent conclusion in which all of the proof steps are instantiable \wrt some constraints.
+This will mean that every proof schema indirectly corresponds to some proof in the original \ML sense.
+By soundness of our proof system, this will show that there is no void proof schema of a false conclusion, and so the proof system is sound even when we extend patterns with meta-variables.
+
+\paragraph{Main idea.} Such a soundness proof is based on a simple observation that all of constraint types are conditional (if a variable appears, then it meets the constraint) except for $\Hol$.
+If $\Hol$ is disjoint from the other constraints, we are always instantiable with a simple application sequence of variables to variables in $\Hol$:
+\begin{definition}[Variable application sequences]
+  Let $\mathsf{Fin}(A)$ denote the set of all finite subsets of a set $A$.
+  We define a function $I : \mathsf{Fin}(\Var) \times \Var \to \Pat$ as follows:
+  \begin{itemize}
+    \item $I(\emptyset, \square) = \square$,
+    \item $I(\s{\chi} \cup \Xi', \square) = \mathsf{app}\ \chi\ I(\Xi')$
+  \end{itemize}
+\end{definition}
+
+To make things simpler, we will w.l.o.g.~assume some special variable $\square$ not being used in any one of our constraints in the following text.
+
+\begin{definition}
+  If for every $n$, $\delta(n)$ is undefined or there exists a set $\Xi$ such that $\delta(n) = I(\Xi, \square)$, then $\delta$ is called a \emph{trivial instantiation function}.
+\end{definition}
+\begin{definition}
+  Let $M$ be a metavariable.
+  Any trivial instantiation function $\delta : \Nat \to \Pat$ with $\delta(M.id) = I(M.\Hol, \square)$, we call a trivial instantiation function  \emph{for} $M$.
+\end{definition}
+
+\begin{proposition*}
+  \label{prop:trivial_inst}
+  Let $M$ be a metavariable with $M.\Hol$ disjoint from other constraints.
+  If $\delta$ is the trivial instantiation function for $M$, then $M\delta$ is an instantiation of $M$.
+  \begin{proof}
+    The function $\delta$ satisfies all of the constraints for $M$:
+    \begin{enumerate}
+      \item $M\delta$ is an application context \wrt all variables in $M.\Hol$, and
+      \item $M\delta$ trivially satifies all of the remaining constraint types by our disjointness assumption.
+    \end{enumerate}
+  \end{proof}
+\end{proposition*}
+\begin{corollary}
+  If $M.\Hol$ is disjoint from other constraint types, then $M$ is instantiable over any signature $\Sigma$.
+\end{corollary}
+
+We want to extend this concept to patterns.
+Recall that we can have two metavariables with same id but different constraints, in which case we have a \emph{conflict}.
+However, this cannot happen when we work with metavariable-consistent patterns.
+There it is only a matter of merging instantiations together:
+\begin{definition}[Products]
+  If $\delta_1, \delta_2$ are instantiation functions corresponding on their domains, we define their product $\delta_1 \delta_2 : \Nat \to \Pat$ as follows: \[\delta_1 \delta_2 (n) :=
+    \begin{cases}
+      \delta_1(n)&\delta_1(n) = \delta_2(n)\emph{ is defined}\\
+      \delta_1(n)&\delta_1(n)\emph{ is defined}\\
+      \delta_2(n)&\delta_2(n)\emph{ is defined}
+    \end{cases}\]
+\end{definition}
+\begin{proposition}
+  \label{prop:product_vs_trivial}
+  If $\delta_1, \delta_2$ are trivial instantiation functions corresponding on their domains, then $\delta_1 \delta_2$ is a trivial instantiation function.
+\end{proposition}
+\begin{proposition*}
+  \label{prop:product}
+  Let $M_1, M_2$ be metavariables with $M_1.id \neq M_2.id$.
+  Assume $M_1.\Hol$ is disjoint from other constraints of $M_1$, and $M_2.\Hol$ is disjoint from other constraints of $M_2$.
+  If $M_1$ ($M_2$) is instantiable by a \emph{tight} trivial instantiation function $\delta_1$ ($\delta_2$), then both $M_1, M_2$ are instantiable by $\delta := \delta_1 \delta_2$.
+\end{proposition*}
+
+\begin{theorem*}
+  \label{theorem:disjoint_instantiability}
+  Let every metavariable $M$ in $\psi$ have $M.\Hol$ disjoint from other constraints of $M$.
+  If $\psi$ is metavariable-consistent, then $\psi$ is instantiable.
+
+  \begin{proof}
+    We will prove a stronger statement:
+    \begin{quote}
+      For every $\psi$ holds the following.
+      If $\psi$ is metavariable-consistent and every metavariable in $\psi$ has hole constraints disjoint from its other constraints, then $\psi$ is instantiable by a \emph{tight} instantiation function that is trivial for every metavariable in $\psi$.
+    \end{quote}
+
+    By a simple structural induction.
+    The main trick is to use products of trivial instantiation functions to merge them together.
+
+    \begin{itemize}
+      \item Concrete base cases are trivial.
+      \item $\psi \equiv M$: Let $\delta$ be a tight instantiation function that is trivial for $M$.
+      Then $M\delta$ is an instantiation of $M$ by \Cref{prop:trivial_inst}.
+      \item $\psi \equiv M[\varphi/\chi]$.
+      Our assumptions about $\psi$ distribute to their subpatterns, and so $M, \varphi$ have all hole constraints disjoint and are metavariable-consistent.
+      We have by IH that $M$ is instantiable by some tight instantiation function $\delta_1$ and $\varphi$ is instantiable by some tight instantiation function $\delta_2$.
+      Consider the product $\delta := \delta_1 \delta_2$
+      \begin{itemize}
+        \item $\delta$ is well-defined. By IH, $\delta_1$ is tight for $M$ and $\delta_2$ is tight for $\varphi$, meaning if both $\delta_1(n), \delta_2(n)$ are defined, then metavariables $M_1, M_1'$ with $M_1.id = M_1'.id = n$ occurs in both $M$ and $\varphi$.
+        As $\psi$ is metavariable-consistent, $M_1 = M_1'$.
+        As both $\delta_1, \delta_2$ are \emph{trivial} for $M_1 = M_1',$ by construction, necessarily $\delta_1(n) = \delta_2(n)$.
+        \item $\delta$ is tight for $\psi$. By product construction, as $\delta_1$ $(\delta_2)$ is tight by IH for $M$ $(\varphi)$.
+        \item $\delta$ is trivial for every metavariable in $\psi$. By IH and product construction.
+      \end{itemize}
+
+      By \Cref{prop:product}, $M\delta$ is an instantiation of $M$ and also $\varphi \delta$ is an instantiation of $\varphi$: $\varphi$ is instantiable by $\delta$ iff every $M'$ in $\varphi$ is instantiable by $\delta$ (\Cref{prop:inst_distro}), which it is by IH and \Cref{prop:product} (pick $M_1 := M$ and $M_2 := M'$).
+      Thus the expression \[M\delta[\varphi\delta/\chi] = (M[\varphi/\chi])\delta\] is an instantiation of $M[\varphi/\chi]$.
+      \item Other cases are analogous, as it is all just constructors where metavariables cannot be bound.
+    \end{itemize}
+  \end{proof}
+\end{theorem*}
+
+Not every pattern is metavariable-consistent.
+However, recall that our concern here is only to make sure that no proof schema can derive a structurally false conclusion.
+We can change constraints insofar as we do not mess up with the correctness of the schema.
+First, we extend metavariable-consistency to proofs:
+
+\begin{definition}
+  A proof schema $\pi$ is called \emph{metavariable-consistent}, if for every metavariable $M, M'$ occurring in $\pi$ we have $M.id = M'.id$ implies $M = M'$.
+\end{definition}
+
+\begin{theorem*}
+  \label{theorem:main}
+  If a proof schema is metavariable-consistent such that for every contained metavariable $M$, $M.\Hol$ is disjoint from other constraints of $M$, then every pattern in the proof schema is instantiable by a single instantiation function.
+  \begin{proof}
+    For every metavariable $M$ in the proof schema, use the tight trivial instantiation for $M$.
+    Every pattern in the proof schema is instantiable by the same instantiation function: the product of these tight trivial instantiation functions.
+  \end{proof}
+\end{theorem*}
+\begin{corollary*}
+  If metavariables are only allowed with holes disjoint from other constraints and proofs are metavariable-consistent, the proof system extended with metavariables is sound.
+  \begin{proof}
+  With our assumption, every proof schema represents a concrete proof in the original proof system by \Cref{theorem:main}.
+  This is because there is a single instantiation function, and thus every metavariable is instantiated consistently.
+  The conclusion follows from the soundness of the matching logic proof system  (over concrete patterns).
+  \end{proof}
+\end{corollary*}
+
+% TODO: This tries to show that if we simply check that holes are disjoint from other constraints, this is sufficient for soundness. I.e., we can remove the "global" metavariable-consistency assumption.
+\iffalse
+\begin{theorem*}
+  If a proof schema of $\psi$ contains meta-variables that have holes disjoint from other constraints, then there is a schema of $\psi' \approx \psi$ that is not void and metavariable-consistent.
+  \begin{proof}
+    The main idea is to rename variables accordingly and apply \Cref{theorem:disjoint_instantiability}.
+
+    By structural induction on the proof of $\varphi$.
+
+    \paragraph{Base.} $\varphi$ is an axiom. Simply pick the maximal of metavariables as fixed and change the rest to make $\varphi$ metavariable-consistent. This schema is not void by \Cref{theorem:disjoint_instantiability}, and also $\varphi$ is metavariable-consistent.
+
+    \paragraph{Step.} Let us do a case analysis:
+    \begin{itemize}
+      \item Axiom. Same as Base.
+      \item MP. $\psi$, $\psi \to \varphi$ by IH there are non-void proof schemas of $\psi'$ and $\psi' \to \varphi'$ with metavariable-consistent patterns, simply merge them and derive $\varphi'$, for which both these assumptions hold by IH.
+
+    \end{itemize}
+
+  \end{proof}
+\end{theorem*}
+\fi
+
+\end{document}
