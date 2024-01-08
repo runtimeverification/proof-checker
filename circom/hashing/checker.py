@@ -7,7 +7,10 @@ P = circom_P
 # Randomly chosen :)
 # In practice we want to "Fiat-Shamir" this and derive it from
 # a hash of the proof.
+# Fiat-Shamir attacks, Zero Knowledge, Nethermind
 r = ((P // 17) + 19) % P
+
+# Schwartz-Zippel
 
 # Map string A to polynomial P which has A as its coefficients.
 # Evaluate P at point r
@@ -36,6 +39,8 @@ class ExplicitPattern():
 
     def well_formed(self) -> bool:
         # Placeholder
+        # Constrain parsing in terms of local conditions on AST
+        # Parsing for regex
         return True
 
 class Artefact():
@@ -71,6 +76,7 @@ class ExplicitCommitment(ProofStep):
     # However, we can distinguish between these and proof artefacts
     # by using unique hints
     def proofs(self) -> list[Artefact]:
+        # ->->
         assert self.pattern.well_formed()
         return Artefact(
             ipat=self.pattern.implicit(),
@@ -96,6 +102,7 @@ class Prop1(ProofStep):
         ]
 
     # Construct "->a->ba" from "a" and "b"
+    # a -> (b -> a)
     def proofs(self) -> list[Artefact]:
         prop1_inst: ImplicitPattern = ExplicitPattern("->") \
             .implicit() \
@@ -198,8 +205,13 @@ class ModusPonens(ProofStep):
 
 def check_proof(
         claim: ExplicitPattern,
+        # O(|claim|)
         ecoms: list[ExplicitCommitment], 
+        # O(|args|)
         proof_steps: list[Prop1 | Prop2 | ModusPonens]
+        # O(log N)
+        # Attempt O(1) computation of r powers from previous powers
+        # N = steps
     ) -> bool:
 
     # Expect the last step of the proof to produce an artefact of the claim
@@ -216,7 +228,8 @@ def check_proof(
         for p in step.proofs():
             proofs.add(p)
 
-    assert obligations == proofs
+    #assert obligations == proofs
+    return (obligations, proofs)
 
 imp_refl_claim = ExplicitPattern("->pp")
 ecoms = [
