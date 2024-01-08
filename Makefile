@@ -185,7 +185,7 @@ K_DEFS=$(wildcard generation/k-benchmarks/*/*.k)
 PRE_K_BENCHMARKS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
 
 # remove supporting files not meant to be standalone benchmarks
-K_BENCHMARKS=$(filter-out generation/k-benchmarks/builtin-io/#input_file, ${PRE_K_BENCHMARKS})
+K_BENCHMARKS=$(filter-out generation/k-benchmarks/builtin-io/input_file, ${PRE_K_BENCHMARKS})
 
 
 # Filter out currently unsupported examples
