@@ -217,6 +217,9 @@ abstract class Pattern(Term):
     ...
 
 abstract class Proof(Term):
+    assumptions: list[Pattern] = []
+    instantiable: bool = true
+
     abstract def conclusion:
         ...
 ```
@@ -786,7 +789,7 @@ Otherwise, execution aborts, and verification fails.
 ### Axiom Schemas
 
 `Lukasiewicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
-:   Push proof term corresponding to axiom schema onto the stack.
+:   Push proof term corresponding to axiom schema onto the stack (with empty assumptions).
 
 ### Meta inference
 
@@ -798,33 +801,56 @@ Otherwise, execution aborts, and verification fails.
     corresponding substitution `phi[psi/metavar_id]`.
 
 `Instantiate n:u8 [metavar_id:u8]*n`
-:   Consume a `Proof` and then n `Pattern`s off the stack, and push the instantiated proof term to the stack,
-    checking wellformedness as needed.
+:   Consume a `Proof` with `instantiable = true` and then n `Pattern`s off the stack, and
+    push the instantiated proof term to the stack (including instantiated assumptions), checking wellformedness as needed.
 
 ### Inference rules
 
 `ModusPonens`/`Generalization`/`Frame`/`Substitution`/`KnasterTarski`
-:   Consume one or two `Proof` terms off the stack and push the new proof term.
+:   Consume one or two `Proof` terms with empty assumptions off the stack and push the new proof term.
+
+`Apply`
+:   Consume the top of the stack `Proof(assumptions, conclusion)` with $n$ assumptions, then:
+    1.  Consume $n$ `Proof`s from top of the stack with empty assumptions, and save their conclusions into a temporary variable `assumptions'`.
+    2.  Assert that `assumptions = assumptions'`.
+    3.  Place `Proof([], conclusion)` on top of the stack.
 
 ### Memory manipulation:
 
+Let `LOCAL_MEM` be an usize constant. Memory starting at the `LOCAL_MEM` index
+is called *local memory*. This fragment of memory will represent the additional assumptions
+used in the given subproof, where we can load them as `Proved`'s.
+Memory capped by `LOCAL_MEM` is called *global memory*.
+
+`Assume <i:u8>`
+:   If local memory is empty, consumes `i` `Pattern` entries from the top of the stack and adds them to local memory as `Proved`'s
+    with `instantiable = false` and empty assumptions (see [^instantiable_false]).
+
 `Save`
-:   Store the top element of the stack by appending it to the memory array.
+:   Store the top element of the stack by appending it to global memory with assumptions from local memory.
 
 `Load <i:u8>`
 :   Push the `Term` at index $i$ in memory to the top of the stack.
 
+[^instantiable_false]: The reason is that `Assume n` (unlike `Save`) declares
+that we assume we have a proof of `n` fixed formulas of the form given by assumptions.
+Loading an assumption means we are inlining its (fixed) proof here.
+Instantiating does not make any good sense in a proof of a derived rule because we can assume whatever form we like.
+We instantiate derived rules when *applying* derived rules with `Apply`.
 
 ### Journal manipulation.
 
 `Publish`
-:   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms.
-    * During the `claim` phase consume a pattern from the stack and push it to the stack of claims.
-    * During the `proof` phase consume a proof from the stack
-      and a claim from the queue of claims and assert that they are equal.
+:   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms with the assumptions given from local memory,
+        and empties local memory.
+    * During the `claim` phase consume a pattern from the stack and push it to the stack of claims with the assumptions
+        given from local memory, and empties local memory.
+    * During the `proof` phase consume a proof from the stack with the assumptions from local memory,
+      and a claim from the queue of claims, assert that they are equal.
+      If they are, remove the top claim, empty local memory and empty the stack.
 
     Note that since the claims form a stack, they must be proved in the reverse order they
-    were declared in[^claims-stack-vs-queue].
+    were declared in [^claims-stack-vs-queue].
 
 [^claims-stack-vs-queue]: This is convenient for the current implementation, but we may want to revist it later.
 
@@ -832,6 +858,109 @@ Otherwise, execution aborts, and verification fails.
 
 `Pop`
 :   Consume the top of the stack.
+
+Example of Derived Rules
+=========================
+Whenever we write `Assumptions = [...]`, we mean the contents of local memory.
+
+Example of Proving Derived Rules
+============================
+
+Theory/Gamma phase:
+```
+```
+Claims Phase:
+```
+    MetaVar 0       # phi0
+    MetaVar 1       # phi0 -> phi1
+    Implies
+    MetaVar 1
+    MetaVar 2
+    Implies         # phi0 -> phi1 ; phi1 -> phi2
+    Assume 2         # Assumptions=[phi0 -> phi1, phi1 -> phi2]
+    MetaVar 0
+    MetaVar 2
+    Implies         # phi0 -> phi1 ; phi1 -> phi2 ; phi0 -> phi2
+    Publish         # Claim(assumptions=[phi0 -> phi1 ; phi1 -> phi2], phi0 -> phi2), Assumptions = [], Stack = []
+```
+Proof Phase for the derived rule:
+```
+    # -------------------------------------------------------------------------
+    # Populate the assumptions list
+    MetaVar 0
+    MetaVar 1
+    Implies             # phi0 -> phi1
+    MetaVar 1
+    MetaVar 2
+    Implies             # phi0 -> phi1; phi1 -> phi2
+    Assume  2           # Stack = []
+                        # Assumptions = [ phi0 -> phi1; phi1 -> phi2 ]
+    # -------------------------------------------------------------------------
+    # Prove the derived rule
+    Prop2               # 0: Proof((phi0 -> (phi1 -> phi2)) ->  ((phi0 -> phi1) -> (phi0 -> phi2)))
+    MetaVar 1
+    MetaVar 2
+    Implies             # 0: ...; 1: phi1 -> phi2
+    MetaVar 0           # 0: ...; 1: phi1 -> phi2; 2: phi0
+    Prop1               # 0: ...; 1: ...; 2: ...: 3: Proof(phi0 -> (phi1 -> phi0))
+    Instantiate 2 0 1   # 0: ...; 1: Proof((phi1 -> phi2) -> (phi0 -> (phi1 -> phi2)))
+    Load LOCAL_MEM+1    # 0: ...; 1: ...; 2: Proof(phi1 -> phi2, instantiable=False)
+    ModusPonens         # 0: ... ; 1: Proof(phi0 -> (phi1 -> phi2))
+    ModusPonens         # 0: Proof((phi0 -> phi1) -> (phi0 -> phi2))
+    Load LOCAL_MEM+0    # 0: Proof((phi0 -> phi1) -> (phi0 -> phi2))
+                        # 1: Proof(phi0 -> phi1, instantiable=False)
+    ModusPonens         # 0: Proof(phi0 -> phi2)
+    Publish             # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi0 -> phi2)
+                        # Assumptions = []
+```
+# Example of Using Derived Rules
+================================
+Theory/Gamma Phase:
+```
+    Symbol 0
+    Symbol 1
+    Implies
+    Publish
+    Symbol 1
+    Symbol 2
+    Implies
+    Publish         # Proof(sigma0 -> sigma1), Proof(sigma1 -> sigma2)
+    # Derived rule is in a different slice, and we add it as an axiom
+    MetaVar 0       # phi0
+    MetaVar 1       # phi0 -> phi1
+    Implies
+    MetaVar 1
+    MetaVar 2
+    Implies         # phi0 -> phi1 ; phi1 -> phi2
+    Assume  2       # Assumptions=[phi0 -> phi1, phi1 -> phi2], Stack = []
+    MetaVar 0
+    MetaVar 2
+    Implies         # phi0 -> phi2
+    Publish         # Stack = [ Proof(sigma0 -> sigma1),
+                    # Proof(sigma1 -> sigma2),
+                    # Proof(assumptions=[phi0 -> phi1 ; phi1 -> phi2], phi0 -> phi2) ]
+                    # Assumptions = []
+```
+Claim phase
+```
+  Symbol 0
+  Symbol 2
+  Implies # Stack: [sigma0 -> sigma2]
+  Publish # Claim stack: [sigma0 -> sigma2], Assumptions = []
+
+```
+Proof phase for using a derived rule:
+```
+    # Load Axiom
+    Load 0              # 0: Proof(sigma0 -> sigma1)
+    Load 1              # 1: Proof(sigma1 -> sigma2)
+    Load 2              # 2: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
+    Symbol 0
+    Symbol 1
+    Symbol 2
+    Instantiate 3 1 2 3 # 2: Proof(assumptions=[sigma0 -> sigma1; sigma1 -> sigma2], sigma0 -> sigma2)
+    Apply               # 0: Proof(sigma0 -> sigma2)
+```
 
 ### Technical
 
