@@ -209,7 +209,7 @@ def check_proof(
         ecoms: list[ExplicitCommitment], 
         # O(|args|)
         proof_steps: list[Prop1 | Prop2 | ModusPonens]
-        # O(log N)
+        # O(log N) per step
         # Attempt O(1) computation of r powers from previous powers
         # N = steps
     ) -> bool:
