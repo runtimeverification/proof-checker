@@ -24,52 +24,30 @@ Implies
 MetaVar 0
 Implies
 Publish
-<<<<<<< HEAD
-Load (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}]=2
-=======
 Load (phi0 -> (μ X0 . X0)[])[0: phi0]=2
->>>>>>> main
 MetaVar 0
 MetaVar 1
 Implies
 Implies
 Publish
 MetaVar 0
-<<<<<<< HEAD
-Load (phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}]=2
-Load (phi0 -> (μ X0 . X0)[{}])=2
-=======
 Load (phi0 -> (μ X0 . X0)[])[0: phi0]=2
 Load (phi0 -> (μ X0 . X0)[])=2
->>>>>>> main
 Instantiate 0
 Save
 Implies
 Publish
-<<<<<<< HEAD
-Load (phi0 -> (μ X0 . X0)[{}])[{0: "(phi0 -> (μ X0 . X0)[{}])[{0: 'phi0'}]"}]=3
-=======
 Load (phi0 -> (μ X0 . X0)[])[0: (phi0 -> (μ X0 . X0)[])[0: phi0]]=3
->>>>>>> main
 MetaVar 0
 Implies
 Save
 Publish
-<<<<<<< HEAD
-Load (μ X0 . X0)[{}]=0
-MetaVar 0
-Implies
-Publish
-Load (μ X0 . X0)[{}]=0
-Load (phi0 -> (μ X0 . X0)[{}])=2
-=======
 Load (μ X0 . X0)[]=0
 MetaVar 0
 Implies
 Publish
 Load (μ X0 . X0)[]=0
 Load (phi0 -> (μ X0 . X0)[])=2
->>>>>>> main
 Instantiate 0
 Publish
 MetaVar 0
