@@ -78,7 +78,7 @@ if [[ ! -d ".build/kompiled-definitions/${MOD}-kompiled/" ]]; then
   all_temps+=(${kompiled_dir})
   # Kompile the K definition
   echo "Compiling $DEF..."
-  if kompile --backend llvm --output-definition "$kompiled_dir" "$DEF"; then
+  if kompile --backend llvm --llvm-proof-hint-instrumentation --output-definition "$kompiled_dir" "$DEF"; then
     echo "Compilation successful."
   else
     echo "Error: Compilation of $DEF failed."
@@ -88,15 +88,6 @@ if [[ ! -d ".build/kompiled-definitions/${MOD}-kompiled/" ]]; then
 else
   kompiled_dir=".build/kompiled-definitions/${MOD}-kompiled"
   echo "kompiled definition exists: $kompiled_dir"
-fi
-
-# Produce the instrumented interpreter binary
-if llvm-kompile --proof-hint-instrumentation "$kompiled_dir"/definition.kore "$kompiled_dir"/dt main -- -o "$kompiled_dir"/interpreter; then
-  echo "Instrumented interpreter generated successfully."
-else
-  echo "Error: Generating instrumented interpreter for $DEF failed."
-  remove_files "${all_temps[@]}"
-  exit 1
 fi
 
 # Create a temporary file for intermediate results
@@ -112,19 +103,9 @@ else
   echo "Input program parsed successfully."
 fi
 
-# Construct the initial configuration's kore term
-if ! llvm-krun -c PGM "$temp_file" KItem korefile --directory "$kompiled_dir" --dry-run -nm -o "$temp_file"; then
-  echo "Error: llvm-krun command failed."
-  remove_files "${all_temps[@]}"
-  exit 1
-else
-  echo "Input configuration kore term genereated successfully."
-fi
-
 # Execute the interpreter and generate proof hints
-rm -f "$OUT"
-if ! ${kompiled_dir}/interpreter "$temp_file" -1 "$OUT" --proof-output; then
-  echo "Error: Interpreter command failed."
+if ! llvm-krun --proof-hints --directory "$kompiled_dir" -c PGM "$temp_file" KItem korefile -o "$OUT"; then
+  echo "Error: llvm-krun command failed."
   remove_files "${all_temps[@]}"
   exit 1
 else
