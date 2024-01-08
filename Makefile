@@ -275,7 +275,7 @@ test-proof-translate: ${PROOF_TRANSLATION_TARGETS}
 .SECONDEXPANSION:
 .build/kompiled-definitions/%-kompiled/timestamp: generation/k-benchmarks/$$*/$$*.k
 	mkdir -p .build/kompiled-definitions/
-	kompile --backend llvm --output-definition $(dir $@) $<
+	kompile --backend llvm --llvm-proof-hint-instrumentation --output-definition $(dir $@) $<
 
 # Regenerate proofs from K
 # ------------------------
