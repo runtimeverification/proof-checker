@@ -721,13 +721,7 @@ fn execute_instructions(
                     Instruction::Prop2 => stack.push(Term::Proved(prop2.clone())),
                     Instruction::Prop3 => stack.push(Term::Proved(prop3.clone())),
                     Instruction::Quantifier => stack.push(Term::Proved(quantifier.clone())),
-                    Instruction::PropagationOr => { panic!("PropagationOr not implemented!"); },
-                    Instruction::PropagationExists => {
-                        panic!("PropagationExists not implemented!");
-                    },
-                    Instruction::PreFixpoint => { panic!("PreFixpoint not implemented!"); },
                     Instruction::Existence => stack.push(Term::Proved(existence.clone())),
-                    Instruction::Singleton => { panic!("Singleton not implemented!"); },
                     Instruction::ModusPonens => {
                         let premise2 = pop_stack_proved(ref stack);
                         let premise1: Pattern = pop_stack_proved(ref stack);
@@ -772,7 +766,6 @@ fn execute_instructions(
                             _ => { panic!("Expected an implication as a first parameter."); }
                         };
                     },
-                    Instruction::Frame => { panic!("Frame not implemented!"); },
                     Instruction::Substitution => {
                         let svar_id = buffer.pop_front().expect('Insufficient params Subst').into();
                         let pattern = pop_stack_proved(ref stack);
@@ -780,7 +773,6 @@ fn execute_instructions(
 
                         stack.push(Term::Proved(apply_ssubst(@pattern, svar_id, @plug)));
                     },
-                    Instruction::KnasterTarski => { panic!("KnasterTarski not implemented!"); },
                     Instruction::Instantiate => {
                         let n: u8 = buffer.pop_front().expect('Insufficient parms Instantiate');
                         let mut ids: IdList = ArrayTrait::new();
@@ -857,7 +849,7 @@ fn execute_instructions(
                         // Clean metavars are always well-formed
                         stack.push(Term::Pattern(metavar_pat));
                     },
-                    Instruction::NoOp => { panic!("NoOp not implemented!"); },
+                    _ => { panic!("Instruction: {} not implemented!", inst_felt252); },
                 }
             },
             Option::None => { break; }
