@@ -217,6 +217,8 @@ abstract class Pattern(Term):
     ...
 
 abstract class Proof(Term):
+    assumptions: list[Pattern]
+
     abstract def conclusion:
         ...
 ```
@@ -571,10 +573,28 @@ Axiom schemas are `Proof`s that do not need any input arguments.
 They may use `MetaVar`s to represent their schematic nature.
 
 ```python
-class Lukasiewicz(Proof):
+class Prop1(Proof):
     def conclusion():
+        phi0 = MetaVar('phi0')
         phi1 = MetaVar('phi1')
-        return Implies(Implies(Implies(MetaVar(phi1) , ...)...)...)
+        return Implies(phi0, Implies(phi1, phi0))
+
+class Prop2(Proof):
+    def conclusion():
+        phi0 = MetaVar('phi0')
+        phi1 = MetaVar('phi1')
+        return Implies(
+                  Implies(phi0, Implies(phi1, phi2)),
+                  Implies(Implies(phi0, phi1),
+                          Implies(phi0, phi2)))
+
+class Prop3(Proof):
+    def conclusion():
+        def neg(p):
+            return Implies(p, Mu(0, SVar(X))
+
+        phi0 = MetaVar('phi0')
+        return Implies(neg(neg(phi0)), phi0)
 
 class Quantifier(Proof):
     def conclusion():
@@ -741,6 +761,7 @@ The verifier's state consists of:
 *   only during the phase `gamma`, a write-only list of axioms.
     At the beginning of the `proof` phase this list of axioms will be used to pre-populate the memory.
 *   only during the phases `claim` and `proof`: a queue of claims to be proved.
+*   An "assumption scope": A list of patterns that may be used for proving derived rules.
 
 The verifier's input consists of three files, one for each phase.
 These files are at a logical level. Depending on the circumstances
@@ -785,7 +806,7 @@ Otherwise, execution aborts, and verification fails.
 
 ### Axiom Schemas
 
-`Lukasiewicz`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
+`Prop1`/`Prop2`/`Prop3`/`Quantifier`/`PropagationOr`/`PropagationExists`/`PreFixpoint`/`Existance`/`Singleton`
 :   Push proof term corresponding to axiom schema onto the stack.
 
 ### Meta inference
@@ -806,6 +827,30 @@ Otherwise, execution aborts, and verification fails.
 `ModusPonens`/`Generalization`/`Frame`/`Substitution`/`KnasterTarski`
 :   Consume one or two `Proof` terms off the stack and push the new proof term.
 
+    All assumptions for subproofs are copied to the derived proof.
+    `ModusPonens` succeeds only when either both sub-proofs have exactly the same assumptions,
+    or the assumptions of one are empty. This avoids the need for a general set union over assumptions.
+
+### Derived rules
+
+`Assumptions <n>`
+:   Consume `n` patterns from the stack and replace the assumptions scope with it.
+    If the assumption scope contains some previous assumptions, those are removed.
+
+`ByAssumption <n>`
+:   Load the nth assumption from the assumption scope as a `Proof` instance.
+    This instance will have all assumptions in the assumption scope associated with it.
+
+`ApplyDerived`
+:   Suppose there is a `Proof` at the top of the stack with $n$ assumptions, then:
+
+    1.  Consume $n + 1$ `Proof`s
+    2.  Assert that the first $n$ `Proof`s have conclusions identical to the assumptions in $n$
+    3.  Assert that the first $n$ `Proof`s either have empty assumptions,
+        or they are identical to the assumptions of the others if present.
+    4.  Place a new `Proof` with the same conclusion as the `n + 1`th `Proof` from the stack.
+        If any of the first $n$ `Proof`s have assumptions, the new `Proof` will have those assumptions.
+
 ### Memory manipulation:
 
 `Save`
@@ -818,10 +863,10 @@ Otherwise, execution aborts, and verification fails.
 ### Journal manipulation.
 
 `Publish`
-:   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms.
-    * During the `claim` phase consume a pattern from the stack and push it to the stack of claims.
+:   * During the `gamma` phase, consume a pattern from the stack and push it to the list of axioms (with assumptions from the assumption scope).
+    * During the `claim` phase consume a pattern from the stack and push it to the stack of claims (with assumptions from the assumption scope).
     * During the `proof` phase consume a proof from the stack
-      and a claim from the queue of claims and assert that they are equal.
+      and a claim from the queue of claims and assert that they are equal (.
 
     Note that since the claims form a stack, they must be proved in the reverse order they
     were declared in[^claims-stack-vs-queue].
@@ -897,6 +942,106 @@ Notation at the Binary representation level
 The `Save` and `Load` instructions allow us to share these reused subterms.
 
 
+Example of Derived Rules
+========================
+
+
+Theory/Gamma Phase:
+
+```
+    # Needed for example usage
+    Symbol 0
+    Symbol 1
+    Implies
+    Publish
+
+    Symbol 1
+    Symbol 2
+    Implies
+    Publish
+```
+
+Claims Phase:
+
+
+```
+    MetaVar 0       # phi0
+    MetaVar 1       # phi0 -> phi1
+    Implies
+
+    MetaVar 1
+    MetaVar 2
+    Implies         # phi0 -> phi1 ; phi1 -> phi2
+
+    Assumptions 2   # Assumptions=[phi0 -> phi1 ; phi1 -> phi2]
+
+    MetaVar 0
+    MetaVar 2
+    Implies         # phi0 -> phi1 ; phi1 -> phi2 ; phi0 -> phi2
+
+    Publish         # Claim(assumptions=[phi0 -> phi1 ; phi1 -> phi2], conclusion=phi0 -> phi2)
+```
+
+Proof Phase:
+
+```
+    # -------------------------------------------------------------------------
+    # Populate the assumptions list
+
+    MetaVar 0
+    MetaVar 1
+    Implies             # phi0 -> phi1
+
+    MetaVar 1
+    MetaVar 2
+    Implies             # phi0 -> phi1; phi1 -> phi2
+
+    Assumptions 2       # Stack = []
+                        # Assumptions = [ phi0 -> phi1; phi1 -> phi2 ]
+
+    # -------------------------------------------------------------------------
+    # Prove the derived rule
+
+    Prop2               # 0: Proof((phi0 -> (phi1 -> phi2)) ->  ((phi0 -> phi1) -> (phi0 -> phi2)), assumptions=[])
+
+    MetaVar 1
+    MetaVar 2
+    Implies             # 0: ...; 1: phi1 -> phi2
+    MetaVar 0           # 0: ...; 1: phi1 -> phi2; 2: phi0
+    Prop1               # 0: ...; 1: ...; 2: ...: 3: Proof(phi0 -> (phi1 -> phi0), assumptions=[])
+    Instantiate 2 0 1   # 0: ...; 1: Proof((phi1 -> phi2) -> (phi0 -> (phi1 -> phi2)), assumptions=[])
+
+    ByAssumption 1      # 0: ...; 1: ...; 2: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi1 -> phi2)
+
+
+    ModusPonens         # 0: ... ; 1: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> (phi1 -> phi2)))
+    ModusPonens         # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], ((phi0 -> phi1) -> (phi0 -> phi2)))
+
+    ByAssumption 0      # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], ((phi0 -> phi1) -> (phi0 -> phi2)))
+                        # 1: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], phi0 -> phi1)
+
+    ModusPonens         # 0: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
+
+    Publish
+
+    # -------------------------------------------------------------------------
+    # Example Usage
+
+    Save 2              # Save derived rule for later usage
+    Drop                # Not needed, but lets empty the stack easier documentation.
+
+    # Load Axiom
+    Load 0              # 0: Proof(assumptions=[], sigma0 -> sigma1)
+    Load 1              # 1: Proof(assumptions=[], sigma1 -> sigma2)
+    Load 2              # 2: Proof(assumptions=[phi0 -> phi1; phi1 -> phi2], (phi0 -> phi2))
+    Symbol 0
+    Symbol 1
+    Symbol 2
+    Instantiate 3 1 2 3 # 2: Proof(assumptions=[sigma0 -> sigma1; sigma1 -> sigma2], (sigma0 -> sigma2))
+    ApplyDerived        # 0: Proof(assumptions=[], (sigma0 -> sigma2))
+```
+
+
 Future considerations
 =====================
 
@@ -907,4 +1052,5 @@ Future considerations
     two variables (element, set, meta-) equal, only if they are the identical
     DAG node. That is, the variable was constructed once, and retrieved using
     the `Load` command.
+
 
