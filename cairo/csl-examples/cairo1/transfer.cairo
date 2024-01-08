@@ -1,18 +1,20 @@
-// addressTo, amount, balanceSender, balanceTo, ret
 fn transfer() -> u32 {
-    let x1 = 12345_u32;
-    let x2 = 10_u32;
-    let mut x3 = 100_u32;
-    let mut x4 = 200_u32;
+    let amount = 10_u32;
+    let mut balance_from = 100_u32;
+    let mut balance_to = 200_u32;
 
-    let ret = if x2 > x3 {
+    let _ret = if amount > balance_from {
         0_u32
     } else {
-        x3 = x3 - x2;
-        x4 = x4 + x2;
+        balance_from = balance_from - amount;
+        balance_to = balance_to + amount;
         1_u32
     };
-    ret
+    _ret
+}
+
+fn main() -> u32 {
+    transfer()
 }
 
 // Unit tests module
