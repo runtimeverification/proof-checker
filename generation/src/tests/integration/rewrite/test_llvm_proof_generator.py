@@ -132,16 +132,16 @@ def test_proof_trace_double_rewrite() -> None:
 
 
 def test_proof_trace_tree_reverse_without_int() -> None:
-    k_file = Path(K_BENCHMARKS_DIR + '/tree-reverse-without-integers/tree-reverse-without-integers.k')
-    hints_file = Path(HINTS_DIR + '/tree-reverse-without-integers/simplify.tree-reverse-without-integers.hints')
-    kompiled_dir = Path(KOMPILED_DIR + '/tree-reverse-without-integers-kompiled/')
+    k_file = Path(K_BENCHMARKS_DIR + '/tree-reverse/tree-reverse.k')
+    hints_file = Path(HINTS_DIR + '/tree-reverse/simplify.tree-reverse.hints')
+    kompiled_dir = Path(KOMPILED_DIR + '/tree-reverse-kompiled/')
 
     initial_config, iterator = generate_proof_trace(k_file, hints_file, kompiled_dir)
 
     # Test the initial configuration
     pre_symbol = get_k_cell_top_symbol(initial_config)
     assert isinstance(pre_symbol, Symbol)
-    assert pre_symbol.name == "ksym_Lbl'Hash'Init'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'KItem"
+    assert pre_symbol.name == "ksym_Lbl'Hash'Init'Unds'TREE-REVERSE-SYNTAX'Unds'KItem"
 
     # First rewrite
     hint = next(iterator, None)
@@ -158,7 +158,7 @@ def test_proof_trace_tree_reverse_without_int() -> None:
     # Function event
     hint = next(iterator, None)
     assert isinstance(hint, FunEvent)
-    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree{}"
     assert hint.position == (0, 0, 0, 0, 0)
 
     # Simplification rule
@@ -170,7 +170,7 @@ def test_proof_trace_tree_reverse_without_int() -> None:
     # Function event
     hint = next(iterator, None)
     assert isinstance(hint, FunEvent)
-    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree{}"
     assert hint.position == (0, 0)
 
     # Simplification rule
@@ -182,7 +182,7 @@ def test_proof_trace_tree_reverse_without_int() -> None:
     # Function event
     hint = next(iterator, None)
     assert isinstance(hint, FunEvent)
-    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert hint.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree{}"
     assert hint.position == (0, 1)
 
     # Simplification rule

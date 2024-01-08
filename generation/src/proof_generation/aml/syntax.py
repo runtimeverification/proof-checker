@@ -571,7 +571,7 @@ class Instantiate(Pattern):
         pretty_inst = []
         for key, val in sorted(self.inst.items()):
             pretty_inst += [str(key) + ': ' + val.pretty(opts)]
-        return f'{str(self.pattern)}[{", ".join(pretty_inst)}]'
+        return str(self.pattern) + '[' + ', '.join(pretty_inst) + ']'
 
     def __str__(self) -> str:
         return self.pretty(PrettyOptions())

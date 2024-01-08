@@ -8,6 +8,6 @@ module SINGLE-REWRITE
 
   imports SINGLE-REWRITE-SYNTAX
 
-  rule FooA() => FooB()
+  rule [a-to-b]: FooA() => FooB()
 
 endmodule

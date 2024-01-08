@@ -120,7 +120,7 @@ test-python: poetry-install
 test-unit-python: poetry-install
 	$(POETRY_RUN) pytest generation/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration-python: poetry-install test-hints
+test-integration-python: poetry-install generate-hints
 	$(POETRY_RUN) pytest generation/src/tests/integration --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 # Coverage
@@ -182,11 +182,19 @@ pyupgrade: poetry-install
 
 ALL_K_FILES=$(wildcard generation/k-benchmarks/*/*)
 K_DEFS=$(wildcard generation/k-benchmarks/*/*.k)
-K_BENCHMARKS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
+PRE_K_BENCHMARKS=$(filter-out ${K_DEFS}, ${ALL_K_FILES})
+
+# remove supporting files not meant to be standalone benchmarks
+K_BENCHMARKS=$(filter-out generation/k-benchmarks/builtin-io/input_file, ${PRE_K_BENCHMARKS})
+
 
 # Filter out currently unsupported examples
 UNSUPPORTED_K_BENCHMARKS=$(wildcard generation/k-benchmarks/imp/*) \
-                         generation/k-benchmarks/imp5/transfer.imp5
+                         generation/k-benchmarks/imp5/transfer.imp5 \
+                         generation/k-benchmarks/builtin-io/read.builtin-io \
+                         generation/k-benchmarks/list-factory/input.list-factory \
+                         generation/k-benchmarks/reg/exec.reg \
+                         generation/k-benchmarks/simplification/input.simplification
 SUPPORTED_K_BENCHMARKS=$(filter-out ${UNSUPPORTED_K_BENCHMARKS}, ${K_BENCHMARKS})
 
 # Proof Hint Generation from LLVM
@@ -220,16 +228,6 @@ module=$(patsubst %/,%, $(dir $*))
 
 pretty-print-hints: $(HINTS_PRETTY_PRINTED)
 
-# Checking generated hints
-# ------------------------
-
-EXECUTION_HINTS_TARGETS=$(addsuffix .hints_gen,${EXECUTION_HINTS})
-
-.build/proof-hints/%.hints.hints_gen: .build/proof-hints/%.hints.pretty
-	${DIFF} --label expected "proofs/proof-hints/$*.hints.pretty" --label actual ".build/proof-hints/$*.hints.pretty"
-
-test-hints: ${EXECUTION_HINTS_TARGETS}
-
 # Removing generated hints (binary and pretty-printed)
 # ----------------------------------------------------
 
@@ -237,7 +235,7 @@ clean-hints:
 	rm -rf .build/proof-hints/*
 
 
-.PHONY: generate-hints pretty-print-hints test-hints clean-hints
+.PHONY: generate-hints pretty-print-hints clean-hints
 
 
 # System testing

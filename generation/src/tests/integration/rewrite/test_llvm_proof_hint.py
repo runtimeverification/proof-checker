@@ -44,7 +44,7 @@ def test_parse_proof_hint_single_rewrite() -> None:
 
 
 def test_parse_proof_hint_reverse_no_ints() -> None:
-    hint = read_proof_hint('tree-reverse-without-integers/simplify.tree-reverse-without-integers.hints')
+    hint = read_proof_hint('tree-reverse/simplify.tree-reverse.hints')
 
     # 11 initialization events
     assert len(hint.pre_trace) == 11
@@ -55,7 +55,7 @@ def test_parse_proof_hint_reverse_no_ints() -> None:
     # Contents of the k cell in the initial configuration
     k_cell = hint.initial_config.patterns[0].dict['args'][0]
     assert k_cell['name'] == 'kseq'
-    assert k_cell['args'][0]['name'] == "Lbl'Hash'Init'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'KItem"
+    assert k_cell['args'][0]['name'] == "Lbl'Hash'Init'Unds'TREE-REVERSE-SYNTAX'Unds'KItem"
 
     # Rule applied in the single (non-functional) rewrite step
     rule_event = hint.trace[0]
@@ -69,7 +69,7 @@ def test_parse_proof_hint_reverse_no_ints() -> None:
     assert isinstance(rule_event, kore.Pattern)
     k_cell = rule_event.patterns[0].dict['args'][0]
     assert k_cell['name'] == 'kseq'
-    assert k_cell['args'][0]['name'] == "Lbl'Hash'next'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'KItem"
+    assert k_cell['args'][0]['name'] == "Lbl'Hash'next'Unds'TREE-REVERSE-SYNTAX'Unds'KItem"
 
     # Second rewrite
     rule_event = hint.trace[2]
@@ -81,13 +81,13 @@ def test_parse_proof_hint_reverse_no_ints() -> None:
     # Function event
     rule_event = hint.trace[3]
     assert isinstance(rule_event, LLVMFunctionEvent)
-    assert rule_event.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert rule_event.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree{}"
     assert rule_event.relative_position == '0:0:0:0:0'
     assert len(rule_event.args) == 1
     assert (
         isinstance(rule_event.args[0], kore.App)
         and rule_event.args[0].symbol
-        == "Lblnode'LParUndsCommUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree'Unds'Tree"
+        == "Lblnode'LParUndsCommUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree'Unds'Tree"
     )
 
     # Simplification rule
@@ -101,12 +101,12 @@ def test_parse_proof_hint_reverse_no_ints() -> None:
     # Function event
     rule_event = hint.trace[5]
     assert isinstance(rule_event, LLVMFunctionEvent)
-    assert rule_event.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert rule_event.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree{}"
     assert rule_event.relative_position == '0:0'
     assert len(rule_event.args) == 1
     assert (
         isinstance(rule_event.args[0], kore.App)
-        and rule_event.args[0].symbol == "Lblb'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree"
+        and rule_event.args[0].symbol == "Lblb'Unds'TREE-REVERSE-SYNTAX'Unds'Tree"
     )
 
     # Simplification rule
@@ -119,12 +119,12 @@ def test_parse_proof_hint_reverse_no_ints() -> None:
     # Function event
     rule_event = hint.trace[7]
     assert isinstance(rule_event, LLVMFunctionEvent)
-    assert rule_event.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree{}"
+    assert rule_event.name == "Lblreverse'LParUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree{}"
     assert rule_event.relative_position == '0:1'
     assert len(rule_event.args) == 1
     assert (
         isinstance(rule_event.args[0], kore.App)
-        and rule_event.args[0].symbol == "Lbla'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree"
+        and rule_event.args[0].symbol == "Lbla'Unds'TREE-REVERSE-SYNTAX'Unds'Tree"
     )
 
     # Simplification rule
@@ -141,15 +141,15 @@ def test_parse_proof_hint_reverse_no_ints() -> None:
     assert k_cell['name'] == 'kseq'
     assert (
         k_cell['args'][0]['args'][0]['name']
-        == "Lblnode'LParUndsCommUndsRParUnds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree'Unds'Tree'Unds'Tree"
+        == "Lblnode'LParUndsCommUndsRParUnds'TREE-REVERSE-SYNTAX'Unds'Tree'Unds'Tree'Unds'Tree"
     )
-    assert k_cell['args'][0]['args'][0]['args'][0]['name'] == "Lblb'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree"
-    assert k_cell['args'][0]['args'][0]['args'][1]['name'] == "Lbla'Unds'TREE-REVERSE-WITHOUT-INTEGERS-SYNTAX'Unds'Tree"
+    assert k_cell['args'][0]['args'][0]['args'][0]['name'] == "Lblb'Unds'TREE-REVERSE-SYNTAX'Unds'Tree"
+    assert k_cell['args'][0]['args'][0]['args'][1]['name'] == "Lbla'Unds'TREE-REVERSE-SYNTAX'Unds'Tree"
 
 
-def test_parse_proof_hint_trivial() -> None:
-    names = ['0_rewrites.trivial', '1_rewrite.trivial', '2_rewrites.trivial']
-    hints = [read_proof_hint('trivial/' + name + '.hints') for name in names]
+def test_parse_proof_hint_decrement() -> None:
+    names = ['0_rewrites.decrement', '1_rewrite.decrement', '2_rewrites.decrement']
+    hints = [read_proof_hint('decrement/' + name + '.hints') for name in names]
 
     # 11 initialization events
     for i in range(len(hints)):
@@ -178,13 +178,3 @@ def test_parse_proof_hint_imp5() -> None:
 
     # 2 post-initial-configuration events
     assert len(hint.trace) == 2
-
-
-def test_parse_proof_hint_reverse() -> None:
-    hint = read_proof_hint('reverse/init.reverse.hints')
-
-    # 11 initialization events
-    assert len(hint.pre_trace) == 11
-
-    # 10 post-initial-configuration events
-    assert len(hint.trace) == 10

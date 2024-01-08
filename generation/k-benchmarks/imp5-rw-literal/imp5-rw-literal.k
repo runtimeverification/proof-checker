@@ -1,4 +1,5 @@
 module INTERNAL-DOMAIN-SYNTAX
+
   // Domain constructors
   syntax IBool ::= "true" | "false"
   syntax IInt ::= "12345" | "10" | "100" | "200" | "1" | "90" | "210" | "0"
@@ -6,11 +7,13 @@ module INTERNAL-DOMAIN-SYNTAX
 endmodule
 
 module INTERNAL-DOMAIN
+
   imports INTERNAL-DOMAIN-SYNTAX
 
 endmodule
 
 module IMP5-RW-LITERAL-SYNTAX
+
   imports INTERNAL-DOMAIN-SYNTAX
 
   syntax Id2 ::= "x1" | "x2" | "x3" | "x4" | "x5" | "ret"
@@ -32,6 +35,7 @@ module IMP5-RW-LITERAL-SYNTAX
 endmodule
 
 module IMP5-RW-LITERAL
+
   imports IMP5-RW-LITERAL-SYNTAX
   imports INTERNAL-DOMAIN
 

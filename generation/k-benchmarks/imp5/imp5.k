@@ -1,4 +1,5 @@
 module IMP5-SYNTAX
+
   imports INT-SYNTAX
   imports BOOL-SYNTAX
 
@@ -34,9 +35,11 @@ module IMP5-SYNTAX
   syntax Ids ::= List{Id2,","}                 [format(%1%2 %3)]
 
   syntax Vars5 ::= Int "," Int "," Int "," Int "," Int "," Int
+
 endmodule
 
 module IMP5
+
   imports IMP5-SYNTAX
   imports INT
   imports BOOL
@@ -90,4 +93,5 @@ module IMP5
   // rule <k> int (X,Xs => Xs);_ </k> <state> _:Map (.Map => X|->0) </state>
   // We have _L here instead of .Ids because we are not doing anything with declaration
   rule int _L; S => S
+
 endmodule

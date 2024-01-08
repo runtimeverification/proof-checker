@@ -1,4 +1,5 @@
 module INTERNAL-DOMAIN-SYNTAX
+
   // Domain constructors
   syntax IBool ::= "true" | "false"
   syntax Nat ::= "0" | s(Nat)
@@ -18,6 +19,7 @@ module INTERNAL-DOMAIN-SYNTAX
 endmodule
 
 module INTERNAL-DOMAIN
+
   imports INTERNAL-DOMAIN-SYNTAX
 
   // Nat plus
@@ -33,9 +35,11 @@ module INTERNAL-DOMAIN
   rule 0 >Nat _:Nat => false
   rule s(_:Nat) >Nat 0 => true
   rule s(N:Nat) >Nat s(M:Nat) => N >Nat M
+
 endmodule
 
 module IMP5-RW-SUCC-SYNTAX
+
   imports INTERNAL-DOMAIN-SYNTAX
 
   syntax Id2 ::= "x1" | "x2" | "x3" | "x4" | "x5" | "ret"
@@ -59,6 +63,7 @@ module IMP5-RW-SUCC-SYNTAX
 endmodule
 
 module IMP5-RW-SUCC
+
   imports IMP5-RW-SUCC-SYNTAX
   imports INTERNAL-DOMAIN
 
@@ -109,4 +114,5 @@ module IMP5-RW-SUCC
   rule 100 => s(s(s(s(s(s(s(s(s(s(0))))))))))  // 10
   rule 200 => s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(s(0)))))))))))))))))))) // 20
   rule 1 => s(0) // 1
+
 endmodule
