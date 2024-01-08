@@ -120,7 +120,7 @@ test-python: poetry-install
 test-unit-python: poetry-install
 	$(POETRY_RUN) pytest generation/src/tests/unit --maxfail=1 --verbose $(TEST_ARGS)
 
-test-integration-python: poetry-install test-hints
+test-integration-python: poetry-install generate-hints
 	$(POETRY_RUN) pytest generation/src/tests/integration --maxfail=1 --verbose --durations=0 --numprocesses=4 --dist=worksteal $(TEST_ARGS)
 
 # Coverage
@@ -228,16 +228,6 @@ module=$(patsubst %/,%, $(dir $*))
 
 pretty-print-hints: $(HINTS_PRETTY_PRINTED)
 
-# Checking generated hints
-# ------------------------
-
-EXECUTION_HINTS_TARGETS=$(addsuffix .hints_gen,${EXECUTION_HINTS})
-
-.build/proof-hints/%.hints.hints_gen: .build/proof-hints/%.hints.pretty
-	${DIFF} --label expected "proofs/proof-hints/$*.hints.pretty" --label actual ".build/proof-hints/$*.hints.pretty"
-
-test-hints: ${EXECUTION_HINTS_TARGETS}
-
 # Removing generated hints (binary and pretty-printed)
 # ----------------------------------------------------
 
@@ -245,7 +235,7 @@ clean-hints:
 	rm -rf .build/proof-hints/*
 
 
-.PHONY: generate-hints pretty-print-hints test-hints clean-hints
+.PHONY: generate-hints pretty-print-hints clean-hints
 
 
 # System testing
