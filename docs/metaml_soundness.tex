@@ -248,6 +248,7 @@ On the contrary, this is a special property of patterns that we will be consider
   We call a pattern $\psi$ \emph{metavariable-consistent}, if for every $M, M'$ in $\psi$ we have that $M.id = M'.id$ implies $M = M'$.
 \end{definition}
 
+% TODO: Might be used for removing the global metavariable-consistency check
 \iffalse
 \begin{definition}[Pattern renaming]
   Let $\varphi$ a pattern.
@@ -473,11 +474,12 @@ First, we extend metavariable-consistency to proofs:
   \end{proof}
 \end{corollary*}
 
+% TODO: This tries to show that if we simply check that holes are disjoint from other constraints, this is sufficient for soundness. I.e., we can remove the "global" metavariable-consistency assumption.
 \iffalse
 \begin{theorem*}
   If a proof schema of $\psi$ contains meta-variables that have holes disjoint from other constraints, then there is a schema of $\psi' \approx \psi$ that is not void and metavariable-consistent.
   \begin{proof}
-    The main idea is to  and apply \Cref{theorem:disjoint_instantiability}.
+    The main idea is to rename variables accordingly and apply \Cref{theorem:disjoint_instantiability}.
 
     By structural induction on the proof of $\varphi$.
 
