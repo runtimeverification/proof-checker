@@ -171,6 +171,7 @@ class ProofExp:
 
     def exists_generalization(self, proved: ProofThunk, var: EVar) -> ProofThunk:
         l, r = Implies.extract(proved.conc)
+        assert r.evar_is_fresh(var.name)
         return ProofThunk(
             (lambda interpreter: interpreter.exists_generalization(proved(interpreter), var)),
             Implies(Exists(var.name, l), r),

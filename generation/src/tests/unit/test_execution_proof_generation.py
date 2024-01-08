@@ -113,7 +113,7 @@ def rewrite_hints_with_cell() -> list[tuple[RewriteStepExpression, Pattern, Patt
     ]
 
 
-def cell_pretty_conf(symbol_name: str, plug: str = 'phi0') -> str:
+def cell_pretty_conf(symbol_name: str, plug: str = 'x0') -> str:
     return f'<ksym_generated_top> <ksym_k> (ksym_inj(ksort_SortFoo, ksort_SortKCell, {symbol_name}()) ~> {plug}) </ksym_k> </ksym_generated_top>'
 
 

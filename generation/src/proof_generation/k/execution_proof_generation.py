@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import proof_generation.proof as proof
 import proof_generation.proofs.kore as kl
-from proof_generation.aml import Pattern, Symbol
+from proof_generation.aml import EVar, Pattern, Symbol
 from proof_generation.k.kore_convertion.language_semantics import (
     AxiomType,
     ConvertedAxiom,
@@ -17,7 +17,7 @@ from proof_generation.k.kore_convertion.language_semantics import (
 )
 from proof_generation.k.kore_convertion.rewrite_steps import FunEvent, RewriteStepExpression
 from proof_generation.proofs.definedness import functional
-from proof_generation.proofs.substitution import HOLE, Substitution
+from proof_generation.proofs.substitution import HOLE, Substitution, func_subst_axiom
 
 if TYPE_CHECKING:
     from proof_generation.k.kore_convertion.language_semantics import LanguageSemantics
@@ -326,34 +326,52 @@ class ExecutionProofExp(proof.ProofExp):
         """Returns the current configuration."""
         return self._curr_config
 
+    @staticmethod
+    def assert_functional_pattern(semantics: LanguageSemantics, pattern: Pattern) -> None:
+        sym, _ = kl.deconstruct_nary_application(pattern)
+        # TODO: Should we also check that the arguments are functional?
+        assert isinstance(sym, Symbol), f'Pattern {pattern} is not supported'
+        k_sym = semantics.resolve_to_ksymbol(sym)
+        assert k_sym is not None
+        assert k_sym.is_functional
+
     def rewrite_event(self, rule: KRewritingRule, substitution: dict[int, Pattern]) -> proof.ProofThunk:
         """Extends the proof with an additional rewrite step."""
-        # Check that the rule is krewrites
-        instantiated_axiom = rule.pattern.instantiate(substitution)
-        match = kl.kore_rewrites.assert_matches(instantiated_axiom)
-        lhs = match[1]
-        rhs = match[2]
+        # Construct and add claim
+        claim = rule.pattern
+        for name, plug in substitution.items():
+            claim = claim.apply_esubst(name, plug)
+        self.add_claim(claim)
+        sort, lhs, rhs = kl.kore_rewrites.assert_matches(claim)
 
-        # Check that the lhs matches the current configuration
+        # Check that the lhs equals the current configuration
         assert (
             lhs == self.current_configuration
-        ), f'The current configuration {lhs.pretty(self.pretty_options())} does not match the lhs of the rule {rule.pattern.pretty(self.pretty_options())}'
+        ), f'The current configuration {str(self.current_configuration)} does not equal {str(lhs)}, the lhs of an instance of rule {str(rule.pattern)}'
 
-        # Add the axioms
-        self.add_assumptions_for_rewrite_step(rule, substitution)
+        # Add the axioms/assumptions
+        self.add_axiom(rule.pattern)
+        for name, plug in substitution.items():
+            self.assert_functional_pattern(self.language_semantics, plug)
+            self.add_assumption(functional(plug))
+            # TODO: Get rid of this hack:
+            self.subst_proofexp.add_axiom(func_subst_axiom(name))
 
-        # Add the claim
-        self.add_claim(instantiated_axiom)
+        # Compute the proof
+        step_pf = self.load_axiom(rule.pattern)
+        for name, plug in substitution.items():
+            functional_assumption = self.load_axiom(functional(plug))
+            universalized = self.subst_proofexp.universal_gen(step_pf, EVar(name))
+            step_pf = self.subst_proofexp.functional_subst(functional_assumption, universalized, EVar(name))
 
         # Add the proof
-        proof = self.dynamic_inst(self.load_axiom(rule.pattern), substitution)
-        self.add_proof_expression(proof)
+        self.add_proof_expression(step_pf)
         self._curr_config = rhs
 
         # Update the current configuration
         self._simplification_performer.update_configuration(self._curr_config)
 
-        return proof
+        return step_pf
 
     def function_simplification_event(self, location: Location) -> None:
         self._simplification_performer.enter_context(location)

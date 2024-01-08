@@ -4,10 +4,9 @@ from itertools import count
 
 from pytest import mark, raises
 
-from proof_generation.aml import App, EVar, MetaVar, Pattern, Symbol, phi0, phi1
+from proof_generation.aml import App, EVar, Pattern, Symbol, phi0, phi1
 from proof_generation.k.execution_proof_generation import ExecutionProofExp
 from proof_generation.k.kore_convertion.language_semantics import (
-    AxiomType,
     KEquationalRule,
     KModule,
     KSort,
@@ -73,9 +72,9 @@ def rewrite_with_cell() -> LanguageSemantics:
             c_symbol = mod.symbol('c', foo_sort, is_functional=True, is_ctor=True)
             mod.symbol('dotk', k_sort, is_functional=True, is_ctor=True)
 
-            c1 = rewrite_with_cells_config_pattern(semantics, a_symbol.app(), MetaVar(0))
-            c2 = rewrite_with_cells_config_pattern(semantics, b_symbol.app(), MetaVar(0))
-            c3 = rewrite_with_cells_config_pattern(semantics, c_symbol.app(), MetaVar(0))
+            c1 = rewrite_with_cells_config_pattern(semantics, a_symbol.app(), EVar(0))
+            c2 = rewrite_with_cells_config_pattern(semantics, b_symbol.app(), EVar(0))
+            c3 = rewrite_with_cells_config_pattern(semantics, c_symbol.app(), EVar(0))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c1, c2))
             mod.rewrite_rule(kore_rewrites(top_cell_sort.aml_symbol, c2, c3))
 
@@ -604,38 +603,39 @@ def test_collect_functional_axioms() -> None:
         with module as mod:
             sort = mod.sort('sort')
             a_symbol = mod.symbol('a', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
-            b_symbol = mod.symbol('c', sort, input_sorts=(), is_functional=True, is_ctor=True)
-            c_symbol = mod.symbol('d', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
+            b_symbol = mod.symbol('b', sort, input_sorts=(), is_functional=True, is_ctor=True)
+            c_symbol = mod.symbol('c', sort, input_sorts=(sort,), is_functional=True, is_ctor=True)
+            d_symbol = mod.symbol('d', sort, input_sorts=(sort, sort), is_functional=True, is_ctor=True)
             a = a_symbol.app
             b = b_symbol.aml_symbol
             c = c_symbol.app
+            d = d_symbol.app
+            single_evar_krule = mod.rewrite_rule(kore_rewrites(sort.aml_symbol, EVar(0), EVar(0)))
+            double_evar_krule = mod.rewrite_rule(
+                kore_rewrites(sort.aml_symbol, d(EVar(0), EVar(1)), d(EVar(0), EVar(1)))
+            )
 
-            axioms = ExecutionProofExp.collect_functional_axioms(
-                sem,
+            b_pe = ExecutionProofExp(sem, b)
+            b_pe.rewrite_event(
+                single_evar_krule,
                 {0: b},
             )
-            assert len(axioms) == 1
-            axiom = axioms[0]
-            assert axiom.kind == AxiomType.FunctionalSymbol
-            assert axiom.pattern == functional(b)
+            assert functional(b) in b_pe.get_axioms()
 
-            with raises(AssertionError):
-                # Not yet supported (At the time of writing we only
-                # support generation of functional assumptions for symbols)
-                ExecutionProofExp.collect_functional_axioms(sem, {0: EVar(1)})
+            ab_pe = ExecutionProofExp(sem, a(b))
+            ab_pe.rewrite_event(
+                single_evar_krule,
+                {0: a(b)},
+            )
+            assert functional(a(b)) in ab_pe.get_axioms()
 
-            axioms = ExecutionProofExp.collect_functional_axioms(sem, {1: c(b)})
-            assert len(axioms) == 1
-            axiom = axioms[0]
-            assert axiom.kind == AxiomType.FunctionalSymbol
-            assert axiom.pattern == functional(c(b))
-
-            axioms = ExecutionProofExp.collect_functional_axioms(sem, {0: a(b), 1: b})
-            assert len(axioms) == 2
-            for axiom in axioms:
-                assert axiom.kind == AxiomType.FunctionalSymbol
-            assert axioms[0].pattern == functional(a(b))
-            assert axioms[1].pattern == functional(b)
+            cbb_pe = ExecutionProofExp(sem, d(c(b), b))
+            cbb_pe.rewrite_event(
+                double_evar_krule,
+                {0: c(b), 1: b},
+            )
+            assert functional(c(b)) in cbb_pe.get_axioms()
+            assert functional(b) in cbb_pe.get_axioms()
 
 
 @mark.parametrize(

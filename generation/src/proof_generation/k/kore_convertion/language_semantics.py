@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, NamedTuple, ParamSpec, TypeVar
 import pyk.kore.syntax as kore
 
 import proof_generation.proofs.kore as kl
-from proof_generation.aml import App, EVar, Instantiate, MetaVar, Pattern, Symbol
+from proof_generation.aml import App, EVar, Instantiate, MetaVar, Pattern, SVar, Symbol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from proof_generation.aml import Notation, SVar
+    from proof_generation.aml import Notation
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -46,7 +46,6 @@ class KSort:
         return Symbol('ksort_' + self.name)
 
 
-# TODO: Remove this class
 @dataclass(frozen=True)
 class KSortVar:
     name: str
@@ -330,10 +329,10 @@ class ConvertionScope:
             self._metavars[name] = MetaVar(name=len(self._metavars))
         return self._metavars[name]
 
-    def lookup_metavar(self, name: str) -> MetaVar:
-        if name in self._metavars:
-            return self._metavars[name]
-        raise KeyError(f'Variable name {name} not found in meta vars dict!')
+    def lookup_evar(self, name: str) -> EVar:
+        if name in self._evars:
+            return self._evars[name]
+        raise KeyError(f'Variable name {name} not found in element vars dict!')
 
     def resolve_sort_param_metavar(self, name: str) -> MetaVar:
         """Resolve the metavar in the given pattern."""
@@ -554,8 +553,7 @@ class LanguageSemantics(BuilderScope):
         substitutions = {}
         scope = self._cached_axiom_scopes[axiom_ordinal]
         for var_name, kore_pattern in subst.items():
-            # TODO: Replace it with the EVar later
-            name = scope.lookup_metavar(var_name).name
+            name = scope.lookup_evar(var_name).name
             substitutions[name] = self._convert_pattern(scope, kore_pattern)
         return substitutions
 
@@ -673,9 +671,7 @@ class LanguageSemantics(BuilderScope):
 
                 return ksymbol.app(*(sort_params + arg_patterns))
             case kore.EVar(name, _):
-                # TODO: Revisit when we have sorting implemented!
-                # return scope.resolve_evar(pattern)
-                return scope.resolve_metavar(name)
+                return scope.resolve_evar(name)
             case kore.SVar(name, sort):
                 raise NotImplementedError()
             case kore.Top(sort):
@@ -692,9 +688,7 @@ class LanguageSemantics(BuilderScope):
                 exists_outer_sort_pattern: Pattern = self._convert_sort(scope, sort)
                 exists_var_pattern: Pattern = self._convert_pattern(scope, var)
                 exists_pattern: Pattern = self._convert_pattern(scope, pattern)
-                # TODO: This should be fixed after functional substitution is implemented
-                # assert isinstance(exists_var_pattern, EVar | SVar)
-                assert isinstance(exists_var_pattern, MetaVar)
+                assert isinstance(exists_var_pattern, EVar | SVar)
 
                 custom_exists_notation = kl.kore_exists(exists_var_pattern.name)
                 self._inferred_notations.add(custom_exists_notation)
