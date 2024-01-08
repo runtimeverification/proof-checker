@@ -402,6 +402,8 @@ class MetaVar(Pattern):
 phi0 = MetaVar(0)
 phi1 = MetaVar(1)
 phi2 = MetaVar(2)
+phi3 = MetaVar(3)
+phi4 = MetaVar(4)
 
 
 @dataclass(frozen=True)
